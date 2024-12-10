@@ -1,0 +1,23 @@
+# Python
+*.pyc
+__pycache__/
+*.pyo
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Ambiente virtual
+env/
+venv/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Ignore IDE-specific files
+.vscode/
+.idea/

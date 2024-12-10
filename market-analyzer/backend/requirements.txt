@@ -1,0 +1,19 @@
+####### Main Tool #######
+fastapi
+uvicorn
+psycopg2
+
+####### Tecnical Analysis #######
+
+numpy
+pandas
+pandas_ta
+datetime
+MetaTrader5
+scipy
+scipy.signal
+itertools
+tqdm
+time
+
+TA-Lib
