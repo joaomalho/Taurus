@@ -1,5 +1,5 @@
 
-![Logo](https://github.com/joaomalho/Taurus/blob/main/images/logo.png?raw=true)
+![Logo](https://github.com/joaomalho/Taurus/blob/main/images/taurus.png?raw=true)
 
 
 This tool analyzes finantial markets in real time to help investors.
