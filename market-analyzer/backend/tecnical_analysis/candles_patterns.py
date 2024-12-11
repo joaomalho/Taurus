@@ -1,7 +1,6 @@
 import talib
 import pandas as pd
 
-
 class CandlesPatterns:
     """
     Detect all candlestick patterns using TA-Lib.

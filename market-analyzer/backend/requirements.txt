@@ -9,11 +9,14 @@ numpy
 pandas
 pandas_ta
 datetime
+time
+
+
 MetaTrader5
 scipy
 scipy.signal
-itertools
 tqdm
-time
-
+itertools
 TA-Lib
+
+joblib
