@@ -20,7 +20,7 @@ This tool analyzes finantial markets in real time to help investors.
 ## Roadmap
 
 - Continuação de migração da ferramenta desenvolvida localmente.
-- Funções de coleta de informação
+- Funções de coleta de informação - Yahooo (Done) 
 
 ## Last updates
 
@@ -30,7 +30,7 @@ Use of Parallelization through Joblib to optimization process of :
 * RSI - Missing
 
 Replace of hardcoded funcions by TA-Lib.
-* trend_metrics
+* Trend Metrics `trend_metrics`
 
 New measures of to valuate strategies performance:
 * Sharpe Ratio
@@ -69,22 +69,3 @@ __Dados de Criptomoedas:__
 __Delay:__ Aproximadamente 1-2 minutos.
 __Descrição:__ Criptomoedas são frequentemente atualizadas, mas não são tão rápidas quanto APIs dedicadas, como a Binance ou Coinbase.
 
-
-
-Data Source Utilities
-
-| **Type of Data**            | **Method/Property**                 | **Description**                                  |
-|-----------------------------|-------------------------------------|--------------------------------------------------|
-| Market Data                 | `yf.download()`                     | Historical price data.                           |
-| General Information         | `ticker_data.info`                  | Details about the company/asset.                 |
-| Dividends                   | `ticker_data.dividends`             | Dividend history.                                |
-| Splits                      | `ticker_data.splits`                | Stock split history.                             |
-| Analyst Recommendations     | `ticker_data.recommendations`       | Analyst insights.                                |
-| News                        | `ticker_data.news`                  | News related to the asset.                       |
-| Corporate Events            | `ticker_data.calendar`              | Upcoming events like earnings calls.             |
-| Options                     | `ticker_data.option_chain()`        | Options information (calls/puts).                |
-| Financial Statements        | `ticker_data.financials`            | Income statement data.                           |
-| Balance Sheet               | `ticker_data.balance_sheet`         | Asset and liability information.                 |
-| Cash Flow                   | `ticker_data.cashflow`              | Cash flow details.                               |
-| Sustainability              | `ticker_data.sustainability`        | ESG data.                                        |
-| Institutional Holders       | `ticker_data.institutional_holders` | Major institutional investors.                   |
