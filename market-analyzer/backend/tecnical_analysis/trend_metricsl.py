@@ -6,14 +6,8 @@ class TrendMetrics:
     A class that encapsulates technical analysis metrics using TA-Lib.
     """
 
-    def __init__(self):
-        self.result_df = pd.DataFrame(columns=['Function', 'Signal'])
-        self.crossover_signal = None
-        self.lower_band = None
-        self.upper_band = None
-        self.bbands_signal = None
-        self.rsi_now = None
-        self.rsi_signal = None
+    def __init__(self, data):
+        self.data = data
 
     def get_crossover(self, data: pd.DataFrame, l1: int, l2: int, l3: int):
         """

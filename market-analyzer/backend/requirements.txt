@@ -10,7 +10,7 @@ pandas
 pandas_ta
 datetime
 time
-
+warnings
 
 MetaTrader5
 scipy
@@ -20,3 +20,6 @@ itertools
 TA-Lib
 
 joblib
+
+####### Data Sources #######
+yfinance
