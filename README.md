@@ -27,7 +27,7 @@ This tool analyzes finantial markets in real time to help investors.
 Use of Parallelization through Joblib to optimization process of :
 * Crossover
 * Bollinger Bands
-* RSI - Missing
+* RSI
 
 Replace of hardcoded funcions by TA-Lib.
 * Trend Metrics `trend_metrics`

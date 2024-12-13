@@ -1,0 +1,19 @@
+.sidenav-container {
+    height: 100%;
+  }
+  
+  mat-sidenav {
+    width: 250px;
+    background: #263238; /* Cor do fundo da sidebar */
+    color: rgb(207, 79, 79);
+  }
+  
+  mat-sidenav mat-nav-list a {
+    color: rgb(160, 72, 72);
+    text-decoration: none;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+  
