@@ -3,7 +3,7 @@ This file is responsible for market order execution
 '''
 import MetaTrader5 as mt5
 
-class Market_Order_Execution():
+class MarketOrderExecution():
     def __init__(self) -> None:
         
         self.order_result = None
