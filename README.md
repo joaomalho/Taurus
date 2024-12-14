@@ -1,10 +1,10 @@
-<center># Taurus</center>
+# <p align="center"> Taurus </p>
 
 
 ![Logo](https://github.com/joaomalho/Taurus/blob/main/images/taurus.png?raw=true)
 
-<center>**Empowering Investors with Real-Time Financial Insights**</center>
-  
+**<p align="center"> Empowering Investors with Real-Time Financial Insights </p>**
+
 Taurus is a cutting-edge tool that analyzes financial markets in real-time, helping investors make smarter and more informed decisions.
 
 ---
