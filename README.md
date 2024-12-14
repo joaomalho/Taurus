@@ -40,8 +40,8 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 | Data Type            | Source        | Delay           | Description                                        |
 |----------------------|---------------|-----------------|----------------------------------------------------|
 | **Intraday**         | Yahoo Finance | 1-2 minutes     | Near real-time data for short intervals.           |
-| **Daily or Long-Term**| Yahoo Finance | Same day or next day | Reliable data for historical analysis.        |
-| **Currencies (Forex)**| Yahoo Finance | 15 sec - 1 min   | Quick updates on currency markets.                |
+| **Daily or Long-Term**| Yahoo Finance | 1-2 minutes | Reliable data for historical analysis.        |
+| **Currencies (Forex)**| Yahoo Finance | 1-2 minutes   | Quick updates on currency markets.                |
 | **Cryptocurrencies** | Yahoo Finance | 1-2 minutes     | Regular updates, though slower than dedicated APIs like Binance. |
 
 ---
@@ -119,3 +119,5 @@ Be the master of your investments with Taurus.
 ## 🛠️ Next steps
 - Risk Manager
 - FrontEnd firt version release
+- Improve Crypto source (binance)
+- Improve Forex source (metatrader5)
