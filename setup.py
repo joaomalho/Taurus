@@ -3,7 +3,9 @@ import subprocess
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.install import install
+from setuptools.command.easy_install import easy_install
 import venv
+import shutil
 
 # Função para carregar as dependências do requirements.txt
 def parse_requirements(filename):
@@ -41,14 +43,18 @@ class CustomInstallCommand(install):
         if not os.path.exists(venv_dir):
             print(f"Criando ambiente virtual em: {venv_dir}")
             venv.create(venv_dir, with_pip=True)
-        
-        # Ativar o ambiente virtual
+
+        # Ativar o ambiente virtual de forma adequada para o sistema operacional
         if os.name == 'nt':
-            activate_script = os.path.join(venv_dir, 'Scripts', 'activate_this.py')
+            # No Windows, utilizamos o arquivo `activate.bat`
+            activate_script = os.path.join(venv_dir, 'Scripts', 'activate.bat')
         else:
-            activate_script = os.path.join(venv_dir, 'bin', 'activate_this.py')
-        
-        exec(open(activate_script).read(), {'__file__': activate_script})
+            # No Linux/MacOS, utilizamos o script `activate`
+            activate_script = os.path.join(venv_dir, 'bin', 'activate')
+
+        # Executar o script de ativação (somente ativação no código)
+        print(f"Ativando o ambiente virtual com: {activate_script}")
+        subprocess.call([activate_script], shell=True)
 
     def install_yfinance(self):
         """Instala o yfinance com os parâmetros específicos."""
@@ -89,18 +95,47 @@ class CustomInstallCommand(install):
         subprocess.check_call("sudo make install", shell=True)
         os.chdir("..")
 
-# Carregar dependências do requirements.txt
+class CustomUninstallCommand(easy_install):
+    """Comando personalizado para desinstalar o pacote e remover o ambiente virtual"""
+    
+    description = "Desinstala o pacote e remove o ambiente virtual"
+    
+    def run(self):
+        # Remover o ambiente virtual, se existir
+        venv_dir = os.path.join(os.getcwd(), 'venv')
+        if os.path.exists(venv_dir):
+            print(f"Removendo ambiente virtual em: {venv_dir}")
+            shutil.rmtree(venv_dir)  # Remove o diretório do ambiente virtual
+
+        # Desinstalar o pacote via pip
+        print("Desinstalando o pacote usando pip...")
+        subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "-y", "taurus"])
+
+        # Chama a desinstalação do pacote do setuptools
+        easy_install.run(self)
+
+class UpdateCommand(easy_install):
+    """Comando para atualizar todas as dependências do requirements.txt"""
+    description = "Atualiza as dependências do requirements.txt para a versão mais recente"
+    
+    def run(self):
+        """Executa a atualização das dependências"""
+        print("Atualizando pacotes do requirements.txt...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "-r", "requirements.txt"])
+
 requirements = parse_requirements("requirements.txt")
 
 setup(
     name="taurus",
     version="0.1.0",
     packages=find_packages(),
-    install_requires=requirements,  # Usa o requirements.txt
+    install_requires=requirements,
     extras_require={
         "yfinance": ["yfinance>=0.0.0"],
     },
     cmdclass={
         "install": CustomInstallCommand,
+        "uninstall": CustomUninstallCommand,
+        "update": UpdateCommand,
     },
 )
