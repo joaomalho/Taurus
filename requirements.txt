@@ -4,22 +4,20 @@ uvicorn
 psycopg2
 
 ####### Tecnical Analysis #######
-
 numpy
 pandas
 pandas_ta
 datetime
 time
 warnings
-
 MetaTrader5
 scipy
 scipy.signal
 tqdm
 itertools
 TA-Lib
-
 joblib
 
 ####### Data Sources #######
+# yfinance must be installed with: pip install yfinance --upgrade --no-cache-dir
 yfinance
