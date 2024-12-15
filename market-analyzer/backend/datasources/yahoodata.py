@@ -34,7 +34,6 @@ class DataHistory():
     
     def get_yahoo_symbol_info(self, symbol : str):
         '''
-        !!! Not Working !!!
         Return detailed information about asset
         '''
         yahoo_symbol_info = yf.Ticker(symbol).info
@@ -56,7 +55,6 @@ class DataHistory():
  
     def get_yahoo_symbol_recommendations(self, symbol : str):
         '''
-        !!! Not Working !!!
         Return recommendations about asset
         '''
         yahoo_symbol_recommendations = yf.Ticker(symbol).recommendations
@@ -64,7 +62,6 @@ class DataHistory():
 
     def get_yahoo_symbol_calendar(self, symbol : str):
         '''
-        !!! Not Working !!!
         Return corporative calendar events about asset
         '''
         yahoo_symbol_calendar = yf.Ticker(symbol).calendar
@@ -86,11 +83,10 @@ class DataHistory():
 
     def get_yahoo_symbol_balance_sheet(self, symbol : str):
         '''
-        !!! Not Working !!!
         Return the patrimonial balance sheet
         '''
-        yahoo_symbol_institutional_holders = yf.Ticker(symbol).institutional_holders
-        return yahoo_symbol_institutional_holders
+        yahoo_symbol_balance_sheet = yf.Ticker(symbol).balance_sheet
+        return yahoo_symbol_balance_sheet
 
     def get_yahoo_symbol_financials(self, symbol : str):
         '''
@@ -102,7 +98,6 @@ class DataHistory():
 
     def get_yahoo_symbol_cashflow(self, symbol : str):
         '''
-        !!! Not Working !!!
         Return the cashflow results
         '''
         yahoo_symbol_cashflow = yf.Ticker(symbol).cashflow
@@ -110,7 +105,7 @@ class DataHistory():
 
     def get_yahoo_symbol_sustainability(self, symbol : str):
         '''
-        !!! Not Working !!!
+        
         Return the ESG metrics (enviormental, social and governamental)
         '''
         yahoo_symbol_sustainability = yf.Ticker(symbol).sustainability
