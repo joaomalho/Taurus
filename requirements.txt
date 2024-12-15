@@ -1,9 +1,7 @@
-####### Main Tool #######
+# Por favor, use `setup.py install` para instalar todas as dependências corretamente.
 fastapi
 uvicorn
 psycopg2
-
-####### Tecnical Analysis #######
 numpy
 pandas
 pandas_ta
@@ -12,12 +10,8 @@ time
 warnings
 MetaTrader5
 scipy
-scipy.signal
 tqdm
 itertools
-TA-Lib
 joblib
-
-####### Data Sources #######
-# yfinance must be installed with: pip install yfinance --upgrade --no-cache-dir
 yfinance
+# TA-Lib: Instalar via setup.py devido às dependências nativas

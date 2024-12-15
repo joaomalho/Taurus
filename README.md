@@ -4,7 +4,7 @@
 ![Logo](https://github.com/joaomalho/Taurus/blob/main/images/taurus.png?raw=true)
 
 **<p align="center"> Empowering Investors with Real-Time Financial Insights </p>**
-
+ 
 Taurus is a cutting-edge tool that analyzes financial markets in real-time, helping investors make smarter and more informed decisions.
 
 ---
@@ -28,13 +28,6 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 
 ### Real-Time Data:
 - Track Stocks, ETFs, Currencies, and Cryptocurrencies with near-instant updates.
-
----
----
-
-## **🚀 Latest Updates**
-- **Risk Manager:** A new feature to help minimize losses in volatile markets.
-- **Valuation Metrics:** Powerful indicators for long-term strategies and fundamental analysis.
 
 ---
 ---
@@ -120,17 +113,9 @@ Taurus bridges the gap between complex market analysis and actionable insights, 
 
 ---
 ---
-
-## **🛠️ Next steps**
-- Risk Manager
-- FrontEnd firt version release
-- Improve Crypto source (binance)
-- Improve Forex source (metatrader5)
-
----
 ---
 
-## **📘 Full Documentation**
+## **<p align="center"> 📘 Full Documentation</p>**
 
 Follow the Documentation (WIP) for setup, usage details, and FAQs.
 
@@ -154,30 +139,11 @@ cd Taurus
 
 Alternatively, if you prefer not to use Git, you can download the repository as a ZIP file from GitHub and extract it to a folder.
 
-### 2️⃣ Install Dependencies
+### 2️⃣ Direct Installation
 
-**🐧 For Linux/Mac:**
+**🐧 For Linux/Mac & 🖥️ For Windows:**
 
-To install the required dependencies, run the following script:
-```bash
-./install.sh
-```
-Make sure the script is executable by running:
-```bash
-chmod +x install.sh
-```
-Then, execute it to install all necessary libraries.
-
-**🖥️ For Windows:**
-
-If you’re using Windows, you can install dependencies by running the batch script:
-```bash
-install.bat
-``` 
-Just double-click the install.bat file, or run it from a Command Prompt.
-
-### 3️⃣ Direct Installation (Recommendation)
-Alternatively, if you want to install the application as a Python package directly, you can use the setup.py file:
+Install the application as a Python package directly, you can use the setup.py file:
 ```bash
 python setup.py install
 ```
@@ -190,14 +156,20 @@ This method installs the app and all its dependencies globally, making it easier
 ```bash
 python --version
 ```
-📦 The installation scripts handle all dependencies listed in requirements.txt, including fastapi, psycopg2, pandas, numpy, yfinance, and others.
+
+💹 **TA-Lib:** The TA-Lib The direct installation via `pip install ta-lib` cause an error, probably because you haven't installed actual TA-Lib library which is written in C. Note that the python lib is just a wrapper on top of the actual library. So in order to have python wrapper successfully installed, you'll need to install its prerequisite (the actual TA-Lib). We try to handle that via our installation tool for Linux/Mac and Windows.
+
+📦 The installation scripts handle all dependencies listed in requirements.txt, including fastapi, psycopg2, pandas, numpy, yfinance, and others. It also try to support Linux/Mac and Windows, although our DEV and QA environments are based on Windows.  
+
 
 ### **🛠️ Troubleshooting**
 If you encounter any issues during installation, here are some common solutions:
 
-❌ **Missing pip:** If you get an error saying pip is not found, install it by following these instructions.
+❌ **Missing pip:** 
+If you get an error saying pip is not found, install it by following these instructions.
 
-🔒 **Permission issues:** On Linux/Mac, you may need to prepend sudo to some commands if you get permission errors:
+🔒 **Permission issues:** 
+On Linux/Mac, you may need to prepend sudo to some commands if you get permission errors:
 ```bash
 sudo pip install -r requirements.txt
 ```
@@ -208,3 +180,23 @@ sudo pip install -r requirements.txt
 
 ## 🎉 **Congratulations!** 
 You’re all set to use Taurus. If you have any issues, feel free to open an issue on the GitHub [ISSUES](https://github.com/joaomalho/Taurus/issues).
+
+
+---
+---
+---
+
+## **<p align="center"> 👨‍💻 Developments & Improvements </p>**
+
+## **🛠️ Next steps**
+- Risk Manager
+- FrontEnd firt version release
+- Improve Crypto source (binance)
+- Improve Forex source (metatrader5)
+- Install tool visual upgrade.
+
+
+## **🚀 Latest Improvements**
+- **Risk Manager:** A new feature to help minimize losses in volatile markets.
+- **Valuation Metrics:** Powerful indicators for long-term strategies and fundamental analysis.
+- **Install scripts:** Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script.

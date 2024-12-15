@@ -11,7 +11,7 @@ class DataHistory():
     def __init__(self) -> None:
         self
     
-    def get_yahoo_data_history(self, symbol : str, period : str, interval, start = '1900-01-01', end = datetime.now(), prepost : bool = True, debug : bool = True):
+    def get_yahoo_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
         '''
         Data collection from yahoo
 
@@ -26,10 +26,8 @@ class DataHistory():
             Download end date string (YYYY-MM-DD) or _datetime, exclusive. Default is now E.g. for end="2023-01-01", the last data point will be on "2022-12-31"
         prepost : bool
             Include Pre and Post market data in results? Default is False
-        debug: bool
-            If passed as False, will suppress error message printing to console.
         '''
-        yahoo_data_history = yf.Ticker(symbol).history(period=period, interval=interval, start=start, end=end, prepost=prepost, debug=debug)
+        yahoo_data_history = yf.Ticker(symbol).history(period=period, interval=interval, start=start, end=end, prepost=prepost)
         return yahoo_data_history
     
     def get_yahoo_symbol_info(self, symbol : str):
