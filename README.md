@@ -185,10 +185,8 @@ If you encounter any issues during installation, here are some common solutions:
 If you get an error saying pip is not found, install it by following these instructions.
 
 🔒 **Permission issues:** 
-On Linux/Mac, you may need to prepend sudo to some commands if you get permission errors:
-```bash
-sudo pip install -r requirements.txt
-```
+On Linux/Mac, you may need to prepend sudo to some commands if you get permission errors.
+
 🧩 **Missing dependencies:** If a dependency fails to install, ensure you have all system requirements for the libraries (e.g., development tools, headers, etc.) and try running the installation command again.
 
 ---
