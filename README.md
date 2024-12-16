@@ -145,25 +145,22 @@ Alternatively, if you prefer not to use Git, you can download the repository as 
 
 Install the application as a Python package directly, you can use the setup.py file:
 ```bash
-python setup.py install
+python setup.py install 
 ```
-This method installs the app and all its dependencies globally, making it easier to use across different environments.
 
 ### 3️⃣ Direct Uninstall
 
-Uninstall the application as a Python package directly, you can also use the setup.py file:
+Uninstall the application as a Python package directly, deleting isolated enviroments, variables and temporaty files:
 ```bash
-python setup.py uninstall
+python uninstaller.py
 ```
-This method uninstall the app and all its dependencies globally.
 
 ### 4️⃣ Direct Update
 
-Update the application as a Python package directly, you can also use the setup.py file:
+Update the application as a Python package directly:
 ```bash
 python setup.py update
 ```
-This method update the app and all its dependencies globally.
 
 ### **📌 Notes**
 ⚙️ **yfinance:** The yfinance library requires specific installation options (--upgrade --no-cache-dir). The installation scripts handle this automatically, so you don’t need to worry about it.
@@ -203,7 +200,7 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 ## **<p align="center"> 👨‍💻 Developments & Improvements </p>**
 
 ## **🛠️ Next steps**
-- Install tool (Upgrade & Uninstall Methods)
+- Install tool (Upgrade & Uninstall Methods, and visual)
 - Risk Manager
 - FrontEnd firt version release
 - Improve Crypto source (binance)

@@ -95,34 +95,6 @@ class CustomInstallCommand(install):
         subprocess.check_call("sudo make install", shell=True)
         os.chdir("..")
 
-class CustomUninstallCommand(easy_install):
-    """Comando personalizado para desinstalar o pacote e remover o ambiente virtual"""
-    
-    description = "Desinstala o pacote e remove o ambiente virtual"
-    
-    def run(self):
-        # Remover o ambiente virtual, se existir
-        venv_dir = os.path.join(os.getcwd(), 'venv')
-        if os.path.exists(venv_dir):
-            print(f"Removendo ambiente virtual em: {venv_dir}")
-            shutil.rmtree(venv_dir)  # Remove o diretório do ambiente virtual
-
-        # Desinstalar o pacote via pip
-        print("Desinstalando o pacote usando pip...")
-        subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "-y", "taurus"])
-
-        # Chama a desinstalação do pacote do setuptools
-        easy_install.run(self)
-
-class UpdateCommand(easy_install):
-    """Comando para atualizar todas as dependências do requirements.txt"""
-    description = "Atualiza as dependências do requirements.txt para a versão mais recente"
-    
-    def run(self):
-        """Executa a atualização das dependências"""
-        print("Atualizando pacotes do requirements.txt...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "-r", "requirements.txt"])
-
 requirements = parse_requirements("requirements.txt")
 
 setup(
@@ -134,8 +106,6 @@ setup(
         "yfinance": ["yfinance>=0.0.0"],
     },
     cmdclass={
-        "install": CustomInstallCommand,
-        "uninstall": CustomUninstallCommand,
-        "update": UpdateCommand,
+        "install": CustomInstallCommand
     },
 )
