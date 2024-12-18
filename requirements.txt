@@ -14,4 +14,5 @@ tqdm
 itertools
 joblib
 yfinance
+requests
 # TA-Lib: Instalar via setup.py devido às dependências nativas

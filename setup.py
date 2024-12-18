@@ -3,9 +3,8 @@ import subprocess
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-from setuptools.command.easy_install import easy_install
 import venv
-import shutil
+import requests
 
 # Função para carregar as dependências do requirements.txt
 def parse_requirements(filename):
@@ -16,45 +15,35 @@ def parse_requirements(filename):
 
 class CustomInstallCommand(install):
     def run(self):
-        # Verificar se o ambiente virtual está ativado
+
         if not self.is_virtual_env():
             print("Ambiente virtual não detectado. Criando ambiente virtual...")
             self.create_virtualenv()
 
-        # Instalar os requisitos Python padrão
         install.run(self)
 
-        # Garantir a instalação do yfinance com as opções específicas
         self.install_yfinance()
 
-        # Checar e instalar dependências adicionais (TA-Lib)
         if os.name == "nt":
             self.install_ta_lib_windows()
-        elif os.name == "posix":
-            self.install_ta_lib_linux()
 
     def is_virtual_env(self):
         """Verifica se o script está sendo executado em um ambiente virtual"""
         return hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)
 
     def create_virtualenv(self):
-        """Cria e ativa o ambiente virtual"""
+        """Cria o ambiente virtual"""
         venv_dir = os.path.join(os.getcwd(), 'venv')
         if not os.path.exists(venv_dir):
             print(f"Criando ambiente virtual em: {venv_dir}")
             venv.create(venv_dir, with_pip=True)
 
-        # Ativar o ambiente virtual de forma adequada para o sistema operacional
-        if os.name == 'nt':
-            # No Windows, utilizamos o arquivo `activate.bat`
-            activate_script = os.path.join(venv_dir, 'Scripts', 'activate.bat')
-        else:
-            # No Linux/MacOS, utilizamos o script `activate`
-            activate_script = os.path.join(venv_dir, 'bin', 'activate')
+        # Usar o pip do ambiente virtual diretamente
+        pip_path = os.path.join(venv_dir, 'Scripts', 'pip.exe')
 
-        # Executar o script de ativação (somente ativação no código)
-        print(f"Ativando o ambiente virtual com: {activate_script}")
-        subprocess.call([activate_script], shell=True)
+        # Instalar as dependências do requirements.txt no ambiente virtual
+        print(f"Instalando as dependências no ambiente virtual usando: {pip_path}")
+        subprocess.check_call([pip_path, 'install', '-r', 'requirements.txt'])
 
     def install_yfinance(self):
         """Instala o yfinance com os parâmetros específicos."""
@@ -64,36 +53,42 @@ class CustomInstallCommand(install):
     def install_ta_lib_windows(self):
         """Automatiza a instalação do TA-Lib no Windows."""
         print("Instalando TA-Lib no Windows...")
-        talib_url = "https://sourceforge.net/projects/ta-lib/files/latest/download"
-        talib_dir = os.path.join(os.getcwd(), "ta-lib")
 
-        if not os.path.exists(talib_dir):
-            os.makedirs(talib_dir)
+        # URL do arquivo .whl
+        talib_url = "https://github.com/cgohlke/talib-build/releases/download/v0.5.1/ta_lib-0.5.1-cp311-cp311-win_amd64.whl"
+        
+        # Diretório onde o arquivo será salvo
+        library_dir = os.path.join(os.getcwd(), "library")
+        
+        # Verificar se o diretório 'library' existe, se não, cria
+        if not os.path.exists(library_dir):
+            os.makedirs(library_dir)
 
-        # Baixar e descompactar a biblioteca
-        subprocess.check_call(f"curl -L {talib_url} --output ta-lib.zip", shell=True)
-        subprocess.check_call("tar -xvf ta-lib.zip -C ta-lib --strip-components=1", shell=True)
+        # Caminho do arquivo para salvar
+        file_path = os.path.join(library_dir, "ta_lib-0.5.1-cp311-cp311-win_amd64.whl")
 
-        # Compilar a biblioteca
-        os.chdir(os.path.join(talib_dir, "c", "make", "cdr", "win32", "msvc"))
-        subprocess.check_call(
-            r'"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat" && nmake',
-            shell=True
-        )
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+        # Baixar o arquivo
+        print(f"Baixando o arquivo de {talib_url}...")
+        response = requests.get(talib_url, stream=True)
 
-    def install_ta_lib_linux(self):
-        """Automatiza a instalação do TA-Lib no Linux."""
-        print("Instalando TA-Lib no Linux...")
-        subprocess.check_call("sudo apt-get update && sudo apt-get install -y build-essential wget", shell=True)
-        talib_url = "https://sourceforge.net/projects/ta-lib/files/latest/download"
-        subprocess.check_call(f"wget {talib_url} -O ta-lib.tar.gz", shell=True)
-        subprocess.check_call("tar -xvzf ta-lib.tar.gz", shell=True)
-        os.chdir("ta-lib")
-        subprocess.check_call("./configure --prefix=/usr", shell=True)
-        subprocess.check_call("make", shell=True)
-        subprocess.check_call("sudo make install", shell=True)
-        os.chdir("..")
+        # Verifica se o download foi bem-sucedido
+        if response.status_code == 200:
+            # Salvar o arquivo no diretório
+            with open(file_path, 'wb') as file:
+                for chunk in response.iter_content(chunk_size=1024):
+                    if chunk:
+                        file.write(chunk)
+            print(f"Arquivo salvo em {file_path}")
+        else:
+            print(f"Falha ao baixar o arquivo, status code: {response.status_code}")
+
+        # Usar o pip do ambiente virtual para instalar o .whl
+        venv_dir = os.path.join(os.getcwd(), 'venv')
+        pip_path = os.path.join(venv_dir, 'Scripts', 'pip.exe')
+
+        # Instalar o arquivo .whl no ambiente virtual
+        print(f"Instalando TA-Lib a partir do arquivo baixado usando: {pip_path}")
+        subprocess.check_call([pip_path, 'install', file_path])
 
 requirements = parse_requirements("requirements.txt")
 

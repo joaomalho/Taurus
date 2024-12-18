@@ -124,7 +124,7 @@ Follow the Documentation (WIP) for setup, usage details, and FAQs.
 
 Before you begin, make sure you have the following:
 
-- **Python 3.8 or later** installed
+- **Python 3.8 or later, 11 recommended** installed
 - **pip** (Python package manager)
 - A **Git** client to clone the repository (optional if downloading manually)
 
@@ -141,7 +141,7 @@ Alternatively, if you prefer not to use Git, you can download the repository as 
 
 ### 2️⃣ Direct Installation
 
-**🐧 For Linux/Mac & 🖥️ For Windows:**
+**🖥️ For Windows:**
 
 Install the application as a Python package directly, you can use the setup.py file:
 ```bash
@@ -159,20 +159,21 @@ python uninstaller.py
 
 Update the application as a Python package directly:
 ```bash
-python setup.py update
+python update.py
 ```
 
 ### **📌 Notes**
 ⚙️ **yfinance:** The yfinance library requires specific installation options (--upgrade --no-cache-dir). The installation scripts handle this automatically, so you don’t need to worry about it.
 
-🐍 Ensure that **Python 3.8 or later** is installed on your machine. You can check your version by running:
+🐍 Ensure that **Python 3.8 or later, 11 recommended** is installed on your machine. You can check your version by running:
 ```bash
 python --version
 ```
 
-💹 **TA-Lib:** The TA-Lib The direct installation via `pip install ta-lib` cause an error, probably because you haven't installed actual TA-Lib library which is written in C. Note that the python lib is just a wrapper on top of the actual library. So in order to have python wrapper successfully installed, you'll need to install its prerequisite (the actual TA-Lib). We try to handle that via our installation tool for Linux/Mac and Windows.
 
-📦 The installation scripts handle all dependencies listed in requirements.txt, including fastapi, psycopg2, pandas, numpy, yfinance, and others. It also try to support Linux/Mac and Windows, although our DEV and QA environments are based on Windows.  
+💹 **TA-Lib:** The TA-Lib direct installation via `pip install ta-lib` cause an error, probably because you haven't installed actual TA-Lib library which is written in C. Note that the python lib is just a wrapper on top of the actual library. So in order to have python wrapper successfully installed, you'll need to install its prerequisite (the actual TA-Lib). We try to handle that via our installation tool for Windows.
+
+📦 The installation scripts handle all dependencies listed in requirements.txt, including fastapi, psycopg2, pandas, numpy, yfinance, and others. It also try to Windows, although our DEV and QA environments are based on Windows we will further develop for Linux.
 
 
 ### **🛠️ Troubleshooting**
@@ -201,10 +202,15 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 
 ## **🛠️ Next steps**
 - Install tool (Upgrade & Uninstall Methods, and visual)
+    -   setup.py, ta-lib installation vir whell.
 - Risk Manager
+    -   testing majority vote
 - FrontEnd firt version release
+    -   pass results to screen
 - Improve Crypto source (binance)
 - Improve Forex source (metatrader5)
+    - Only trade implemented
+    - Create functions like yahoo
 
 
 ## **🚀 Latest Improvements**

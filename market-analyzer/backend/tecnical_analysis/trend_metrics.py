@@ -1,7 +1,7 @@
 import talib
 import pandas as pd
 
-class TrendMetrics:
+class TrendMetrics():
     """
     A class that encapsulates technical analysis metrics using TA-Lib.
     """
