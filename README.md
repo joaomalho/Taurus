@@ -211,9 +211,12 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 - Improve Forex source (metatrader5)
     - Only trade implemented
     - Create functions like yahoo
-
+- Results
+    - Trend Metrics - Done
+    - Candles Patterns Metrics - WIP
 
 ## **🚀 Latest Improvements**
 - **Risk Manager:** A new feature to help minimize losses in volatile markets.
 - **Valuation Metrics:** Powerful indicators for long-term strategies and fundamental analysis.
 - **Install scripts:** Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script.
+- **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
