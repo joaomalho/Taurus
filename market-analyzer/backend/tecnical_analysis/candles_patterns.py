@@ -7,34 +7,24 @@ class CandlesPatterns:
     """
 
     def __init__(self):
-        self.result_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Stoploss'])
+        self.result_candles_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Stoploss'])
 
     def detect_pattern(self, data: pd.DataFrame, pattern_function, pattern_name: str):
         """
         General method to detect a specific candlestick pattern.
         """
-        # Calculate the pattern using TA-Lib
-        pattern = pattern_function(
-            data['open'].values,
-            data['high'].values,
-            data['low'].values,
-            data['close'].values
-        )
 
-        # Identify bullish, bearish, or no pattern
-        last_pattern_value = pattern[-1]
-        if last_pattern_value > 0:
-            signal = "Buy"
-        elif last_pattern_value < 0:
-            signal = "Sell"
-        else:
-            signal = "Flat"
+        # IF in the last 5 candles a pattern is detected AND stoploss not complete then decision of the candle.
+        # This for all candles pattern each one with is own conditions
+        # Complete function detect:pattern
 
-        return {
-            "Pattern": pattern_name,
-            "Signal": signal,
-            "Value": last_pattern_value
-        }
+        detection = pattern_function(data['Open'], data['High'], data['Low'], data['Close'])
+        # Save result
+        self.result_candles_df = pd.concat([self.result_candles_df, pd.DataFrame({
+            'function': [pattern_name],
+            'signal': 'Flat' #### WIP
+        })], ignore_index=True)
+        return detection
 
     def doji(self, data: pd.DataFrame):
         '''

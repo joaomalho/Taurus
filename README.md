@@ -203,6 +203,7 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 ## **🛠️ Next steps**
 - Install tool (Upgrade & Uninstall Methods, and visual)
     -   setup.py, ta-lib installation vir whell.
+        - Correct installation on `test.ipynb`, should replace the instalation method in `setup.py` for windows users.
 - Risk Manager
     -   testing majority vote
 - FrontEnd firt version release
@@ -214,6 +215,10 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 - Results
     - Trend Metrics - Done
     - Candles Patterns Metrics - WIP
+        - IF in the last 5 candles a pattern is detected AND stoploss not complete then decision of the candle.
+        - This for all candles pattern each one with is own conditions
+        - Complete function `detect_pattern`
+        
 
 ## **🚀 Latest Improvements**
 - **Risk Manager:** A new feature to help minimize losses in volatile markets.
