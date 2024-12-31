@@ -7,8 +7,8 @@ class CandlesPatterns:
     """
 
     def __init__(self):
-        self.result_candles_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Stoploss'])
-
+        self.result_candles_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Relevance', 'Stoploss'])
+        
 
     def detect_pattern(self, data: pd.DataFrame, pattern_function, pattern_name: str):
         """
@@ -123,57 +123,111 @@ class CandlesPatterns:
         return self.detect_pattern(data, talib.CDLKICKING, "Kicking")
 
     def kicking_by_length(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLKICKINGBYLENGTH, "Kicking by Length")
 
     def tasuki_gap(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLTASUKIGAP, "Tasuki Gap")
 
     def gap_side_by_side_white(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLGAPSIDESIDEWHITE, "Gap Side By Side White")
 
     def counter_attack(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLCOUNTERATTACK, "Counterattack")
 
     def piercing(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLPIERCING, "Piercing")
 
     def dark_cloud_cover(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLDARKCLOUDCOVER, "Dark Cloud Cover")
 
     def tri_star(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLTRISTAR, "Tri Star")
 
     def on_neck(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLONNECK, "On Neck")
 
     def in_neck(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLINNECK, "In Neck")
 
     def thrusting(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLTHRUSTING, "Thrusting")
 
     def matching_low(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLMATCHINGLOW, "Matching Low")
 
     def three_black_crows(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDL3BLACKCROWS, "Three Black Crows")
 
     def three_white_soldiers(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDL3WHITESOLDIERS, "Three White Soldiers")
 
     def three_inside(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDL3INSIDE, "Three Inside")
 
     def three_outside(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDL3OUTSIDE, "Three Outside")
 
     def three_stars_in_south(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDL3STARSINSOUTH, "Three Stars in South")
 
     def advance_block(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLADVANCEBLOCK, "Advance Block")
 
     def stalled_pattern(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLSTALLEDPATTERN, "Stalled Pattern")
 
     def abandoned_baby(self, data: pd.DataFrame):

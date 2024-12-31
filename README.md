@@ -284,8 +284,12 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
     - Candles Patterns Metrics - WIP
         - IF in the last 5 candles a pattern is detected AND stoploss not complete then decision of the candle.
         - This for all candles pattern each one with is own conditions
-        - Complete function `detect_pattern`
-        
+        - Complete function `candles_patterns` 
+            - Already listed all detectable functions
+            - 1 Version of stoploss also included
+            - Finish "which candle" should be regarded to consider stoploss values
+            - Include `signal` and `relevance` for each candle.
+            - Pass this values to Risk Manager  
 
 ## **🚀 Latest Improvements**
 - **Risk Manager:** A new feature to help minimize losses in volatile markets.
