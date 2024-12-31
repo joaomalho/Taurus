@@ -61,9 +61,15 @@ class CandlesPatterns:
         return self.detect_pattern(data, talib.CDLEVENINGSTAR, "Evening Star")
 
     def morning_doji_star(self, data: pd.DataFrame):
+        # Stop-loss: below the extreme of the Doji
+        stoploss = data['Low']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLMORNINGDOJISTAR, "Morning Doji Star")
 
     def evening_doji_star(self, data: pd.DataFrame):
+        # Stop-loss: below the extreme of the Doji
+        stoploss = data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLEVENINGDOJISTAR, "Evening Doji Star")
 
     def hammer(self, data: pd.DataFrame):
@@ -87,18 +93,33 @@ class CandlesPatterns:
         return self.detect_pattern(data, talib.CDLSHOOTINGSTAR, "Shooting Star")
 
     def marubozu(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLMARUBOZU, "Marubozu")
 
     def harami(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLHARAMI, "Harami")
 
     def harami_cross(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLHARAMICROSS, "Harami Cross")
 
     def spinning_top(self, data: pd.DataFrame):
+        '''
+        NEED FIBONACCI
+        '''
         return self.detect_pattern(data, talib.CDLSPINNINGTOP, "Spinning Top")
 
     def kicking(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLKICKING, "Kicking")
 
     def kicking_by_length(self, data: pd.DataFrame):
