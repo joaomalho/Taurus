@@ -9,6 +9,7 @@ class CandlesPatterns:
     def __init__(self):
         self.result_candles_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Stoploss'])
 
+
     def detect_pattern(self, data: pd.DataFrame, pattern_function, pattern_name: str):
         """
         General method to detect a specific candlestick pattern.
@@ -27,24 +28,36 @@ class CandlesPatterns:
         return detection
 
     def doji(self, data: pd.DataFrame):
-        '''
-        Detect Doji Pattern.
-        '''
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLDOJI, "Doji")
 
     def dragonfly_doji(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLDRAGONFLYDOJI, "Dragonfly Doji")
 
     def gravestone_doji(self, data: pd.DataFrame):
+        # Stop-loss: below/above the extreme of the Doji
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
+        # takeprofit = None
         return self.detect_pattern(data, talib.CDLGRAVESTONEDOJI, "Gravestone Doji")
 
     def engulfing(self, data: pd.DataFrame):
+        # Stop-loss: low of the engulfed candle
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         return self.detect_pattern(data, talib.CDLENGULFING, "Engulfing")
 
     def morning_star(self, data: pd.DataFrame):
+        # Stop-loss: middle candle's extreme
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         return self.detect_pattern(data, talib.CDLMORNINGSTAR, "Morning Star")
 
     def evening_star(self, data: pd.DataFrame):
+        # Stop-loss: middle candle's extreme
+        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         return self.detect_pattern(data, talib.CDLEVENINGSTAR, "Evening Star")
 
     def morning_doji_star(self, data: pd.DataFrame):
@@ -54,15 +67,23 @@ class CandlesPatterns:
         return self.detect_pattern(data, talib.CDLEVENINGDOJISTAR, "Evening Doji Star")
 
     def hammer(self, data: pd.DataFrame):
+        # Stop-loss: below the shadow
+        stoploss = data['Low']
         return self.detect_pattern(data, talib.CDLHAMMER, "Hammer")
 
     def inverted_hammer(self, data: pd.DataFrame):
+        # Stop-loss: below the shadow
+        stoploss = data['Low']
         return self.detect_pattern(data, talib.CDLINVERTEDHAMMER, "Inverted Hammer")
 
     def hanging_man(self, data: pd.DataFrame):
+        # Stop-loss: above the shadow
+        stoploss = data['High']
         return self.detect_pattern(data, talib.CDLHANGINGMAN, "Hanging Man")
 
     def shooting_star(self, data: pd.DataFrame):
+        # Stop-loss: above the shadow
+        stoploss = data['High']
         return self.detect_pattern(data, talib.CDLSHOOTINGSTAR, "Shooting Star")
 
     def marubozu(self, data: pd.DataFrame):

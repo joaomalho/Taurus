@@ -185,8 +185,75 @@ If you get an error saying pip is not found, install it by following these instr
 🔒 **Permission issues:** 
 On Linux/Mac, you may need to prepend sudo to some commands if you get permission errors.
 
-🧩 **Missing dependencies:** If a dependency fails to install, ensure you have all system requirements for the libraries (e.g., development tools, headers, etc.) and try running the installation command again.
+🧩 **Missing dependencies:** 
+If a dependency fails to install, ensure you have all system requirements for the libraries (e.g., development tools, headers, etc.) and try running the installation command again.
 
+---
+---
+
+## **📝 Caddle Patterns Detection Guide**
+
+Our tool is capable of detecting X-candle patterns in the market.
+
+Each candle pattern has an associated stop-loss target, take-profit target, and relevance level as outlined in the table below:
+
+| Pattern Name               | Classification   | Candles Range Detection   | Target Range 
+|:---------------------------|:-----------------|:--------------------------|:--------------------------
+| **Doji**                   | Reversal         | 3                         |
+| **Dragonfly Doji**         | Reversal         | 3                         |
+| **Gravestone Doji**        | Reversal         | 3                         |
+| **Engulfing**              | Reversal         | 3                         |
+| **Morning Star**           | Reversal         | 5-7                       |
+| **Evening Star**           | Reversal         | 5-7                       |
+| **Morning Doji Star**      | Reversal         | 5-7                       |
+| **Evening Doji Star**      | Reversal         | 5-7                       |
+| **Hammer**                 | Reversal         | 3                         |
+| **Inverted Hammer**        | Reversal         | 3                         |
+| **Hanging Man**            | Reversal         | 3                         |
+| **Shooting Star**          | Reversal         | 3                         |
+| **Marubozu**               | Continuation     | 3                         |
+| **Harami**                 | Reversal         | 3                         |
+| **Harami Cross**           | Reversal         | 3                         |
+| **Spinning Top**           | Continuation     | 3-5                       |
+| **Kicking**                | Reversal         | 3                         |
+| **Kicking by Length**      | Reversal         | 3                         |
+| **Tasuki Gap**             | Continuation     | 3-5                       |
+| **Gap Side By Side White** | Continuation     | 3-5                       |
+| **Counterattack**          | Reversal         | 3                         |
+| **Piercing**               | Reversal         | 3                         |
+| **Dark Cloud Cover**       | Reversal         | 3                         |
+| **Tri Star**               | Reversal         | 3                         |
+| **On Neck**                | Continuation     | 3                         |
+| **In Neck**                | Continuation     | 3                         |
+| **Thrusting**              | Continuation     | 3                         |
+| **Matching Low**           | Reversal         | 3                         |
+| **Three Black Crows**      | Complex          | 5-7                       |
+| **Three White Soldiers**   | Complex          | 5-7                       |
+| **Three Inside**           | Complex          | 5-7                       |
+| **Three Outside**          | Complex          | 5-7                       |
+| **Three Stars in South**   | Complex          | 5-7                       |
+| **Advance Block**          | Complex          | 5-7                       |
+| **Stalled Pattern**        | Complex          | 5-7                       |
+| **Abandoned Baby**         | Reversal         | 5-7                       |
+| **Unique 3 River**         | Complex          | 5-7                       |
+| **Belt Hold**              | Reversal         | 3                         |
+| **Separating Lines**       | Continuation     | 3                         |
+| **Upside Gap Two Crows**   | Complex          | 5-7                       |
+
+
+### ⚖️ **Relevance:**
+
+**Pattern recency:** The more recent the pattern, the more relevant it is. Patterns that occurred many candles ago lose their influence on the market's current behavior. However, this does not invalidate the targets already defined when the pattern was detected.
+
+**Market volatility:** In highly volatile markets, older patterns lose relevance more quickly, whereas in slower markets, they may remain valid for longer. Once the defined targets are reached, the pattern is disregarded.
+
+**Pattern overlap:** In cases where one pattern overlaps another within the consideration range, if they are contradictory, the new pattern is disregarded. After the consideration range, the new targets are taken into account. In situations where the overlapping patterns are unidirectional, the old targets are maintained, and after they are reached, the new targets are considered.
+
+**Consideration range:** The consideration range depends on the detected pattern and is classified as, `reversal` patterns consider 3 candles, `continuation` patterns consider 3 to 5 candles, and `complex` patterns consider 5 to 7 candles.
+
+**Position opening:** The detection of a pattern **is not** sufficient by itself to justify opening a position.
+
+---
 ---
 ---
 
