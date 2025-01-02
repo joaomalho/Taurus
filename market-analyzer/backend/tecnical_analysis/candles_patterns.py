@@ -9,244 +9,200 @@ class CandlesPatterns:
     def __init__(self):
         self.result_candles_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Relevance', 'Stoploss'])
         
-
+        
     def detect_pattern(self, data: pd.DataFrame, pattern_function, pattern_name: str):
         """
         General method to detect a specific candlestick pattern.
         """
-        
-        data_pass = data.tail(10)
+        data_pass = data  # Usar todos os candles fornecidos
 
+        # Detect pattern
         detection = pattern_function(data_pass['Open'], data_pass['High'], data_pass['Low'], data_pass['Close'])
-        # Save result
-        self.result_candles_df = pd.concat([self.result_candles_df, pd.DataFrame({
-            'function': [pattern_name],
-            'signal': 'Flat' #### WIP
-        })], ignore_index=True)
+
+        # Localizar valores não-zero
+        non_zero_detection = detection[detection != 0]
+        if not non_zero_detection.empty:
+            for date, signal in non_zero_detection.items():
+                # Cálculo do Stoploss baseado no padrão
+                if pattern_name in [
+                    "doji", "dragonfly_doji", "gravestone_doji", "engulfing",
+                    "morning_star", "evening_star", "marubozu", "harami",
+                    "harami_cross", "kicking", "kicking_by_length", "tasuki_gap",
+                    "gap_side_by_side_white", "counter_attack", "piercing",
+                    "dark_cloud_cover", "tri_star"
+                ]:
+                    stoploss = data_pass.loc[date, 'Low'] if signal > 0 else data_pass.loc[date, 'High']
+                elif pattern_name in [
+                    "morning_doji_star", "hammer", "inverted_hammer",
+                    "thrusting", "matching_low", "three_white_soldiers",
+                    "three_outside", "three_stars_in_south"
+                ]:
+                    stoploss = data_pass.loc[date, 'Low']
+                elif pattern_name in [
+                    "evening_doji_star", "hanging_man", "shooting_star",
+                    "on_neck", "in_neck", "three_black_crows",
+                    "three_inside", "advance_block", "stalled_pattern"
+                ]:
+                    stoploss = data_pass.loc[date, 'High']
+                else:
+                    stoploss = None
+
+                new_entry = pd.DataFrame({
+                    'Pattern': [pattern_name],
+                    'Signal': [signal],
+                    'Relevance': ['Flat'],
+                    'Stoploss': [stoploss],
+                }, index=[date])
+                self.result_candles_df = pd.concat([self.result_candles_df, new_entry], ignore_index=False)
+
         return detection
 
-    def relevance_candle(self):
-        '''
-        Determine whether the targets have already been reached following pattern detection, if not, consider them as active targets. 
-        Additionally, evaluate which pattern should be prioritized if multiple patterns are detected.
-        '''
-        
-
-
     def doji(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLDOJI, "Doji")
+        return self.detect_pattern(data, talib.CDLDOJI, "doji")
 
     def dragonfly_doji(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLDRAGONFLYDOJI, "Dragonfly Doji")
+        return self.detect_pattern(data, talib.CDLDRAGONFLYDOJI, "dragonfly_doji")
 
     def gravestone_doji(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLGRAVESTONEDOJI, "Gravestone Doji")
+        return self.detect_pattern(data, talib.CDLGRAVESTONEDOJI, "gravestone_doji")
 
     def engulfing(self, data: pd.DataFrame):
-        # Stop-loss: low of the engulfed candle
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
-        return self.detect_pattern(data, talib.CDLENGULFING, "Engulfing")
+        return self.detect_pattern(data, talib.CDLENGULFING, "engulfing")
 
     def morning_star(self, data: pd.DataFrame):
-        # Stop-loss: middle candle's extreme
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
-        return self.detect_pattern(data, talib.CDLMORNINGSTAR, "Morning Star")
+        return self.detect_pattern(data, talib.CDLMORNINGSTAR, "morning_star")
 
     def evening_star(self, data: pd.DataFrame):
-        # Stop-loss: middle candle's extreme
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
-        return self.detect_pattern(data, talib.CDLEVENINGSTAR, "Evening Star")
+        return self.detect_pattern(data, talib.CDLEVENINGSTAR, "evening_star")
 
     def morning_doji_star(self, data: pd.DataFrame):
-        # Stop-loss: below the extreme of the Doji
-        stoploss = data['Low']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLMORNINGDOJISTAR, "Morning Doji Star")
+        return self.detect_pattern(data, talib.CDLMORNINGDOJISTAR, "morning_doji_star")
 
     def evening_doji_star(self, data: pd.DataFrame):
-        # Stop-loss: below the extreme of the Doji
-        stoploss = data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLEVENINGDOJISTAR, "Evening Doji Star")
+        return self.detect_pattern(data, talib.CDLEVENINGDOJISTAR, "evening_doji_star")
 
     def hammer(self, data: pd.DataFrame):
-        # Stop-loss: below the shadow
-        stoploss = data['Low']
-        return self.detect_pattern(data, talib.CDLHAMMER, "Hammer")
+        return self.detect_pattern(data, talib.CDLHAMMER, "hammer")
 
     def inverted_hammer(self, data: pd.DataFrame):
-        # Stop-loss: below the shadow
-        stoploss = data['Low']
-        return self.detect_pattern(data, talib.CDLINVERTEDHAMMER, "Inverted Hammer")
+        return self.detect_pattern(data, talib.CDLINVERTEDHAMMER, "inverted_hammer")
 
     def hanging_man(self, data: pd.DataFrame):
-        # Stop-loss: above the shadow
-        stoploss = data['High']
-        return self.detect_pattern(data, talib.CDLHANGINGMAN, "Hanging Man")
+        return self.detect_pattern(data, talib.CDLHANGINGMAN, "hanging_man")
 
     def shooting_star(self, data: pd.DataFrame):
-        # Stop-loss: above the shadow
-        stoploss = data['High']
-        return self.detect_pattern(data, talib.CDLSHOOTINGSTAR, "Shooting Star")
+        return self.detect_pattern(data, talib.CDLSHOOTINGSTAR, "shooting_star")
 
     def marubozu(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLMARUBOZU, "Marubozu")
+        return self.detect_pattern(data, talib.CDLMARUBOZU, "marubozu")
 
     def harami(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLHARAMI, "Harami")
+        return self.detect_pattern(data, talib.CDLHARAMI, "harami")
 
     def harami_cross(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLHARAMICROSS, "Harami Cross")
+        return self.detect_pattern(data, talib.CDLHARAMICROSS, "harami_cross")
 
     def spinning_top(self, data: pd.DataFrame):
         '''
         NEED FIBONACCI
         '''
-        return self.detect_pattern(data, talib.CDLSPINNINGTOP, "Spinning Top")
+        return self.detect_pattern(data, talib.CDLSPINNINGTOP, "spinning_top")
 
     def kicking(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLKICKING, "Kicking")
+        return self.detect_pattern(data, talib.CDLKICKING, "kicking")
 
     def kicking_by_length(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLKICKINGBYLENGTH, "Kicking by Length")
+        return self.detect_pattern(data, talib.CDLKICKINGBYLENGTH, "kicking_by_length")
 
     def tasuki_gap(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLTASUKIGAP, "Tasuki Gap")
+        return self.detect_pattern(data, talib.CDLTASUKIGAP, "tasuki_gap")
 
     def gap_side_by_side_white(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLGAPSIDESIDEWHITE, "Gap Side By Side White")
+        return self.detect_pattern(data, talib.CDLGAPSIDESIDEWHITE, "gap_side_by_side_white")
 
     def counter_attack(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLCOUNTERATTACK, "Counterattack")
+        return self.detect_pattern(data, talib.CDLCOUNTERATTACK, "counter_attack")
 
     def piercing(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLPIERCING, "Piercing")
+        return self.detect_pattern(data, talib.CDLPIERCING, "piercing")
 
     def dark_cloud_cover(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLDARKCLOUDCOVER, "Dark Cloud Cover")
+        return self.detect_pattern(data, talib.CDLDARKCLOUDCOVER, "dark_cloud_cover")
 
     def tri_star(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low'] if data['Close'] > data['Open'] else data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLTRISTAR, "Tri Star")
+        return self.detect_pattern(data, talib.CDLTRISTAR, "tri_star")
 
     def on_neck(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLONNECK, "On Neck")
+        return self.detect_pattern(data, talib.CDLONNECK, "on_neck")
 
     def in_neck(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLINNECK, "In Neck")
+        return self.detect_pattern(data, talib.CDLINNECK, "in_neck")
 
     def thrusting(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLTHRUSTING, "Thrusting")
+        return self.detect_pattern(data, talib.CDLTHRUSTING, "thrusting")
 
     def matching_low(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLMATCHINGLOW, "Matching Low")
+        return self.detect_pattern(data, talib.CDLMATCHINGLOW, "matching_low")
 
     def three_black_crows(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3BLACKCROWS, "Three Black Crows")
+        return self.detect_pattern(data, talib.CDL3BLACKCROWS, "three_black_crows")
 
     def three_white_soldiers(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3WHITESOLDIERS, "Three White Soldiers")
+        return self.detect_pattern(data, talib.CDL3WHITESOLDIERS, "three_white_soldiers")
 
     def three_inside(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3INSIDE, "Three Inside")
+        return self.detect_pattern(data, talib.CDL3INSIDE, "three_inside")
 
     def three_outside(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3OUTSIDE, "Three Outside")
+        return self.detect_pattern(data, talib.CDL3OUTSIDE, "three_outside")
 
     def three_stars_in_south(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['Low']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3STARSINSOUTH, "Three Stars in South")
+        return self.detect_pattern(data, talib.CDL3STARSINSOUTH, "three_stars_in_south")
 
     def advance_block(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLADVANCEBLOCK, "Advance Block")
+        return self.detect_pattern(data, talib.CDLADVANCEBLOCK, "advance_block")
 
     def stalled_pattern(self, data: pd.DataFrame):
-        # Stop-loss: below/above the extreme of the Doji
-        stoploss = data['High']
         # takeprofit = None
-        return self.detect_pattern(data, talib.CDLSTALLEDPATTERN, "Stalled Pattern")
+        return self.detect_pattern(data, talib.CDLSTALLEDPATTERN, "stalled_pattern")
 
-    def abandoned_baby(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLABANDONEDBABY, "Abandoned Baby")
+    # def abandoned_baby(self, data: pd.DataFrame):
+    #     return self.detect_pattern(data, talib.CDLABANDONEDBABY, "abandoned_baby")
 
-    def unique_3_river(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLUNIQUE3RIVER, "Unique 3 River")
+    # def unique_3_river(self, data: pd.DataFrame):
+    #     return self.detect_pattern(data, talib.CDLUNIQUE3RIVER, "unique_3_river")
 
-    def belt_hold(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLBELTHOLD, "Belt Hold")
+    # def belt_hold(self, data: pd.DataFrame):
+    #     return self.detect_pattern(data, talib.CDLBELTHOLD, "belt_hold")
 
-    def separating_lines(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLSEPARATINGLINES, "Separating Lines")
+    # def separating_lines(self, data: pd.DataFrame):
+    #     return self.detect_pattern(data, talib.CDLSEPARATINGLINES, "Separating Lines")
 
-    def upside_gap_two_crows(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLUPSIDEGAP2CROWS, "Upside Gap Two Crows")
+    # def upside_gap_two_crows(self, data: pd.DataFrame):
+    #     return self.detect_pattern(data, talib.CDLUPSIDEGAP2CROWS, "Upside Gap Two Crows")

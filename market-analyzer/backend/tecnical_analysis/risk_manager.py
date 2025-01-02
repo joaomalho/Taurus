@@ -5,6 +5,17 @@ class RiskManagers():
         self.stoploss = None
         self.takeprofit = None
 
+    def relevance_candle(self):
+        '''
+        Determine whether the targets have already been reached following pattern detection, if not, consider them as active targets. 
+        Additionally, evaluate which pattern should be prioritized if multiple patterns are detected.
+        '''
+            
+    
+    
+    
+    
+    
     def stoploss_manager():
         pass
 
@@ -13,4 +24,4 @@ class RiskManagers():
 
     def decision_manager():
         pass
-        
+    

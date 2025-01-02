@@ -16,9 +16,17 @@ class Executer():
         tm.get_rsi()
 
         cm = CandlesPatterns()
-        
-        print("Yahoo Data History:")
-        print(data)
+
+        # Loop para detectar padrões
+        for candle_function in dir(cm):
+            if (not candle_function.startswith("__") and 
+                callable(getattr(cm, candle_function)) and 
+                candle_function != "detect_pattern"):
+                pattern_function = getattr(cm, candle_function)
+                try:
+                    candle_result = pattern_function(data)
+                except Exception as e:
+                    print(f"Error detecting pattern {candle_function}: {e}")
 
 
 if __name__ == "__main__":
