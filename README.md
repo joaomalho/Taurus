@@ -170,10 +170,9 @@ python update.py
 python --version
 ```
 
-
 💹 **TA-Lib:** The TA-Lib direct installation via `pip install ta-lib` cause an error, probably because you haven't installed actual TA-Lib library which is written in C. Note that the python lib is just a wrapper on top of the actual library. So in order to have python wrapper successfully installed, you'll need to install its prerequisite (the actual TA-Lib). We try to handle that via our installation tool for Windows.
 
-📦 The installation scripts handle all dependencies listed in requirements.txt, including fastapi, psycopg2, pandas, numpy, yfinance, and others. It also try to Windows, although our DEV and QA environments are based on Windows we will further develop for Linux.
+📦 The installation scripts handle all dependencies listed in requirements.txt, including fastapi, psycopg2, pandas, numpy, yfinance, and others. It also try to Linux, although our DEV and QA environments are based on Windows we will further develop for Linux.
 
 
 ### **🛠️ Troubleshooting**
@@ -268,9 +267,8 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 ## **<p align="center"> 👨‍💻 Developments & Improvements </p>**
 
 ## **🛠️ Next steps**
-- Install tool (Upgrade & Uninstall Methods, and visual)
-    -   setup.py, ta-lib installation vir whell.
-        - Correct installation on `test.ipynb`, should replace the instalation method in `setup.py` for windows users.
+- Install tool (Upgrade & Uninstall Methods, and visual) - Done
+    - Add a visual window in screen - Next Version
 - Risk Manager
     -   testing majority vote
 - FrontEnd firt version release
