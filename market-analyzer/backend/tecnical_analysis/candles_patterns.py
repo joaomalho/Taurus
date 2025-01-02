@@ -14,18 +14,24 @@ class CandlesPatterns:
         """
         General method to detect a specific candlestick pattern.
         """
+        
+        data_pass = data.tail(10)
 
-        # IF in the last 5 candles a pattern is detected AND stoploss not complete then decision of the candle.
-        # This for all candles pattern each one with is own conditions
-        # Complete function detect:pattern
-
-        detection = pattern_function(data['Open'], data['High'], data['Low'], data['Close'])
+        detection = pattern_function(data_pass['Open'], data_pass['High'], data_pass['Low'], data_pass['Close'])
         # Save result
         self.result_candles_df = pd.concat([self.result_candles_df, pd.DataFrame({
             'function': [pattern_name],
             'signal': 'Flat' #### WIP
         })], ignore_index=True)
         return detection
+
+    def relevance_candle(self):
+        '''
+        Determine whether the targets have already been reached following pattern detection, if not, consider them as active targets. 
+        Additionally, evaluate which pattern should be prioritized if multiple patterns are detected.
+        '''
+        
+
 
     def doji(self, data: pd.DataFrame):
         # Stop-loss: below/above the extreme of the Doji

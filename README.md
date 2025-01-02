@@ -248,7 +248,7 @@ Each candle pattern has an associated stop-loss target, take-profit target, and 
 
 **Pattern overlap:** In cases where one pattern overlaps another within the consideration range, if they are contradictory, the new pattern is disregarded. After the consideration range, the new targets are taken into account. In situations where the overlapping patterns are unidirectional, the old targets are maintained, and after they are reached, the new targets are considered.
 
-**Consideration range:** The consideration range depends on the detected pattern and is classified as, `reversal` patterns consider 3 candles, `continuation` patterns consider 3 to 5 candles, and `complex` patterns consider 5 to 7 candles.
+**Consideration range:** The consideration range depends on the detected pattern and is classified as, `reversal` patterns consider 3 candles, `continuation` patterns consider 3 to 5 candles, and `complex` patterns consider 5 to 7 candles. Aside from this tool presenting candle detection across the full historical dataset, the consideration range will focus exclusively on the last 10 candles, regardless of the timeframe.
 
 **Position opening:** The detection of a pattern **is not** sufficient by itself to justify opening a position.
 
