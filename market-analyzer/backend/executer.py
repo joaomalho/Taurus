@@ -28,7 +28,6 @@ class Executer():
                 except Exception as e:
                     print(f"Error detecting pattern {candle_function}: {e}")
 
-
 if __name__ == "__main__":
     # Instantiate Executer and call main
     exec = Executer()
