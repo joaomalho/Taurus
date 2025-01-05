@@ -1,0 +1,8 @@
+{
+  "QPushButton": [
+    {
+      "name": "pushButton",
+      "icon": "Qss/icons/Icons/feather/airplay.png"
+    }
+  ]
+}

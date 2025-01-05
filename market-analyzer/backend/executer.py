@@ -19,8 +19,8 @@ class AnalysisThread(QThread):
             df = dh.get_yahoo_data_history('MSFT', '1y', '1d')
 
             tm = TrendMetrics()
-            tm.get_crossover(data=df, l1=25, l2=50, l3=200 )
             tm.get_sma_bands(data=df, length=15, std_dev=1)
+            tm.get_crossover(data=df, l1=25, l2=50, l3=200)
             tm.get_rsi(data=df, length=25, overbought=70, oversold=30)
 
             print('------------- Results df -------------\n\n',tm.result_df,'\n\n------------- ')
