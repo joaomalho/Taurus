@@ -6,8 +6,7 @@ class TrendMetrics():
     A class that encapsulates technical analysis metrics using TA-Lib.
     """
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self):
         self.result_df = pd.DataFrame(columns=['function', 'signal'])
         self.crossover_info = pd.DataFrame(columns=['function', 'signal', 'period_low', 'period_mid', 'period_high', 'ema_low', 'ema_mid', 'ema_high'])
         self.sma_bands_info = pd.DataFrame(columns=['function', 'signal', 'period', 'std', 'lower_band', 'middle_band', 'upper_band'])
@@ -27,9 +26,9 @@ class TrendMetrics():
         period_low, period_mid, period_high = l1, l2, l3
         
         # Compute EMAs
-        ema1 = talib.EMA(data['close'], timeperiod=l1)
-        ema2 = talib.EMA(data['close'], timeperiod=l2)
-        ema3 = talib.EMA(data['close'], timeperiod=l3)
+        ema1 = talib.EMA(data['Close'], timeperiod=l1)
+        ema2 = talib.EMA(data['Close'], timeperiod=l2)
+        ema3 = talib.EMA(data['Close'], timeperiod=l3)
 
         # Current values
         ema_low, ema_mid, ema_high = ema1.iloc[-1], ema2.iloc[-1], ema3.iloc[-1]
@@ -60,7 +59,7 @@ class TrendMetrics():
             'ema3_now': [ema_high],
         })], ignore_index=True)
 
-    def get_sma_bands(self, data: pd.DataFrame, length: int, std_dev: int):
+    def get_sma_bands(self, data: pd.DataFrame, length: int=15, std_dev: int = 1):
         """
         This function calculates Bollinger Bands and detects signals based on them.
         
@@ -77,11 +76,11 @@ class TrendMetrics():
 
         # Compute Bollinger Bands
         upper_band, middle_band, lower_band = talib.BBANDS(
-            data['close'], timeperiod=length, nbdevup=std_dev, nbdevdn=std_dev, matype=0
+            data['Close'], timeperiod=length, nbdevup=std_dev, nbdevdn=std_dev, matype=0
         )
 
         # Current values
-        last_close = data['close'].iloc[-1]
+        last_close = data['Close'].iloc[-1]
         lower_band, middle_band, upper_band = lower_band.iloc[-1], middle_band.iloc[-1], upper_band.iloc[-1]
 
         # Determine signal
@@ -109,7 +108,7 @@ class TrendMetrics():
         })], ignore_index=True)
 
 
-    def get_rsi(self, data: pd.DataFrame, length: int, overbought: int, oversold: int):
+    def get_rsi(self, data: pd.DataFrame, length: int = 25, overbought: int = 70, oversold: int = 30):
         """
         This function calculates the RSI and generates a signal based on overbought/oversold levels.
         
@@ -126,7 +125,7 @@ class TrendMetrics():
         period, upper_level, lower_level = length, overbought, oversold 
 
         # Compute RSI
-        rsi = talib.RSI(data['close'], timeperiod=length)
+        rsi = talib.RSI(data['Close'], timeperiod=length)
         rsi_now = rsi.iloc[-1]
 
         # Determine signal
@@ -143,8 +142,8 @@ class TrendMetrics():
             'signal': [rsi_signal]
         })], ignore_index=True)
 
-        self.rsi_info = pd.concat([self.sma_bands_info, pd.DataFrame({
-            'function': ['Bollinger_Bands'],
+        self.rsi_info = pd.concat([self.rsi_info, pd.DataFrame({
+            'function': ['RSI'],
             'signal': [rsi_signal],
             'period': [period],
             'upper_level': [upper_level],

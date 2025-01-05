@@ -1,99 +1,101 @@
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GLib
-import threading  # Para manter a interface responsiva
-from datasources.yahoodata import DataHistory
-from tecnical_analysis.trend_metrics import TrendMetrics
-from tecnical_analysis.candles_patterns import CandlesPatterns
+import sys
+from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QTextEdit
 
-class Executer:
-    def __init__(self, log_callback):
-        self.log_callback = log_callback
+# Thread para executar a análise
+class AnalysisThread(QThread):
+    progress = pyqtSignal(str)  # Sinal para enviar atualizações para a interface
 
-    def main(self):
+    def run(self):
         try:
-            self.log_callback("Iniciando análise...\n")
-            
+            self.progress.emit("Iniciando análise...\n")
+
+            # Simula a execução do backend
+            from datasources.yahoodata import DataHistory
+            from tecnical_analysis.trend_metrics import TrendMetrics
+            from tecnical_analysis.candles_patterns import CandlesPatterns
+
             dh = DataHistory()
-            data = dh.get_yahoo_data_history('MSFT', '1y', '1d')
+            df = dh.get_yahoo_data_history('MSFT', '1y', '1d')
 
             tm = TrendMetrics()
-            tm.get_crossover()
-            tm.get_sma_bands()
-            tm.get_rsi()
-            self.log_callback("Indicadores calculados: SMA Bands, Crossover, RSI.\n")
+            tm.get_crossover(data=df, l1=25, l2=50, l3=200 )
+            tm.get_sma_bands(data=df, length=15, std_dev=1)
+            tm.get_rsi(data=df, length=25, overbought=70, oversold=30)
+
+            print('------------- Results df -------------\n\n',tm.result_df,'\n\n------------- ')
+
+            print('------------- Results Crossover -------------\n\n',tm.crossover_info,'\n\n------------- ')
+
+            print('------------- Results Bollinger Bands -------------\n\n',tm.sma_bands_info,'\n\n------------- ')
+
+            print('------------- Results RSI -------------\n\n',tm.rsi_info,'\n\n------------- ')
+            
+            self.progress.emit("Indicadores calculados: SMA Bands, Crossover, RSI.\n")
 
             cm = CandlesPatterns()
             for candle_function in dir(cm):
-                if (not candle_function.startswith("__") and 
-                    callable(getattr(cm, candle_function)) and 
+                if (not candle_function.startswith("__") and
+                    callable(getattr(cm, candle_function)) and
                     candle_function != "detect_pattern"):
                     pattern_function = getattr(cm, candle_function)
                     try:
-                        candle_result = pattern_function(data)
-                        self.log_callback(f"Padrão {candle_function}: {candle_result}\n")
+                        candle_result = pattern_function(df)
+                        self.progress.emit(f"Padrão {candle_function}: {candle_result}\n")
                     except Exception as e:
-                        self.log_callback(f"Erro ao detectar padrão {candle_function}: {e}\n")
-            
-            self.log_callback("Análise concluída!\n")
+                        self.progress.emit(f"Erro ao detectar padrão {candle_function}: {e}\n")
+
+            self.progress.emit("Análise concluída!\n")
 
         except Exception as e:
-            self.log_callback(f"Erro durante a execução: {e}\n")
+            self.progress.emit(f"Erro durante a execução: {e}\n")
 
-class TaskManager(Gtk.Window):
+class MainWindow(QMainWindow):
     def __init__(self):
-        super().__init__(title="Task Manager")
-
-        self.set_border_width(10)
-        self.set_default_size(600, 400)
-
-        # Layout principal
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        self.add(vbox)
-
-        # Botão para iniciar análise
-        self.start_button = Gtk.Button(label="Iniciar Análise")
-        self.start_button.connect("clicked", self.start_task)
-        vbox.pack_start(self.start_button, False, False, 0)
+        super().__init__()
+        self.setWindowTitle("Task Manager")
+        self.setGeometry(100, 100, 600, 400)
 
         # Área de log
-        self.log_textview = Gtk.TextView()
-        self.log_textview.set_editable(False)
-        self.log_textview.set_wrap_mode(Gtk.WrapMode.WORD)
-        vbox.pack_start(self.log_textview, True, True, 0)
+        self.log_area = QTextEdit(self)
+        self.log_area.setReadOnly(True)
 
-        # Barra de rolagem para o log
-        scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        scroll.add(self.log_textview)
-        vbox.pack_start(scroll, True, True, 0)
+        # Botão para iniciar análise
+        self.start_button = QPushButton("Iniciar Análise", self)
+        self.start_button.clicked.connect(self.start_analysis)
+
+        # Layout principal
+        layout = QVBoxLayout()
+        layout.addWidget(self.log_area)
+        layout.addWidget(self.start_button)
+
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
 
     def log_message(self, message):
         """Adiciona uma mensagem ao log."""
-        buffer = self.log_textview.get_buffer()
-        buffer.insert(buffer.get_end_iter(), message)
+        self.log_area.append(message)
 
-    def start_task(self, widget):
-        """Inicia a execução do backend em uma thread separada."""
-        self.start_button.set_sensitive(False)
+    def start_analysis(self):
+        """Inicia a análise em uma thread separada."""
+        self.start_button.setEnabled(False)
         self.log_message("Iniciando tarefa...\n")
 
-        # Criar thread para executar o backend
-        thread = threading.Thread(target=self.run_backend)
-        thread.daemon = True
-        thread.start()
+        # Criar e iniciar a thread
+        self.analysis_thread = AnalysisThread()
+        self.analysis_thread.progress.connect(self.log_message)
+        self.analysis_thread.finished.connect(self.task_completed)
+        self.analysis_thread.start()
 
-    def run_backend(self):
-        """Executa o backend e atualiza a interface."""
-        executer = Executer(log_callback=self.log_message)
-        executer.main()
+    def task_completed(self):
+        """Reabilita o botão após a conclusão da análise."""
+        self.start_button.setEnabled(True)
+        self.log_message("Tarefa concluída.\n")
 
-        # Reabilitar o botão após a conclusão
-        GLib.idle_add(self.start_button.set_sensitive, True)
-
-if __name__ == "__main__":
-    win = TaskManager()
-    win.connect("destroy", Gtk.main_quit)
-    win.show_all()
-    Gtk.main()
+# Inicializar a aplicação
+app = QApplication(sys.argv)
+window = MainWindow()
+window.show()
+app.exec()
 
