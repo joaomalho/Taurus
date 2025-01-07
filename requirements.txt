@@ -15,4 +15,6 @@ itertools
 joblib
 yfinance
 requests
+PySide6
+QT-PyQt-PySide-Custom-Widgets
 # TA-Lib: Instalar via setup.py devido às dependências nativas

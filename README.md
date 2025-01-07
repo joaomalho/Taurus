@@ -294,4 +294,4 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 - **Valuation Metrics:** Powerful indicators for long-term strategies and fundamental analysis.
 - **Install scripts:** Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script.
 - **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
-- **GUI:** Implemented 1º version of GUI.
+- **GUI:** Implemented 2º version of GUI.
