@@ -1,19 +1,19 @@
 import sys
-from PyQt6.QtCore import QThread, pyqtSignal
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+import pandas as pd
 from PyQt6 import QtGui, QtWidgets
-from frontend.interface import Ui_MainWindow  # Template gerado pelo pyuic
+from PyQt6.QtCore import QThread, pyqtSignal
+from frontend.interface import Ui_MainWindow
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 
 # Thread para executar a análise
 class AnalysisThread(QThread):
     progress = pyqtSignal(str)  # Sinal para enviar atualizações para a interface
-    dataframe_ready = pyqtSignal(object)  # Sinal para enviar o DataFrame processado
+    dataframe_ready = pyqtSignal(object, str)  # Sinal para enviar o DataFrame processado
 
     def run(self):
         try:
             self.progress.emit("Iniciando análise...\n")
 
-            # Simula a execução do backend
             from backend.datasources.yahoodata import DataHistory
             from backend.tecnical_analysis.trend_metrics import TrendMetrics
             from backend.tecnical_analysis.candles_patterns import CandlesPatterns
@@ -27,7 +27,9 @@ class AnalysisThread(QThread):
             tm.get_rsi(data=df, length=25, overbought=70, oversold=30)
 
             self.progress.emit("Indicadores calculados: SMA Bands, Crossover, RSI.\n")
-            self.dataframe_ready.emit(tm.result_df)  # Envia o DataFrame processado para a interface
+            self.dataframe_ready.emit(tm.result_df, "trend_metrics") 
+
+            self.progress.emit("Iniciando deteção de padrões...\n")
 
             cm = CandlesPatterns()
             for candle_function in dir(cm):
@@ -37,11 +39,11 @@ class AnalysisThread(QThread):
                     pattern_function = getattr(cm, candle_function)
                     try:
                         candle_result = pattern_function(df)
-                        self.progress.emit(f"Padrão {candle_function}: {candle_result}\n")
                     except Exception as e:
                         self.progress.emit(f"Erro ao detectar padrão {candle_function}: {e}\n")
 
             self.progress.emit("Análise concluída!\n")
+            self.dataframe_ready.emit(cm.result_candles_df, "candle_patterns")
 
         except Exception as e:
             self.progress.emit(f"Erro durante a execução: {e}\n")
@@ -63,8 +65,8 @@ class MainWindow(QMainWindow):
 
     def log_message(self, message):
         """Adiciona uma mensagem ao log."""
-        print(message)  # Para debug
-        self.ui.pushButton_5.setText(message)  # Atualiza um botão com logs (substitua se necessário)
+        print(message)
+        self.ui.pushButton_5.setText(message)
 
     def start_analysis(self):
         """Inicia a análise em uma thread separada."""
@@ -80,28 +82,39 @@ class MainWindow(QMainWindow):
             self.paused = not self.paused
             if self.paused:
                 self.log_message("Análise pausada.\n")
-                # Pausar a thread aqui (apenas simulação, implementar lógica conforme necessário)
             else:
                 self.log_message("Análise retomada.\n")
 
     def stop_analysis(self):
         """Para a análise."""
         if self.analysis_thread and self.analysis_thread.isRunning():
-            self.analysis_thread.terminate()  # Força o término da thread
+            self.analysis_thread.terminate()
             self.log_message("Análise parada.\n")
 
-    def display_dataframe(self, df):
-        """Exibe o DataFrame no QTableWidget."""
-        self.ui.tableWidget.setRowCount(len(df))
-        self.ui.tableWidget.setColumnCount(len(df.columns))
-        self.ui.tableWidget.setHorizontalHeaderLabels(df.columns)
+    def display_dataframe(self, df, table_type):
+        """Exibe o DataFrame no QTableWidget correspondente."""
+        if table_type == "trend_metrics":
+            table_widget = self.ui.tableWidget
+        elif table_type == "candle_patterns":
+            table_widget = self.ui.tableWidget_2
+        else:
+            self.log_message("Tipo de tabela desconhecido.\n")
+            return
+        df = df.reset_index()
+
+        table_widget.setRowCount(len(df))
+        table_widget.setColumnCount(len(df.columns))
+        table_widget.setHorizontalHeaderLabels(df.columns)
 
         for i, row in df.iterrows():
             for j, value in enumerate(row):
-                self.ui.tableWidget.setItem(i, j, QTableWidgetItem(str(value)))
+                if isinstance(value, pd.Timestamp):
+                    value = value.strftime("YY-mm-dd") 
+                elif pd.isna(value):
+                    value = ""
+                table_widget.setItem(i, j, QTableWidgetItem(str(value)))
 
-        self.log_message("Resultados exibidos na tabela.\n")
-
+        self.log_message(f"Resultados exibidos na tabela {table_type}.\n")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
