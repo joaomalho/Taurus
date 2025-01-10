@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(644, 525)
+        MainWindow.resize(738, 737)
         MainWindow.setStyleSheet("")
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -42,40 +42,42 @@ class Ui_MainWindow(object):
         self.pushButton_6.setGeometry(QtCore.QRect(10, 150, 131, 24))
         self.pushButton_6.setObjectName("pushButton_6")
         self.tableWidget = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(150, 40, 241, 241))
+        self.tableWidget.setGeometry(QtCore.QRect(150, 40, 581, 201))
         self.tableWidget.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.tableWidget.setAutoFillBackground(False)
         self.tableWidget.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
-        self.textEdit = QtWidgets.QTextEdit(parent=self.centralwidget)
-        self.textEdit.setGeometry(QtCore.QRect(150, 10, 161, 31))
-        self.textEdit.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.textEdit.setFrameShadow(QtWidgets.QFrame.Shadow.Plain)
-        self.textEdit.setObjectName("textEdit")
         self.tableWidget_2 = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.tableWidget_2.setGeometry(QtCore.QRect(400, 40, 241, 241))
+        self.tableWidget_2.setGeometry(QtCore.QRect(150, 290, 581, 211))
         self.tableWidget_2.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.tableWidget_2.setObjectName("tableWidget_2")
         self.tableWidget_2.setColumnCount(0)
         self.tableWidget_2.setRowCount(0)
-        self.textEdit_2 = QtWidgets.QTextEdit(parent=self.centralwidget)
-        self.textEdit_2.setGeometry(QtCore.QRect(400, 10, 161, 31))
-        self.textEdit_2.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.textEdit_2.setFrameShadow(QtWidgets.QFrame.Shadow.Plain)
-        self.textEdit_2.setObjectName("textEdit_2")
         self.tableWidget_3 = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.tableWidget_3.setGeometry(QtCore.QRect(150, 320, 491, 201))
+        self.tableWidget_3.setGeometry(QtCore.QRect(150, 540, 581, 121))
         self.tableWidget_3.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.tableWidget_3.setObjectName("tableWidget_3")
         self.tableWidget_3.setColumnCount(0)
         self.tableWidget_3.setRowCount(0)
-        self.textEdit_3 = QtWidgets.QTextEdit(parent=self.centralwidget)
-        self.textEdit_3.setGeometry(QtCore.QRect(150, 290, 141, 31))
-        self.textEdit_3.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.textEdit_3.setFrameShadow(QtWidgets.QFrame.Shadow.Plain)
-        self.textEdit_3.setObjectName("textEdit_3")
+        self.progressBar = QtWidgets.QProgressBar(parent=self.centralwidget)
+        self.progressBar.setGeometry(QtCore.QRect(70, 710, 591, 23))
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setObjectName("progressBar")
+        self.label = QtWidgets.QLabel(parent=self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(150, 10, 151, 20))
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(parent=self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(150, 260, 151, 20))
+        self.label_2.setObjectName("label_2")
+        self.label_3 = QtWidgets.QLabel(parent=self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(150, 510, 151, 20))
+        self.label_3.setObjectName("label_3")
+        self.label_4 = QtWidgets.QLabel(parent=self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(70, 680, 521, 41))
+        self.label_4.setText("")
+        self.label_4.setObjectName("label_4")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -91,30 +93,9 @@ class Ui_MainWindow(object):
         self.pushButton_3.setToolTip(_translate("MainWindow", "Stop"))
         self.pushButton_5.setText(_translate("MainWindow", "Manual Adjusts"))
         self.pushButton_6.setText(_translate("MainWindow", "Auto Calibration"))
-        self.textEdit.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"hr { height: 1px; border-width: 0; }\n"
-"li.unchecked::marker { content: \"\\2610\"; }\n"
-"li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Trend Metrics Parameters:</p></body></html>"))
-        self.textEdit_2.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"hr { height: 1px; border-width: 0; }\n"
-"li.unchecked::marker { content: \"\\2610\"; }\n"
-"li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Candle Pattern Detection:</p></body></html>"))
-        self.textEdit_3.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"hr { height: 1px; border-width: 0; }\n"
-"li.unchecked::marker { content: \"\\2610\"; }\n"
-"li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Orders Executed:</p></body></html>"))
+        self.label.setText(_translate("MainWindow", "Trend Metrics Parameters:"))
+        self.label_2.setText(_translate("MainWindow", "Candle Pattern Detection:"))
+        self.label_3.setText(_translate("MainWindow", "Orders Executed:"))
 
 
 if __name__ == "__main__":

@@ -107,7 +107,6 @@ class TrendMetrics():
             'upper_band': [upper_band]
         })], ignore_index=True)
 
-
     def get_rsi(self, data: pd.DataFrame, length: int = 25, overbought: int = 70, oversold: int = 30):
         """
         This function calculates the RSI and generates a signal based on overbought/oversold levels.

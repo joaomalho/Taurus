@@ -7,12 +7,14 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 
 # Thread para executar a análise
 class AnalysisThread(QThread):
-    progress = pyqtSignal(str)  # Sinal para enviar atualizações para a interface
-    dataframe_ready = pyqtSignal(object, str)  # Sinal para enviar o DataFrame processado
+    progress_text = pyqtSignal(str)
+    progress_value = pyqtSignal(int)
+    dataframe_ready = pyqtSignal(object, str)
 
     def run(self):
         try:
-            self.progress.emit("Iniciando análise...\n")
+            self.progress_text.emit("Iniciando análise...\n")
+            self.progress_value.emit(0)
 
             from backend.datasources.yahoodata import DataHistory
             from backend.tecnical_analysis.trend_metrics import TrendMetrics
@@ -21,32 +23,36 @@ class AnalysisThread(QThread):
             dh = DataHistory()
             df = dh.get_yahoo_data_history('MSFT', '1y', '1d')
 
+            self.progress_text.emit("Calculando indicadores...\n")
+            self.progress_value.emit(30)
+
             tm = TrendMetrics()
             tm.get_sma_bands(data=df, length=15, std_dev=1)
             tm.get_crossover(data=df, l1=25, l2=50, l3=200)
             tm.get_rsi(data=df, length=25, overbought=70, oversold=30)
 
-            self.progress.emit("Indicadores calculados: SMA Bands, Crossover, RSI.\n")
+            self.progress_text.emit("Indicadores calculados: SMA Bands, Crossover, RSI.\n")
+            self.progress_value.emit(60)
             self.dataframe_ready.emit(tm.result_df, "trend_metrics") 
 
-            self.progress.emit("Iniciando deteção de padrões...\n")
-
+            self.progress_text.emit("Iniciando deteção de padrões...\n")
             cm = CandlesPatterns()
             for candle_function in dir(cm):
                 if (not candle_function.startswith("__") and
-                        callable(getattr(cm, candle_function)) and
-                        candle_function != "detect_pattern"):
+                    callable(getattr(cm, candle_function)) and
+                    candle_function != "detect_pattern"):
                     pattern_function = getattr(cm, candle_function)
                     try:
                         candle_result = pattern_function(df)
                     except Exception as e:
-                        self.progress.emit(f"Erro ao detectar padrão {candle_function}: {e}\n")
+                        self.progress_text.emit(f"Erro ao detectar padrão {candle_function}: {e}\n")
 
-            self.progress.emit("Análise concluída!\n")
+            self.progress_text.emit("Análise concluída!\n")
+            self.progress_value.emit(100)
             self.dataframe_ready.emit(cm.result_candles_df, "candle_patterns")
 
         except Exception as e:
-            self.progress.emit(f"Erro durante a execução: {e}\n")
+            self.progress_text.emit(f"Erro durante a execução: {e}\n")
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -55,24 +61,22 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         # Conectar os botões aos métodos correspondentes
-        self.ui.pushButton.clicked.connect(self.start_analysis)  # Botão "Run"
-        self.ui.pushButton_2.clicked.connect(self.pause_analysis)  # Botão "Pause"
-        self.ui.pushButton_3.clicked.connect(self.stop_analysis)  # Botão "Stop"
+        self.ui.pushButton.clicked.connect(self.start_analysis)
+        self.ui.pushButton_2.clicked.connect(self.pause_analysis)
+        self.ui.pushButton_3.clicked.connect(self.stop_analysis)
 
         # Configuração inicial
         self.analysis_thread = None
         self.paused = False
 
-    def log_message(self, message):
-        """Adiciona uma mensagem ao log."""
-        print(message)
-        self.ui.pushButton_5.setText(message)
-
     def start_analysis(self):
         """Inicia a análise em uma thread separada."""
         self.log_message("Iniciando tarefa...\n")
+        self.ui.label_4.setText("Iniciando análise...")
+        self.ui.progressBar.setValue(0)
         self.analysis_thread = AnalysisThread()
-        self.analysis_thread.progress.connect(self.log_message)
+        self.analysis_thread.progress_text.connect(self.log_message)
+        self.analysis_thread.progress_value.connect(self.update_progress)
         self.analysis_thread.dataframe_ready.connect(self.display_dataframe)
         self.analysis_thread.start()
 
@@ -109,12 +113,19 @@ class MainWindow(QMainWindow):
         for i, row in df.iterrows():
             for j, value in enumerate(row):
                 if isinstance(value, pd.Timestamp):
-                    value = value.strftime("YY-mm-dd") 
+                    value = value.strftime("%Y-%m-%d") 
                 elif pd.isna(value):
                     value = ""
                 table_widget.setItem(i, j, QTableWidgetItem(str(value)))
 
-        self.log_message(f"Resultados exibidos na tabela {table_type}.\n")
+    def update_progress(self, value):
+        """Atualiza o valor da barra de progresso."""
+        self.ui.progressBar.setValue(value)
+
+    def log_message(self, message):
+        """Adiciona uma mensagem ao log e atualiza a label_4."""
+        print(message)
+        self.ui.label_4.setText(message)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

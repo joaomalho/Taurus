@@ -271,12 +271,10 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
     - Add a visual window in screen - Next Version
 - Risk Manager
     -   testing majority vote
-- FrontEnd firt version release
-    -   Add QT front end window. Able to execute via window. WIP
 - Improve Crypto source (binance)
 - Improve Forex source (metatrader5)
-    - Only trade implemented
-    - Create functions like yahoo
+- FrontEnd firt version release
+    -   Include orders
 - Results
     - Trend Metrics - Done
     - Candles Patterns Metrics - WIP

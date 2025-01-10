@@ -7,6 +7,7 @@ class CandlesPatterns:
     """
 
     def __init__(self):
+        self.result_candles_history_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Relevance', 'Stoploss'])
         self.result_candles_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Relevance', 'Stoploss'])
         
         
@@ -14,12 +15,10 @@ class CandlesPatterns:
         """
         General method to detect a specific candlestick pattern.
         """
-        data_pass = data  # Usar todos os candles fornecidos
+        data_pass = data
 
-        # Detect pattern
         detection = pattern_function(data_pass['Open'], data_pass['High'], data_pass['Low'], data_pass['Close'])
 
-        # Localizar valores não-zero
         non_zero_detection = detection[detection != 0]
         if not non_zero_detection.empty:
             for date, signal in non_zero_detection.items():
@@ -31,19 +30,19 @@ class CandlesPatterns:
                     "gap_side_by_side_white", "counter_attack", "piercing",
                     "dark_cloud_cover", "tri_star"
                 ]:
-                    stoploss = data_pass.loc[date, 'Low'] if signal > 0 else data_pass.loc[date, 'High']
+                    stoploss = round(data_pass.loc[date, 'Low'],5) if signal > 0 else round(data_pass.loc[date, 'High'],5)
                 elif pattern_name in [
                     "morning_doji_star", "hammer", "inverted_hammer",
                     "thrusting", "matching_low", "three_white_soldiers",
                     "three_outside", "three_stars_in_south"
                 ]:
-                    stoploss = data_pass.loc[date, 'Low']
+                    stoploss = round(data_pass.loc[date, 'Low'],5)
                 elif pattern_name in [
                     "evening_doji_star", "hanging_man", "shooting_star",
                     "on_neck", "in_neck", "three_black_crows",
                     "three_inside", "advance_block", "stalled_pattern"
                 ]:
-                    stoploss = data_pass.loc[date, 'High']
+                    stoploss = round(data_pass.loc[date, 'High'],5)
                 else:
                     stoploss = None
 
@@ -53,6 +52,10 @@ class CandlesPatterns:
                     'Relevance': ['Flat'],
                     'Stoploss': [stoploss],
                 }, index=[date])
+
+                self.result_candles_history_df = pd.concat([self.result_candles_history_df, new_entry], ignore_index=False)
+
+                self.result_candles_df = self.result_candles_df[self.result_candles_df['Pattern'] != pattern_name]
                 self.result_candles_df = pd.concat([self.result_candles_df, new_entry], ignore_index=False)
 
         return detection
