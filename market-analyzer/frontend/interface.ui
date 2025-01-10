@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Taurus</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../images/icon.ico</normaloff>../../images/icon.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
