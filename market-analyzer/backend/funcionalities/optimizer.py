@@ -4,50 +4,51 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
+from datetime import datetime, timedelta
 
-
-class ParamsOptimization:
+class ParamsOptimization():
     """
     A class for optimizing technical indicators' parameters and evaluating strategy performance.
     """
 
-    def __init__(self, ticker, market_type, timeframe):
-        self.ticker = ticker
-        self.market_type = market_type
-        self.timeframe = timeframe
-        self.best_params = pd.DataFrame()
+    def __init__(self):
+        self.symbol = None
+        self.market_type = None
+        self.timeframe = None
+        self.crossover_params = None
+        self.bbands_params = None
 
-    def fetch_data(self, ticker):
+    def fetch_data(self,asset_type: str, symbol : str, period : str, interval : str):
         """
-        Simulate fetching market data for the given ticker.
-        Replace this method with the actual data retrieval logic.
+        Simulate fetching market data for the given ticker. According to same periodicity and timeframe of subject bot setting
         """
-        # Simulate historical data
-        np.random.seed(42)
-        size = 1000  # Simulated number of rows
-        data = pd.DataFrame({
-            "close": np.random.uniform(100, 200, size),
-            "volume": np.random.randint(1000, 5000, size)
-        })
+
+        if asset_type == 'stock':
+            from backend.datasources.yahoodata import DataHistory
+            dh = DataHistory()
+            data = dh.get_yahoo_data_history(symbol, period, interval, start=datetime.now(), end=datetime.now() - timedelta(days=365))
+
+        elif asset_type == 'cambial':
+            pass
+            # Metatrader
+        elif asset_type == 'crypto':
+            pass
+            # crypto
+        
         return data
 
-    def optimize(self):
+    def optimize(self, symbol : str):
         """
         Run optimization for all strategies.
         """
-        tickers = [self.ticker] if isinstance(self.ticker, str) else self.ticker
-        all_results = []
-
-        for ticker in tickers:
-            data = self.fetch_data(ticker)
-            crossover_params = self.optimize_crossover(data, ticker)
-            bbands_params = self.optimize_bbands(data, ticker)
-            all_results.append(pd.concat([crossover_params, bbands_params], axis=1))
-
-        self.best_params = pd.concat(all_results, ignore_index=True)
+        data = self.fetch_data(symbol)
+        self.crossover_params = self.optimize_crossover(data, symbol)
+        self.bbands_params = self.optimize_bbands(data, symbol)
+        
+        
         return self.best_params
 
-    def optimize_crossover(self, data, ticker):
+    def optimize_crossover(self, data : pd.DataFrame, symbol : str):
         """
         Optimize EMA crossover strategy.
         """
@@ -59,7 +60,7 @@ class ParamsOptimization:
 
         # Parallel execution for speed
         results = Parallel(n_jobs=-1)(delayed(self.simulate_crossover)(
-            data, ticker, l1, l2, l3) for l1, l2, l3 in tqdm(combinations, desc="Optimizing EMA Crossover"))
+            data, symbol, l1, l2, l3) for l1, l2, l3 in tqdm(combinations, desc="Optimizing EMA Crossover"))
 
         # Combine results into a DataFrame
         results_df = pd.DataFrame(results)
@@ -67,7 +68,7 @@ class ParamsOptimization:
 
         return best_result
 
-    def simulate_crossover(self, data, ticker, l1, l2, l3):
+    def simulate_crossover(self, data : pd.DataFrame, symbol : str, l1 : int, l2 : int, l3 : int):
         """
         Simulate crossover strategy and calculate metrics.
         """
@@ -87,7 +88,7 @@ class ParamsOptimization:
         expectancy = self.calculate_expectancy(data['returns'])
 
         return {
-            'Ticker': ticker,
+            'Ticker': symbol,
             'Best_EMA1': l1,
             'Best_EMA2': l2,
             'Best_EMA3': l3,
@@ -96,7 +97,7 @@ class ParamsOptimization:
             'Expectancy': expectancy
         }
 
-    def optimize_bbands(self, data, ticker):
+    def optimize_bbands(self, data : pd.DataFrame, symbol : str):
         """
         Optimize Bollinger Bands strategy.
         """
@@ -107,7 +108,7 @@ class ParamsOptimization:
 
         # Parallel execution for speed
         results = Parallel(n_jobs=-1)(delayed(self.simulate_bbands)(
-            data, ticker, period, std) for period, std in tqdm(combinations, desc="Optimizing Bollinger Bands"))
+            data, symbol, period, std) for period, std in tqdm(combinations, desc="Optimizing Bollinger Bands"))
 
         # Combine results into a DataFrame
         results_df = pd.DataFrame(results)
@@ -115,7 +116,7 @@ class ParamsOptimization:
 
         return best_result
 
-    def simulate_bbands(self, data, ticker, period, std):
+    def simulate_bbands(self, data, symbol, period, std):
         """
         Simulate Bollinger Bands strategy and calculate metrics.
         """
@@ -135,7 +136,7 @@ class ParamsOptimization:
         expectancy = self.calculate_expectancy(data['returns'])
 
         return {
-            'Ticker': ticker,
+            'Ticker': symbol,
             'Best_Period': period,
             'Best_Std': std,
             'Sharpe': sharpe,
@@ -178,10 +179,5 @@ class ParamsOptimization:
         return (win_rate * avg_win) - (loss_rate * avg_loss)
 
 
-
-# # Instanciar e otimizar
-# optimizer = ParamsOptimization(ticker=["AAPL", "GOOG"], market_type="stocks", timeframe="1d")
-# best_params = optimizer.optimize()
-
-# # Exibir resultados
-# print(best_params)
+# Adicionar Fontes Crypt e Cambial
+# Adicionar resultados

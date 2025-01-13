@@ -252,6 +252,14 @@ Each candle pattern has an associated stop-loss target, take-profit target, and 
 
 **Position opening:** The detection of a pattern **is not** sufficient by itself to justify opening a position.
 
+
+---
+---
+
+## **📝 Auto Calibration and Optimization**
+- WIP
+
+
 ---
 ---
 ---
@@ -293,3 +301,4 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 - **Install scripts:** Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script.
 - **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
 - **GUI:** Implemented 2º version of GUI.
+- **Auto Optimization** WIP
