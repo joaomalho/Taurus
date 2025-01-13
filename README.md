@@ -1,7 +1,7 @@
 # <p align="center"> **Taurus** </p>
 
 
-![Logo](https://github.com/joaomalho/Taurus/blob/main/images/taurus.png?raw=true)
+![Logo](https://github.com/joaomalho/Taurus/blob/main/assets/taurus.png?raw=true)
 
 **<p align="center"> Empowering Investors with Real-Time Financial Insights </p>**
  
