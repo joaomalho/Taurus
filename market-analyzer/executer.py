@@ -11,25 +11,25 @@ class AnalysisThread(QThread):
     progress_value = pyqtSignal(int)
     dataframe_ready = pyqtSignal(object, str)
 
-    def __init__(self, mode="analyze", parent=None):
-        super().__init__(parent)
+    def __init__(self, mode:str, ticker:str, period:str, interval:str):
+        super().__init__()
         self.mode = mode
 
         ## Adicionar botões
-        self.symbol = 'MSFT'
-        self.period = '1y'
-        self.interval = '1d'
+        self.ticker = ticker
+        self.period = period
+        self.interval = interval
     
     def run(self):
         try:
             if self.mode == "analyze":
-                self.perform_analysis()
+                self.perform_analysis(self.ticker, self.interval, self.period)
             elif self.mode == "optimize":
-                self.optimize_metrics()
+                self.optimize_metrics("stock", self.ticker, self.interval, self.period)
         except Exception as e:
             self.progress_text.emit(f"Erro durante a execução: {e}\n")
 
-    def perform_analysis(self, symbol = str, interval = str, period = str):
+    def perform_analysis(self, symbol : str, interval : str, period : str):
         self.progress_text.emit("Iniciando análise...\n")
         self.progress_value.emit(0)
 
@@ -68,7 +68,7 @@ class AnalysisThread(QThread):
         self.progress_value.emit(100)
         self.dataframe_ready.emit(cm.result_candles_df, "candle_patterns")
 
-    def optimize_metrics(self, asset_type = str, symbol = str, interval = str, period = str):
+    def optimize_metrics(self, asset_type : str, symbol : str, interval : str, period : str):
         """Executa a calibração de métricas."""
         self.progress_text.emit("Iniciando calibração de métricas...\n")
         self.progress_value.emit(0)
@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
         self.log_message("Iniciando tarefa...\n")
         self.ui.label_4.setText("Iniciando análise...")
         self.ui.progressBar.setValue(0)
-        self.analysis_thread = AnalysisThread(mode="analyze")
+        self.analysis_thread = AnalysisThread(mode="analyze", ticker='SPY', period= '1y', interval = '1d')
         self.analysis_thread.progress_text.connect(self.log_message)
         self.analysis_thread.progress_value.connect(self.update_progress)
         self.analysis_thread.dataframe_ready.connect(self.display_dataframe)
@@ -120,7 +120,7 @@ class MainWindow(QMainWindow):
         self.log_message("Iniciando calibração de métricas...\n")
         self.ui.label_4.setText("Calibrando métricas...")
         self.ui.progressBar.setValue(0)
-        self.analysis_thread = AnalysisThread(mode="optimize")
+        self.analysis_thread = AnalysisThread(mode="optimize", ticker='SPY', period= '1y', interval = '1d')
         self.analysis_thread.progress_text.connect(self.log_message)
         self.analysis_thread.progress_value.connect(self.update_progress)
         self.analysis_thread.dataframe_ready.connect(self.display_dataframe)
