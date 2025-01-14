@@ -12,11 +12,18 @@ class ParamsOptimization():
     """
 
     def __init__(self):
-        self.symbol = None
-        self.market_type = None
-        self.timeframe = None
-        self.crossover_params = None
-        self.bbands_params = None
+        
+        self.crossover_params = pd.DataFrame(columns=['Ticker', 'EMA1', 'EMA2', 'EMA3', 'Sharpe', 'MaxDrawdown', 'Expectancy'])
+        self.bbands_params = pd.DataFrame(columns=['Ticker', 'Period', 'Std', 'Sharpe', 'MaxDrawdown', 'Expectancy'])
+
+    def optimize(self, asset_type: str, symbol: str, period: str, interval: str):
+        """
+        Run optimization for all strategies.
+        """
+        data = self.fetch_data(asset_type, symbol, period, interval)
+        self.crossover_results = self.optimize_crossover(data, symbol)
+        self.bbands_results = self.optimize_bbands(data, symbol)
+
 
     def fetch_data(self,asset_type: str, symbol : str, period : str, interval : str):
         """
@@ -34,53 +41,38 @@ class ParamsOptimization():
         elif asset_type == 'crypto':
             pass
             # crypto
-        
         return data
-
-    def optimize(self, symbol : str):
-        """
-        Run optimization for all strategies.
-        """
-        data = self.fetch_data(symbol)
-        self.crossover_params = self.optimize_crossover(data, symbol)
-        self.bbands_params = self.optimize_bbands(data, symbol)
-        
-        
-        return self.best_params
 
     def optimize_crossover(self, data : pd.DataFrame, symbol : str):
         """
         Optimize EMA crossover strategy.
         """
-        ema1_periods = [10, 15, 20]
-        ema2_periods = [25, 30, 50]
-        ema3_periods = [100, 150, 200]
+        ema1_periods = range(10, 21)
+        ema2_periods = range(25, 61)
+        ema3_periods = range(100, 200)
 
         combinations = list(itertools.product(ema1_periods, ema2_periods, ema3_periods))
 
-        # Parallel execution for speed
         results = Parallel(n_jobs=-1)(delayed(self.simulate_crossover)(
             data, symbol, l1, l2, l3) for l1, l2, l3 in tqdm(combinations, desc="Optimizing EMA Crossover"))
 
-        # Combine results into a DataFrame
         results_df = pd.DataFrame(results)
-        best_result = results_df.loc[results_df['Expectancy'].idxmax()]
 
-        return best_result
+        return results_df
 
     def simulate_crossover(self, data : pd.DataFrame, symbol : str, l1 : int, l2 : int, l3 : int):
         """
         Simulate crossover strategy and calculate metrics.
         """
         # Calculate EMAs
-        data['ema1'] = talib.EMA(data['close'], timeperiod=l1)
-        data['ema2'] = talib.EMA(data['close'], timeperiod=l2)
-        data['ema3'] = talib.EMA(data['close'], timeperiod=l3)
+        data['ema1'] = talib.EMA(data['Close'], timeperiod=l1)
+        data['ema2'] = talib.EMA(data['Close'], timeperiod=l2)
+        data['ema3'] = talib.EMA(data['Close'], timeperiod=l3)
 
         # Generate signals
         data['signal'] = np.where((data['ema1'] > data['ema2']) & (data['ema2'] > data['ema3']), 1,
                                   np.where((data['ema1'] < data['ema2']) & (data['ema2'] < data['ema3']), -1, 0))
-        data['returns'] = data['close'].pct_change() * data['signal'].shift(1)
+        data['returns'] = data['Close'].pct_change() * data['signal'].shift(1)
 
         # Calculate metrics
         sharpe = self.calculate_sharpe(data['returns'])
@@ -89,11 +81,11 @@ class ParamsOptimization():
 
         return {
             'Ticker': symbol,
-            'Best_EMA1': l1,
-            'Best_EMA2': l2,
-            'Best_EMA3': l3,
+            'EMA1': l1,
+            'EMA2': l2,
+            'EMA3': l3,
             'Sharpe': sharpe,
-            'Max_Drawdown': max_drawdown,
+            'MaxDrawdown': max_drawdown,
             'Expectancy': expectancy
         }
 
@@ -101,20 +93,17 @@ class ParamsOptimization():
         """
         Optimize Bollinger Bands strategy.
         """
-        sma_periods = [10, 15, 20]
-        std_devs = [1, 2, 3]
+        sma_periods = range(10, 21)
+        std_devs = range(1, 3)
 
         combinations = list(itertools.product(sma_periods, std_devs))
 
-        # Parallel execution for speed
         results = Parallel(n_jobs=-1)(delayed(self.simulate_bbands)(
             data, symbol, period, std) for period, std in tqdm(combinations, desc="Optimizing Bollinger Bands"))
 
-        # Combine results into a DataFrame
         results_df = pd.DataFrame(results)
-        best_result = results_df.loc[results_df['Expectancy'].idxmax()]
-
-        return best_result
+       
+        return results_df
 
     def simulate_bbands(self, data, symbol, period, std):
         """
@@ -122,13 +111,13 @@ class ParamsOptimization():
         """
         # Calculate Bollinger Bands
         upperband, middleband, lowerband = talib.BBANDS(
-            data['close'], timeperiod=period, nbdevup=std, nbdevdn=std, matype=0
+            data['Close'], timeperiod=period, nbdevup=std, nbdevdn=std, matype=0
         )
 
         # Generate signals
-        data['signal'] = np.where(data['close'] < lowerband, 1,
-                                  np.where(data['close'] > upperband, -1, 0))
-        data['returns'] = data['close'].pct_change() * data['signal'].shift(1)
+        data['signal'] = np.where(data['Close'] < lowerband, 1,
+                                  np.where(data['Close'] > upperband, -1, 0))
+        data['returns'] = data['Close'].pct_change() * data['signal'].shift(1)
 
         # Calculate metrics
         sharpe = self.calculate_sharpe(data['returns'])
@@ -137,10 +126,10 @@ class ParamsOptimization():
 
         return {
             'Ticker': symbol,
-            'Best_Period': period,
-            'Best_Std': std,
+            'Period': period,
+            'Std': std,
             'Sharpe': sharpe,
-            'Max_Drawdown': max_drawdown,
+            'MaxDrawdown': max_drawdown,
             'Expectancy': expectancy
         }
 
@@ -177,7 +166,6 @@ class ParamsOptimization():
         avg_win = wins.mean() if len(wins) > 0 else 0
         avg_loss = losses.mean() if len(losses) > 0 else 0
         return (win_rate * avg_win) - (loss_rate * avg_loss)
-
 
 # Adicionar Fontes Crypt e Cambial
 # Adicionar resultados
