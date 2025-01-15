@@ -33,7 +33,7 @@ class ParamsOptimization():
         if asset_type == 'stock':
             from backend.datasources.yahoodata import DataHistory
             dh = DataHistory()
-            data = dh.get_yahoo_data_history(symbol, period, interval, start=datetime.now(), end=datetime.now() - timedelta(days=365))
+            data = dh.get_yahoo_data_history(symbol, period, interval, start=datetime.now() - timedelta(days=365), end=datetime.now())
 
         elif asset_type == 'cambial':
             pass

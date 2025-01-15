@@ -95,10 +95,10 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         # Conectar os botões aos métodos correspondentes
-        self.ui.pushButton.clicked.connect(self.start_analysis)
-        self.ui.pushButton_2.clicked.connect(self.pause_analysis)
-        self.ui.pushButton_3.clicked.connect(self.stop_analysis)
-        self.ui.pushButton_6.clicked.connect(self.start_optimization)
+        self.ui.pushButton_run.clicked.connect(self.start_analysis)
+        self.ui.pushButton_stop.clicked.connect(self.stop_analysis)
+        self.ui.pushButton_reset.clicked.connect(self.reset_analysis)
+        self.ui.pushButton_autoCali.clicked.connect(self.start_optimization)
 
         # Configuração inicial
         self.analysis_thread = None
@@ -107,8 +107,8 @@ class MainWindow(QMainWindow):
     def start_analysis(self):
         """Inicia a análise em uma thread separada."""
         self.log_message("Iniciando tarefa...\n")
-        self.ui.label_4.setText("Iniciando análise...")
-        self.ui.progressBar.setValue(0)
+        self.ui.label_loading.setText("Iniciando análise...")
+        self.ui.progressBar_main.setValue(0)
         self.analysis_thread = AnalysisThread(mode="analyze", ticker='SPY', period= '1y', interval = '1d')
         self.analysis_thread.progress_text.connect(self.log_message)
         self.analysis_thread.progress_value.connect(self.update_progress)
@@ -118,22 +118,16 @@ class MainWindow(QMainWindow):
     def start_optimization(self):
         """Inicia a calibração de métricas em uma thread separada."""
         self.log_message("Iniciando calibração de métricas...\n")
-        self.ui.label_4.setText("Calibrando métricas...")
-        self.ui.progressBar.setValue(0)
+        self.ui.label_loading.setText("Calibrando métricas...")
+        self.ui.progressBar_main.setValue(0)
         self.analysis_thread = AnalysisThread(mode="optimize", ticker='SPY', period= '1y', interval = '1d')
         self.analysis_thread.progress_text.connect(self.log_message)
         self.analysis_thread.progress_value.connect(self.update_progress)
         self.analysis_thread.dataframe_ready.connect(self.display_dataframe)
         self.analysis_thread.start()
 
-    def pause_analysis(self):
-        """Pausa a análise."""
-        if self.analysis_thread and self.analysis_thread.isRunning():
-            self.paused = not self.paused
-            if self.paused:
-                self.log_message("Análise pausada.\n")
-            else:
-                self.log_message("Análise retomada.\n")
+    def reset_analysis(self):
+       pass
             
     def stop_analysis(self):
         """Para a análise."""
@@ -144,13 +138,13 @@ class MainWindow(QMainWindow):
     def display_dataframe(self, df, table_type):
         """Exibe o DataFrame no QTableWidget correspondente."""
         if table_type == "trend_metrics":
-            table_widget = self.ui.tableWidget
+            table_widget = self.ui.tableWidget_trendMetrics
         elif table_type == "candle_patterns":
-            table_widget = self.ui.tableWidget_2
+            table_widget = self.ui.tableWidget_candlePat
         else:
             self.log_message("Tipo de tabela desconhecido.\n")
             return
-        df = df.reset_index()
+        df = df.reset_index(drop=True)
 
         table_widget.setRowCount(len(df))
         table_widget.setColumnCount(len(df.columns))
@@ -166,12 +160,12 @@ class MainWindow(QMainWindow):
 
     def update_progress(self, value):
         """Atualiza o valor da barra de progresso."""
-        self.ui.progressBar.setValue(value)
+        self.ui.progressBar_main.setValue(value)
 
     def log_message(self, message):
         """Adiciona uma mensagem ao log e atualiza a label_4."""
         print(message)
-        self.ui.label_4.setText(message)
+        self.ui.label_loading.setText(message)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

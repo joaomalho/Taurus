@@ -256,8 +256,15 @@ Each candle pattern has an associated stop-loss target, take-profit target, and 
 ---
 ---
 
-## **📝 Auto Calibration and Optimization**
-- WIP
+## **⚙️ Auto Calibration and Optimization**
+
+Taurus have an auto-calibration and optimization method designed to measure, test, and select the best parameters for technical analysis metrics. This method leverages a backtesting environment to evaluate metric performance over the past 365 days of the selected asset's market data.
+
+It can be triggered via the application's auto calibration button. Please note that this process will overwrite the preset parameter values.
+
+
+
+
 
 
 ---
