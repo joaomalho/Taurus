@@ -282,16 +282,16 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 ## **<p align="center"> 👨‍💻 Developments & Improvements </p>**
 
 ## **🛠️ Next steps**
-- Install tool (Upgrade & Uninstall Methods, and visual) - Done
+- Install tool (Upgrade & Uninstall Methods, and visual) - Install review due new dependencies
     - Add a visual window in screen - Next Version
 - Risk Manager
     -   testing majority vote
 - Improve Crypto source (binance)
+    - Included, current price for all tickers and last 24h metrics. WIP
 - Improve Forex source (metatrader5)
 - FrontEnd firt version release
     -   Include orders
 - Results
-    - Trend Metrics - Done
     - Candles Patterns Metrics - WIP
         - IF in the last 5 candles a pattern is detected AND stoploss not complete then decision of the candle.
         - This for all candles pattern each one with is own conditions

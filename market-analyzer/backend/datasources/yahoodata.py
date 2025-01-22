@@ -2,11 +2,9 @@ import warnings
 import yfinance as yf
 from datetime import datetime
 
-# Suprimir avisos específicos
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
-
-class DataHistory():
+class DataHistoryYahoo():
 
     def __init__(self) -> None:
         self

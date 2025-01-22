@@ -33,11 +33,11 @@ class AnalysisThread(QThread):
         self.progress_text.emit("Iniciando análise...\n")
         self.progress_value.emit(0)
 
-        from backend.datasources.yahoodata import DataHistory
+        from backend.datasources.yahoodata import DataHistoryYahoo
         from backend.tecnical_analysis.trend_metrics import TrendMetrics
         from backend.tecnical_analysis.candles_patterns import CandlesPatterns
         
-        dh = DataHistory()
+        dh = DataHistoryYahoo()
         df = dh.get_yahoo_data_history(symbol=symbol, interval=interval, period=period)
 
         self.progress_text.emit("Calculando indicadores...\n")
@@ -87,8 +87,8 @@ class AnalysisThread(QThread):
         self.progress_text.emit("Calibração concluída!\n")
         self.progress_value.emit(100)
 
-
 class MainWindow(QMainWindow):
+    
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
