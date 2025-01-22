@@ -45,8 +45,10 @@ class AnalysisThread(QThread):
 
         tm = TrendMetrics()
         tm.get_sma_bands(data=df, length=15, std_dev=1)
-        tm.get_crossover(data=df, l1=25, l2=50, l3=200)
+        tm.get_crossover(data=df, fastperiod=25, mediumperiod=50, slowperiod=200)
         tm.get_rsi(data=df, length=25, overbought=70, oversold=30)
+        tm.get_adx(data=df, length=25)
+        tm.get_macd(data=df, fastperiod=12, slowperiod=26, signalperiod=9)
 
         self.progress_text.emit("Indicadores calculados: SMA Bands, Crossover, RSI.\n")
         self.progress_value.emit(60)

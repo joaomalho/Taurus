@@ -37,10 +37,11 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 
 | Data Type            | Source        | Delay           | Description                                        |
 |----------------------|---------------|-----------------|----------------------------------------------------|
-| **Intraday**         | Yahoo Finance | 1-2 minutes     | Near real-time data for short intervals.           |
+| **Intraday**         | Yahoo Finance | -1 minutes     | Near real-time data for short intervals.           |
 | **Daily or Long-Term**| Yahoo Finance | 1-2 minutes | Reliable data for historical analysis.        |
-| **Currencies (Forex)**| Yahoo Finance | 1-2 minutes   | Quick updates on currency markets.                |
-| **Cryptocurrencies** | Yahoo Finance | 1-2 minutes     | Regular updates, though slower than dedicated APIs like Binance. |
+| **Currencies (Forex)**| Yahoo Finance | 1 minutes   | Quick updates on currency markets.                |
+| **Stock** | Binance Finance | 1-2 minutes     | Regular updates. |
+| **Cryptocurrencies** | Binance Finance | -1 minute     | Real-Time updates, dedicated APIs from Binance. |
 
 ---
 ---
@@ -48,10 +49,10 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 
 ## **🔧 Tech Stack**
 
-- **Backend:** Python, YFinance API
-- **Frontend:** Angular, Material Design
-- **Charts:** Chart.js, D3.js
-- **Data Analysis:** Pandas, NumPy
+- **Backend:** Python
+- **Frontend:** Python, PyQt6
+- **Charts:** To Define
+- **Data Analysis:** Pandas, NumPy, TA-Lib, ...
 - **Machine Learning (Future):** TensorFlow, Scikit-learn
 
 ---
@@ -190,6 +191,13 @@ If a dependency fails to install, ensure you have all system requirements for th
 ---
 ---
 
+## **🪙 Type of Markets**
+
+Taurus provides comprehensive, detailed and real-time access to the forex, stock, and cryptocurrency markets, collecting complete information on all available tickers across these market types. Our data providers include Yahoo for forex and stock information and Binance for cryptocurrency data.
+
+---
+---
+
 ## **📝 Caddle Patterns Detection Guide**
 
 Our tool is capable of detecting X-candle patterns in the market.
@@ -239,6 +247,8 @@ Each candle pattern has an associated stop-loss target, take-profit target, and 
 | **Separating Lines**       | Continuation     | 3                         |
 | **Upside Gap Two Crows**   | Complex          | 5-7                       |
 
+---
+---
 
 ### ⚖️ **Relevance:**
 
@@ -262,7 +272,8 @@ Taurus have an auto-calibration and optimization method designed to measure, tes
 
 It can be triggered via the application's auto calibration button. Please note that this process will overwrite the preset parameter values.
 
-
+---
+---
 
 
 
@@ -285,10 +296,7 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 - Install tool (Upgrade & Uninstall Methods, and visual) - Install review due new dependencies
     - Add a visual window in screen - Next Version
 - Risk Manager
-    -   testing majority vote
-- Improve Crypto source (binance)
-    - Included, current price for all tickers and last 24h metrics. WIP
-- Improve Forex source (metatrader5)
+    -   Condition do decision making - WIP
 - FrontEnd firt version release
     -   Include orders
 - Results

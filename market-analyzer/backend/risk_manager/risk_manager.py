@@ -32,5 +32,11 @@ class RiskManager():
         pass
 
     def decision_manager():
+        '''
+        Trend confirmation:
+            1. Crossoover signal Buy or Sell 
+            2. ADX > Threshold (storng trend)
+            3. MACD line cross signal Line to MACD < Signal line then Buy, MACD > Signal Line then Sell        
+        '''
         pass
     
