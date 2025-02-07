@@ -275,6 +275,12 @@ It can be triggered via the application's auto calibration button. Please note t
 ---
 ---
 
+## **🏢 Open Insider Information**
+
+Real-time insider trading information is available for all US stocks. This data is sourced from the SEC and provides insights into the buying and selling activities of company insiders.
+
+---
+---
 
 
 
@@ -309,6 +315,9 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
             - Finish "which candle" should be regarded to consider stoploss values
             - Include `signal` and `relevance` for each candle.
             - Pass this values to Risk Manager  
+- Fundamental Analysis
+    - Included openinsider information
+    - Missing Catalog for penny, top of day, top of week.
 
 ## **🚀 Latest Improvements**
 - **Risk Manager:** A new feature to help minimize losses in volatile markets.
@@ -317,3 +326,4 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 - **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
 - **GUI:** Implemented 2º version of GUI.
 - **Auto Optimization** WIP
+- **Fundamental Analysis** WIP
