@@ -1,6 +1,9 @@
 import warnings
+import requests
+import pandas as pd
 import yfinance as yf
 from datetime import datetime
+from bs4 import BeautifulSoup
 
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
@@ -9,6 +12,50 @@ class DataHistoryYahoo():
     def __init__(self) -> None:
         self
     
+    def get_yahoo_most_active(self, table_class: str = None) -> pd.DataFrame:
+        """
+        Extrat data from yahoo most active
+
+        Parameters:
+            classe_tabela (str): Classe CSS da tabela para extração (opcional).
+
+        Returns:
+            pd.DataFrame: DataFrame with table content.
+        """
+        try:
+            response = requests.get("https://finance.yahoo.com/markets/stocks/most-active/")
+            response.raise_for_status()
+
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+            if table_class:
+                tabela = soup.find('table', {'class': table_class})
+            else:
+                tabela = soup.find('table')
+
+            headers = [th.text.strip() for th in tabela.find_all('th')]
+
+            rows = []
+            for row in tabela.find_all('tr')[1:]:
+                cols = [td.text.strip() for td in row.find_all('td')]
+                if cols: 
+                    rows.append(cols)
+
+            df = pd.DataFrame(rows, columns=headers if headers else None)
+            df["Price"] = df["Price"].str.extract(r"^([\d\.]+)")
+            df["Change"] = df["Change"].str.replace("+", "", regex=False).astype(float)
+            df["Change %"] = df["Change %"].str.replace("%", "", regex=False).astype(float)
+            df["P/E Ratio (TTM)"] = df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False).astype(float)
+            df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False).astype(float)
+            return df
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error accessing URL: {e}")
+        except Exception as e:
+            print(f"Error processing data: {e}")
+
+        return pd.DataFrame()
+
     def get_yahoo_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
         '''
         Data collection from yahoo
