@@ -22,8 +22,13 @@ class DataHistoryYahoo():
         Returns:
             pd.DataFrame: DataFrame with table content.
         """
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
+
         try:
-            response = requests.get("https://finance.yahoo.com/markets/stocks/most-active/")
+            response = requests.get("https://finance.yahoo.com/markets/stocks/most-active/", headers=headers)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
