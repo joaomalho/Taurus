@@ -2,299 +2,62 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1143</width>
-    <height>737</height>
+    <width>1260</width>
+    <height>755</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Taurus</string>
-  </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>../../images/icon.ico</normaloff>../../images/icon.ico</iconset>
-  </property>
-  <property name="styleSheet">
-   <string notr="true"/>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton_run">
+   <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
-      <width>131</width>
-      <height>24</height>
+      <y>20</y>
+      <width>151</width>
+      <height>51</height>
      </rect>
     </property>
-    <property name="toolTip">
-     <string/>
-    </property>
-    <property name="toolTipDuration">
-     <number>-1</number>
-    </property>
     <property name="text">
-     <string>Run</string>
-    </property>
-    <property name="icon">
-     <iconset theme="QIcon::ThemeIcon::MediaPlaybackStart"/>
-    </property>
-    <property name="autoRepeat">
-     <bool>false</bool>
+     <string>Highlights</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_stop">
+   <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
-      <width>131</width>
-      <height>24</height>
+      <y>80</y>
+      <width>151</width>
+      <height>51</height>
      </rect>
     </property>
-    <property name="toolTip">
-     <string/>
-    </property>
     <property name="text">
-     <string>Stop</string>
-    </property>
-    <property name="icon">
-     <iconset theme="QIcon::ThemeIcon::MediaPlaybackStop"/>
+     <string>Tecnical Analysis</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_reset">
+   <widget class="QPushButton" name="pushButton_3">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>70</y>
-      <width>131</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string/>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LayoutDirection::LeftToRight</enum>
-    </property>
-    <property name="text">
-     <string notr="true">Reset</string>
-    </property>
-    <property name="icon">
-     <iconset theme="QIcon::ThemeIcon::SystemReboot"/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_manualAdj">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>170</y>
-      <width>131</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Manual Adjusts</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_autoCali">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>200</y>
-      <width>131</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Auto Calibration</string>
-    </property>
-    <property name="autoDefault">
-     <bool>false</bool>
-    </property>
-    <property name="default">
-     <bool>false</bool>
-    </property>
-    <property name="flat">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QTableWidget" name="tableWidget_trendMetrics">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>30</y>
-      <width>321</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LayoutDirection::LeftToRight</enum>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Shape::NoFrame</enum>
-    </property>
-   </widget>
-   <widget class="QTableWidget" name="tableWidget_candlePat">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>280</y>
-      <width>581</width>
-      <height>211</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Shape::NoFrame</enum>
-    </property>
-   </widget>
-   <widget class="QTableWidget" name="tableWidget_orderEx">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>530</y>
-      <width>581</width>
-      <height>121</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Shape::NoFrame</enum>
-    </property>
-   </widget>
-   <widget class="QProgressBar" name="progressBar_main">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>720</y>
-      <width>591</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="value">
-     <number>0</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>10</y>
+      <y>140</y>
       <width>151</width>
-      <height>20</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="text">
-     <string>Trend Metrics Results:</string>
+     <string>Inside Information</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>260</y>
-      <width>151</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Candle Pattern Detection:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>510</y>
-      <width>151</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Orders Executed:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_loading">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>690</y>
-      <width>521</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QFrame" name="frame">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>151</width>
-      <height>241</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="inputMethodHints">
-     <set>Qt::InputMethodHint::ImhNone</set>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Shape::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Shadow::Sunken</enum>
-    </property>
-    <property name="lineWidth">
-     <number>8</number>
-    </property>
-    <property name="midLineWidth">
-     <number>5</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>650</x>
-      <y>10</y>
-      <width>151</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Trend Metrics Parameters:</string>
-    </property>
-   </widget>
-   <zorder>frame</zorder>
-   <zorder>pushButton_run</zorder>
-   <zorder>pushButton_stop</zorder>
-   <zorder>pushButton_reset</zorder>
-   <zorder>pushButton_manualAdj</zorder>
-   <zorder>pushButton_autoCali</zorder>
-   <zorder>tableWidget_trendMetrics</zorder>
-   <zorder>tableWidget_candlePat</zorder>
-   <zorder>tableWidget_orderEx</zorder>
-   <zorder>progressBar_main</zorder>
-   <zorder>label</zorder>
-   <zorder>label_2</zorder>
-   <zorder>label_3</zorder>
-   <zorder>label_loading</zorder>
-   <zorder>label_4</zorder>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>

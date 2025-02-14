@@ -21,3 +21,6 @@ Thumbs.db
 # Ignore IDE-specific files
 .vscode/
 .idea/
+
+# ignore front end notes
+note.txt

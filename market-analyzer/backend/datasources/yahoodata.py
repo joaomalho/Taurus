@@ -12,12 +12,66 @@ class DataHistoryYahoo():
     def __init__(self) -> None:
         self
     
+    def get_yahoo_top100_gainers(table_class: str = None) -> pd.DataFrame:
+        """
+        Extrat data from yahoo top 100 gainers
+
+        Parameters:
+            classe_tabela (str): Class CSS from table to scrap (optional).
+
+        Returns:
+            pd.DataFrame: DataFrame with table content.
+        """
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
+
+        try:
+            response = requests.get("https://finance.yahoo.com/markets/stocks/gainers/?start=0&count=100", headers=headers)
+            response.raise_for_status()
+
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+            if table_class:
+                tabela = soup.find('table', {'class': table_class})
+            else:
+                tabela = soup.find('table')
+
+            headers = [th.text.strip() for th in tabela.find_all('th')]
+
+            rows = []
+            for row in tabela.find_all('tr')[1:]:
+                cols = [td.text.strip() for td in row.find_all('td')]
+                if cols: 
+                    rows.append(cols)
+
+            df = pd.DataFrame(rows, columns=headers if headers else None)
+            df["Price"] = df["Price"].str.extract(r"^([\d\.]+)")
+            df["Change"] = df["Change"].str.replace("+", "", regex=False)
+            df["Change %"] = df["Change %"].str.replace("%", "", regex=False)
+            df["Volume"] = df["Volume"].str.replace("-", "0", regex=False)
+            df["Avg Vol (3M)"] = df["Avg Vol (3M)"].str.replace("-", "0", regex=False)
+            df["Market Cap"] = df["Market Cap"].str.replace("-", "0", regex=False)
+            df["P/E Ratio (TTM)"] = df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False)
+            df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False)
+            df.drop(columns=["52 Wk Range"], inplace=True)
+            return df
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error accessing URL: {e}")
+        except Exception as e:
+            print(f"Error processing data: {e}")
+
+        return df
+
+
     def get_yahoo_most_active(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo most active
 
         Parameters:
-            classe_tabela (str): Classe CSS da tabela para extração (opcional).
+            classe_tabela (str): Class CSS from table to scrap (optional).
 
         Returns:
             pd.DataFrame: DataFrame with table content.
@@ -48,18 +102,71 @@ class DataHistoryYahoo():
 
             df = pd.DataFrame(rows, columns=headers if headers else None)
             df["Price"] = df["Price"].str.extract(r"^([\d\.]+)")
-            df["Change"] = df["Change"].str.replace("+", "", regex=False).astype(float)
-            df["Change %"] = df["Change %"].str.replace("%", "", regex=False).astype(float)
-            df["P/E Ratio (TTM)"] = df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False).astype(float)
-            df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False).astype(float)
+            df["Change"] = df["Change"].str.replace("+", "", regex=False)
+            df["Change %"] = df["Change %"].str.replace("%", "", regex=False)
+            df["P/E Ratio (TTM)"] = df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False)
+            df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False)
+            df.drop(columns=["52 Wk Range"], inplace=True)
             return df
 
         except requests.exceptions.RequestException as e:
             print(f"Error accessing URL: {e}")
         except Exception as e:
             print(f"Error processing data: {e}")
+    
+        return df
+    
+    def get_yahoo_trending(table_class: str = None) -> pd.DataFrame:
+        """
+        Extrat data from yahoo trending.
 
-        return pd.DataFrame()
+        Parameters:
+            classe_tabela (str): Class CSS from table to scrap (optional).
+
+        Returns:
+            pd.DataFrame: DataFrame with table content.
+        """
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
+
+        try:
+            response = requests.get("https://finance.yahoo.com/markets/stocks/trending/", headers=headers)
+            response.raise_for_status()
+
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+            if table_class:
+                tabela = soup.find('table', {'class': table_class})
+            else:
+                tabela = soup.find('table')
+
+            headers = [th.text.strip() for th in tabela.find_all('th')]
+
+            rows = []
+            for row in tabela.find_all('tr')[1:]:
+                cols = [td.text.strip() for td in row.find_all('td')]
+                if cols: 
+                    rows.append(cols)
+
+            df = pd.DataFrame(rows, columns=headers if headers else None)
+            df["Price"] = df["Price"].str.extract(r"^([\d\.]+)")
+            df["Change"] = df["Change"].str.replace("+", "", regex=False)
+            df["Change %"] = df["Change %"].str.replace("%", "", regex=False)
+            df["Avg Vol (3M)"] = df["Avg Vol (3M)"].str.replace("-", "0", regex=False)
+            df["Market Cap"] = df["Market Cap"].str.replace("-", "0", regex=False)
+            df["P/E Ratio (TTM)"] = df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False)
+            df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False)
+            df.drop(columns=["52 Wk Range"], inplace=True)
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error accessing URL: {e}")
+        except Exception as e:
+            print(f"Error processing data: {e}")
+
+        return df
+
 
     def get_yahoo_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
         '''
@@ -91,7 +198,7 @@ class DataHistoryYahoo():
         '''
         Return dividents historics
         '''
-        yahoo_symbol_dividends = yf.Ticker(symbol).dividends
+        yahoo_symbol_dividends = yf.Ticker(symbol).divwidends
         return yahoo_symbol_dividends
     
     def get_yahoo_symbol_splits(self, symbol : str):

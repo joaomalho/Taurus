@@ -316,6 +316,7 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
             - Include `signal` and `relevance` for each candle.
             - Pass this values to Risk Manager  
 - Fundamental Analysis
+    - Included top gainers, trendy and most active stocks
     - Included openinsider information
     - Missing Catalog for penny, top of day, top of week.
 
@@ -326,4 +327,4 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 - **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
 - **GUI:** Implemented 2º version of GUI.
 - **Auto Optimization** WIP
-- **Fundamental Analysis** WIP
+- **Fundamental Analysis** Included top gainers, trendy, most active stocks, and insider information. 

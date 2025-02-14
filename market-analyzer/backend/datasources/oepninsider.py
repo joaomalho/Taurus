@@ -14,7 +14,6 @@ class DataOpenInsider():
         self.start_month = start_month
         self.max_workers = max_workers
 
-
     def fetch_data(self, url: str) -> requests.Response:
         """
         Make an HTTP request to Open Insider to get the data.
@@ -80,10 +79,12 @@ class DataOpenInsider():
 
     def clean_numeric(self, value: str) -> float:
         """
-        Converte valores numéricos de texto para float, removendo símbolos e caracteres indesejados.
+        Converte numeric text to float, romving symbols.
 
-        :param value: String contendo um número possivelmente formatado com $, %, etc.
-        :return: Número convertido para float.
+        :parameters
+            value: String containing numbers with formats regaring $, %, etc.
+        :return: 
+            Numbers converted to float.
         """
         if not value or value.lower() in ['n/a', 'new']:
             return 0.0
@@ -93,5 +94,4 @@ class DataOpenInsider():
         try:
             return float(clean)
         except ValueError:
-            return 9999999999999  #Retorna um valor NaN para identificar erros
-
+            return 9999999999999 
