@@ -296,6 +296,40 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 ---
 ---
 
+## **<p align="center"> 🚀 Calling All Developers! 👨‍💻👩‍💻 </p>**
+
+We are looking for **passionate coders** to join our **open-source community** 🌍.
+
+🎯 **Roles Available:**
+- 🛠️ Maintainers
+- 🧪 Testers
+- 🎨 UI/UX Designers
+
+
+We are also looking to grow our community with **key roles in market analysis**:
+
+- **📈 Technical Analyst** → Studies price action & indicators.
+- **📊 Fundamental Analyst** → Evaluates financial statements & economic factors.
+- **🤖 Quantitative Analyst (Quant)** → Develops algorithmic trading models.
+- **⚠️ Risk Manager** → Manages portfolio risks & exposure.
+- **💸 Short-Term Trader** → Focuses on day & swing trading.
+- **🏦 Long-Term Investor** → Buys & holds assets for long-term gains.
+- **🪙 Crypto Analyst** → Researches & analyzes cryptocurrency markets.
+- **🎯 Options Trader** → Trades derivatives like calls & puts.
+
+📍 **Join us to level up your market knowledge!** 🚀📈
+
+📢 Join us today and contribute! 🤝
+
+🌍 Community:
+- 🗨️ **Discord** - 🔗 [Join Here](#) - WIP
+- 👽 **Reddit** - 🔗 [Join Here](#) - WIP
+
+---
+---
+---
+
+
 ## **<p align="center"> 👨‍💻 Developments & Improvements </p>**
 
 ## **🛠️ Next steps**
@@ -305,6 +339,7 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
     -   Condition do decision making - WIP
 - FrontEnd firt version release
     -   Include orders
+    -   Working on framer
 - Results
     - Candles Patterns Metrics - WIP
         - IF in the last 5 candles a pattern is detected AND stoploss not complete then decision of the candle.
@@ -316,7 +351,6 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
             - Include `signal` and `relevance` for each candle.
             - Pass this values to Risk Manager  
 - Fundamental Analysis
-    - Included top gainers, trendy and most active stocks
     - Included openinsider information
     - Missing Catalog for penny, top of day, top of week.
 
@@ -327,4 +361,7 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 - **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
 - **GUI:** Implemented 2º version of GUI.
 - **Auto Optimization** WIP
-- **Fundamental Analysis** Included top gainers, trendy, most active stocks, and insider information. 
+- **Fundamental Analysis** Included top gainers, trendy, most active stocks, cryptos, currencies, and insider information.
+
+
+
