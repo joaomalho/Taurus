@@ -322,7 +322,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 📢 Join us today and contribute! 🤝
 
 🌍 Community:
-- 🗨️ **Discord** - 🔗 [Join Here](#) - WIP
+- 🗨️ **Discord** - 🔗 [Join Here](#https://discord.gg/fwDYajbt) - WIP
 - 👽 **Reddit** - 🔗 [Join Here](#) - WIP
 
 ---

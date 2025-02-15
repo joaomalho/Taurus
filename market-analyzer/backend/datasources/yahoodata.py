@@ -546,3 +546,5 @@ class DataHistoryYahoo():
             print(f"Error processing data: {e}")
 
         return df
+
+    def get_yahoo_economic_calendar(self, table_class: str = None) -> pd.DataFrame:
