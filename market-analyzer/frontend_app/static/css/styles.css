@@ -1,75 +1,95 @@
-body {
-    font-family: "Poppins", sans-serif;
-    background: white;
+/* Garante que o HTML e Body ocupem 100% da tela */
+html, body {
+    width: 100vw;
+    height: 100vh;
     margin: 0;
     padding: 0;
+    overflow: hidden;
+    background: white;
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Container principal */
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Sidebar fixa na lateral esquerda */
 .sidebar {
-    width: 90px;
-    height: 900px;
+    width: 129px;
+    height: 100vh; /* Ocupa toda a altura */
     background: #1E241F;
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: absolute;
-    left: 0;
+    padding-top: 20px;
+    z-index: 900;
 }
 
-.topbar {
-    width: calc(100% - 90px);
-    height: 80px;
-    background: #D9D9D9;
-    position: absolute;
-    left: 90px;
-    top: 0;
+/* Logo dentro da sidebar */
+.logo {
+    width: 100px;
+    height: auto;
 }
 
-.header-title {
-    position: absolute;
-    left: 136px;
-    top: 25px;
-    font-size: 32px;
-    font-weight: 800;
-    color: black;
-}
-
-.navbar {
-    position: absolute;
-    left: 432px;
-    top: 30px;
+/* Links do menu na sidebar */
+.menu-links {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 30px;
 }
 
-.navbar a {
-    text-decoration: none;
-    color: black;
+.menu-links div {
+    color: white;
     font-size: 14px;
     font-weight: 800;
+    cursor: pointer;
 }
 
+/* Barra superior fixa */
+.topbar {
+    width: calc(100vw - 129px); /* Ajusta para descontar a sidebar */
+    height: 97px;
+    background: #1E241F;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 129px; /* Começa após a sidebar */
+    z-index: 1000;
+}
+
+/* Links do menu da navbar */
+.nav-links, .social-links {
+    display: flex;
+    gap: 24px;
+}
+
+.nav-links div, .social-links div {
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* Área de conteúdo ajustável */
 .main-container {
     position: absolute;
-    left: 100px;
-    top: 125px;
+    left: 129px; /* Para começar após a sidebar */
+    top: 97px; /* Para começar após a navbar */
+    width: calc(100vw - 129px); /* Ajusta a largura */
+    height: calc(100vh - 97px); /* Ajusta a altura */
     display: flex;
-    gap: 10px;
-}
-
-.box {
-    height: 766px;
-    background: #D9D9D9;
-}
-
-.box1 {
-    width: 608px;
-}
-
-.box2 {
-    width: 460px;
-}
-
-.box3 {
-    width: 221px;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    background: white;
 }

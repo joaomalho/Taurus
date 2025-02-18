@@ -10,26 +10,38 @@
 </head>
 <body>
 
-    <!-- Barra lateral -->
-    <div class="sidebar">
-        <!-- Ícones podem ser adicionados aqui -->
-    </div>
+    <!-- Container principal -->
+    <div class="container">
 
-    <!-- Barra superior -->
-    <div class="topbar">
-        <div class="header-title">Home Page</div>
-        <nav class="navbar">
-            <a href="#">Stocks</a>
-            <a href="#">Currencies</a>
-            <a href="#">ETFs</a>
-        </nav>
-    </div>
+        <!-- Barra lateral -->
+        <div class="sidebar">
+            <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
+            <div class="menu-links">
+                <div>Trending Now</div>
+                <div>Most Actives</div>
+                <div>Top Gainer</div>
+            </div>
+        </div>
 
-    <!-- Containers principais -->
-    <div class="main-container">
-        <div class="box box1"></div>
-        <div class="box box2"></div>
-        <div class="box box3"></div>
+        <!-- Barra superior -->
+        <div class="topbar">
+            <div class="nav-links">
+                <div>Stocks</div>
+                <div>Currencies</div>
+                <div>ETFs</div>
+                <div>Crypto</div>
+            </div>
+            <div class="social-links">
+                <div>Discord</div>
+                <div>Reddit</div>
+            </div>
+        </div>
+
+        <!-- Conteúdo principal -->
+        <div class="main-container">
+            <p>Bem-vindo à página inicial!</p>
+        </div>
+
     </div>
 
     <script src="{% static 'js/script.js' %}"></script>
