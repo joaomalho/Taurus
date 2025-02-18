@@ -547,4 +547,3 @@ class DataHistoryYahoo():
 
         return df
 
-    def get_yahoo_economic_calendar(self, table_class: str = None) -> pd.DataFrame:
