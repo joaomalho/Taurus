@@ -1,2 +1,0 @@
-Save GUI
-pyuic6 -x interface.ui -o interface.py
