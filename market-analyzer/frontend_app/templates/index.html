@@ -6,44 +6,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap" />
+
+
 </head>
 <body>
-
-    <!-- Container principal -->
-    <div class="container">
-
-        <!-- Barra lateral -->
-        <div class="sidebar">
-            <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
-            <div class="menu-links">
-                <div>Trending Now</div>
-                <div>Most Actives</div>
-                <div>Top Gainer</div>
-            </div>
-        </div>
-
-        <!-- Barra superior -->
-        <div class="topbar">
-            <div class="nav-links">
-                <div>Stocks</div>
-                <div>Currencies</div>
-                <div>ETFs</div>
-                <div>Crypto</div>
-            </div>
-            <div class="social-links">
-                <div>Discord</div>
-                <div>Reddit</div>
-            </div>
-        </div>
-
-        <!-- Conteúdo principal -->
-        <div class="main-container">
-            <p>Bem-vindo à página inicial!</p>
-        </div>
-
-    </div>
-
-    <script src="{% static 'js/script.js' %}"></script>
+  	
+  	<div class="home-stocks">
+    		<div class="header">
+      			<div class="headermenu">
+        				<div class="reach-us">Reach Us</div>
+      			</div>
+      			<div class="menu-items">
+        				<div class="stocks">
+          					<div class="stocks1">Trending Now</div>
+        				</div>
+        				<div class="stocks">
+          					<div class="stocks1">Most Actives</div>
+        				</div>
+        				<div class="stocks">
+          					<div class="stocks1">Top Gainers</div>
+        				</div>
+      			</div>
+      			<div class="menu-items1">
+        				<div class="stocks">
+          					<div class="stocks1">Stocks</div>
+        				</div>
+        				<div class="stocks">
+          					<div class="stocks1">Currencies</div>
+        				</div>
+        				<div class="stocks">
+          					<div class="stocks1">ETFs</div>
+        				</div>
+        				<div class="stocks">
+          					<div class="stocks1">Cryptos</div>
+        				</div>
+      			</div>
+    		</div>
+    		<div class="logo-wrapper">
+      			<img class="logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
+      			
+    		</div>
+  	</div>
+  	
+  	
+  	
+  	
 </body>
 </html>
+ 
