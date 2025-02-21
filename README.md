@@ -353,6 +353,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 - Fundamental Analysis
     - Included openinsider information
     - Missing Catalog for penny, top of day, top of week.
+    - https://whalewisdom.com/stock/ctre Muito importante
 
 ## **🚀 Latest Improvements**
 - **Risk Manager:** A new feature to help minimize losses in volatile markets.
