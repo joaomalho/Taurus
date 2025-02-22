@@ -8,51 +8,39 @@
     <title>Home Page</title>
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap" />
-
-
 </head>
+
 <body>
-  	
-  	<div class="home-stocks">
-    		<div class="header">
-      			<div class="headermenu">
-        				<div class="reach-us">Reach Us</div>
-      			</div>
-      			<div class="menu-items">
-        				<div class="stocks">
-          					<div class="stocks1">Trending Now</div>
-        				</div>
-        				<div class="stocks">
-          					<div class="stocks1">Most Actives</div>
-        				</div>
-        				<div class="stocks">
-          					<div class="stocks1">Top Gainers</div>
-        				</div>
-      			</div>
-      			<div class="menu-items1">
-        				<div class="stocks">
-          					<div class="stocks1">Stocks</div>
-        				</div>
-        				<div class="stocks">
-          					<div class="stocks1">Currencies</div>
-        				</div>
-        				<div class="stocks">
-          					<div class="stocks1">ETFs</div>
-        				</div>
-        				<div class="stocks">
-          					<div class="stocks1">Cryptos</div>
-        				</div>
-      			</div>
-    		</div>
-    		<div class="logo-wrapper">
-      			<img class="logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
-      			
-    		</div>
-  	</div>
-  	
-  	
-  	
-  	
+
+    <div class="main">
+        <div class="header">
+            <img class="logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
+            <div class="menu-items">
+                <div class="stocks">Stocks</div>
+                <div class="stocks">Currencies</div>
+                <div class="stocks">ETFs</div>
+                <div class="stocks">Cryptos</div>
+            </div>
+            <div class="headermenu">
+                <div class="reach-us">Reach Us</div>
+            </div>
+        </div>
+
+        <!-- Input para buscar ações -->
+        <div class="search-container">
+            <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
+            <button id="searchButton">Search</button>
+        </div>
+
+        <!-- Área onde os dados da tabela serão exibidos -->
+        <div class="table-container" id="tableContainer">
+            <h2>Stock Data</h2>
+            <p>Enter a stock symbol and press "Search" to fetch data.</p>
+        </div>
+    </div>
+
+    <!-- Importando o script externo -->
+    <script src="{% static 'js/scripts.js' %}"></script>
+
 </body>
 </html>
- 

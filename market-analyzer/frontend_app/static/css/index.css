@@ -4,199 +4,109 @@ html, body {
     height: 100vh;
     margin: 0;
     padding: 0;
-    overflow: hidden;
     background: white;
     font-family: "Poppins", sans-serif;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
 }
 
-/* Container principal */
-.container {
-    display: flex;
-    height: 100vh;
-    width: 100vw;
-}
-
-/* Sidebar fixa na lateral esquerda */
-.sidebar {
-    width: 129px;
-    height: 100vh; /* Ocupa toda a altura */
-    background: #1E241F;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 20px;
-    z-index: 900;
-}
-
-/* Logo dentro da sidebar */
-.logo {
-    width: 100px;
-    height: auto;
-}
-
-/* Links do menu na sidebar */
-.menu-links {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    margin-top: 30px;
-}
-
-.menu-links div {
-    color: white;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-}
-
-/* Barra superior fixa */
-.topbar {
-    width: calc(100vw - 129px); /* Ajusta para descontar a sidebar */
-    height: 97px;
-    background: #1E241F;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 40px;
-    box-sizing: border-box;
-    position: fixed;
-    top: 0;
-    left: 129px; /* Começa após a sidebar */
-    z-index: 1000;
-}
-
-/* Links do menu da navbar */
-.nav-links, .social-links {
-    display: flex;
-    gap: 24px;
-}
-
-.nav-links div, .social-links div {
-    color: white;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-}
-
-/* Área de conteúdo ajustável */
-.main-container {
-    position: absolute;
-    left: 129px; /* Para começar após a sidebar */
-    top: 97px; /* Para começar após a navbar */
-    width: calc(100vw - 129px); /* Ajusta a largura */
-    height: calc(100vh - 97px); /* Ajusta a altura */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    background: white;
-}
-
-.reach-us {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    font-weight: 800;
-}
-.headermenu {
-    position: absolute;
-    width: calc(100% - 1561px);
-    top: 39px;
-    right: 41px;
-    left: 1520px;
-    height: 21px;
-}
-.stocks1 {
-    position: relative;
-    font-weight: 800;
-}
-
-/* Efeito ao passar o mouse */
-.stocks1:hover {
-    background-color: white;
-    color: black;
-    border-radius: 16px #9747ff;
-}
-
-/* Efeito ao clicar */
-.stocks1:active {
-    background-color: white;
-    color: black;
-    border-radius: 16px #9747ff;
-    
-
-}
-
-.stocks {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 0px 25px;
-}
-.menu-items {
-    position: absolute;
-    top: 39px;
-    left: 566px;
-    width: 472px;
-    height: 21px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 20px;
-}
-.menu-items1 {
-    position: absolute;
-    top: 39px;
-    left: 30px;
-    width: 481px;
-    height: 21px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 20px;
-}
+/* Cabeçalho */
 .header {
-    position: absolute;
-    width: calc(100% - 100px);
-    top: 0px;
-    right: 0px;
-    left: 100px;
+    width: 100%;
     background-color: #1e241f;
     height: 99px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-sizing: border-box;
 }
+
+/* Logo no header */
 .logo-icon {
     width: 80px;
-    position: relative;
     height: 96px;
     object-fit: cover;
 }
-.logo-wrapper {
-    position: absolute;
-    height: 100%;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-color: #1e241f;
-    width: 100px;
+
+/* Menu do topo */
+.menu-items {
+    display: flex;
+    gap: 20px;
+}
+
+.stocks {
+    font-weight: 800;
+    cursor: pointer;
+    color: white;
+}
+
+/* Efeito ao passar o mouse */
+.stocks:hover, .stocks:active {
+    background-color: white;
+    color: black;
+    border-radius: 16px;
+    padding: 5px;
+}
+
+/* Layout principal */
+.main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-}
-.home-stocks {
     width: 100%;
-    position: relative;
-    background-color: #fff;
-    height: 1801px;
-    overflow: hidden;
-    text-align: left;
-    font-size: 14px;
-    color: #fff;
-    font-family: Poppins;
+    margin-top: 20px;
+}
+.search-container {
+    margin: 20px;
+    text-align: center;
 }
 
+.search-container input {
+    padding: 8px;
+    font-size: 16px;
+    width: 200px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.search-container button {
+    padding: 8px 12px;
+    font-size: 16px;
+    background-color: #1e241f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-container button:hover {
+    background-color: #444;
+}
+
+/* Estilo da Tabela */
+.table-container {
+    width: 80%;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.table-container h2 {
+    color: #1e241f;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container th, .table-container td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.table-container th {
+    background-color: #1e241f;
+    color: white;
+}
