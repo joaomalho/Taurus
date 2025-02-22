@@ -246,7 +246,7 @@ class DataHistoryYahoo():
         '''
         Return dividents historics
         '''
-        yahoo_symbol_dividends = yf.Ticker(symbol).divwidends
+        yahoo_symbol_dividends = yf.Ticker(symbol).dividends
         return yahoo_symbol_dividends
     
     def get_yahoo_forex_symbol_splits(self, symbol : str):
@@ -547,3 +547,48 @@ class DataHistoryYahoo():
 
         return df
 
+    def get_yahoo_ticker_holders(self, ticker: str) -> pd.DataFrame:
+        """
+        Extrat data from yahoo holders for ticker.
+
+        Parameters:
+            classe_tabela (str): Class CSS from table to scrap (optional).
+
+        Returns:
+            pd.DataFrame: DataFrame with table content.
+        """
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
+
+        try:
+            response = requests.get(f"https://finance.yahoo.com/quote/{ticker}/holders/", headers=headers)
+            response.raise_for_status()
+
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+            tabela = soup.find('section', {'data-testid': "holders-top-institutional-holders"})
+
+            headers = [th.text.strip() for th in tabela.find_all('th')]
+            
+            rows = []
+            for row in tabela.find_all('tr')[1:]:
+                cols = [td.text.strip() for td in row.find_all('td')]
+                if cols: 
+                    rows.append(cols)
+
+            df = pd.DataFrame(rows, columns=headers if headers else None)
+            df["% Out"] = df["% Out"].str.replace("%", "", regex=False)
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error accessing URL: {e}")
+        except Exception as e:
+            print(f"Error processing data: {e}")
+
+        return df
+    
+    def get_yahoo_ticker_estimated_prices(self, ticker: str) -> pd.DataFrame:
+        '''
+        
+        '''
