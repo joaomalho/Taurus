@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // 🔥 Função para buscar dados do servidor
 function fetchStockData(symbol) {
-    fetch(`/get_stock_data/?symbol=${symbol}`)  // ✅ CORRIGIDO
+    fetch(`/get_stock_data/?symbol=${symbol}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {

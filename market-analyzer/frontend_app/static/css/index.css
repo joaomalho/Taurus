@@ -85,8 +85,11 @@ html, body {
 
 .footer {
     text-align: center;
-    margin-bottom: 100px;
+    margin-top: auto;
     width: 100%;
+    padding: 20px 0;
+    background-color: #222;
+    color: #9A8655;
 }
 
 .footer p {
@@ -112,12 +115,12 @@ html, body {
 }
 
 .line1 {
-    width: 100%;  /* Largura total */
-    height: 1px;  /* Altura da linha */
-    background-color: #ccc;  /* Cor da linha */
-    border: none;  /* Remove bordas */
-    margin: 40px 0; /* Espaçamento acima e abaixo */
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, #ddd, #ccc, #ddd);
+    margin: 20px 0;
 }
+
 
 
 /* Layout principal */
@@ -153,7 +156,6 @@ html, body {
     color: #ffffff;
 }
 
-
 /* Estilo da Tabela */
 .table-container-stock {
     width: 80%;
@@ -164,7 +166,6 @@ html, body {
 .table-container-stock h2 {
     color: #ffffff;
 }
-
 
 .table-container-stock table {
     width: 100%;
@@ -179,4 +180,46 @@ html, body {
 .table-container-stock th {
     background-color: #969696;
     color: white;
+}
+
+.table-custom {
+    width: 100%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+.table-custom th {
+    background-color: #9A8655;
+    color: white;
+    padding: 12px 20px;
+    white-space: nowrap;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+.table-custom td {
+    padding: 10px;
+    white-space: nowrap;
+    border-bottom: 1px solid #ddd;
+}
+
+.table-custom tr:hover {
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+/* Torna APENAS tabelas com a classe .table-custom responsivas */
+@media screen and (max-width: 768px) {
+    .table-custom {
+        width: 100%;
+    }
+
+    .table-custom th, .table-custom td {
+        padding: 8px;
+        font-size: 14px;
+    }
 }
