@@ -18,6 +18,8 @@
                 <button id="searchButton">Search</button>
                 <p class="search-indication">Enter a stock symbol and press "Search" to fetch data.</p>
             </div>
+            <div class="menu-market-types">
+                <div class="market-types">Screener</div>
             <div class="headermenu">
                 <div class="reach-us">Reach Us</div>
             </div>
@@ -27,25 +29,16 @@
 
     <div class="stock-info">
         <!-- Input para buscar novas ações -->
-        <div class="fundamentalStocksZone">
-            <h2>Fundamental Analysis</h2>
-        </div>
 
-        <div id="HolderZone">
-            <h2>Holders</h2>
-            <div class="table-container" id="holdersTableContainer"></div>
+        <div id="yahooGainersContainer">
+            <h2>Top 100 Gainers</h2>
+            <table id="yahooGainersTable">
+                <thead>
+                    <tr id="yahooGainersHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
+                </thead>
+                <tbody id="yahooGainersBody"></tbody>  <!-- Aqui os dados serão inseridos -->
+            </table>
         </div>
-
-        <div id="EstimatedPricesZone">
-            <h2>Estimated Prices</h2>
-            <div class="table-container" id="estimatedPricesTableContainer"></div>
-        </div>
-
-        <div id="technicalStockZone">
-            <h2>Technical Analysis</h2>
-            <div class="table-container" id="technicalAnalysisTableContainer"></div>
-        </div>
-    
     </div>
     
     <a href="/">Back to home page</a>

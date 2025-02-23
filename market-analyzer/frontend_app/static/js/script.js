@@ -67,3 +67,73 @@ function updateTable(data) {
     `;
     document.getElementById("tableContainerStock").innerHTML = tableHTML;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Script carregado com sucesso!");
+
+    // 🔥 Redireciona para a página Screener quando o botão for clicado
+    let screenerButton = document.getElementById("screenerButton");
+    if (screenerButton) {
+        screenerButton.addEventListener("click", function () {
+            window.location.href = "/screener/";
+        });
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Script carregado com sucesso!");
+
+    // 🔥 Chama a função para buscar os dados quando a página carrega
+    fetchYahooGainers();
+});
+
+function fetchYahooGainers() {
+    fetch("/screener/get_yahoo_gainers/")
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById("yahooGainersContainer").innerHTML = "<h2>Erro ao carregar os dados.</h2>";
+            } else {
+                populateYahooGainersTable(data.data);
+            }
+        })
+        .catch(error => {
+            console.error("Erro ao buscar dados:", error);
+            document.getElementById("yahooGainersContainer").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
+        });
+}
+
+// 🔥 Função para preencher a tabela com os dados recebidos
+function populateYahooGainersTable(data) {
+    let headerRow = document.getElementById("yahooGainersHeader");
+    let tableBody = document.getElementById("yahooGainersBody");
+
+    // Limpa qualquer dado antigo
+    headerRow.innerHTML = "";
+    tableBody.innerHTML = "";
+
+    if (data.length === 0) {
+        tableBody.innerHTML = "<tr><td colspan='100%'>Nenhum dado disponível</td></tr>";
+        return;
+    }
+
+    // 🔥 Adiciona os cabeçalhos da tabela (baseados nas chaves do JSON)
+    let headers = Object.keys(data[0]);
+    headers.forEach(header => {
+        let th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+
+    // 🔥 Adiciona os dados na tabela
+    data.forEach(row => {
+        let tr = document.createElement("tr");
+        headers.forEach(header => {
+            let td = document.createElement("td");
+            td.textContent = row[header] ? row[header] : "-";
+            tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+    });
+}

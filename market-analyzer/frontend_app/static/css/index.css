@@ -30,19 +30,19 @@ html, body {
 }
 
 /* Menu do topo */
-.menu-market-types {
+.menu-screener {
     display: flex;
     gap: 20px;
 }
 
-.market-types {
+.screener {
     font-weight: 800;
     cursor: pointer;
     color: white;
 }
 
 /* Efeito ao passar o mouse */
-.market-types:hover, .market-types:active {
+.screener:hover, .screener:active {
     background-color: white;
     color: black;
     border-radius: 16px;
@@ -152,6 +152,7 @@ html, body {
 .stock-info h2 {
     color: #ffffff;
 }
+
 
 /* Estilo da Tabela */
 .table-container-stock {

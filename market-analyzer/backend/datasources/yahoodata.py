@@ -58,13 +58,10 @@ class DataHistoryYahoo():
             df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False)
             df.drop(columns=["52 Wk Range"], inplace=True)
             return df
-
         except requests.exceptions.RequestException as e:
             print(f"Error accessing URL: {e}")
         except Exception as e:
             print(f"Error processing data: {e}")
-
-        return df
 
     def get_yahoo_stocks_top100_most_active(self, table_class: str = None) -> pd.DataFrame:
         """
@@ -114,8 +111,6 @@ class DataHistoryYahoo():
         except Exception as e:
             print(f"Error processing data: {e}")
     
-        return df
-    
     def get_yahoo_stocks_trending(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo trending.
@@ -159,13 +154,12 @@ class DataHistoryYahoo():
             df["P/E Ratio (TTM)"] = df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False)
             df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False)
             df.drop(columns=["52 Wk Range"], inplace=True)
-
+            return df
         except requests.exceptions.RequestException as e:
             print(f"Error accessing URL: {e}")
         except Exception as e:
             print(f"Error processing data: {e}")
 
-        return df
 
     ########### FOREX ###########
     def get_yahoo_forex(self, table_class: str = None) -> pd.DataFrame:
@@ -208,14 +202,13 @@ class DataHistoryYahoo():
             df["Change %"] = df["Change %"].str.replace("%", "", regex=False).str.replace("+", "", regex=False)
             df.drop(columns=["52 Wk Range", "Symbol"], inplace=True)
             df.rename(columns={"Name": "Symbol"}, inplace=True)
-            
+            return df
+        
         except requests.exceptions.RequestException as e:
             print(f"Error accessing URL: {e}")
         except Exception as e:
             print(f"Error processing data: {e}")
     
-        return df
-
     def get_yahoo_forex_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
         '''
         Data collection from yahoo

@@ -1,8 +1,31 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from backend.datasources.yahoodata import DataHistoryYahoo
 
+############################# Pages #############################
 def home(request):
     return render(request, 'index.html')
+
+############################# Screener Page #############################
+
+def screener_page(request):
+    return render(request, 'screener.html')
+
+def get_yahoo_gainers(request):
+    """
+    View que retorna os Top 100 Gainers da Yahoo Finance em formato JSON.
+    """
+    
+    data_history = DataHistoryYahoo() 
+    df = data_history.get_yahoo_stocks_top100_gainers()
+
+    if df is None or df.empty:
+        return JsonResponse({"error": "No data found"}, status=404)
+
+    # Converte DataFrame para dicionário JSON
+    return JsonResponse({"data": df.to_dict(orient="records")})
+
+############################# Stock Pages #############################
 
 def stock_page(request, symbol):
     return render(request, 'stock.html', {"symbol": symbol})
@@ -24,3 +47,5 @@ def get_stock_data(request):
         return JsonResponse({"symbol": symbol, **stock_data[symbol]})
     else:
         return JsonResponse({"error": "Stock not found"}, status=404)
+
+
