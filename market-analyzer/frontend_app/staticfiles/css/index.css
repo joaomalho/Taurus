@@ -30,6 +30,12 @@ html, body {
     object-fit: cover;
 }
 
+.reach-us {
+    font-weight: 800;
+    cursor: pointer;
+    color: white;
+}
+
 /* Menu do topo */
 .menu-items {
     display: flex;
@@ -47,7 +53,6 @@ html, body {
     background-color: white;
     color: black;
     border-radius: 16px;
-    padding: 5px;
 }
 
 /* Layout principal */

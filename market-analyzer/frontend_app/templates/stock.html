@@ -1,0 +1,82 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+
+<body>
+    <div class="main">
+        <div class="header">
+            <img class="logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
+            <div class="menu-items">
+                <div class="stocks">Stocks</div>
+                <div class="stocks">Currencies</div>
+                <div class="stocks">ETFs</div>
+                <div class="stocks">Cryptos</div>
+            </div>
+            <div class="headermenu">
+                <div class="reach-us">Reach Us</div>
+            </div>
+        </div>
+
+        <!-- Input para buscar ações -->
+        <div class="search-container">
+            <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
+            <button id="searchButton">Search</button>
+        </div>
+
+        <!-- Área onde os dados da tabela serão exibidos -->
+        <div class="table-container" id="tableContainer">
+            <h2>Stock Data</h2>
+            <p>Enter a stock symbol and press "Search" to fetch data.</p>
+        </div>
+    
+        <a href="/">Back to home page</a>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let symbol = "{{ symbol }}";  // O Django passa o símbolo pesquisado para o template
+
+        fetch(`/get_stock_data/?symbol=${symbol}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById("tableContainer").innerHTML = "<h2>Stock not found</h2>";
+                } else {
+                    updateTable(data);
+                }
+            });
+
+        function updateTable(data) {
+            let tableHTML = `
+                <h2>Market Data for ${data.symbol}</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Change</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${data.name}</td>
+                            <td>${data.price}</td>
+                            <td>${data.change}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            document.getElementById("tableContainer").innerHTML = tableHTML;
+        }
+    });
+    </script>
+
+</body>
+</html>

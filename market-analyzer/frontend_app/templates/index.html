@@ -12,35 +12,27 @@
 
 <body>
 
-    <div class="main">
-        <div class="header">
-            <img class="logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
-            <div class="menu-items">
-                <div class="stocks">Stocks</div>
-                <div class="stocks">Currencies</div>
-                <div class="stocks">ETFs</div>
-                <div class="stocks">Cryptos</div>
-            </div>
-            <div class="headermenu">
-                <div class="reach-us">Reach Us</div>
-            </div>
-        </div>
-
+    <div class="main-home">  
         <!-- Input para buscar ações -->
+        <img class="logo-icon-homepage" alt="Logo" src="{% static 'images/logo.png' %}">
+        <div class="menu-items">
+            <div class="stocks">Stocks</div>
+            <div class="stocks">Currencies</div>
+            <div class="stocks">ETFs</div>
+            <div class="stocks">Cryptos</div>
+        </div>
         <div class="search-container">
             <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
             <button id="searchButton">Search</button>
-        </div>
-
-        <!-- Área onde os dados da tabela serão exibidos -->
-        <div class="table-container" id="tableContainer">
-            <h2>Stock Data</h2>
             <p>Enter a stock symbol and press "Search" to fetch data.</p>
+        </div>
+        <div class="headermenu">
+            <div class="reach-us">Reach Us</div>
         </div>
     </div>
 
     <!-- Importando o script externo -->
-    <script src="{% static 'js/scripts.js' %}"></script>
+    <script src="{% static 'js/script.js' %}"></script>
 
 </body>
 </html>

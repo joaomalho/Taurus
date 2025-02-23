@@ -338,8 +338,8 @@ We are also looking to grow our community with **key roles in market analysis**:
 - Risk Manager
     -   Condition do decision making - WIP
 - FrontEnd firt version release
-    -   Include orders
-    -   Working on framer
+    -   Working with DJango:
+        - Stock results page - WIP
 - Results
     - Candles Patterns Metrics - WIP
         - IF in the last 5 candles a pattern is detected AND stoploss not complete then decision of the candle.
@@ -360,7 +360,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **Valuation Metrics:** Powerful indicators for long-term strategies and fundamental analysis.
 - **Install scripts:** Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script.
 - **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
-- **GUI:** Implemented 2º version of GUI.
+- **GUI:** Implemented 3º version of GUI, Django.
 - **Auto Optimization** WIP
 - **Fundamental Analysis** Included top gainers, trendy, most active stocks, cryptos, currencies, and insider information.
 

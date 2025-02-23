@@ -4,30 +4,35 @@ html, body {
     height: 100vh;
     margin: 0;
     padding: 0;
-    background: white;
+    background: #111111;
     font-family: "Poppins", sans-serif;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
 }
 
-/* Cabeçalho */
-.header {
-    width: 100%;
-    background-color: #1e241f;
-    height: 99px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    box-sizing: border-box;
-}
-
-/* Logo no header */
-.logo-icon {
+/* HOME PAGE */
+.logo-icon-home {
     width: 80px;
     height: 96px;
     object-fit: cover;
+    zoom: 2;
+}
+
+/* Layout principal */
+.main-home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    padding-top: 150px;
+}
+
+.reach-us {
+    font-weight: 800;
+    cursor: pointer;
+    color: white;
 }
 
 /* Menu do topo */
@@ -47,26 +52,19 @@ html, body {
     background-color: white;
     color: black;
     border-radius: 16px;
-    padding: 5px;
 }
 
-/* Layout principal */
-.main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin-top: 20px;
-}
+
 .search-container {
-    margin: 20px;
+    margin: 0px;
     text-align: center;
+    padding-top: 40px; 
 }
 
 .search-container input {
     padding: 8px;
     font-size: 16px;
-    width: 200px;
+    width: 300px;
     border: 1px solid #ddd;
     border-radius: 5px;
 }
@@ -74,7 +72,7 @@ html, body {
 .search-container button {
     padding: 8px 12px;
     font-size: 16px;
-    background-color: #1e241f;
+    background-color: #6b6b6b;
     color: white;
     border: none;
     border-radius: 5px;
@@ -85,6 +83,36 @@ html, body {
     background-color: #444;
 }
 
+
+/* DATA PAGE */
+.logo-icon {
+    width: 80px;
+    height: 96px;
+    object-fit: cover;
+    zoom: 1;
+}
+
+/* Layout principal */
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+/* Cabeçalho */
+.header {
+    width: 100%;
+    background-color: #111111;
+    height: 99px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-sizing: border-box;
+}
+
 /* Estilo da Tabela */
 .table-container {
     width: 80%;
@@ -93,7 +121,7 @@ html, body {
 }
 
 .table-container h2 {
-    color: #1e241f;
+    color: #ffffff;
 }
 
 .table-container table {
@@ -107,6 +135,6 @@ html, body {
 }
 
 .table-container th {
-    background-color: #1e241f;
+    background-color: #969696;
     color: white;
 }

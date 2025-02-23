@@ -4,6 +4,9 @@ from django.http import JsonResponse
 def home(request):
     return render(request, 'index.html')
 
+def stock_page(request, symbol):
+    return render(request, 'stock.html', {"symbol": symbol})
+
 def get_stock_data(request):
     symbol = request.GET.get('symbol', '').upper()
 
