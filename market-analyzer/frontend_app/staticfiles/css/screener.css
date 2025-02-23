@@ -1,0 +1,11 @@
+.screener-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.screener-info h2 {
+    color: #ffffff;
+    text-align: center;
+    width: 100%;
+    margin: 20px 0;
+}

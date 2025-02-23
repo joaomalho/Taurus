@@ -11,7 +11,7 @@ def home(request):
 def screener_page(request):
     return render(request, 'screener.html')
 
-def get_yahoo_gainers(request):
+def get_yahoo_stock_gainers(request):
     """
     View que retorna os Top 100 Gainers da Yahoo Finance em formato JSON.
     """
@@ -24,6 +24,40 @@ def get_yahoo_gainers(request):
 
     # Converte DataFrame para dicionário JSON
     return JsonResponse({"data": df.to_dict(orient="records")})
+
+def get_yahoo_stock_trending(request):
+    """
+    View que retorna os Top 100 Trending da Yahoo Finance em formato JSON.
+    """
+    
+    data_history = DataHistoryYahoo() 
+    df = data_history.get_yahoo_stocks_trending()
+
+    if df is None or df.empty:
+        return JsonResponse({"error": "No data found"}, status=404)
+
+    # Converte DataFrame para dicionário JSON
+    return JsonResponse({"data": df.to_dict(orient="records")})
+
+def get_yahoo_stock_most_active(request):
+    """
+    View que retorna os Top 100 Most Active da Yahoo Finance em formato JSON.
+    """
+    
+    data_history = DataHistoryYahoo() 
+    df = data_history.get_yahoo_stocks_top100_most_active()
+
+    if df is None or df.empty:
+        return JsonResponse({"error": "No data found"}, status=404)
+
+    # Converte DataFrame para dicionário JSON
+    return JsonResponse({"data": df.to_dict(orient="records")})
+
+
+
+
+
+
 
 ############################# Stock Pages #############################
 

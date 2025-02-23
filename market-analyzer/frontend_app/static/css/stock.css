@@ -1,0 +1,36 @@
+.stock-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.stock-info h2 {
+    color: #ffffff;
+}
+
+.table-container-stock {
+    width: 80%;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.table-container-stock h2 {
+    color: #ffffff;
+}
+
+.table-container-stock table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container-stock th, .table-container-stock td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.table-container-stock th {
+    background-color: #969696;
+    color: white;
+}

@@ -6,43 +6,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Data</title>
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/screener.css' %}">
 </head>
 
 <body>
-    <div class="main-stock">
-        <div class="header-stock">
-            <img class="logo-icon-stock" alt="Logo" src="{% static 'images/logo.png' %}">
+    <div class="main-header">
+        <div class="header">
+            <img class="header-logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
             <div class="search-container">
                 <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
                 <button id="searchButton">Search</button>
                 <p class="search-indication">Enter a stock symbol and press "Search" to fetch data.</p>
             </div>
-            <div class="menu-market-types">
-                <div class="headermenu">
-                    <div class="reach-us">Reach Us</div>
-                </div>
+            <div class="footer">
+                <div class="reach-us">Reach Us</div>
             </div>
         </div>
     <hr class="line1">
 
-    <div class="stock-info">
-        <!-- Input para buscar novas ações -->
+    <div class="screener-info">
+        <div id="yahooStockGainersContainer">
+            <h2>Top Gainers</h2>
+            <div class="table-container">
+                <table class="table-custom", id="yahooStockGainersTable">
+                    <thead>
+                        <tr id="yahooStockGainersHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
+                    </thead>
+                    <tbody id="yahooStockGainersBody"></tbody>  <!-- Aqui os dados serão inseridos -->
+                </table>
+            </div>
+        </div>
 
-        <div id="yahooGainersContainer">
-            <h2>Top 100 Gainers</h2>
-            <table class="table-custom", id="yahooGainersTable">
-                <thead>
-                    <tr id="yahooGainersHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
-                </thead>
-                <tbody id="yahooGainersBody"></tbody>  <!-- Aqui os dados serão inseridos -->
-            </table>
+        <div id="yahooStockTrendingContainer">
+            <h2>Top Trending</h2>
+            <div class="table-container">
+                <table class="table-custom", id="yahooStockTrendingTable">
+                    <thead>
+                        <tr id="yahooStockTrendingHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
+                    </thead>
+                    <tbody id="yahooStockTrendingBody"></tbody>  <!-- Aqui os dados serão inseridos -->
+                </table>
+            </div>
+        </div>
+        
+        <div id="yahooStockMostActiveContainer">
+            <h2>Top Most Active</h2>
+            <div class="table-container">
+                <table class="table-custom", id="yahooStockMostActiveTable">
+                    <thead>
+                        <tr id="yahooStockMostActiveHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
+                    </thead>
+                    <tbody id="yahooStockMostActiveBody"></tbody>  <!-- Aqui os dados serão inseridos -->
+                </table>
+            </div>
         </div>
     </div>
     
     <a href="/">Back to home page</a>
 
-    <!-- 🔥 Importando o script externo -->
     <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>
