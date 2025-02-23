@@ -11,24 +11,23 @@
 </head>
 
 <body>
-
     <div class="main-home">  
         <!-- Input para buscar ações -->
         <img class="logo-icon-homepage" alt="Logo" src="{% static 'images/logo.png' %}">
-        <div class="menu-items">
-            <div class="stocks">Stocks</div>
-            <div class="stocks">Currencies</div>
-            <div class="stocks">ETFs</div>
-            <div class="stocks">Cryptos</div>
+        <div class="menu-market-types">
+            <div class="market-types">Stocks</div>
+            <div class="market-types">Currencies</div>
+            <div class="market-types">ETFs</div>
+            <div class="market-types">Cryptos</div>
         </div>
         <div class="search-container">
             <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
             <button id="searchButton">Search</button>
-            <p>Enter a stock symbol and press "Search" to fetch data.</p>
+            <p class="search-indication">Enter a stock symbol and press "Search" to fetch data.</p>
         </div>
-        <div class="headermenu">
-            <div class="reach-us">Reach Us</div>
-        </div>
+    </div>
+    <div class="footer">
+        <div class="reach-us">Reach Us</div>
     </div>
 
     <!-- Importando o script externo -->

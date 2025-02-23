@@ -19,8 +19,8 @@ html, body {
     zoom: 2;
 }
 
-/* Layout principal */
 .main-home {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -29,31 +29,24 @@ html, body {
     padding-top: 150px;
 }
 
-.reach-us {
-    font-weight: 800;
-    cursor: pointer;
-    color: white;
-}
-
 /* Menu do topo */
-.menu-items {
+.menu-market-types {
     display: flex;
     gap: 20px;
 }
 
-.stocks {
+.market-types {
     font-weight: 800;
     cursor: pointer;
     color: white;
 }
 
 /* Efeito ao passar o mouse */
-.stocks:hover, .stocks:active {
+.market-types:hover, .market-types:active {
     background-color: white;
     color: black;
     border-radius: 16px;
 }
-
 
 .search-container {
     margin: 0px;
@@ -83,17 +76,52 @@ html, body {
     background-color: #444;
 }
 
+.search-container p {
+    color: #ffffff;
+    font-size: 12px;
+    font-style: italic;
+    padding-bottom: 5px;
+}
 
-/* DATA PAGE */
-.logo-icon {
+.footer {
+    text-align: center;
+    margin-bottom: 100px;
+    width: 100%;
+}
+
+.footer p {
+    color: #9A8655;
+    font-size: 12px;
+    font-style: italic;
+    padding-bottom: 5px;
+}
+
+.reach-us {
+    font-weight: 800;
+    cursor: pointer;
+    color: #9A8655;
+}
+
+
+/* STOCK PAGE */
+.logo-icon-stock {
     width: 80px;
     height: 96px;
     object-fit: cover;
     zoom: 1;
 }
 
+.line1 {
+    width: 100%;  /* Largura total */
+    height: 1px;  /* Altura da linha */
+    background-color: #ccc;  /* Cor da linha */
+    border: none;  /* Remove bordas */
+    margin: 40px 0; /* Espaçamento acima e abaixo */
+}
+
+
 /* Layout principal */
-.main {
+.main-stock {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -102,7 +130,7 @@ html, body {
 }
 
 /* Cabeçalho */
-.header {
+.header-stock {
     width: 100%;
     background-color: #111111;
     height: 99px;
@@ -113,28 +141,41 @@ html, body {
     box-sizing: border-box;
 }
 
+.stock-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.stock-info h2 {
+    color: #ffffff;
+}
+
 /* Estilo da Tabela */
-.table-container {
+.table-container-stock {
     width: 80%;
     margin: 20px auto;
     text-align: center;
 }
 
-.table-container h2 {
+.table-container-stock h2 {
     color: #ffffff;
 }
 
-.table-container table {
+
+.table-container-stock table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.table-container th, .table-container td {
+.table-container-stock th, .table-container-stock td {
     padding: 10px;
     border: 1px solid #ddd;
 }
 
-.table-container th {
+.table-container-stock th {
     background-color: #969696;
     color: white;
 }

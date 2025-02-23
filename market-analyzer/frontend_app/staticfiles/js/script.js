@@ -1,34 +1,53 @@
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("Página carregada com sucesso!");
-});
-
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("searchButton").addEventListener("click", fetchStockData);
-});
+    console.log("Script carregado com sucesso!");
 
-function fetchStockData() {
-    let symbol = document.getElementById("stockSymbol").value.trim();
+    // Adiciona evento ao botão de pesquisa (usado tanto no index.html quanto no stock.html)
+    let searchButton = document.getElementById("searchButton");
+    if (searchButton) {
+        searchButton.addEventListener("click", function () {
+            let symbol = document.getElementById("stockSymbol").value.trim().toUpperCase();
 
-    if (!symbol) {
-        alert("Please enter a stock symbol!");
-        return;
+            if (!symbol) {
+                alert("Please enter a stock symbol!");
+                return;
+            }
+
+            // 🔥 Redireciona para a URL correta definida no `urls.py`
+            window.location.href = `/stock/${symbol}/`;
+        });
     }
 
-    fetch(`/get_stock_data/?symbol=${symbol}`)
+    // 🔥 Captura o símbolo da URL correta `/stock/AAPL/`
+    let pathParts = window.location.pathname.split("/");
+    let symbol = pathParts[2];  // Captura "AAPL" da URL `/stock/AAPL/`
+
+    if (symbol) {
+        console.log("Buscando dados para:", symbol);
+        fetchStockData(symbol);
+    }
+});
+
+// 🔥 Função para buscar dados do servidor
+function fetchStockData(symbol) {
+    fetch(`/get_stock_data/${symbol}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert("Error: " + data.error);
-                return;
+                document.getElementById("tableContainerStock").innerHTML = "<h2>Stock not found</h2>";
+            } else {
+                updateTable(data);
             }
-            updateTable(data);
         })
-        .catch(error => console.error("Error fetching data:", error));
+        .catch(error => {
+            console.error("Erro ao buscar dados:", error);
+            document.getElementById("tableContainerStock").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
+        });
 }
 
+// 🔥 Atualiza a tabela na página stock.html
 function updateTable(data) {
     let tableHTML = `
-        <h2>Stock Data for ${data.symbol}</h2>
+        <h2>Market Data for ${data.symbol}</h2>
         <table>
             <thead>
                 <tr>
@@ -46,6 +65,5 @@ function updateTable(data) {
             </tbody>
         </table>
     `;
-
-    document.getElementById("tableContainer").innerHTML = tableHTML;
+    document.getElementById("tableContainerStock").innerHTML = tableHTML;
 }

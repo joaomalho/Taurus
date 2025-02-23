@@ -6,3 +6,5 @@ urlpatterns = [
     path('stock/<str:symbol>/', stock_page, name='stock_page'),
     path('get_stock_data/', get_stock_data, name='get_stock_data'),
 ]
+
+

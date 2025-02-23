@@ -10,73 +10,54 @@
 </head>
 
 <body>
-    <div class="main">
-        <div class="header">
-            <img class="logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
-            <div class="menu-items">
-                <div class="stocks">Stocks</div>
-                <div class="stocks">Currencies</div>
-                <div class="stocks">ETFs</div>
-                <div class="stocks">Cryptos</div>
+    <div class="main-stock">
+        <div class="header-stock">
+            <img class="logo-icon-stock" alt="Logo" src="{% static 'images/logo.png' %}">
+            <div class="menu-market-types">
+                <div class="market-types">Stocks</div>
+                <div class="market-types">Currencies</div>
+                <div class="market-types">ETFs</div>
+                <div class="market-types">Cryptos</div>
             </div>
             <div class="headermenu">
                 <div class="reach-us">Reach Us</div>
             </div>
         </div>
+    </div>
 
-        <!-- Input para buscar ações -->
+    <div class="stock-info">
+        <!-- Input para buscar novas ações -->
         <div class="search-container">
             <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
             <button id="searchButton">Search</button>
         </div>
 
-        <!-- Área onde os dados da tabela serão exibidos -->
-        <div class="table-container" id="tableContainer">
-            <h2>Stock Data</h2>
-            <p>Enter a stock symbol and press "Search" to fetch data.</p>
+        <hr class="line1">
+
+        <div class="fundamentalStocksZone">
+            <h2>Fundamental Analysis</h2>
+        </div>
+
+        <div id="HolderZone">
+            <h2>Holders</h2>
+            <div class="table-container" id="holdersTableContainer"></div>
+        </div>
+
+        <div id="EstimatedPricesZone">
+            <h2>Estimated Prices</h2>
+            <div class="table-container" id="estimatedPricesTableContainer"></div>
+        </div>
+
+        <div id="technicalStockZone">
+            <h2>Technical Analysis</h2>
+            <div class="table-container" id="technicalAnalysisTableContainer"></div>
         </div>
     
-        <a href="/">Back to home page</a>
     </div>
+    
+    <a href="/">Back to home page</a>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let symbol = "{{ symbol }}";  // O Django passa o símbolo pesquisado para o template
-
-        fetch(`/get_stock_data/?symbol=${symbol}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById("tableContainer").innerHTML = "<h2>Stock not found</h2>";
-                } else {
-                    updateTable(data);
-                }
-            });
-
-        function updateTable(data) {
-            let tableHTML = `
-                <h2>Market Data for ${data.symbol}</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Change</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>${data.name}</td>
-                            <td>${data.price}</td>
-                            <td>${data.change}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `;
-            document.getElementById("tableContainer").innerHTML = tableHTML;
-        }
-    });
-    </script>
-
+    <!-- 🔥 Importando o script externo -->
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>
