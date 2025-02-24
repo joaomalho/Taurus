@@ -27,6 +27,14 @@
     <hr class="line1">
 
     <div class="stock-info">
+
+        <h2>Histórico de Preços</h2>
+        <div class="candlestick-chart" id="candlestickChart"></div>
+
+        <!-- Biblioteca Plotly -->
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="{% static 'js/candlestick.js' %}"></script> <!-- 🔥 Script para buscar e renderizar o gráfico -->
+
         <!-- Input para buscar novas ações -->
         <div class="fundamentalStocksZone">
             <h2>Fundamental Analysis</h2>

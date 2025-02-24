@@ -27,24 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// 🔥 Função para buscar dados do servidor
-function fetchStockData(symbol) {
-    fetch(`/get_stock_data/?symbol=${symbol}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                document.getElementById("tableContainerStock").innerHTML = "<h2>Stock not found</h2>";
-            } else {
-                updateTable(data);
-            }
-        })
-        .catch(error => {
-            console.error("Erro ao buscar dados:", error);
-            document.getElementById("tableContainerStock").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
-        });
-}
-
-// 🔥 Atualiza a tabela na página stock.html
 function updateTable(data) {
     let tableHTML = `
         <h2>Market Data for ${data.symbol}</h2>

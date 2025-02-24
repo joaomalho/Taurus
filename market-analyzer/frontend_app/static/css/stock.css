@@ -34,3 +34,8 @@
     background-color: #969696;
     color: white;
 }
+
+.candlestick-chart {
+    width: 100%;
+    height: 500px;
+}

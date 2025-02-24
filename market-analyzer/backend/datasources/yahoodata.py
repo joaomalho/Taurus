@@ -160,9 +160,8 @@ class DataHistoryYahoo():
         except Exception as e:
             print(f"Error processing data: {e}")
 
-
     ########### FOREX ###########
-    def get_yahoo_forex(self, table_class: str = None) -> pd.DataFrame:
+    def get_yahoo(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo currencies.
 
@@ -209,7 +208,7 @@ class DataHistoryYahoo():
         except Exception as e:
             print(f"Error processing data: {e}")
     
-    def get_yahoo_forex_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
+    def get_yahoo_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
         '''
         Data collection from yahoo
 
@@ -226,65 +225,69 @@ class DataHistoryYahoo():
             Include Pre and Post market data in results? Default is False
         '''
         yahoo_data_history = yf.Ticker(symbol).history(period=period, interval=interval, start=start, end=end, prepost=prepost)
+        yahoo_data_history.reset_index(inplace=True)
+
+        yahoo_data_history["Date"] = yahoo_data_history["Date"].dt.strftime("%Y-%m-%d %H:%M")
+
         return yahoo_data_history
     
-    def get_yahoo_forex_symbol_info(self, symbol : str):
+    def get_yahoo_symbol_info(self, symbol : str):
         '''
         Return detailed information about asset
         '''
         yahoo_symbol_info = yf.Ticker(symbol).info
         return yahoo_symbol_info
     
-    def get_yahoo_forex_symbol_dividends(self, symbol : str):
+    def get_yahoo_symbol_dividends(self, symbol : str):
         '''
         Return dividents historics
         '''
         yahoo_symbol_dividends = yf.Ticker(symbol).dividends
         return yahoo_symbol_dividends
     
-    def get_yahoo_forex_symbol_splits(self, symbol : str):
+    def get_yahoo_symbol_splits(self, symbol : str):
         '''
         Return actions splits historics
         '''
         yahoo_symbol_splits = yf.Ticker(symbol).splits
         return yahoo_symbol_splits
  
-    def get_yahoo_forex_symbol_recommendations(self, symbol : str):
+    def get_yahoo_symbol_recommendations(self, symbol : str):
         '''
         Return recommendations about asset
         '''
         yahoo_symbol_recommendations = yf.Ticker(symbol).recommendations
         return yahoo_symbol_recommendations
 
-    def get_yahoo_forex_symbol_calendar(self, symbol : str):
+    def get_yahoo_symbol_calendar(self, symbol : str):
         '''
         Return corporative calendar events about asset
         '''
         yahoo_symbol_calendar = yf.Ticker(symbol).calendar
         return yahoo_symbol_calendar
 
-    def get_yahoo_forex_symbol_major_holders(self, symbol : str):
+    def get_yahoo_symbol_major_holders(self, symbol : str):
         '''
         Return the list of major holders
         '''
         yahoo_symbol_major_holders = yf.Ticker(symbol).major_holders
         return yahoo_symbol_major_holders
 
-    def get_yahoo_forex_symbol_institutional_holders(self, symbol : str):
+    def get_yahoo_symbol_institutional_holders(self, symbol : str):
         '''
         Return the list of major institutional holders
         '''
         yahoo_symbol_institutional_holders = yf.Ticker(symbol).institutional_holders
         return yahoo_symbol_institutional_holders
 
-    def get_yahoo_forex_symbol_balance_sheet(self, symbol : str):
+    def get_yahoo_symbol_balance_sheet(self, symbol : str):
         '''
         Return the patrimonial balance sheet
         '''
         yahoo_symbol_balance_sheet = yf.Ticker(symbol).balance_sheet
         return yahoo_symbol_balance_sheet
 
-    def get_yahoo_forex_symbol_financials(self, symbol : str):
+    def get_yahoo_symbol_financials(self, symbol : str):
         '''
         !!! Not Working !!!
         Return the financials results (profits and expenses)
@@ -292,14 +295,14 @@ class DataHistoryYahoo():
         yahoo_symbol_financials = yf.Ticker(symbol).financials
         return yahoo_symbol_financials
 
-    def get_yahoo_forex_symbol_cashflow(self, symbol : str):
+    def get_yahoo_symbol_cashflow(self, symbol : str):
         '''
         Return the cashflow results
         '''
         yahoo_symbol_cashflow = yf.Ticker(symbol).cashflow
         return yahoo_symbol_cashflow
 
-    def get_yahoo_forex_symbol_sustainability(self, symbol : str):
+    def get_yahoo_symbol_sustainability(self, symbol : str):
         '''
         
         Return the ESG metrics (enviormental, social and governamental)
@@ -307,14 +310,14 @@ class DataHistoryYahoo():
         yahoo_symbol_sustainability = yf.Ticker(symbol).sustainability
         return yahoo_symbol_sustainability
 
-    def get_yahoo_forex_symbol_news(self, symbol : str):
+    def get_yahoo_symbol_news(self, symbol : str):
         '''
         Return the latest news about asset
         '''
         yahoo_symbol_news = yf.Ticker(symbol).news
         return yahoo_symbol_news
 
-    def get_yahoo_forex_symbol_fast_info(self, symbol : str):
+    def get_yahoo_symbol_fast_info(self, symbol : str):
         '''
         Return the fast information about asset
 

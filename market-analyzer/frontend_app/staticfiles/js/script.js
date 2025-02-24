@@ -27,24 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// 🔥 Função para buscar dados do servidor
-function fetchStockData(symbol) {
-    fetch(`/get_stock_data/?symbol=${symbol}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                document.getElementById("tableContainerStock").innerHTML = "<h2>Stock not found</h2>";
-            } else {
-                updateTable(data);
-            }
-        })
-        .catch(error => {
-            console.error("Erro ao buscar dados:", error);
-            document.getElementById("tableContainerStock").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
-        });
-}
-
-// 🔥 Atualiza a tabela na página stock.html
 function updateTable(data) {
     let tableHTML = `
         <h2>Market Data for ${data.symbol}</h2>
@@ -95,7 +77,7 @@ function fetchYahooStockGainers() {
             if (data.error) {
                 document.getElementById("yahooStockGainersContainer").innerHTML = "<h2>Erro ao carregar os dados.</h2>";
             } else {
-                populateStockYahooGainersTable(data.data);
+                populateYahooStockGainersTable(data.data);
             }
         })
         .catch(error => {
@@ -152,7 +134,7 @@ function fetchYahooStockTrending() {
             if (data.error) {
                 document.getElementById("yahooStockTrendingContainer").innerHTML = "<h2>Erro ao carregar os dados.</h2>";
             } else {
-                populateStockYahooTrendingTable(data.data);
+                populateYahooStockTrendingTable(data.data);
             }
         })
         .catch(error => {
@@ -164,6 +146,61 @@ function fetchYahooStockTrending() {
 function populateYahooStockTrendingTable(data) {
     let headerRow = document.getElementById("yahooStockTrendingHeader");
     let tableBody = document.getElementById("yahooStockTrendingBody");
+
+    // Limpa qualquer dado antigo
+    headerRow.innerHTML = "";
+    tableBody.innerHTML = "";
+
+    if (data.length === 0) {
+        tableBody.innerHTML = "<tr><td colspan='100%'>Nenhum dado disponível</td></tr>";
+        return;
+    }
+
+    // 🔥 Adiciona os cabeçalhos da tabela (baseados nas chaves do JSON)
+    let headers = Object.keys(data[0]);
+    headers.forEach(header => {
+        let th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+
+    // 🔥 Adiciona os dados na tabela
+    data.forEach(row => {
+        let tr = document.createElement("tr");
+        headers.forEach(header => {
+            let td = document.createElement("td");
+            td.textContent = row[header] ? row[header] : "-";
+            tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Script carregado com sucesso!");
+
+    fetchYahooStockMostActive();
+});
+
+function fetchYahooStockMostActive() {
+    fetch("/screener/get_yahoo_stock_most_active/")
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById("yahooStockMostActiveContainer").innerHTML = "<h2>Erro ao carregar os dados.</h2>";
+            } else {
+                populateYahooStockMostActiveTable(data.data);
+            }
+        })
+        .catch(error => {
+            console.error("Erro ao buscar dados:", error);
+            document.getElementById("yahooStockMostActiveContainer").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
+        });
+}
+
+function populateYahooStockMostActiveTable(data) {
+    let headerRow = document.getElementById("yahooStockMostActiveHeader");
+    let tableBody = document.getElementById("yahooStockMostActiveBody");
 
     // Limpa qualquer dado antigo
     headerRow.innerHTML = "";
