@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (symbol) {
         fetchCandlestickData(symbol, "1mo", "1d");  
     } else {
-        console.error("🚨 Nenhum símbolo encontrado na URL!");
+        console.error("Nenhum símbolo encontrado na URL!");
     }
 });
 
@@ -27,14 +27,13 @@ function fetchCandlestickData(symbol, period, interval) {
 
 function processCandlestickData(data) {
     if (!data.data || data.data.length === 0) {
-        console.error("🚨 Nenhum dado encontrado no JSON:", data);
+        console.error("Nenhum dado encontrado no JSON:", data);
         document.getElementById("candlestickChart").innerHTML = `<h3 style="color: red;">Nenhum dado disponível</h3>`;
         return;
     }
 
-    console.log("📊 Processando dados para o gráfico:", data.data);
+    console.log("Processando dados para o gráfico:", data.data);
 
-    // 🔥 Limita os dados para evitar sobrecarga no Plotly
     let maxDataPoints = 500;  // Ajuste conforme necessário
     let trimmedData = data.data.slice(-maxDataPoints);  // Pega os últimos 500 registros
 
@@ -52,11 +51,10 @@ function processCandlestickData(data) {
     let lowPrices = trimmedData.map(entry => parseFloat(entry.Low) || 0);
     let closePrices = trimmedData.map(entry => parseFloat(entry.Close) || 0);
 
-    console.log("📈 Dados extraídos para o gráfico (limite de 500):", { dates, openPrices, highPrices, lowPrices, closePrices });
+    console.log("Dados extraídos para o gráfico (limite de 500):", { dates, openPrices, highPrices, lowPrices, closePrices });
 
     renderCandlestickChart(dates, openPrices, highPrices, lowPrices, closePrices);
 }
-
 
 
 function renderCandlestickChart(dates, open, high, low, close) {

@@ -35,6 +35,13 @@
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script src="{% static 'js/candlestick.js' %}"></script> <!-- 🔥 Script para buscar e renderizar o gráfico -->
 
+        <div id="technicalStockZone">
+            <h2>Technical Analysis</h2>
+            <div class="table-container" id="technicalAnalysisTableContainer"></div>
+        </div>
+
+        <div id="crossoverResults"></div>
+        
         <!-- Input para buscar novas ações -->
         <div class="fundamentalStocksZone">
             <h2>Fundamental Analysis</h2>
@@ -50,10 +57,7 @@
             <div class="table-container" id="estimatedPricesTableContainer"></div>
         </div>
 
-        <div id="technicalStockZone">
-            <h2>Technical Analysis</h2>
-            <div class="table-container" id="technicalAnalysisTableContainer"></div>
-        </div>
+
     
     </div>
     
