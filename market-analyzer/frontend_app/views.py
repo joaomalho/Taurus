@@ -1,3 +1,5 @@
+import json
+import numpy as np
 from django.shortcuts import render
 from django.http import JsonResponse
 from backend.datasources.yahoodata import DataHistoryYahoo
@@ -54,7 +56,7 @@ def get_yahoo_data_history(request):
 
 def get_yahoo_stock_gainers(request):
     """
-    View que retorna os Top 100 Gainers da Yahoo Finance em formato JSON.
+    View to pass Top 100 Gainers JSON.
     """
     
     data_history = DataHistoryYahoo() 
@@ -68,7 +70,7 @@ def get_yahoo_stock_gainers(request):
 
 def get_yahoo_stock_trending(request):
     """
-    View que retorna os Top 100 Trending da Yahoo Finance em formato JSON.
+    View to pass Top 100 Trending JSON.
     """
     
     data_history = DataHistoryYahoo() 
@@ -82,7 +84,7 @@ def get_yahoo_stock_trending(request):
 
 def get_yahoo_stock_most_active(request):
     """
-    View que retorna os Top 100 Most Active da Yahoo Finance em formato JSON.
+    View to pass Top 100 Most Active JSON.
     """
     
     data_history = DataHistoryYahoo() 
@@ -97,41 +99,73 @@ def get_yahoo_stock_most_active(request):
 
 def get_crossover_trend_metrics(request):
     """
-    View que calcula o crossover de 3 EMAs e retorna os sinais para o frontend.
+    View to calculate crossover of 3 EMAs and return signals to frontend.
     """
-    symbol = request.GET.get("symbol", "AAPL")  
-    fastperiod = int(request.GET.get("fast", 5))  
-    mediumperiod = int(request.GET.get("medium", 10))  
-    slowperiod = int(request.GET.get("slow", 20))  
+    symbol = request.GET.get("symbol", "").strip().upper()
+
+    if not symbol:
+        return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+    fastperiod = int(request.GET.get("fast", 5))
+    mediumperiod = int(request.GET.get("medium", 10))
+    slowperiod = int(request.GET.get("slow", 20))
 
     raw_data = request.GET.get("data")
 
     if raw_data:
-        import json
-        data_list = json.loads(raw_data)
-        df = pd.DataFrame(data_list)
+        try:
+            data_list = json.loads(raw_data)
+            close_prices = np.array([entry["Close"] for entry in data_list if "Close" in entry], dtype=np.float64)
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
     else:
-        # 🔥 Obtém os dados diretamente do Yahoo (caso não tenham sido carregados no frontend)
         data_history = DataHistoryYahoo()
-        df = data_history.get_yahoo_forex_data_history(symbol=symbol, period="1mo", interval="1d")
+        df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
 
-    if df is None or df.empty:
-        return JsonResponse({"error": "No data found"}, status=404)
+        if df is None or df.empty:
+            return JsonResponse({"error": "No data found"}, status=404)
 
-    # 🔥 Criar um objeto da classe TrendMetrics e calcular crossover
-    trend_metrics = TrendMetrics()
-    result_df, crossover_info = trend_metrics.get_crossover(df, fastperiod, mediumperiod, slowperiod)
+        close_prices = df["Close"].to_numpy(dtype=np.float64) 
 
-    # 🔥 Retornar JSON
-    response_data = {
-        "symbol": symbol,
-        "fast_period": fastperiod,
-        "medium_period": mediumperiod,
-        "slow_period": slowperiod,
-        "ema1_now": crossover_info.iloc[-1]["ema1_now"],
-        "ema2_now": crossover_info.iloc[-1]["ema2_now"],
-        "ema3_now": crossover_info.iloc[-1]["ema3_now"],
-        "signal": crossover_info.iloc[-1]["signal"]
-    }
+    tm = TrendMetrics()
+    crossover_result = tm.get_crossover(close_prices, symbol, fastperiod, mediumperiod, slowperiod)
 
-    return JsonResponse(response_data)
+    return JsonResponse(crossover_result)
+
+
+def get_adx_trend_metrics(request):
+    """
+    View to calculate ADX and return signals to frontend.
+    """
+    symbol = request.GET.get("symbol", "").strip().upper()
+
+    if not symbol:
+        return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+    length = int(request.GET.get("length", 5))
+
+    raw_data = request.GET.get("data")
+
+    if raw_data:
+        try:
+            data_list = json.loads(raw_data)
+            close_prices = np.array([entry["Close"] for entry in data_list if "Close" in entry], dtype=np.float64)
+            high_prices = np.array([entry["High"] for entry in data_list if "High" in entry], dtype=np.float64)
+            low_prices = np.array([entry["Low"] for entry in data_list if "Low" in entry], dtype=np.float64)
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
+    else:
+        data_history = DataHistoryYahoo()
+        df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
+
+        if df is None or df.empty:
+            return JsonResponse({"error": "No data found"}, status=404)
+
+        close_prices = df["Close"].to_numpy(dtype=np.float64) 
+        high_prices = df["High"].to_numpy(dtype=np.float64) 
+        low_prices = df["Low"].to_numpy(dtype=np.float64) 
+
+    tm = TrendMetrics()
+    adx_result = tm.get_adx(high_prices, low_prices, close_prices, symbol, length)
+
+    return JsonResponse(adx_result)

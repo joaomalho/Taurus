@@ -1,5 +1,6 @@
 import talib
 import pandas as pd
+import numpy as np
 
 class TrendMetrics():
     """
@@ -7,15 +8,12 @@ class TrendMetrics():
     """
 
     def __init__(self):
-        self.result_df = pd.DataFrame(columns=['function', 'signal'])
-        self.crossover_info = pd.DataFrame(columns=['function', 'signal', 'period_low', 'period_mid', 'period_high', 'ema_low', 'ema_mid', 'ema_high'])
         self.sma_bands_info = pd.DataFrame(columns=['function', 'signal', 'period', 'std', 'lower_band', 'middle_band', 'upper_band'])
         self.rsi_info = pd.DataFrame(columns=['function', 'signal', 'period', 'upper_level', 'lower_level'])
-        self.adx_info = pd.DataFrame(columns=['function', 'signal', 'period'])
         self.macd_info = pd.DataFrame(columns=['function', 'signal', 'period', 'upper_level', 'lower_level'])
 
     ### Trend Metrics ###
-    def get_crossover(self, data: pd.DataFrame, fastperiod: int, mediumperiod: int, slowperiod: int):
+    def get_crossover(self, close_prices, symbol, fastperiod: int, mediumperiod: int, slowperiod: int):
         """
         This function measures the crossover of 3 EMAs using TA-Lib.
         
@@ -26,12 +24,14 @@ class TrendMetrics():
         Returns:
         - Updates self.crossover_signal with 'Buy', 'Sell', or 'Flat'.
         """
+        if close_prices.size < slowperiod:
+            return {"error": "Dados insuficientes para calcular EMAs"}
 
-        ema1 = talib.EMA(data['Close'], timeperiod=fastperiod)
-        ema2 = talib.EMA(data['Close'], timeperiod=mediumperiod)
-        ema3 = talib.EMA(data['Close'], timeperiod=slowperiod)
+        ema1 = talib.EMA(close_prices, timeperiod=fastperiod)
+        ema2 = talib.EMA(close_prices, timeperiod=mediumperiod)
+        ema3 = talib.EMA(close_prices, timeperiod=slowperiod)
 
-        ema_low, ema_mid, ema_high = ema1.iloc[-1], ema2.iloc[-1], ema3.iloc[-1]
+        ema_low, ema_mid, ema_high = ema1[-1], ema2[-1], ema3[-1]
 
         if ema_low > ema_mid > ema_high:
             crossover_signal = 'Buy'
@@ -40,49 +40,48 @@ class TrendMetrics():
         else:
             crossover_signal = 'Flat'
 
-        self.result_df = pd.concat([self.result_df, pd.DataFrame({
-            'function': ['Crossover'],
-            'signal': [crossover_signal]
-        })], ignore_index=True)
+        return {
+            "symbol": symbol,
+            "fast_period": fastperiod,
+            "medium_period": mediumperiod,
+            "slow_period": slowperiod,
+            "ema1_now": round(ema_low, 4),
+            "ema2_now": round(ema_mid, 4),
+            "ema3_now": round(ema_high, 4),
+            "signal": crossover_signal
+        }
 
-        self.crossover_info = pd.concat([self.crossover_info, pd.DataFrame({
-            'function': ['Crossover'],
-            'signal': [crossover_signal],
-            'fast_period': [fastperiod],
-            'mid_period': [mediumperiod],
-            'low_period': [slowperiod],
-            'ema1_now': [ema_low],
-            'ema2_now': [ema_mid],
-            'ema3_now': [ema_high],
-        })], ignore_index=True)
-
-    def get_adx(self, data: pd.DataFrame, length: int = 14):
+    def get_adx(self, high_prices, low_prices, close_prices, symbol, length: int):
         """
         This function calculates the ADX (Average Directional Index) to measure trend strength.
-        
-        Parameters:
-        - data: DataFrame containing 'High', 'Low', and 'Close' columns.
-        - length: Period for ADX calculation.
-        
-        Returns:
-        - Updates self.result_df with the ADX signal.
-        """
 
-        adx = talib.ADX(data['High'], data['Low'], data['Close'], timeperiod=length)
-        adx_now = adx.iloc[-1]
+        Parameters:
+        - high_prices: np.array containing the high prices.
+        - low_prices: np.array containing the low prices.
+        - close_prices: np.array containing the close prices.
+        - symbol: Stock symbol (string).
+        - length: Period for ADX calculation.
+
+        Returns:
+        - Dictionary with ADX value and trend strength signal.
+        """
+        
+        if close_prices.size < length:
+            return {"error": "Dados insuficientes para calcular ADX"}
+
+        adx = talib.ADX(high_prices, low_prices, close_prices, timeperiod=length)
+        
+        adx_now = adx[-1]
 
         adx_signal = 'Strong Trend' if adx_now > 25 else 'Weak Trend'
 
-        self.result_df = pd.concat([self.result_df, pd.DataFrame({
-            'function': ['ADX'],
-            'signal': [adx_signal]
-        })], ignore_index=True)
+        return {
+            "symbol": symbol,
+            "length": length,
+            "adx_now": round(adx_now, 4),
+            "signal": adx_signal
+        }
 
-        self.adx_info = pd.concat([self.adx_info, pd.DataFrame({
-            'function': ['ADX'],
-            'signal': [adx_signal],
-            'length': [length]
-        })], ignore_index=True)
 
     def get_macd(self, data: pd.DataFrame, fastperiod: int = 12, slowperiod: int = 26, signalperiod: int = 9):
         """

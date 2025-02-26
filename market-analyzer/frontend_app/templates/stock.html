@@ -39,8 +39,33 @@
             <h2>Technical Analysis</h2>
             <div class="table-container" id="technicalAnalysisTableContainer"></div>
         </div>
-
+        
+        <h2>Trend</h2>
+        <h3>Exponential Average Crossover (Direction)</h3>
+        <div id="crossoverForm">
+            <label for="fastPeriod">EMA Short:</label>
+            <input type="number" id="fastPeriod" value="5" min="1">
+        
+            <label for="mediumPeriod">EMA Medium:</label>
+            <input type="number" id="mediumPeriod" value="10" min="1">
+        
+            <label for="slowPeriod">EMA Long:</label>
+            <input type="number" id="slowPeriod" value="20" min="1">
+        
+            <button id="crossoverButton">Crossover Calculation</button>
+        </div>
+        
         <div id="crossoverResults"></div>
+
+        <h3>ADX (Strengh)</h3>
+        <div id="AdxForm">
+            <label for="length">length:</label>
+            <input type="number" id="length" value="5" min="1">
+        
+            <button id="AdxButton">Adx Calculation</button>
+        </div>
+        
+        <div id="AdxResults"></div>
         
         <!-- Input para buscar novas ações -->
         <div class="fundamentalStocksZone">

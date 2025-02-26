@@ -6,15 +6,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
-
+    
     if (symbol) {
         fetchStockData(symbol);
         fetchCrossoverData(symbol);
+        fetchADXData(symbol);
     }
 
     fetchYahooStockGainers();
     fetchYahooStockTrending();
     fetchYahooStockMostActive();
+
+    document.getElementById("crossoverButton").addEventListener("click", function () {
+        let fastPeriod = document.getElementById("fastPeriod").value;
+        let mediumPeriod = document.getElementById("mediumPeriod").value;
+        let slowPeriod = document.getElementById("slowPeriod").value;
+
+        if (!symbol) {
+            alert("Por favor, selecione um ativo antes de calcular.");
+            return;
+        }
+
+        fastPeriod = parseInt(fastPeriod);
+        mediumPeriod = parseInt(mediumPeriod);
+        slowPeriod = parseInt(slowPeriod);
+
+        if (isNaN(fastPeriod) || isNaN(mediumPeriod) || isNaN(slowPeriod)) {
+            alert("Insira valores numéricos válidos.");
+            return;
+        }
+
+        fetchCrossoverData(symbol, fastPeriod, mediumPeriod, slowPeriod);
+    });
+
+    document.getElementById("AdxButton").addEventListener("click", function () {
+        let length = document.getElementById("length").value;
+    
+        if (!symbol) {
+            alert("Por favor, selecione um ativo antes de calcular.");
+            return;
+        }
+    
+        length = parseInt(length);
+    
+        if (isNaN(length)) {
+            alert("Insira valores numéricos válidos.");
+            return;
+        }
+    
+        fetchADXData(symbol, length);
+    });
 });
 
 /* ─────────────── FUNÇÕES DE EVENTOS ─────────────── */
@@ -75,6 +116,23 @@ function fetchCrossoverData(symbol, fastPeriod = 5, mediumPeriod = 10, slowPerio
             document.getElementById("crossoverResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
         });
 }
+
+function fetchADXData(symbol, length = 14) {
+    fetch(`/get_adx_trend/?symbol=${symbol}&length=${length}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById("AdxResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
+            } else {
+                displayADXResults(data);
+            }
+        })
+        .catch(error => {
+            console.error("Erro ao buscar os dados do ADX:", error);
+            document.getElementById("AdxResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
+        });
+}
+
 
 function fetchYahooStockGainers() {
     fetch("/screener/get_yahoo_stock_gainers/")
@@ -151,23 +209,22 @@ function updateTable(data) {
 
 function displayCrossoverResults(data) {
     let tableHTML = `
-        <h2>Crossover de Médias Móveis</h2>
         <table class="table-custom">
             <thead>
                 <tr>
-                    <th>Símbolo</th>
-                    <th>EMA Curta (${data.fast_period})</th>
-                    <th>EMA Média (${data.medium_period})</th>
-                    <th>EMA Longa (${data.slow_period})</th>
-                    <th>Sinal</th>
+                    <th>Ticker</th>
+                    <th>EMA Short (${data.fast_period})</th>
+                    <th>EMA Medium (${data.medium_period})</th>
+                    <th>EMA Long (${data.slow_period})</th>
+                    <th>Signal</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>${data.symbol}</td>
-                    <td>${data.ema1_now.toFixed(2)}</td>
-                    <td>${data.ema2_now.toFixed(2)}</td>
-                    <td>${data.ema3_now.toFixed(2)}</td>
+                    <td>${parseFloat(data.ema1_now).toFixed(2)}</td>
+                    <td>${parseFloat(data.ema2_now).toFixed(2)}</td>
+                    <td>${parseFloat(data.ema3_now).toFixed(2)}</td>
                     <td><strong>${data.signal}</strong></td>
                 </tr>
             </tbody>
@@ -175,6 +232,31 @@ function displayCrossoverResults(data) {
     `;
 
     document.getElementById("crossoverResults").innerHTML = tableHTML;
+}
+
+function displayADXResults(data) {
+    let tableHTML = `
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Length</th>
+                    <th>ADX</th>
+                    <th>Signal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${data.symbol}</td>
+                    <td>${data.length}</td>
+                    <td>${parseFloat(data.adx_now).toFixed(2)}</td>
+                    <td><strong>${data.signal}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById("AdxResults").innerHTML = tableHTML;
 }
 
 function populateYahooStockTable(containerPrefix, data) {
