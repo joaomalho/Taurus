@@ -169,3 +169,74 @@ def get_adx_trend_metrics(request):
     adx_result = tm.get_adx(high_prices, low_prices, close_prices, symbol, length)
 
     return JsonResponse(adx_result)
+
+
+def get_sma_trend_metrics(request):
+    """
+    View to calculate Bollinger and return signals to frontend.
+    """
+    symbol = request.GET.get("symbol", "").strip().upper()
+
+    if not symbol:
+        return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+    length = int(request.GET.get("length", 5))
+    std_dev = int(request.GET.get("std_dev", 5))
+
+    raw_data = request.GET.get("data")
+
+    if raw_data:
+        try:
+            data_list = json.loads(raw_data)
+            close_prices = np.array([entry["Close"] for entry in data_list if "Close" in entry], dtype=np.float64)
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
+    else:
+        data_history = DataHistoryYahoo()
+        df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
+
+        if df is None or df.empty:
+            return JsonResponse({"error": "No data found"}, status=404)
+
+        close_prices = df["Close"].to_numpy(dtype=np.float64) 
+
+    tm = TrendMetrics()
+    sma_bands_result = tm.get_sma_bands(symbol, close_prices, length, std_dev)
+
+    return JsonResponse(sma_bands_result)
+
+
+def get_rsi_trend_metrics(request):
+    """
+    View to calculate RSI and return signals to frontend.
+    """
+    symbol = request.GET.get("symbol", "").strip().upper()
+
+    if not symbol:
+        return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+    length = int(request.GET.get("length", 5))
+    upper_level = int(request.GET.get("upper_level", 5))
+    lower_level = int(request.GET.get("lower_level", 5))
+
+    raw_data = request.GET.get("data")
+
+    if raw_data:
+        try:
+            data_list = json.loads(raw_data)
+            close_prices = np.array([entry["Close"] for entry in data_list if "Close" in entry], dtype=np.float64)
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
+    else:
+        data_history = DataHistoryYahoo()
+        df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
+
+        if df is None or df.empty:
+            return JsonResponse({"error": "No data found"}, status=404)
+
+        close_prices = df["Close"].to_numpy(dtype=np.float64) 
+
+    tm = TrendMetrics()
+    rsi_result = tm.get_rsi(symbol, close_prices, length, upper_level, lower_level)
+
+    return JsonResponse(rsi_result)

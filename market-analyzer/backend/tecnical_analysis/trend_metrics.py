@@ -73,7 +73,14 @@ class TrendMetrics():
         
         adx_now = adx[-1]
 
-        adx_signal = 'Strong Trend' if adx_now > 25 else 'Weak Trend'
+        if adx_now < 20:
+            adx_signal = 'Weak Trend'
+        elif 20 <= adx_now < 50:
+            adx_signal = 'Strong Trend'
+        elif 50 <= adx_now < 75:
+            adx_signal = 'Very Strong Trend'
+        else:
+            adx_signal = 'Extremely Strong Trend'
 
         return {
             "symbol": symbol,
@@ -81,7 +88,6 @@ class TrendMetrics():
             "adx_now": round(adx_now, 4),
             "signal": adx_signal
         }
-
 
     def get_macd(self, data: pd.DataFrame, fastperiod: int = 12, slowperiod: int = 26, signalperiod: int = 9):
         """
@@ -117,7 +123,7 @@ class TrendMetrics():
         })], ignore_index=True)
 
     ### Volatility ###
-    def get_sma_bands(self, data: pd.DataFrame, length: int=15, std_dev: int = 1):
+    def get_sma_bands(self, symbol, close_prices, length, std_dev):
         """
         This function calculates Bollinger Bands and detects signals based on them.
         
@@ -130,14 +136,15 @@ class TrendMetrics():
         - Updates self.bbands_signal with 'Buy', 'Sell', or 'Flat'.
         """
 
-        period, std = length, std_dev
-
+        if close_prices.size < length:
+            return {"error": "Dados insuficientes para calcular ADX"}
+        
         upper_band, middle_band, lower_band = talib.BBANDS(
-            data['Close'], timeperiod=length, nbdevup=std_dev, nbdevdn=std_dev, matype=0
+            close_prices, timeperiod=length, nbdevup=std_dev, nbdevdn=std_dev, matype=0
         )
 
-        last_close = data['Close'].iloc[-1]
-        lower_band, middle_band, upper_band = lower_band.iloc[-1], middle_band.iloc[-1], upper_band.iloc[-1]
+        last_close = close_prices[-1]
+        lower_band, middle_band, upper_band = lower_band[-1], middle_band[-1], upper_band[-1]
 
         if last_close <= lower_band:
             bbands_signal = 'Buy'
@@ -145,24 +152,19 @@ class TrendMetrics():
             bbands_signal = 'Sell'
         else:
             bbands_signal = 'Flat'
-
-        self.result_df = pd.concat([self.result_df, pd.DataFrame({
-            'function': ['Bollinger_Bands'],
-            'signal': [bbands_signal]
-        })], ignore_index=True)
         
-        self.sma_bands_info = pd.concat([self.sma_bands_info, pd.DataFrame({
-            'function': ['Bollinger_Bands'],
-            'signal': [bbands_signal],
-            'period': [period],
-            'std': [std],
-            'lower_band': [lower_band],
-            'middle_band': [middle_band],
-            'upper_band': [upper_band]
-        })], ignore_index=True)
+        return {
+            "symbol": symbol,
+            "length": length,
+            "std_dev": std_dev,
+            "upper_band": upper_band,
+            "middle_band": middle_band,
+            "lower_band": lower_band,
+            "signal": bbands_signal
+        }
 
     ### Oscilators ###
-    def get_rsi(self, data: pd.DataFrame, length: int = 25, overbought: int = 70, oversold: int = 30):
+    def get_rsi(self, symbol, close_prices, length, overbought, oversold):
         """
         This function calculates the RSI and generates a signal based on overbought/oversold levels.
         
@@ -176,28 +178,22 @@ class TrendMetrics():
         - Updates self.rsi_signal with 'Buy', 'Sell', or 'Flat'.
         """
 
-        period, upper_level, lower_level = length, overbought, oversold 
+        length, upper_level, lower_level = length, overbought, oversold 
 
-        rsi = talib.RSI(data['Close'], timeperiod=length)
-        rsi_now = rsi.iloc[-1]
+        rsi = talib.RSI(close_prices, timeperiod=length)
+        rsi_now = rsi[-1]
 
-        if rsi_now >= overbought:
+        if rsi_now >= upper_level:
             rsi_signal = 'Sell'
-        elif rsi_now <= oversold:
+        elif rsi_now <= lower_level:
             rsi_signal = 'Buy'
         else:
             rsi_signal = 'Flat'
 
-        self.result_df = pd.concat([self.result_df, pd.DataFrame({
-            'function': ['RSI'],
-            'signal': [rsi_signal]
-        })], ignore_index=True)
-
-        self.rsi_info = pd.concat([self.rsi_info, pd.DataFrame({
-            'function': ['RSI'],
-            'signal': [rsi_signal],
-            'period': [period],
-            'upper_level': [upper_level],
-            'lower_level': [lower_level]
-        })], ignore_index=True)
-
+        return {
+            "symbol": symbol,
+            "length": length,
+            "upper_level": upper_level,
+            "lower_level": lower_level,
+            "signal": rsi_signal
+        }

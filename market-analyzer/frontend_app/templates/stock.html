@@ -6,8 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Data</title>
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
     <link rel="stylesheet" href="{% static 'css/stock.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
 </head>
 
 <body>
@@ -43,30 +43,54 @@
         <h2>Trend</h2>
         <h3>Exponential Average Crossover (Direction)</h3>
         <div id="crossoverForm">
-            <label for="fastPeriod">EMA Short:</label>
+            <label for="fastPeriod">Short EMA:</label>
             <input type="number" id="fastPeriod" value="5" min="1">
         
-            <label for="mediumPeriod">EMA Medium:</label>
+            <label for="mediumPeriod">Medium EMA:</label>
             <input type="number" id="mediumPeriod" value="10" min="1">
         
-            <label for="slowPeriod">EMA Long:</label>
+            <label for="slowPeriod">Long EMA:</label>
             <input type="number" id="slowPeriod" value="20" min="1">
         
-            <button id="crossoverButton">Crossover Calculation</button>
+            <button id="crossoverButton">Calculate</button>
         </div>
-        
         <div id="crossoverResults"></div>
 
         <h3>ADX (Strengh)</h3>
         <div id="AdxForm">
-            <label for="length">length:</label>
+            <label for="length">Periods:</label>
             <input type="number" id="length" value="5" min="1">
         
-            <button id="AdxButton">Adx Calculation</button>
+            <button id="AdxButton">Calculate</button>
         </div>
-        
         <div id="AdxResults"></div>
         
+        <h2>Volatility</h2>
+        <h3>Bollinger Bands</h3>
+        <div id="BollingerForm">
+            <label for="length">Periods:</label>
+            <input type="number" id="length" value="10" min="1">
+            <label for="std_bol">Standard Deviation:</label>
+            <input type="number" id="std_bol" value="2" min="1">
+        
+            <button id="BollingerButton">Calculate</button>
+        </div>
+        <div id="BollingerResults"></div>
+
+        <h2>Oscilators</h2>
+        <h3>Relative Strengh Index</h3>
+        <div id="RSIForm">
+            <label for="length">Periods:</label>
+            <input type="number" id="length" value="10" min="1">
+            <label for="upper_level">Upper Level:</label>
+            <input type="number" id="upper_level" value="70" min="50">
+            <label for="lower_level">Lower Level:</label>
+            <input type="number" id="lower_level" value="30" min="1">
+
+            <button id="RSIButton">Calculate</button>
+        </div>
+        <div id="RSIResults"></div>
+
         <!-- Input para buscar novas ações -->
         <div class="fundamentalStocksZone">
             <h2>Fundamental Analysis</h2>
@@ -82,8 +106,6 @@
             <div class="table-container" id="estimatedPricesTableContainer"></div>
         </div>
 
-
-    
     </div>
     
     <a href="/">Back to home page</a>

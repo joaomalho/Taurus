@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchStockData(symbol);
         fetchCrossoverData(symbol);
         fetchADXData(symbol);
+        fetchBollingerData(symbol);
+        fetchRSIData(symbol);
     }
 
     fetchYahooStockGainers();
@@ -55,6 +57,60 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     
         fetchADXData(symbol, length);
+    });
+
+    document.getElementById("BollingerButton").addEventListener("click", function () {
+        let length = document.getElementById("length").value;
+        let std_dev = document.getElementById("std_dev").value;
+    
+        if (!symbol) {
+            alert("Por favor, selecione um ativo antes de calcular.");
+            return;
+        }
+    
+        length = parseInt(length);
+        std_dev = parseInt(std_dev);
+    
+        if (isNaN(length)) {
+            alert("Insira valores numéricos válidos.");
+            return;
+        }
+        if (isNaN(std_dev)) {
+            alert("Insira valores numéricos válidos.");
+            return;
+        }
+    
+        fetchBollingerData(symbol, length, std_dev);
+    });
+
+    document.getElementById("RSIButton").addEventListener("click", function () {
+        let length = document.getElementById("length").value;
+        let upper_level = document.getElementById("upper_level").value;
+        let lower_level = document.getElementById("lower_level").value;
+    
+        if (!symbol) {
+            alert("Por favor, selecione um ativo antes de calcular.");
+            return;
+        }
+    
+        length = parseInt(length);
+        upper_level = parseInt(upper_level);
+        lower_level = parseInt(lower_level);
+    
+        if (isNaN(length)) {
+            alert("Insira valores numéricos válidos.");
+            return;
+        }
+        if (isNaN(upper_level)) {
+            alert("Insira valores numéricos válidos.");
+            return;
+        }
+        if (isNaN(lower_level)) {
+            alert("Insira valores numéricos válidos.");
+            return;
+        }
+    
+        fetchRSIData(symbol, length, upper_level, lower_level);
     });
 });
 
@@ -101,7 +157,7 @@ function fetchStockData(symbol) {
         });
 }
 
-function fetchCrossoverData(symbol, fastPeriod = 5, mediumPeriod = 10, slowPeriod = 20) {
+function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeriod = 200) {
     fetch(`/get_crossover_trend/?symbol=${symbol}&fast=${fastPeriod}&medium=${mediumPeriod}&slow=${slowPeriod}`)
         .then(response => response.json())
         .then(data => {
@@ -133,6 +189,37 @@ function fetchADXData(symbol, length = 14) {
         });
 }
 
+function fetchBollingerData(symbol, length = 14, std_dev=2) {
+    fetch(`/get_bollinger_trend/?symbol=${symbol}&length=${length}&std=${std_dev}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById("BollingerResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
+            } else {
+                displayBollingerResults(data);
+            }
+        })
+        .catch(error => {
+            console.error("Erro ao buscar os dados do Bollinger:", error);
+            document.getElementById("BollingerResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
+        });
+}
+
+function fetchRSIData(symbol, length = 14, upper_level = 70, lower_level = 30) {
+    fetch(`/get_rsi_trend/?symbol=${symbol}&length=${length}&upper_level=${upper_level}&lower_level=${lower_level}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById("RSIResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
+            } else {
+                displayRSIResults(data);
+            }
+        })
+        .catch(error => {
+            console.error("Erro ao buscar os dados do RSI:", error);
+            document.getElementById("RSIResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
+        });
+}
 
 function fetchYahooStockGainers() {
     fetch("/screener/get_yahoo_stock_gainers/")
@@ -240,7 +327,7 @@ function displayADXResults(data) {
             <thead>
                 <tr>
                     <th>Ticker</th>
-                    <th>Length</th>
+                    <th>Periods</th>
                     <th>ADX</th>
                     <th>Signal</th>
                 </tr>
@@ -257,6 +344,64 @@ function displayADXResults(data) {
     `;
 
     document.getElementById("AdxResults").innerHTML = tableHTML;
+}
+
+function displayBollingerResults(data) {
+    let tableHTML = `
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Periods</th>
+                    <th>Deviation</th>
+                    <th>Upper Band</th>
+                    <th>Middle Band</th>
+                    <th>Lower Band</th>
+                    <th>Signal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${data.symbol}</td>
+                    <td>${data.length}</td>
+                    <td>${data.std_dev}</td>
+                    <td>${parseFloat(data.upper_band).toFixed(2)}</td>
+                    <td>${parseFloat(data.middle_band).toFixed(2)}</td>
+                    <td>${parseFloat(data.lower_band).toFixed(2)}</td>
+                    <td><strong>${data.signal}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById("BollingerResults").innerHTML = tableHTML;
+}
+
+function displayRSIResults(data) {
+    let tableHTML = `
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Periods</th>
+                    <th>Upper Level</th>
+                    <th>Lower Level</th>
+                    <th>Signal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${data.symbol}</td>
+                    <td>${data.length}</td>
+                    <td>${data.upper_level}</td>
+                    <td>${data.lower_level}</td>
+                    <td><strong>${data.signal}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById("RSIResults").innerHTML = tableHTML;
 }
 
 function populateYahooStockTable(containerPrefix, data) {

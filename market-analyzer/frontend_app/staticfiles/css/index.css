@@ -16,21 +16,24 @@
     padding-top: 150px;
 }
 
-.menu-screener {
-    display: flex;
-    gap: 20px;
-}
-
 .screener {
-    font-weight: 800;
-    cursor: pointer;
-    color: white;
+    padding: 8px 12px;
+    margin-bottom: 50px;
 }
 
-.screener:hover, .screener:active {
-    background-color: white;
-    color: black;
-    border-radius: 16px;
+.screener button {
+    padding: 6px 12px;
+    font-size: 12px;
+    background-color: #010409;
+    color: #9198a1;
+    border: 1px solid #3d444d;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.screener button:hover {
+    background-color: #212830;   
 }
 
 .footer {
@@ -47,3 +50,4 @@
     font-style: italic;
     padding-bottom: 5px;
 }
+
