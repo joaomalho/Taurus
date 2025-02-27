@@ -3,7 +3,8 @@ import numpy as np
 from django.shortcuts import render
 from django.http import JsonResponse
 from backend.datasources.yahoodata import DataHistoryYahoo
-from backend.tecnical_analysis.trend_metrics import TrendMetrics  # Ajuste o caminho correto
+from backend.tecnical_analysis.trend_metrics import TrendMetrics
+from backend.tecnical_analysis.candles_patterns import CandlesPatterns
 
 
 ############################# Pages #############################
@@ -240,3 +241,60 @@ def get_rsi_trend_metrics(request):
     rsi_result = tm.get_rsi(symbol, close_prices, length, upper_level, lower_level)
 
     return JsonResponse(rsi_result)
+
+
+def get_candle_detection(request):
+    """
+    View to detect candle pattern and return signals to frontend.
+    """
+    symbol = request.GET.get("symbol", "").strip().upper()
+
+    if not symbol:
+        return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+    raw_data = request.GET.get("data")
+
+    if raw_data:
+        try:
+            data_list = json.loads(raw_data)
+            close_prices = np.array([entry["Close"] for entry in data_list if "Close" in entry], dtype=np.float64)
+            low_prices = np.array([entry["Low"] for entry in data_list if "Low" in entry], dtype=np.float64)
+            high_prices = np.array([entry["High"] for entry in data_list if "High" in entry], dtype=np.float64)
+            open_prices = np.array([entry["Open"] for entry in data_list if "Open" in entry], dtype=np.float64)
+            dates = np.array([entry["Date"] for entry in data_list if "Date" in entry])
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
+    else:
+        data_history = DataHistoryYahoo()
+        df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
+
+        if df is None or df.empty:
+            return JsonResponse({"error": "No data found"}, status=404)
+
+        close_prices = df["Close"].to_numpy(dtype=np.float64) 
+        low_prices = df["Low"].to_numpy(dtype=np.float64) 
+        high_prices = df["High"].to_numpy(dtype=np.float64) 
+        open_prices = df["Open"].to_numpy(dtype=np.float64) 
+
+    cp = CandlesPatterns()
+
+    detected_patterns = {}
+
+    for method_name in dir(cp):
+        if not method_name.startswith("_") and callable(getattr(cp, method_name)):  # Evita métodos internos
+            try:
+                pattern_func = getattr(cp, method_name)
+                detection_result = pattern_func({
+                    "Open": open_prices, "High": high_prices, "Low": low_prices, "Close": close_prices
+                })
+
+                # Filtra sinais diferentes de zero (padrões detectados)
+                detected_indices = np.nonzero(detection_result)[0]
+                if detected_indices.size > 0:
+                    detected_patterns[method_name] = {
+                        dates[i]: int(detection_result[i]) for i in detected_indices
+                    }
+            except Exception as e:
+                detected_patterns[method_name] = f"Error processing pattern: {str(e)}"
+
+    return JsonResponse({"symbol": symbol, "patterns_detected": detected_patterns})

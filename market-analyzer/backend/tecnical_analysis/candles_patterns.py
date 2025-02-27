@@ -1,5 +1,5 @@
 import talib
-import pandas as pd
+import numpy as np
 
 class CandlesPatterns:
     """
@@ -7,193 +7,96 @@ class CandlesPatterns:
     """
 
     def __init__(self):
-        self.result_candles_history_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Relevance', 'Stoploss'])
-        self.result_candles_df = pd.DataFrame(columns=['Pattern', 'Signal', 'Relevance', 'Stoploss'])
+        self.result_candles_history = []
+        self.result_candles = []
         
         
-    def detect_pattern(self, data: pd.DataFrame, pattern_function, pattern_name: str):
+    def detect_pattern(self, data, pattern_function, pattern_name: str, dates: np.array):
         """
         General method to detect a specific candlestick pattern.
         """
-        data_pass = data
 
-        detection = pattern_function(data_pass['Open'], data_pass['High'], data_pass['Low'], data_pass['Close'])
+        detection = pattern_function(data['Open'], data['High'], data['Low'], data['Close'])
 
-        non_zero_detection = detection[detection != 0]
-        if not non_zero_detection.empty:
-            for date, signal in non_zero_detection.items():
-                # Cálculo do Stoploss baseado no padrão
-                if pattern_name in [
-                    "doji", "dragonfly_doji", "gravestone_doji", "engulfing",
-                    "morning_star", "evening_star", "marubozu", "harami",
-                    "harami_cross", "kicking", "kicking_by_length", "tasuki_gap",
-                    "gap_side_by_side_white", "counter_attack", "piercing",
-                    "dark_cloud_cover", "tri_star"
-                ]:
-                    stoploss = round(data_pass.loc[date, 'Low'],5) if signal > 0 else round(data_pass.loc[date, 'High'],5)
-                elif pattern_name in [
-                    "morning_doji_star", "hammer", "inverted_hammer",
-                    "thrusting", "matching_low", "three_white_soldiers",
-                    "three_outside", "three_stars_in_south"
-                ]:
-                    stoploss = round(data_pass.loc[date, 'Low'],5)
-                elif pattern_name in [
-                    "evening_doji_star", "hanging_man", "shooting_star",
-                    "on_neck", "in_neck", "three_black_crows",
-                    "three_inside", "advance_block", "stalled_pattern"
-                ]:
-                    stoploss = round(data_pass.loc[date, 'High'],5)
-                else:
-                    stoploss = None
+        detected_indices = np.nonzero(detection)[0]
+        
+        for i in detected_indices:
+            date = dates[i]
+            signal = int(detection[i])
+        
+            if pattern_name in [
+                "doji", "dragonfly_doji", "gravestone_doji", "engulfing",
+                "morning_star", "evening_star", "marubozu", "harami",
+                "harami_cross", "kicking", "kicking_by_length", "tasuki_gap",
+                "gap_side_by_side_white", "counter_attack", "piercing",
+                "dark_cloud_cover", "tri_star"
+            ]:
+                stoploss = round(data['Low'][i], 5) if signal > 0 else round(data['High'][i], 5)
+            elif pattern_name in [
+                "morning_doji_star", "hammer", "inverted_hammer",
+                "thrusting", "matching_low", "three_white_soldiers",
+                "three_outside", "three_stars_in_south"
+            ]:
+                stoploss = round(data['Low'][i], 5)
+            elif pattern_name in [
+                "evening_doji_star", "hanging_man", "shooting_star",
+                "on_neck", "in_neck", "three_black_crows",
+                "three_inside", "advance_block", "stalled_pattern"
+            ]:
+                stoploss = round(data['High'][i], 5)
+            else:
+                stoploss = None
 
-                new_entry = pd.DataFrame({
-                    'Pattern': [pattern_name],
-                    'Signal': [signal],
-                    'Relevance': ['Flat'],
-                    'Stoploss': [stoploss],
-                }, index=[date])
+            new_entry = {
+                'Pattern': pattern_name,
+                'Signal': signal,
+                'Stoploss': stoploss,
+                'Date': date
+            }
 
-                self.result_candles_history_df = pd.concat([self.result_candles_history_df, new_entry], ignore_index=False)
+            self.result_candles_history.append(new_entry)
 
-                self.result_candles_df = self.result_candles_df[self.result_candles_df['Pattern'] != pattern_name]
-                self.result_candles_df = pd.concat([self.result_candles_df, new_entry], ignore_index=False)
+            # Atualiza a lista de padrões mais recentes
+            self.result_candles = [entry for entry in self.result_candles if entry["Pattern"] != pattern_name]
+            self.result_candles.append(new_entry)
 
         return detection
 
-    def doji(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLDOJI, "doji")
-
-    def dragonfly_doji(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLDRAGONFLYDOJI, "dragonfly_doji")
-
-    def gravestone_doji(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLGRAVESTONEDOJI, "gravestone_doji")
-
-    def engulfing(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLENGULFING, "engulfing")
-
-    def morning_star(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLMORNINGSTAR, "morning_star")
-
-    def evening_star(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLEVENINGSTAR, "evening_star")
-
-    def morning_doji_star(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLMORNINGDOJISTAR, "morning_doji_star")
-
-    def evening_doji_star(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLEVENINGDOJISTAR, "evening_doji_star")
-
-    def hammer(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLHAMMER, "hammer")
-
-    def inverted_hammer(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLINVERTEDHAMMER, "inverted_hammer")
-
-    def hanging_man(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLHANGINGMAN, "hanging_man")
-
-    def shooting_star(self, data: pd.DataFrame):
-        return self.detect_pattern(data, talib.CDLSHOOTINGSTAR, "shooting_star")
-
-    def marubozu(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLMARUBOZU, "marubozu")
-
-    def harami(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLHARAMI, "harami")
-
-    def harami_cross(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLHARAMICROSS, "harami_cross")
-
-    def spinning_top(self, data: pd.DataFrame):
-        '''
-        NEED FIBONACCI
-        '''
-        return self.detect_pattern(data, talib.CDLSPINNINGTOP, "spinning_top")
-
-    def kicking(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLKICKING, "kicking")
-
-    def kicking_by_length(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLKICKINGBYLENGTH, "kicking_by_length")
-
-    def tasuki_gap(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLTASUKIGAP, "tasuki_gap")
-
-    def gap_side_by_side_white(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLGAPSIDESIDEWHITE, "gap_side_by_side_white")
-
-    def counter_attack(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLCOUNTERATTACK, "counter_attack")
-
-    def piercing(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLPIERCING, "piercing")
-
-    def dark_cloud_cover(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLDARKCLOUDCOVER, "dark_cloud_cover")
-
-    def tri_star(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLTRISTAR, "tri_star")
-
-    def on_neck(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLONNECK, "on_neck")
-
-    def in_neck(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLINNECK, "in_neck")
-
-    def thrusting(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLTHRUSTING, "thrusting")
-
-    def matching_low(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLMATCHINGLOW, "matching_low")
-
-    def three_black_crows(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3BLACKCROWS, "three_black_crows")
-
-    def three_white_soldiers(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3WHITESOLDIERS, "three_white_soldiers")
-
-    def three_inside(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3INSIDE, "three_inside")
-
-    def three_outside(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3OUTSIDE, "three_outside")
-
-    def three_stars_in_south(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDL3STARSINSOUTH, "three_stars_in_south")
-
-    def advance_block(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLADVANCEBLOCK, "advance_block")
-
-    def stalled_pattern(self, data: pd.DataFrame):
-        # takeprofit = None
-        return self.detect_pattern(data, talib.CDLSTALLEDPATTERN, "stalled_pattern")
+    def doji(self, data, dates): return self.detect_pattern(data, talib.CDLDOJI, "doji", dates)
+    def dragonfly_doji(self, data, dates): return self.detect_pattern(data, talib.CDLDRAGONFLYDOJI, "dragonfly_doji", dates)
+    def gravestone_doji(self, data, dates): return self.detect_pattern(data, talib.CDLGRAVESTONEDOJI, "gravestone_doji", dates)
+    def engulfing(self, data, dates): return self.detect_pattern(data, talib.CDLENGULFING, "engulfing", dates)
+    def morning_star(self, data, dates): return self.detect_pattern(data, talib.CDLMORNINGSTAR, "morning_star", dates)
+    def evening_star(self, data, dates): return self.detect_pattern(data, talib.CDLEVENINGSTAR, "evening_star", dates)
+    def morning_doji_star(self, data, dates): return self.detect_pattern(data, talib.CDLMORNINGDOJISTAR, "morning_doji_star", dates)
+    def evening_doji_star(self, data, dates): return self.detect_pattern(data, talib.CDLEVENINGDOJISTAR, "evening_doji_star", dates)
+    def hammer(self, data, dates): return self.detect_pattern(data, talib.CDLHAMMER, "hammer", dates)
+    def inverted_hammer(self, data, dates): return self.detect_pattern(data, talib.CDLINVERTEDHAMMER, "inverted_hammer", dates)
+    def hanging_man(self, data, dates): return self.detect_pattern(data, talib.CDLHANGINGMAN, "hanging_man", dates)
+    def shooting_star(self, data, dates): return self.detect_pattern(data, talib.CDLSHOOTINGSTAR, "shooting_star", dates)
+    def marubozu(self, data, dates): return self.detect_pattern(data, talib.CDLMARUBOZU, "marubozu", dates)
+    def harami(self, data, dates): return self.detect_pattern(data, talib.CDLHARAMI, "harami", dates)
+    def harami_cross(self, data, dates): return self.detect_pattern(data, talib.CDLHARAMICROSS, "harami_cross", dates)
+    def spinning_top(self, data, dates): return self.detect_pattern(data, talib.CDLSPINNINGTOP, "spinning_top", dates)
+    def kicking(self, data, dates): return self.detect_pattern(data, talib.CDLKICKING, "kicking", dates)
+    def kicking_by_length(self, data, dates): return self.detect_pattern(data, talib.CDLKICKINGBYLENGTH, "kicking_by_length", dates)
+    def tasuki_gap(self, data, dates): return self.detect_pattern(data, talib.CDLTASUKIGAP, "tasuki_gap", dates)
+    def gap_side_by_side_white(self, data, dates): return self.detect_pattern(data, talib.CDLGAPSIDESIDEWHITE, "gap_side_by_side_white", dates)
+    def counter_attack(self, data, dates): return self.detect_pattern(data, talib.CDLCOUNTERATTACK, "counter_attack", dates)
+    def piercing(self, data, dates): return self.detect_pattern(data, talib.CDLPIERCING, "piercing", dates)
+    def dark_cloud_cover(self, data, dates): return self.detect_pattern(data, talib.CDLDARKCLOUDCOVER, "dark_cloud_cover", dates)
+    def tri_star(self, data, dates): return self.detect_pattern(data, talib.CDLTRISTAR, "tri_star", dates)
+    def on_neck(self, data, dates): return self.detect_pattern(data, talib.CDLONNECK, "on_neck", dates)
+    def in_neck(self, data, dates): return self.detect_pattern(data, talib.CDLINNECK, "in_neck", dates)
+    def thrusting(self, data, dates): return self.detect_pattern(data, talib.CDLTHRUSTING, "thrusting", dates)
+    def matching_low(self, data, dates): return self.detect_pattern(data, talib.CDLMATCHINGLOW, "matching_low", dates)
+    def three_black_crows(self, data, dates): return self.detect_pattern(data, talib.CDL3BLACKCROWS, "three_black_crows", dates)
+    def three_white_soldiers(self, data, dates): return self.detect_pattern(data, talib.CDL3WHITESOLDIERS, "three_white_soldiers", dates)
+    def three_inside(self, data, dates): return self.detect_pattern(data, talib.CDL3INSIDE, "three_inside", dates)
+    def three_outside(self, data, dates): return self.detect_pattern(data, talib.CDL3OUTSIDE, "three_outside", dates)
+    def three_stars_in_south(self, data, dates): return self.detect_pattern(data, talib.CDL3STARSINSOUTH, "three_stars_in_south", dates)
+    def advance_block(self, data, dates): return self.detect_pattern(data, talib.CDLADVANCEBLOCK, "advance_block", dates)
+    def stalled_pattern(self, data, dates): return self.detect_pattern(data, talib.CDLSTALLEDPATTERN, "stalled_pattern", dates)
 
     # def abandoned_baby(self, data: pd.DataFrame):
     #     return self.detect_pattern(data, talib.CDLABANDONEDBABY, "abandoned_baby")
