@@ -15,6 +15,7 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 
 ### Advanced Technical Analysis:
 - `Moving Averages and Crossovers`
+- `Average Directional Index (ADX)`
 - `Bollinger Bands`
 - `Relative Strength Index (RSI)`
 
