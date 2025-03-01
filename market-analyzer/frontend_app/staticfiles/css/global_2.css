@@ -3,16 +3,15 @@
 /* ============================= */
 :root {
     --primary-bg: #010409;
-    --border-color: #3d444d;
     --secondary-bg: #0d1117;
+    --border-color: #3d444d;
     --text-color: #ddd;
-    --button-bg: #010409;
     --highlight-color: #9198a1;
+    --button-bg: #010409;
     --button-hover-bg: #212830;
-    --table-header-bg: white;
-    --table-custom-header-bg: #212830;
-    --table-custom-header-text-color: white;
-    --table-custom-body-hover-bg: #ddd;
+    --table-header-bg: #212830;
+    --table-hover-bg: #ddd;
+    --table-custom-bg: #c2c4c7
     --link-color: #9A8655;
 }
 
@@ -53,7 +52,6 @@ html, body {
     width: 80px;
     height: 96px;
     object-fit: cover;
-    zoom: 1; 
 }
 
 /* ============================= */
@@ -63,7 +61,6 @@ html, body {
     width: 100%;
     height: 1px;
     background: var(--border-color);
-    margin: 0px 0;
 }
 
 /* ============================= */
@@ -71,7 +68,7 @@ html, body {
 /* ============================= */
 .search-container {
     text-align: center;
-    padding-top: 2px; 
+    padding-top: 2px;
 }
 
 .search-container input {
@@ -100,7 +97,7 @@ html, body {
 }
 
 .search-container p {
-    color: #9198a1;
+    color: var(--highlight-color);
     font-size: 12px;
     font-style: italic;
     padding-bottom: 5px;
@@ -109,20 +106,19 @@ html, body {
 /* ============================= */
 /* TABELAS GERAIS */
 /* ============================= */
-
 .table-container {
-    max-width: 90%; 
+    max-width: 90%;
     max-height: 500px;
-    overflow-x: auto; 
-    overflow-y: auto; 
+    overflow-x: auto;
+    overflow-y: auto;
     margin: 20px auto;
     padding: 10px;
 }
 
 .table-custom {
-    width: 100%;    
+    width: 100%;
     border-collapse: collapse;
-    background-color: var(--highlight-color);
+    background-color: var(--table-custom-bg);
     border-radius: 5px;
     overflow: hidden;
     table-layout: fixed;
@@ -131,7 +127,7 @@ html, body {
 .table-custom thead {
     position: sticky;
     top: 0;
-    background-color: var(--table-custom-header-bg);
+    background-color: var(--table-header-bg);
     z-index: 2;
 }
 
@@ -150,23 +146,21 @@ html, body {
 
 .table-custom th, .table-custom td {
     padding: 12px;
-    white-space: nowrap;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
     overflow: hidden;
 }
 
 .table-custom th {
-    color:var(--table-custom-header-text-color); 
-    background-color: var(--table-custom-header-bg);
+    color: white;
+    background-color: var(--table-header-bg);
     cursor: pointer;
 }
 
 .table-custom tbody tr:hover {
-    background-color: var(--table-custom-body-hover-bg);
+    background-color: var(--table-hover-bg);
     cursor: pointer;
 }
-
 
 /* ============================= */
 /* LINKS & BOTÕES */
@@ -180,7 +174,6 @@ html, body {
 /* ============================= */
 /* RESPONSIVIDADE */
 /* ============================= */
-
 @media screen and (max-width: 768px) {
     .table-custom th, .table-custom td {
         padding: 8px;

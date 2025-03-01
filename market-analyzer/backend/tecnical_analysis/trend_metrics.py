@@ -193,6 +193,7 @@ class TrendMetrics():
         return {
             "symbol": symbol,
             "length": length,
+            "rsi": rsi_now,
             "upper_level": upper_level,
             "lower_level": lower_level,
             "signal": rsi_signal

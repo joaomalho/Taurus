@@ -6,12 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Data</title>
-    <link rel="stylesheet" href="{% static 'css/stock.css' %}">
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/stock.css' %}">
 </head>
 
 <body>
-    <div class="main-header">
+    <header class="main-header">
         <div class="header">
             <img class="header-logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
             <div class="search-container">
@@ -19,98 +19,127 @@
                 <button id="searchButton">Search</button>
                 <p class="search-indication">Enter a stock symbol and press "Search" to fetch data.</p>
             </div>
-            <div class="headermenu">
+            <nav class="headermenu">
                 <div class="reach-us">Reach Us</div>
-            </div>
+            </nav>
         </div>
-    </div>
+    </header>
+
     <hr class="line1">
 
-    <div class="stock-info">
-
-        <h2>Histórico de Preços</h2>
-        <div class="candlestick-chart" id="candlestickChart"></div>
+    <main class="stock-info">
+        <!-- Seção do Histórico de Preços -->
+        <section id="priceHistory">
+            <h2>Histórico de Preços</h2>
+            <div class="candlestick-chart" id="candlestickChart"></div>
+        </section>
 
         <!-- Biblioteca Plotly -->
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script src="{% static 'js/candlestick.js' %}"></script> <!-- 🔥 Script para buscar e renderizar o gráfico -->
 
-        <div id="technicalStockZone">
+        <!-- Seção de Análise Técnica -->
+        <section id="technicalStockZone">
             <h2>Technical Analysis</h2>
             <div class="table-container" id="technicalAnalysisTableContainer"></div>
-        </div>
+        </section>
         
-        <h2>Trend</h2>
-        <h3>Exponential Average Crossover (Direction)</h3>
-        <div id="crossoverForm">
-            <label for="fastPeriod">Short EMA:</label>
-            <input type="number" id="fastPeriod" value="5" min="1">
-        
-            <label for="mediumPeriod">Medium EMA:</label>
-            <input type="number" id="mediumPeriod" value="10" min="1">
-        
-            <label for="slowPeriod">Long EMA:</label>
-            <input type="number" id="slowPeriod" value="20" min="1">
-        
-            <button id="crossoverButton">Calculate</button>
-        </div>
-        <div id="crossoverResults"></div>
+        <!-- Seção de Tendências -->
+        <section id="trendAnalysis">
+            <h2>Trend</h2>
+            <article id="crossoverAnalysis">
+                <h3>Exponential Average Crossover (Direction)</h3>
+                <form id="crossoverForm">
+                    <label for="fastPeriod">Short EMA:</label>
+                    <input type="number" id="fastPeriod" value="5" min="1">
+                
+                    <label for="mediumPeriod">Medium EMA:</label>
+                    <input type="number" id="mediumPeriod" value="10" min="1">
+                
+                    <label for="slowPeriod">Long EMA:</label>
+                    <input type="number" id="slowPeriod" value="20" min="1">
+                
+                    <button id="crossoverButton">Calculate</button>
+                </form>
+                <div id="crossoverResults"></div>
+            </article>
 
-        <h3>ADX (Strengh)</h3>
-        <div id="AdxForm">
-            <label for="length">Periods:</label>
-            <input type="number" id="length" value="5" min="1">
-        
-            <button id="AdxButton">Calculate</button>
-        </div>
-        <div id="AdxResults"></div>
-        
-        <h2>Volatility</h2>
-        <h3>Bollinger Bands</h3>
-        <div id="BollingerForm">
-            <label for="length">Periods:</label>
-            <input type="number" id="length" value="10" min="1">
-            <label for="std_bol">Standard Deviation:</label>
-            <input type="number" id="std_bol" value="2" min="1">
-        
-            <button id="BollingerButton">Calculate</button>
-        </div>
-        <div id="BollingerResults"></div>
+            <article id="adxAnalysis">
+                <h3>ADX (Strengh)</h3>
 
-        <h2>Oscilators</h2>
-        <h3>Relative Strengh Index</h3>
-        <div id="RSIForm">
-            <label for="length">Periods:</label>
-            <input type="number" id="length" value="10" min="1">
-            <label for="upper_level">Upper Level:</label>
-            <input type="number" id="upper_level" value="70" min="50">
-            <label for="lower_level">Lower Level:</label>
-            <input type="number" id="lower_level" value="30" min="1">
+                <form id="AdxForm">
+                    <label for="adxLength">Periods:</label>
+                    <input type="number" id="adxLength" value="5" min="1">
+                
+                    <button id="AdxButton">Calculate</button>
+                </form>
+                <div id="AdxResults"></div>
+            </article>
+        </section>
 
-            <button id="RSIButton">Calculate</button>
-        </div>
-        <div id="RSIResults"></div>
+        <!-- Seção de Volatilidade -->
+        <section id="volatilityAnalysis">
+            <h2>Volatility</h2>
+            <article id="bollingerBands">
+                <h3>Bollinger Bands</h3>
+                <form id="BollingerForm">
+                    <label for="bollingerLength">Periods:</label>
+                    <input type="number" id="bollingerLength" value="14" min="1">
+                    <label for="std_bol">Standard Deviation:</label>
+                    <input type="number" id="std_bol" value="2" min="1">
+                    <button id="BollingerButton">Calculate</button>
+                </form>
+                <div id="BollingerResults"></div>
+            </article>
+        </section>
 
-        <!-- Input para buscar novas ações -->
-        <div class="fundamentalStocksZone">
+        <!-- Seção de Osciladores -->
+        <section id="oscillators">
+            <h2>Oscillators</h2>
+            <article id="rsiAnalysis">
+                <h3>Relative Strength Index</h3>
+                <form id="RSIForm">
+                    <label for="rsiLength">Periods:</label>
+                    <input type="number" id="rsiLength" value="14" min="1">
+                    <label for="upper_level">Upper Level:</label>
+                    <input type="number" id="upper_level" value="70" min="50">
+                    <label for="lower_level">Lower Level:</label>
+                    <input type="number" id="lower_level" value="30" min="1">
+                    <button id="RSIButton">Calculate</button>
+                </form>
+                <div id="RSIResults"></div>
+            </article>
+        </section>
+
+        <!-- Seção de Padrões de Candlestick -->
+        <section id="candlePatterns">
+            <h2>Candlestick Patterns</h2>
+            <button id="CandleButton">Detect</button>
+            <div id="CandleResults"></div>
+        </section>
+
+        <!-- Seção de Análise Fundamental -->
+        <section id="fundamentalAnalysis">
             <h2>Fundamental Analysis</h2>
-        </div>
+        </section>
 
-        <div id="HolderZone">
+        <!-- Seção de Holders -->
+        <section id="holders">
             <h2>Holders</h2>
             <div class="table-container" id="holdersTableContainer"></div>
-        </div>
+        </section>
 
-        <div id="EstimatedPricesZone">
+        <!-- Seção de Preços Estimados -->
+        <section id="estimatedPrices">
             <h2>Estimated Prices</h2>
             <div class="table-container" id="estimatedPricesTableContainer"></div>
-        </div>
+        </section>
+    </main>
 
-    </div>
+    <footer>
+        <a href="/">Back to home page</a>
+    </footer>
     
-    <a href="/">Back to home page</a>
-
-    <!-- 🔥 Importando o script externo -->
     <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

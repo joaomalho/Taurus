@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchADXData(symbol);
         fetchBollingerData(symbol);
         fetchRSIData(symbol);
+        fetchCandlePatternData(symbol);
     }
 
     fetchYahooStockGainers();
@@ -42,77 +43,90 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.getElementById("AdxButton").addEventListener("click", function () {
-        let length = document.getElementById("length").value;
+        let adxLength = document.getElementById("adxLength").value;
     
         if (!symbol) {
             alert("Por favor, selecione um ativo antes de calcular.");
             return;
         }
     
-        length = parseInt(length);
+        adxLength = parseInt(adxLength);
     
-        if (isNaN(length)) {
+        if (isNaN(adxLength)) {
             alert("Insira valores numéricos válidos.");
             return;
         }
     
-        fetchADXData(symbol, length);
+        fetchADXData(symbol, adxLength);
     });
 
     document.getElementById("BollingerButton").addEventListener("click", function () {
-        let length = document.getElementById("length").value;
-        let std_dev = document.getElementById("std_dev").value;
+        let bollingerLength = document.getElementById("bollingerLength").value;
+        let stdBol = document.getElementById("std_bol").value;
     
         if (!symbol) {
             alert("Por favor, selecione um ativo antes de calcular.");
             return;
         }
     
-        length = parseInt(length);
-        std_dev = parseInt(std_dev);
+        bollingerLength  = parseInt(bollingerLength );
+        stdBol = parseInt(stdBol);
     
-        if (isNaN(length)) {
+        if (isNaN(bollingerLength )) {
             alert("Insira valores numéricos válidos.");
             return;
         }
-        if (isNaN(std_dev)) {
+        if (isNaN(stdBol)) {
             alert("Insira valores numéricos válidos.");
             return;
         }
     
-        fetchBollingerData(symbol, length, std_dev);
+        fetchBollingerData(symbol, bollingerLength, stdBol);
     });
 
     document.getElementById("RSIButton").addEventListener("click", function () {
-        let length = document.getElementById("length").value;
-        let upper_level = document.getElementById("upper_level").value;
-        let lower_level = document.getElementById("lower_level").value;
+        let rsiLength = document.getElementById("rsiLength ").value;
+        let upperLevel = document.getElementById("upper_level").value;
+        let lowerLevel = document.getElementById("lower_level").value;
     
         if (!symbol) {
             alert("Por favor, selecione um ativo antes de calcular.");
             return;
         }
     
-        length = parseInt(length);
-        upper_level = parseInt(upper_level);
-        lower_level = parseInt(lower_level);
+        rsiLength = parseInt(rsiLength);
+        upperLevel = parseInt(upperLevel);
+        lowerLevel  = parseInt(lowerLevel);
     
-        if (isNaN(length)) {
+        if (isNaN(rsiLength)) {
             alert("Insira valores numéricos válidos.");
             return;
         }
-        if (isNaN(upper_level)) {
+        if (isNaN(upperLevel)) {
             alert("Insira valores numéricos válidos.");
             return;
         }
-        if (isNaN(lower_level)) {
+        if (isNaN(lowerLevel)) {
             alert("Insira valores numéricos válidos.");
             return;
         }
     
-        fetchRSIData(symbol, length, upper_level, lower_level);
+        fetchRSIData(symbol, rsiLength, upperLevel, lowerLevel);
+    });
+
+    document.getElementById("CandleButton").addEventListener("click", function () {
+            
+        if (!symbol) {
+            alert("Por favor, selecione um ativo antes de calcular.");
+            return;
+        }
+            
+        fetchCandlePatternData(symbol);
     });
 });
+
+/* ─────────────── FUNÇÕES DE FORMATAÇÃO ─────────────── */
+
 
 /* ─────────────── FUNÇÕES DE EVENTOS ─────────────── */
 
@@ -218,6 +232,28 @@ function fetchRSIData(symbol, length = 14, upper_level = 70, lower_level = 30) {
         .catch(error => {
             console.error("Erro ao buscar os dados do RSI:", error);
             document.getElementById("RSIResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
+        });
+}
+
+function fetchCandlePatternData(symbol) {
+    fetch(`/get_candle_patterns/?symbol=${symbol}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("📊 Dados Recebidos:", data); // Adicionado para depuração
+
+            if (data.error) {
+                document.getElementById("CandleResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
+            } else {
+                if (typeof displayCandleResults === "function") {
+                    displayCandleResults(data);  // Certifique-se de que essa função existe
+                } else {
+                    console.error("❌ Função displayCandleResults não encontrada!");
+                }
+            }
+        })
+        .catch(error => {
+            console.error("🚨 Erro ao buscar os dados do Candles:", error);
+            document.getElementById("CandleResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
         });
 }
 
@@ -393,6 +429,7 @@ function displayRSIResults(data) {
                 <tr>
                     <td>${data.symbol}</td>
                     <td>${data.length}</td>
+                    <td>${parseFloat(data.rsi).toFixed(2)}</td>
                     <td>${data.upper_level}</td>
                     <td>${data.lower_level}</td>
                     <td><strong>${data.signal}</strong></td>
@@ -403,6 +440,41 @@ function displayRSIResults(data) {
 
     document.getElementById("RSIResults").innerHTML = tableHTML;
 }
+
+function displayCandleResults(data) {
+    let tableHTML = `
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Pattern</th>
+                    <th>Stoploss</th>
+                    <th>Signal</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    for (let pattern in data.patterns_detected) {
+        data.patterns_detected[pattern].forEach(entry => {
+            tableHTML += `
+                <tr>
+                    <td>${data.symbol}</td>
+                    <td>${pattern}</td>
+                    <td>${parseFloat(entry.Stoploss).toFixed(5)}</td>
+                    <td>${entry.Signal}</td>
+                    <td>${entry.Date}</td>
+                </tr>
+            `;
+        });
+    }
+
+    tableHTML += "</tbody></table>";
+
+    document.getElementById("CandleResults").innerHTML = tableHTML;
+}
+
 
 function populateYahooStockTable(containerPrefix, data) {
     let headerRow = document.getElementById(`${containerPrefix}Header`);

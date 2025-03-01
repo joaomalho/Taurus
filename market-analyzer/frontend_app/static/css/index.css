@@ -1,4 +1,17 @@
+/* ============================= */
+/* CONFIGURAÇÃO GLOBAL E VARIÁVEIS */
+/* ============================= */
+:root {
+    --button-zone-bg: #010409;
+    --button-zone-border-color: #3d444d;
+    --button-zone-highlight-color: #9198a1;
+    --button-zone-hover-bg: #212830;
+    --footer-text-color: #9A8655
+}
+
+/* ============================= */
 /* HOME PAGE */
+/* ============================= */
 .logo-icon-home {
     width: 80px;
     height: 96px;
@@ -6,6 +19,9 @@
     zoom: 2;
 }
 
+/* ============================= */
+/* SEÇÃO PRINCIPAL */
+/* ============================= */
 .main-home {
     flex: 1;
     display: flex;
@@ -16,38 +32,60 @@
     padding-top: 150px;
 }
 
-.screener {
+/* ============================= */
+/* BOTÕES DE OPÇÃO */
+/* ============================= */
+.button_zone {
     padding: 8px 12px;
     margin-bottom: 50px;
 }
 
-.screener button {
+.button_zone button {
     padding: 6px 12px;
     font-size: 12px;
-    background-color: #010409;
-    color: #9198a1;
-    border: 1px solid #3d444d;
+    background-color: var(--button-zone-bg);
+    border: 1px solid var(--button-zone-border-color);
+    color: var(--button-zone-highlight-color);
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
 
-.screener button:hover {
-    background-color: #212830;   
+.button_zone button:hover {
+    background-color: var(--button-zone-hover-bg);   
 }
 
+/* ============================= */
+/* FOOTER */
+/* ============================= */
 .footer {
     text-align: center;
     margin-top: auto;
     width: 100%;
     padding: 100px 0;
-    color: #9A8655;
+    color: var(--footer-text-color);
 }
 
-.footer p {
-    color: #9A8655;
-    font-size: 12px;
-    font-style: italic;
-    padding-bottom: 5px;
-}
 
+/* ============================= */
+/* RESPONSIVIDADE */
+/* ============================= */
+@media screen and (max-width: 768px) {
+    .main-home {
+        padding-top: 100px;
+        gap: 5px;
+    }
+
+    .screener {
+        padding: 6px 10px;
+    }
+
+    .screener button {
+        font-size: 10px;
+        padding: 5px 10px;
+    }
+
+    .footer {
+        padding: 50px 0;
+    }
+}

@@ -11,19 +11,21 @@ class CandlesPatterns:
         self.result_candles = []
         
         
-    def detect_pattern(self, data, pattern_function, pattern_name: str, dates: np.array):
+    def detect_pattern(self, data, pattern_function, pattern_name: str, dates):
         """
         General method to detect a specific candlestick pattern.
         """
 
         detection = pattern_function(data['Open'], data['High'], data['Low'], data['Close'])
-
         detected_indices = np.nonzero(detection)[0]
+
+        results = []
         
         for i in detected_indices:
             date = dates[i]
             signal = int(detection[i])
-        
+
+            # Determinar stop-loss com base no tipo de padrão
             if pattern_name in [
                 "doji", "dragonfly_doji", "gravestone_doji", "engulfing",
                 "morning_star", "evening_star", "marubozu", "harami",
@@ -47,20 +49,13 @@ class CandlesPatterns:
             else:
                 stoploss = None
 
-            new_entry = {
-                'Pattern': pattern_name,
+            results.append({
                 'Signal': signal,
                 'Stoploss': stoploss,
                 'Date': date
-            }
+            })
 
-            self.result_candles_history.append(new_entry)
-
-            # Atualiza a lista de padrões mais recentes
-            self.result_candles = [entry for entry in self.result_candles if entry["Pattern"] != pattern_name]
-            self.result_candles.append(new_entry)
-
-        return detection
+        return results
 
     def doji(self, data, dates): return self.detect_pattern(data, talib.CDLDOJI, "doji", dates)
     def dragonfly_doji(self, data, dates): return self.detect_pattern(data, talib.CDLDRAGONFLYDOJI, "dragonfly_doji", dates)

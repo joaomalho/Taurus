@@ -274,27 +274,29 @@ def get_candle_detection(request):
         close_prices = df["Close"].to_numpy(dtype=np.float64) 
         low_prices = df["Low"].to_numpy(dtype=np.float64) 
         high_prices = df["High"].to_numpy(dtype=np.float64) 
-        open_prices = df["Open"].to_numpy(dtype=np.float64) 
-
+        open_prices = df["Open"].to_numpy(dtype=np.float64)
+        dates = df["Date"].to_numpy()
+        
     cp = CandlesPatterns()
-
     detected_patterns = {}
 
     for method_name in dir(cp):
-        if not method_name.startswith("_") and callable(getattr(cp, method_name)):  # Evita métodos internos
+        if not method_name.startswith("_") and callable(getattr(cp, method_name)) and method_name != "detect_pattern":
             try:
                 pattern_func = getattr(cp, method_name)
                 detection_result = pattern_func({
-                    "Open": open_prices, "High": high_prices, "Low": low_prices, "Close": close_prices
-                })
+                    "Open": open_prices, 
+                    "High": high_prices, 
+                    "Low": low_prices, 
+                    "Close": close_prices
+                }, dates)
 
-                # Filtra sinais diferentes de zero (padrões detectados)
-                detected_indices = np.nonzero(detection_result)[0]
-                if detected_indices.size > 0:
-                    detected_patterns[method_name] = {
-                        dates[i]: int(detection_result[i]) for i in detected_indices
-                    }
+                if isinstance(detection_result, list) and len(detection_result) > 0:
+                    detected_patterns[method_name] = detection_result[-5:]  # Pega os últimos 5 resultados
             except Exception as e:
                 detected_patterns[method_name] = f"Error processing pattern: {str(e)}"
+
+    if not detected_patterns:
+        return JsonResponse({"symbol": symbol, "patterns_detected": "No patterns found"}, status=200)
 
     return JsonResponse({"symbol": symbol, "patterns_detected": detected_patterns})
