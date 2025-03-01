@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <div class="main-header">
+    <header class="main-header">
         <div class="header">
             <img class="header-logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
             <div class="search-container">
@@ -19,52 +19,58 @@
                 <button id="searchButton">Search</button>
                 <p class="search-indication">Enter a stock symbol and press "Search" to fetch data.</p>
             </div>
-            <div class="footer">
-                <div class="reach-us">Reach Us</div>
-            </div>
+            <nav class="headermenu">
+                <a href="/contact" class="reach-us">Reach Us</a>
+            </nav>
         </div>
+    </header>
         
     <hr class="line1">
 
-    <div class="screener-info">
-        <div id="yahooStockGainersContainer">
+    <main class="screener-info">
+        <section id="yahooStockGainersContainer">
             <h2>Top Gainers</h2>
             <div class="table-container">
-                <table class="table-custom", id="yahooStockGainersTable">
+                <table class="table-custom" id="yahooStockGainersTable">
                     <thead>
                         <tr id="yahooStockGainersHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
                     </thead>
                     <tbody id="yahooStockGainersBody"></tbody>  <!-- Aqui os dados serão inseridos -->
                 </table>
             </div>
-        </div>
+        </section>
 
-        <div id="yahooStockTrendingContainer">
+        <section id="yahooStockTrendingContainer">
             <h2>Top Trending</h2>
             <div class="table-container">
-                <table class="table-custom", id="yahooStockTrendingTable">
+                <table class="table-custom" id="yahooStockTrendingTable">
                     <thead>
                         <tr id="yahooStockTrendingHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
                     </thead>
                     <tbody id="yahooStockTrendingBody"></tbody>  <!-- Aqui os dados serão inseridos -->
                 </table>
             </div>
-        </div>
+        </section>
         
-        <div id="yahooStockMostActiveContainer">
+        <section id="yahooStockMostActiveContainer">
             <h2>Top Most Active</h2>
             <div class="table-container">
-                <table class="table-custom", id="yahooStockMostActiveTable">
+                <table class="table-custom" id="yahooStockMostActiveTable">
                     <thead>
                         <tr id="yahooStockMostActiveHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
                     </thead>
                     <tbody id="yahooStockMostActiveBody"></tbody>  <!-- Aqui os dados serão inseridos -->
                 </table>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
     
-    <a href="/">Back to home page</a>
+    <footer class="footer">
+        <nav>
+            <a href="/">Back to Home Page</a>
+        </nav>
+        <p>&copy; 2024 Stock Data. All Rights Reserved.</p>
+    </footer>
 
     <script src="{% static 'js/script.js' %}"></script>
 </body>

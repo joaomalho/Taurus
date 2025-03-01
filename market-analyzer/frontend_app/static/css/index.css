@@ -45,12 +45,11 @@
 /* BOTÕES DE OPÇÃO */
 /* ============================= */
 .button-zone {
-    padding-top: 8px 12px;
-    margin-bottom: 50px;
+    margin-bottom: 10px;
 }
 
 .button-zone button {
-    padding: 6px 12px;
+    padding: 6px 20px;
     font-size: 12px;
     background-color: var(--button-zone-bg);
     border: 1px solid var(--button-zone-border-color);
