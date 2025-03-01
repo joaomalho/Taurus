@@ -11,21 +11,33 @@
 </head>
 
 <body>
-    <div class="main-home">  
-        <!-- Input para buscar ações -->
-        <img class="logo-icon-homepage" alt="Logo" src="{% static 'images/logo.png' %}">
-        <div class="button_zone">
+    <!-- Cabeçalho -->
+    <header class="main-header">
+        <img class="logo-icon-homepage" alt="Company Logo" src="{% static 'images/logo.png' %}">
+    </header>
+
+    <!-- Corpo principal -->
+    <main class="main-home">
+        <!-- Botão para acessar o Screener -->
+        <section class="button-zone">
             <button id="screenerButton">Screener</button>
-        </div>
-        <div class="search-container">
+        </section>
+
+        <!-- Seção de busca de ações -->
+        <section class="search-container">
+            <label for="stockSymbol" class="sr-only">Search Stock Symbol</label>
             <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
             <button id="searchButton">Search</button>
             <p class="search-indication">Enter a stock symbol and press "Search" to fetch data.</p>
-        </div>
-    </div>
-    <div class="footer">
-        <div class="reach-us">Reach Us</div>
-    </div>
+        </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <nav>
+            <a href="#" class="reach-us">Reach Us</a>
+        </nav>
+    </footer>
 
     <!-- Importando o script externo -->
     <script src="{% static 'js/script.js' %}"></script>

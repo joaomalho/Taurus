@@ -9,14 +9,23 @@
     --footer-text-color: #9A8655
 }
 
+
 /* ============================= */
-/* HOME PAGE */
+/* HEADER */
 /* ============================= */
-.logo-icon-home {
+.main-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding-top: 100px;
+}
+
+.logo-icon-homepage {
     width: 80px;
     height: 96px;
     object-fit: cover;
-    zoom: 2;
+    zoom: 2.5;
 }
 
 /* ============================= */
@@ -29,18 +38,18 @@
     align-items: center;
     width: 100%;
     gap: 10px;
-    padding-top: 150px;
+    padding: 100px 0;
 }
 
 /* ============================= */
 /* BOTÕES DE OPÇÃO */
 /* ============================= */
-.button_zone {
-    padding: 8px 12px;
+.button-zone {
+    padding-top: 8px 12px;
     margin-bottom: 50px;
 }
 
-.button_zone button {
+.button-zone button {
     padding: 6px 12px;
     font-size: 12px;
     background-color: var(--button-zone-bg);
@@ -51,7 +60,7 @@
     transition: background-color 0.2s ease-in-out;
 }
 
-.button_zone button:hover {
+.button-zone button:hover {
     background-color: var(--button-zone-hover-bg);   
 }
 
@@ -76,13 +85,14 @@
         gap: 5px;
     }
 
-    .screener {
-        padding: 6px 10px;
+    .search-container input {
+        max-width: 80%; /* Ajusta para telas menores */
+        font-size: 14px;
     }
 
-    .screener button {
-        font-size: 10px;
-        padding: 5px 10px;
+    .search-container button {
+        font-size: 14px;
+        padding: 0px 0px;
     }
 
     .footer {

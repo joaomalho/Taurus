@@ -71,13 +71,16 @@ html, body {
 /* ============================= */
 .search-container {
     text-align: center;
-    padding-top: 2px; 
+    align-items: center;
+    padding-top: 15px;
+    justify-content: center; 
 }
 
 .search-container input {
     padding: 8px;
     font-size: 16px;
     width: 300px;
+    max-width: 300px;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     background-color: var(--secondary-bg);
@@ -109,7 +112,6 @@ html, body {
 /* ============================= */
 /* TABELAS GERAIS */
 /* ============================= */
-
 .table-container {
     max-width: 90%; 
     max-height: 500px;
