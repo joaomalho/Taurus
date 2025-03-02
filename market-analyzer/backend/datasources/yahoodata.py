@@ -278,7 +278,12 @@ class DataHistoryYahoo():
         Return the list of major institutional holders
         '''
         yahoo_symbol_institutional_holders = yf.Ticker(symbol).institutional_holders
+        yahoo_symbol_institutional_holders['Date Reported'] = yahoo_symbol_institutional_holders['Date Reported'].dt.strftime("%Y-%m-%d %H:%M") 
+        yahoo_symbol_institutional_holders['pctHeld'] = yahoo_symbol_institutional_holders['pctHeld']*100
+        yahoo_symbol_institutional_holders['pctChange'] = yahoo_symbol_institutional_holders['pctChange']*100
+        
         return yahoo_symbol_institutional_holders
+
 
     def get_yahoo_symbol_balance_sheet(self, symbol : str):
         '''

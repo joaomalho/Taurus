@@ -1,12 +1,27 @@
 /* ============================= */
 /* RESET E CONFIGURAÇÃO GLOBAL */
 /* ============================= */
+:root {
+    --primary-bg: #010409;
+    --border-color: #3d444d;
+    --secondary-bg: #0d1117;
+    --text-color: #ddd;
+    --button-bg: #010409;
+    --highlight-color: #9198a1;
+    --button-hover-bg: #212830;
+    --table-header-bg: white;
+    --table-custom-header-bg: #212830;
+    --table-custom-header-text-color: white;
+    --table-custom-body-hover-bg: #ddd;
+    --link-color: #9A8655;
+}
+
 html, body {
     width: 100vw;
     height: 100vh;
     margin: 0;
     padding: 0;
-    background: #010409;
+    background: var(--primary-bg);
     font-family: "Segoe UI", sans-serif;
     display: flex;
     flex-direction: column;
@@ -38,7 +53,7 @@ html, body {
     width: 80px;
     height: 96px;
     object-fit: cover;
-    zoom: 1;
+    zoom: 1; 
 }
 
 /* ============================= */
@@ -47,7 +62,7 @@ html, body {
 .line1 {
     width: 100%;
     height: 1px;
-    background: #3d444d;
+    background: var(--border-color);
     margin: 0px 0;
 }
 
@@ -56,32 +71,35 @@ html, body {
 /* ============================= */
 .search-container {
     text-align: center;
-    padding-top: 2px; 
+    align-items: center;
+    padding-top: 15px;
+    justify-content: center; 
 }
 
 .search-container input {
     padding: 8px;
     font-size: 16px;
     width: 300px;
-    border: 1px solid #3d444d;
+    max-width: 300px;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
-    background-color:#0d1117;
-    color: #ddd;
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
 }
 
 .search-container button {
     padding: 8px 12px;
     font-size: 16px;
-    background-color: #010409;
-    color: #9198a1;
-    border: 1px solid #3d444d;
+    background-color: var(--button-bg);
+    color: var(--highlight-color);
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
 
 .search-container button:hover {
-    background-color: #212830;
+    background-color: var(--button-hover-bg);
 }
 
 .search-container p {
@@ -94,7 +112,6 @@ html, body {
 /* ============================= */
 /* TABELAS GERAIS */
 /* ============================= */
-
 .table-container {
     max-width: 90%; 
     max-height: 500px;
@@ -107,23 +124,16 @@ html, body {
 .table-custom {
     width: 100%;    
     border-collapse: collapse;
-    background-color:#c2c4c7;
+    background-color: var(--highlight-color);
     border-radius: 5px;
     overflow: hidden;
     table-layout: fixed;
 }
 
-.table-container thead {
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 10;
-}
-
 .table-custom thead {
     position: sticky;
     top: 0;
-    background-color: #212830;
+    background-color: var(--table-custom-header-bg);
     z-index: 2;
 }
 
@@ -144,36 +154,36 @@ html, body {
     padding: 12px;
     white-space: nowrap;
     text-align: left;
-    border-bottom: 1px solid #3d444d;
+    border-bottom: 1px solid var(--border-color);
     overflow: hidden;
 }
 
 .table-custom th {
-    color: white; 
-    background-color: #212830;
+    color:var(--table-custom-header-text-color); 
+    background-color: var(--table-custom-header-bg);
     cursor: pointer;
-}
-
-.table-custom td {
-    border-bottom: 1px solid #dddddd07;
 }
 
 .table-custom tbody tr:hover {
-    background-color: #ddd;
+    background-color: var(--table-custom-body-hover-bg);
     cursor: pointer;
 }
 
+
+/* ============================= */
+/* LINKS & BOTÕES */
+/* ============================= */
 .reach-us {
     font-weight: 800;
     cursor: pointer;
-    color: #9A8655;
+    color: var(--link-color);
 }
 
-@media screen and (max-width: 768px) {
-    .table-custom {
-        width: 100%;
-    }
+/* ============================= */
+/* RESPONSIVIDADE */
+/* ============================= */
 
+@media screen and (max-width: 768px) {
     .table-custom th, .table-custom td {
         padding: 8px;
         font-size: 14px;

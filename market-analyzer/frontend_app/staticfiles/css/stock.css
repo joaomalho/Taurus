@@ -1,78 +1,108 @@
+/* ============================= */
+/* CONFIGURAÇÃO GLOBAL E VARIÁVEIS */
+/* ============================= */
+:root {
+    --stock-info-titles: #ffffff;
+    --stock-info-border-color: #3d444d;
+    --stock-info-button-bg: #010409;
+    --stock-info-input-bg: #0d1117;
+    --stock-info-input-text-color: #ddd;
+    --stock-info-button-hover-bg:#212830;
+    --section-bg: transparent;
+    --section-padding: 20px;
+    --article-bg: transparent;
+    --article-padding: 15px;
+}
+
+/* ============================= */
+/* STOCK INFO - SEÇÃO PRINCIPAL */
+/* ============================= */
 .stock-info {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     gap: 10px;
+    padding: var(--section-padding);
 }
 
-.stock-info h2 {
-    color: #ffffff;
+/* ============================= */
+/* SEÇÕES & ARTIGOS */
+/* ============================= */
+.stock-info section {
+    background-color: var(--section-bg);
+    width: 90%;
+    max-width: 1200px;
+    padding: var(--section-padding);
+    border-radius: 10px;
 }
 
-.stock-info h3 {
-    color: #ffffff;
+.stock-info article {
+    background-color: var(--article-bg);
+    padding: var(--article-padding);
+    border-radius: 8px;
 }
 
+/* ============================= */
+/* TÍTULOS */
+/* ============================= */
+.stock-info h2,
+.stock-info h3,
 .stock-info label {
-    color: #ffffff;
+        color: var(--stock-info-titles);
+        text-align: center;
 }
 
+/* ============================= */
+/* INPUTS E BOTÕES */
+/* ============================= */
 .stock-info input {
     padding: 8px;
     font-size: 14px;
     width: 50px;
     height: 10px;
-    border: 1px solid #3d444d;
+    border: 1px solid var(--stock-info-border-color);
     border-radius: 5px;
-    background-color:#0d1117;
-    color: #ddd;
+    background-color: var(--stock-info-input-bg);
+    color: var(--stock-info-input-text-color);
 }
 
-.stock-info button {
-    
+.stock-info button {    
     font-size: 14px;
     width: 150px;
     height: 28px;
-    border: 1px solid #3d444d;
-    background-color: #010409;
+    border: 1px solid var(--stock-info-border-color);
+    background-color: var(--stock-info-button-bg);
     color: #9198a1;
-    border: 1px solid #3d444d;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
 
 .stock-info button:hover {
-    background-color: #212830;
+    background-color: var(--stock-info-button-hover-bg);
 }
 
-.table-container-stock {
-    width: 80%;
-    margin: 20px auto;
-    text-align: center;
-}
-
-.table-container-stock h2 {
-    color: #ffffff;
-}
-
-.table-container-stock table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table-container-stock th, .table-container-stock td {
-    padding: 10px;
-    border: 1px solid #ddd;
-}
-
-.table-container-stock th {
-    background-color: #969696;
-    color: white;
-}
-
+/* ============================= */
+/* GRÁFICOS */
+/* ============================= */
 .candlestick-chart {
     width: 100%;
     height: 500px;
+}
+
+/* ============================= */
+/* RESPONSIVIDADE */
+/* ============================= */
+@media screen and (max-width: 768px) {
+    .stock-info input {
+        width: 50px;
+        font-size: 12px;
+    }
+
+    .stock-info button {
+        width: 130px;
+        height: 30px;
+        font-size: 12px;
+    }
 }

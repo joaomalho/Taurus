@@ -1,11 +1,36 @@
-/* HOME PAGE */
-.logo-icon-home {
+/* ============================= */
+/* CONFIGURAÇÃO GLOBAL E VARIÁVEIS */
+/* ============================= */
+:root {
+    --button-zone-bg: #010409;
+    --button-zone-border-color: #3d444d;
+    --button-zone-highlight-color: #9198a1;
+    --button-zone-hover-bg: #212830;
+    --footer-text-color: #9A8655
+}
+
+
+/* ============================= */
+/* HEADER */
+/* ============================= */
+.main-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding-top: 100px;
+}
+
+.logo-icon-homepage {
     width: 80px;
     height: 96px;
     object-fit: cover;
-    zoom: 2;
+    zoom: 2.5;
 }
 
+/* ============================= */
+/* SEÇÃO PRINCIPAL */
+/* ============================= */
 .main-home {
     flex: 1;
     display: flex;
@@ -13,41 +38,63 @@
     align-items: center;
     width: 100%;
     gap: 10px;
-    padding-top: 150px;
+    padding: 100px 0;
 }
 
-.screener {
-    padding: 8px 12px;
-    margin-bottom: 50px;
+/* ============================= */
+/* BOTÕES DE OPÇÃO */
+/* ============================= */
+.button-zone {
+    margin-bottom: 10px;
 }
 
-.screener button {
-    padding: 6px 12px;
+.button-zone button {
+    padding: 6px 20px;
     font-size: 12px;
-    background-color: #010409;
-    color: #9198a1;
-    border: 1px solid #3d444d;
+    background-color: var(--button-zone-bg);
+    border: 1px solid var(--button-zone-border-color);
+    color: var(--button-zone-highlight-color);
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
 
-.screener button:hover {
-    background-color: #212830;   
+.button-zone button:hover {
+    background-color: var(--button-zone-hover-bg);   
 }
 
+/* ============================= */
+/* FOOTER */
+/* ============================= */
 .footer {
     text-align: center;
     margin-top: auto;
     width: 100%;
     padding: 100px 0;
-    color: #9A8655;
+    color: var(--footer-text-color);
 }
 
-.footer p {
-    color: #9A8655;
-    font-size: 12px;
-    font-style: italic;
-    padding-bottom: 5px;
-}
 
+/* ============================= */
+/* RESPONSIVIDADE */
+/* ============================= */
+@media screen and (max-width: 768px) {
+    .main-home {
+        padding-top: 100px;
+        gap: 5px;
+    }
+
+    .search-container input {
+        max-width: 80%; /* Ajusta para telas menores */
+        font-size: 14px;
+    }
+
+    .search-container button {
+        font-size: 14px;
+        padding: 0px 0px;
+    }
+
+    .footer {
+        padding: 50px 0;
+    }
+}

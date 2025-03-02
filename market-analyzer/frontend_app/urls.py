@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home, stock_page, screener_page, get_yahoo_stock_gainers, get_yahoo_stock_trending, get_yahoo_stock_most_active, get_yahoo_data_history, get_crossover_trend_metrics, get_adx_trend_metrics, get_sma_trend_metrics, get_rsi_trend_metrics, get_candle_detection
+from .views import home, stock_page, screener_page, get_yahoo_stock_gainers, get_yahoo_stock_trending, get_yahoo_stock_most_active, get_yahoo_data_history, get_crossover_trend_metrics, get_adx_trend_metrics, get_sma_trend_metrics, get_rsi_trend_metrics, get_candle_detection, get_yahoo_inst_holders
 
 urlpatterns = [
     path('', home, name='home'),
@@ -14,5 +14,6 @@ urlpatterns = [
     path('get_bollinger_trend/', get_sma_trend_metrics, name='get_bollinger_trend'),
     path('get_rsi_trend/', get_rsi_trend_metrics, name='get_rsi_trend'),
     path('get_candle_patterns/', get_candle_detection, name='get_candle_patterns'),
+    path('get_inst_holders/', get_yahoo_inst_holders, name='get_inst_holders'),
 ]
 

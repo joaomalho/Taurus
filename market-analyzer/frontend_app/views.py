@@ -54,7 +54,6 @@ def get_yahoo_data_history(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
         
-
 def get_yahoo_stock_gainers(request):
     """
     View to pass Top 100 Gainers JSON.
@@ -97,7 +96,6 @@ def get_yahoo_stock_most_active(request):
     # Converte DataFrame para dicionário JSON
     return JsonResponse({"data": df.to_dict(orient="records")})
 
-
 def get_crossover_trend_metrics(request):
     """
     View to calculate crossover of 3 EMAs and return signals to frontend.
@@ -132,7 +130,6 @@ def get_crossover_trend_metrics(request):
     crossover_result = tm.get_crossover(close_prices, symbol, fastperiod, mediumperiod, slowperiod)
 
     return JsonResponse(crossover_result)
-
 
 def get_adx_trend_metrics(request):
     """
@@ -171,7 +168,6 @@ def get_adx_trend_metrics(request):
 
     return JsonResponse(adx_result)
 
-
 def get_sma_trend_metrics(request):
     """
     View to calculate Bollinger and return signals to frontend.
@@ -205,7 +201,6 @@ def get_sma_trend_metrics(request):
     sma_bands_result = tm.get_sma_bands(symbol, close_prices, length, std_dev)
 
     return JsonResponse(sma_bands_result)
-
 
 def get_rsi_trend_metrics(request):
     """
@@ -241,7 +236,6 @@ def get_rsi_trend_metrics(request):
     rsi_result = tm.get_rsi(symbol, close_prices, length, upper_level, lower_level)
 
     return JsonResponse(rsi_result)
-
 
 def get_candle_detection(request):
     """
@@ -300,3 +294,25 @@ def get_candle_detection(request):
         return JsonResponse({"symbol": symbol, "patterns_detected": "No patterns found"}, status=200)
 
     return JsonResponse({"symbol": symbol, "patterns_detected": detected_patterns})
+
+
+def get_yahoo_inst_holders(request):
+    """
+    Return the list of major institutional holders
+    """
+    symbol = request.GET.get("symbol", "").strip().upper()
+
+    if not symbol:
+        return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+    try:
+        data_history = DataHistoryYahoo()  
+        df = data_history.get_yahoo_symbol_institutional_holders(symbol)
+        
+        if df is None or df.empty:
+            return JsonResponse({"error": "No data found"}, status=404)
+
+        return JsonResponse({"data": df.to_dict(orient="records")})
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
