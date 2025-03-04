@@ -1,0 +1,26 @@
+/* ============================= */
+/* PIE CHARTS */
+/* ============================= */
+
+.h-bar-chart-container-holders {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#h-bar-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+/* Ajustando textos dentro do gráfico */
+#h-bar-chart text {
+    font-size: 12px;
+    fill: white;
+}

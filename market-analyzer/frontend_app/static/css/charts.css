@@ -1,7 +1,15 @@
 /* ============================= */
-/* PIE CHARTS */
+/* CONFIGURAÇÃO GLOBAL E VARIÁVEIS */
 /* ============================= */
 
+:root {
+    --text-color: #ffffff;
+    --white: #ffffff;
+}
+
+/* ============================= */
+/* HORIZONTAL BAR CHARTS */
+/* ============================= */
 .h-bar-chart-container-holders {
     display: flex;
     flex-direction: column;
@@ -9,6 +17,7 @@
     justify-content: center;
     width: 100%;
     margin-top: 20px;
+    overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
 }
 
 #h-bar-chart {
@@ -22,5 +31,130 @@
 /* Ajustando textos dentro do gráfico */
 #h-bar-chart text {
     font-size: 12px;
-    fill: white;
+    fill: var(--text-color);
+}
+
+/* Ajustando responsividade */
+@media screen and (max-width: 1024px) {
+    .h-bar-chart-container-holders {
+        width: 100%;
+        padding: 5px;
+    }
+
+    #h-bar-chart {
+        width: 95%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .h-bar-chart-container-holders {
+        overflow-x: scroll; /* Adiciona rolagem horizontal para telas pequenas */
+        padding: 5px;
+    }
+
+    #h-bar-chart {
+        width: 800px; /* Mantém um tamanho fixo para rolagem */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #h-bar-chart text {
+        font-size: 10px; /* Reduz o tamanho da fonte em telas menores */
+    }
+}
+
+/* ============================= */
+/* STACKED BAR CHART - RECOMMENDATIONS */
+/* ============================= */
+
+.stack-bar-recommendation-chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+    overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+
+}
+
+#stack-bar-recommendation-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+/* Ajuste de textos dentro do gráfico */
+#stack-bar-recommendation-chart text {
+    font-size: 12px;
+    font-weight: bold;
+    fill: var(--text-color);
+}
+
+/* Ajuste das barras empilhadas */
+#stack-bar-recommendation-chart rect {
+    stroke: var(--white); /* Linha branca para separar as categorias */
+    stroke-width: 0.5px;
+}
+
+/* Estilo da legenda */
+.recommendation-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.recommendation-legend div {
+    display: flex;
+    align-items: center;
+    margin: 5px;
+}
+
+.recommendation-legend div span {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+/* Melhorando responsividade */
+@media screen and (max-width: 1024px) {
+    .stack-bar-recommendation-chart-container {
+        width: 100%;
+        padding: 5px;
+    }
+
+    #stack-bar-recommendation-chart {
+        width: 95%; /* Reduz ligeiramente para melhor ajuste */
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .stack-bar-recommendation-chart-container {
+        overflow-x: scroll; /* Adiciona rolagem horizontal para telas pequenas */
+        padding: 5px;
+    }
+
+    #stack-bar-recommendation-chart {
+        width: 800px; /* Mantém um tamanho fixo para rolagem */
+    }
+
+    .recommendation-legend {
+        flex-direction: column; /* Legenda em formato de coluna para melhor leitura */
+        align-items: center;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #stack-bar-recommendation-chart text {
+        font-size: 10px; /* Reduz tamanho da fonte */
+    }
+
+    .recommendation-legend div {
+        font-size: 10px; /* Reduz fonte da legenda */
+    }
 }

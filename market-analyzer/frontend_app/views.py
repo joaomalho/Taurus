@@ -461,3 +461,31 @@ def get_yahoo_inst_holders(request, symbol):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+def get_yahoo_recommendations(request, symbol):
+    """
+    Return recommendations about asset
+    """
+    try:
+        symbol = symbol.strip().upper()
+
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()  
+        df = data_history.get_yahoo_symbol_recommendations(symbol)
+        
+        if df is None or df.empty:
+            return JsonResponse({"error": "No data found"}, status=404)
+
+        df = df.replace({np.nan: None})
+
+        return JsonResponse({"data": df.to_dict(orient="records")})
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)

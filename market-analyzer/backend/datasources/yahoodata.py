@@ -195,13 +195,17 @@ class DataHistoryYahoo():
         
         return yahoo_symbol_institutional_holders
 
-    def get_yahoo_symbol_recomentations(self, symbol : str):
+    def get_yahoo_symbol_recommendations(self, symbol : str):
         '''
-        Return the list of recomendations last
+        Return recommendations about asset
         '''
-        yahoo_symbol_recomendations = yf.Ticker(symbol).recommendations
-        yahoo_symbol_recomendations
-        return yahoo_symbol_recomendations
+        yahoo_symbol_recommendations = yf.Ticker(symbol).recommendations
+        current_date = datetime.now()  # Obtém a data atual
+        yahoo_symbol_recommendations["period"] = yahoo_symbol_recommendations.index.map(
+            lambda x: (current_date - pd.DateOffset(months=x)).strftime("%B/%Y")  # Nome do mês + ano
+        )
+        return yahoo_symbol_recommendations
+
 
     ##### NOT IN USE ##### 
     def get_yahoo_symbol_info(self, symbol : str):
@@ -225,13 +229,7 @@ class DataHistoryYahoo():
         yahoo_symbol_splits = yf.Ticker(symbol).splits
         return yahoo_symbol_splits
  
-    def get_yahoo_symbol_recommendations(self, symbol : str):
-        '''
-        Return recommendations about asset
-        '''
-        yahoo_symbol_recommendations = yf.Ticker(symbol).recommendations
-        return yahoo_symbol_recommendations
-
+ 
     def get_yahoo_symbol_calendar(self, symbol : str):
         '''
         Return corporative calendar events about asset
@@ -510,7 +508,3 @@ class DataHistoryYahoo():
 
         return df
     
-    def get_yahoo_ticker_estimated_prices(self, ticker: str) -> pd.DataFrame:
-        '''
-        
-        '''

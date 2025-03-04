@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("✅ Script carregado com sucesso!");
 
     setupSearchButton();
     setupScreenerButton();
@@ -14,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchBollingerData(symbol);
         fetchRSIData(symbol);
         fetchCandlePatternData(symbol);
-        fetchYahooInstHolders(symbol);
     }
 
     fetchYahooStockGainers();
@@ -70,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
     
-        bollingerLength  = parseInt(bollingerLength );
+        bollingerLength  = parseInt(bollingerLength);
         stdBol = parseInt(stdBol);
     
         if (isNaN(bollingerLength )) {
@@ -134,13 +132,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function setupSearchButton() {
     let searchButton = document.getElementById("searchButton");
-    if (searchButton) {
+    let stockInput = document.getElementById("stockSymbol");
+
+    if (searchButton && stockInput) {
         searchButton.addEventListener("click", function () {
-            let symbol = document.getElementById("stockSymbol").value.trim().toUpperCase();
+            let symbol = stockInput.value.trim().toUpperCase();
+
+            // Validação: apenas letras maiúsculas e números são permitidos
             if (!symbol) {
-                alert("Please enter a stock symbol!");
+                alert("⚠️ Por favor, insira um símbolo de ação válido (ex: AAPL).");
                 return;
             }
+
+            if (!/^[A-Z0-9]{1,10}$/.test(symbol)) {
+                alert("⚠️ O símbolo da ação deve conter apenas letras maiúsculas e números (ex: AAPL, TSLA).");
+                return;
+            }
+
             window.location.href = `/stock/${symbol}/`;
         });
     }
@@ -158,14 +166,16 @@ function setupScreenerButton() {
 /* ─────────────── FUNÇÕES DE REQUISIÇÃO ─────────────── */
 
 function fetchStockData(symbol) {
-    fetch(`/stock/${symbol}/`)
+    fetch(`/stock/${symbol}/data_history/?period=1mo&interval=1d`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
                 document.getElementById("tableContainerStock").innerHTML = "<h2>Stock not found</h2>";
-            } else {
-                updateTable(data);
+                return;
             }
+
+            // Apenas atualiza a tabela, sem interferir no gráfico
+            updateTable(data);
         })
         .catch(error => {
             console.error("Erro ao buscar dados:", error);
@@ -173,8 +183,9 @@ function fetchStockData(symbol) {
         });
 }
 
+
 function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeriod = 200) {
-    fetch(`/get_crossover_trend/?symbol=${symbol}&fast=${fastPeriod}&medium=${mediumPeriod}&slow=${slowPeriod}`)
+    fetch(`/stock/${symbol}/crossover_trend/?fast=${fastPeriod}&medium=${mediumPeriod}&slow=${slowPeriod}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -190,7 +201,7 @@ function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeri
 }
 
 function fetchADXData(symbol, length = 14) {
-    fetch(`/get_adx_trend/?symbol=${symbol}&length=${length}`)
+    fetch(`/stock/${symbol}/adx_trend/?length=${length}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -206,7 +217,7 @@ function fetchADXData(symbol, length = 14) {
 }
 
 function fetchBollingerData(symbol, length = 14, std_dev=2) {
-    fetch(`/get_bollinger_trend/?symbol=${symbol}&length=${length}&std=${std_dev}`)
+    fetch(`/stock/${symbol}/bollinger_trend/?length=${length}&std=${std_dev}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -222,7 +233,7 @@ function fetchBollingerData(symbol, length = 14, std_dev=2) {
 }
 
 function fetchRSIData(symbol, length = 14, upper_level = 70, lower_level = 30) {
-    fetch(`/get_rsi_trend/?symbol=${symbol}&length=${length}&upper_level=${upper_level}&lower_level=${lower_level}`)
+    fetch(`/stock/${symbol}/rsi_trend/?length=${length}&upper_level=${upper_level}&lower_level=${lower_level}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -238,11 +249,9 @@ function fetchRSIData(symbol, length = 14, upper_level = 70, lower_level = 30) {
 }
 
 function fetchCandlePatternData(symbol) {
-    fetch(`/get_candle_patterns/?symbol=${symbol}`)
+    fetch(`/stock/${symbol}/candle_patterns/`)
         .then(response => response.json())
         .then(data => {
-            console.log("📊 Dados Recebidos:", data); // Adicionado para depuração
-
             if (data.error) {
                 document.getElementById("CandleResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
             } else {
@@ -254,13 +263,13 @@ function fetchCandlePatternData(symbol) {
             }
         })
         .catch(error => {
-            console.error("🚨 Erro ao buscar os dados do Candles:", error);
+            console.error("Erro ao buscar os dados do Candles:", error);
             document.getElementById("CandleResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
         });
 }
 
 function fetchYahooStockGainers() {
-    fetch("/screener/get_yahoo_stock_gainers/")
+    fetch("/screener/stock_gainers/")
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -276,7 +285,7 @@ function fetchYahooStockGainers() {
 }
 
 function fetchYahooStockTrending() {
-    fetch("/screener/get_yahoo_stock_trending/")
+    fetch("/screener/stock_trending/")
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -292,7 +301,7 @@ function fetchYahooStockTrending() {
 }
 
 function fetchYahooStockMostActive() {
-    fetch("/screener/get_yahoo_stock_most_active/")
+    fetch("/screener/stock_most_active/")
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -307,21 +316,6 @@ function fetchYahooStockMostActive() {
         });
 }
 
-function fetchYahooInstHolders(symbol) {
-    fetch(`/get_inst_holders/?symbol=${symbol}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                document.getElementById("InstHoldersResults").innerHTML = "<h2>Erro ao carregar os dados.</h2>";
-            } else {
-                displayInstHoldersResults(data.data);
-            }
-        })
-        .catch(error => {
-            console.error("Erro ao buscar dados:", error);
-            document.getElementById("InstHoldersResults").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
-        });
-}
 
 /* ─────────────── FUNÇÕES DE MANIPULAÇÃO DE DADOS ─────────────── */
 
@@ -482,47 +476,6 @@ function displayCandleResults(data) {
 
     document.getElementById("CandleResults").innerHTML = tableHTML;
 }
-
-function displayInstHoldersResults(data) {
-    if (!data || data.length === 0) {
-        document.getElementById("InstHoldersResults").innerHTML = "<h2>Sem dados disponíveis.</h2>";
-        return;
-    }
-
-    let tableHTML = `
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th>Date Reported</th>
-                    <th>Holder</th>
-                    <th>Held (%)</th>
-                    <th>Shares (#)</th>
-                    <th>Value</th>
-                    <th>Change (%)</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    data.forEach(entry => {
-        tableHTML += `
-            <tr>
-                <td>${entry["Date Reported"]}</td>
-                <td>${entry.Holder}</td>
-                <td>${parseFloat(entry.pctHeld).toFixed(2)}%</td>
-                <td>${entry.Shares.toLocaleString()}</td>
-                <td>$${entry.Value.toLocaleString()}</td>
-                <td>${parseFloat(entry.pctChange).toFixed(2)}%</td>
-            </tr>
-        `;
-    });
-
-    tableHTML += "</tbody></table>";
-
-    document.getElementById("InstHoldersResults").innerHTML = tableHTML;
-}
-
-
 
 function populateYahooStockTable(containerPrefix, data) {
     let headerRow = document.getElementById(`${containerPrefix}Header`);
