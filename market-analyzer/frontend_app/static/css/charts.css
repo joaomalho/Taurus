@@ -2,7 +2,7 @@
 /* PIE CHARTS */
 /* ============================= */
 
-.pie-chart-container-holders {
+.h-bar-chart-container-holders {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -11,7 +11,7 @@
     margin-top: 20px;
 }
 
-#pie-chart {
+#h-bar-chart {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,7 +20,7 @@
 }
 
 /* Ajustando textos dentro do gráfico */
-#pie-chart text {
+#h-bar-chart text {
     font-size: 12px;
     fill: white;
 }

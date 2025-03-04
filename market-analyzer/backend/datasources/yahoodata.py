@@ -185,16 +185,23 @@ class DataHistoryYahoo():
         return yahoo_data_history
 
     def get_yahoo_symbol_institutional_holders(self, symbol : str):
-            '''
-            Return the list of major institutional holders
-            '''
-            yahoo_symbol_institutional_holders = yf.Ticker(symbol).institutional_holders
-            yahoo_symbol_institutional_holders['Date Reported'] = yahoo_symbol_institutional_holders['Date Reported'].dt.strftime("%Y-%m-%d %H:%M") 
-            yahoo_symbol_institutional_holders['pctHeld'] = yahoo_symbol_institutional_holders['pctHeld']*100
-            yahoo_symbol_institutional_holders['pctChange'] = yahoo_symbol_institutional_holders['pctChange']*100
-            
-            return yahoo_symbol_institutional_holders
+        '''
+        Return the list of major institutional holders
+        '''
+        yahoo_symbol_institutional_holders = yf.Ticker(symbol).institutional_holders
+        yahoo_symbol_institutional_holders['Date Reported'] = yahoo_symbol_institutional_holders['Date Reported'].dt.strftime("%Y-%m-%d %H:%M") 
+        yahoo_symbol_institutional_holders['pctHeld'] = yahoo_symbol_institutional_holders['pctHeld']*100
+        yahoo_symbol_institutional_holders['pctChange'] = yahoo_symbol_institutional_holders['pctChange']*100
+        
+        return yahoo_symbol_institutional_holders
 
+    def get_yahoo_symbol_recomentations(self, symbol : str):
+        '''
+        Return the list of recomendations last
+        '''
+        yahoo_symbol_recomendations = yf.Ticker(symbol).recommendations
+        yahoo_symbol_recomendations
+        return yahoo_symbol_recomendations
 
     ##### NOT IN USE ##### 
     def get_yahoo_symbol_info(self, symbol : str):
