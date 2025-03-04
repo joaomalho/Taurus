@@ -160,54 +160,7 @@ class DataHistoryYahoo():
         except Exception as e:
             print(f"Error processing data: {e}")
 
-    ########### FOREX ###########
-    def get_yahoo(self, table_class: str = None) -> pd.DataFrame:
-        """
-        Extrat data from yahoo currencies.
-
-        Parameters:
-            classe_tabela (str): Class CSS from table to scrap (optional).
-
-        Returns:
-            pd.DataFrame: DataFrame with table content.
-        """
-
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        }
-
-        try:
-            response = requests.get("https://finance.yahoo.com/markets/currencies/", headers=headers)
-            response.raise_for_status()
-
-            soup = BeautifulSoup(response.text, 'html.parser')
-
-            if table_class:
-                tabela = soup.find('table', {'class': table_class})
-            else:
-                tabela = soup.find('table')
-
-            headers = [th.text.strip() for th in tabela.find_all('th')]
-
-            rows = []
-            for row in tabela.find_all('tr')[1:]:
-                cols = [td.text.strip() for td in row.find_all('td')]
-                if cols:
-                    rows.append(cols)
-
-            df = pd.DataFrame(rows, columns=headers if headers else None)
-            df["Price"] = df["Price"].str.extract(r"^([\d\.]+)")
-            df["Change"] = df["Change"].str.replace("+", "", regex=False)
-            df["Change %"] = df["Change %"].str.replace("%", "", regex=False).str.replace("+", "", regex=False)
-            df.drop(columns=["52 Wk Range", "Symbol"], inplace=True)
-            df.rename(columns={"Name": "Symbol"}, inplace=True)
-            return df
-        
-        except requests.exceptions.RequestException as e:
-            print(f"Error accessing URL: {e}")
-        except Exception as e:
-            print(f"Error processing data: {e}")
-    
+    ########### FOREX ###########   
     def get_yahoo_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
         '''
         Data collection from yahoo
@@ -230,7 +183,20 @@ class DataHistoryYahoo():
         yahoo_data_history["Date"] = yahoo_data_history["Date"].dt.strftime("%Y-%m-%d %H:%M")
 
         return yahoo_data_history
-    
+
+    def get_yahoo_symbol_institutional_holders(self, symbol : str):
+            '''
+            Return the list of major institutional holders
+            '''
+            yahoo_symbol_institutional_holders = yf.Ticker(symbol).institutional_holders
+            yahoo_symbol_institutional_holders['Date Reported'] = yahoo_symbol_institutional_holders['Date Reported'].dt.strftime("%Y-%m-%d %H:%M") 
+            yahoo_symbol_institutional_holders['pctHeld'] = yahoo_symbol_institutional_holders['pctHeld']*100
+            yahoo_symbol_institutional_holders['pctChange'] = yahoo_symbol_institutional_holders['pctChange']*100
+            
+            return yahoo_symbol_institutional_holders
+
+
+    ##### NOT IN USE ##### 
     def get_yahoo_symbol_info(self, symbol : str):
         '''
         Return detailed information about asset
@@ -273,18 +239,7 @@ class DataHistoryYahoo():
         yahoo_symbol_major_holders = yf.Ticker(symbol).major_holders
         return yahoo_symbol_major_holders
 
-    def get_yahoo_symbol_institutional_holders(self, symbol : str):
-        '''
-        Return the list of major institutional holders
-        '''
-        yahoo_symbol_institutional_holders = yf.Ticker(symbol).institutional_holders
-        yahoo_symbol_institutional_holders['Date Reported'] = yahoo_symbol_institutional_holders['Date Reported'].dt.strftime("%Y-%m-%d %H:%M") 
-        yahoo_symbol_institutional_holders['pctHeld'] = yahoo_symbol_institutional_holders['pctHeld']*100
-        yahoo_symbol_institutional_holders['pctChange'] = yahoo_symbol_institutional_holders['pctChange']*100
-        
-        return yahoo_symbol_institutional_holders
-
-
+    
     def get_yahoo_symbol_balance_sheet(self, symbol : str):
         '''
         Return the patrimonial balance sheet

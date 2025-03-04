@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
 
@@ -11,19 +10,22 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function fetchCandlestickData(symbol, period, interval) {
-    fetch(`/get_yahoo_data_history/?symbol=${symbol}&period=${period}&interval=${interval}`)
+    fetch(`/stock/${symbol}/data_history/?period=${period}&interval=${interval}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
+                console.error("Erro ao buscar dados do candlestick:", data.error);
                 document.getElementById("candlestickChart").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
             } else {
                 processCandlestickData(data);
             }
         })
         .catch(error => {
+            console.error("Erro ao buscar os dados do candlestick:", error);
             document.getElementById("candlestickChart").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
         });
 }
+
 
 function processCandlestickData(data) {
     if (!data.data || data.data.length === 0) {
@@ -34,31 +36,21 @@ function processCandlestickData(data) {
 
     console.log("Processando dados para o gráfico:", data.data);
 
-    let maxDataPoints = 500;  // Ajuste conforme necessário
-    let trimmedData = data.data.slice(-maxDataPoints);  // Pega os últimos 500 registros
+    let maxDataPoints = 500;
+    let trimmedData = data.data.slice(-maxDataPoints);
 
-    let dates = trimmedData.map(entry => {
-        if (entry.Date) {
-            let dateObj = new Date(entry.Date);
-            let formattedDate = dateObj.toISOString().split("T")[0]; // YYYY-MM-DD
-            let formattedTime = dateObj.toISOString().split("T")[1].substring(0, 5); // HH:MM
-            return `${formattedDate} ${formattedTime}`;
-        }
-        return "Desconhecido";
-    }); 
+    let dates = trimmedData.map(entry => entry.Date ? new Date(entry.Date).toISOString().split("T")[0] : "Desconhecido");
     let openPrices = trimmedData.map(entry => parseFloat(entry.Open) || 0);
     let highPrices = trimmedData.map(entry => parseFloat(entry.High) || 0);
     let lowPrices = trimmedData.map(entry => parseFloat(entry.Low) || 0);
     let closePrices = trimmedData.map(entry => parseFloat(entry.Close) || 0);
 
-    console.log("Dados extraídos para o gráfico (limite de 500):", { dates, openPrices, highPrices, lowPrices, closePrices });
+    console.log("Dados extraídos para o gráfico:", { dates, openPrices, highPrices, lowPrices, closePrices });
 
     renderCandlestickChart(dates, openPrices, highPrices, lowPrices, closePrices);
 }
 
-
 function renderCandlestickChart(dates, open, high, low, close) {
-    
     let trace = {
         x: dates,
         open: open,
@@ -71,7 +63,7 @@ function renderCandlestickChart(dates, open, high, low, close) {
     };
 
     let layout = {
-        title: 'Histórico de Preços Forex',
+        title: 'Histórico de Preços',
         xaxis: { type: 'date' },
         yaxis: { title: 'Preço' },
         dragmode: 'pan'

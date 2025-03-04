@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchBollingerData(symbol);
         fetchRSIData(symbol);
         fetchCandlePatternData(symbol);
+        fetchYahooInstHolders(symbol);
     }
 
     fetchYahooStockGainers();
@@ -124,6 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchCandlePatternData(symbol);
     });
 });
+
 
 /* ─────────────── FUNÇÕES DE FORMATAÇÃO ─────────────── */
 
@@ -305,6 +307,22 @@ function fetchYahooStockMostActive() {
         });
 }
 
+function fetchYahooInstHolders(symbol) {
+    fetch(`/get_inst_holders/?symbol=${symbol}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById("InstHoldersResults").innerHTML = "<h2>Erro ao carregar os dados.</h2>";
+            } else {
+                displayInstHoldersResults(data.data);
+            }
+        })
+        .catch(error => {
+            console.error("Erro ao buscar dados:", error);
+            document.getElementById("InstHoldersResults").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
+        });
+}
+
 /* ─────────────── FUNÇÕES DE MANIPULAÇÃO DE DADOS ─────────────── */
 
 function updateTable(data) {
@@ -335,7 +353,6 @@ function displayCrossoverResults(data) {
         <table class="table-custom">
             <thead>
                 <tr>
-                    <th>Ticker</th>
                     <th>EMA Short (${data.fast_period})</th>
                     <th>EMA Medium (${data.medium_period})</th>
                     <th>EMA Long (${data.slow_period})</th>
@@ -344,7 +361,6 @@ function displayCrossoverResults(data) {
             </thead>
             <tbody>
                 <tr>
-                    <td>${data.symbol}</td>
                     <td>${parseFloat(data.ema1_now).toFixed(2)}</td>
                     <td>${parseFloat(data.ema2_now).toFixed(2)}</td>
                     <td>${parseFloat(data.ema3_now).toFixed(2)}</td>
@@ -362,7 +378,6 @@ function displayADXResults(data) {
         <table class="table-custom">
             <thead>
                 <tr>
-                    <th>Ticker</th>
                     <th>Periods</th>
                     <th>ADX</th>
                     <th>Signal</th>
@@ -370,7 +385,6 @@ function displayADXResults(data) {
             </thead>
             <tbody>
                 <tr>
-                    <td>${data.symbol}</td>
                     <td>${data.length}</td>
                     <td>${parseFloat(data.adx_now).toFixed(2)}</td>
                     <td><strong>${data.signal}</strong></td>
@@ -387,7 +401,6 @@ function displayBollingerResults(data) {
         <table class="table-custom">
             <thead>
                 <tr>
-                    <th>Ticker</th>
                     <th>Periods</th>
                     <th>Deviation</th>
                     <th>Upper Band</th>
@@ -398,7 +411,6 @@ function displayBollingerResults(data) {
             </thead>
             <tbody>
                 <tr>
-                    <td>${data.symbol}</td>
                     <td>${data.length}</td>
                     <td>${data.std_dev}</td>
                     <td>${parseFloat(data.upper_band).toFixed(2)}</td>
@@ -418,7 +430,6 @@ function displayRSIResults(data) {
         <table class="table-custom">
             <thead>
                 <tr>
-                    <th>Ticker</th>
                     <th>Periods</th>
                     <th>Upper Level</th>
                     <th>Lower Level</th>
@@ -427,7 +438,6 @@ function displayRSIResults(data) {
             </thead>
             <tbody>
                 <tr>
-                    <td>${data.symbol}</td>
                     <td>${data.length}</td>
                     <td>${parseFloat(data.rsi).toFixed(2)}</td>
                     <td>${data.upper_level}</td>
@@ -446,7 +456,6 @@ function displayCandleResults(data) {
         <table class="table-custom">
             <thead>
                 <tr>
-                    <th>Ticker</th>
                     <th>Pattern</th>
                     <th>Stoploss</th>
                     <th>Signal</th>
@@ -460,7 +469,6 @@ function displayCandleResults(data) {
         data.patterns_detected[pattern].forEach(entry => {
             tableHTML += `
                 <tr>
-                    <td>${data.symbol}</td>
                     <td>${pattern}</td>
                     <td>${parseFloat(entry.Stoploss).toFixed(5)}</td>
                     <td>${entry.Signal}</td>
@@ -474,6 +482,46 @@ function displayCandleResults(data) {
 
     document.getElementById("CandleResults").innerHTML = tableHTML;
 }
+
+function displayInstHoldersResults(data) {
+    if (!data || data.length === 0) {
+        document.getElementById("InstHoldersResults").innerHTML = "<h2>Sem dados disponíveis.</h2>";
+        return;
+    }
+
+    let tableHTML = `
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Date Reported</th>
+                    <th>Holder</th>
+                    <th>Held (%)</th>
+                    <th>Shares (#)</th>
+                    <th>Value</th>
+                    <th>Change (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    data.forEach(entry => {
+        tableHTML += `
+            <tr>
+                <td>${entry["Date Reported"]}</td>
+                <td>${entry.Holder}</td>
+                <td>${parseFloat(entry.pctHeld).toFixed(2)}%</td>
+                <td>${entry.Shares.toLocaleString()}</td>
+                <td>$${entry.Value.toLocaleString()}</td>
+                <td>${parseFloat(entry.pctChange).toFixed(2)}%</td>
+            </tr>
+        `;
+    });
+
+    tableHTML += "</tbody></table>";
+
+    document.getElementById("InstHoldersResults").innerHTML = tableHTML;
+}
+
 
 
 function populateYahooStockTable(containerPrefix, data) {
