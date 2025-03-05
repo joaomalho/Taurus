@@ -34,7 +34,7 @@ def validate_symbol(symbol):
     except Exception:
         raise Http404("Invalid stock symbol.")
 
-def get_yahoo_data_history(request, symbol):
+def get_data_history(request, symbol):
         '''
         Data collection from yahoo
 
@@ -63,7 +63,7 @@ def get_yahoo_data_history(request, symbol):
 
             try:
                 data_history = DataHistoryYahoo()  
-                df = data_history.get_yahoo_data_history(symbol=symbol, period=per, interval=interval_time)
+                df = data_history.get_data_history(symbol=symbol, period=per, interval=interval_time)
                 
                 if df is None or df.empty:
                     return JsonResponse({"error": "No data found"}, status=404)
@@ -75,13 +75,13 @@ def get_yahoo_data_history(request, symbol):
         except Exception as e:
             return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
-def get_yahoo_stock_gainers(request):
+def get_stock_gainers(request):
     """
     View to pass Top 100 Gainers JSON.
     """
     
     data_history = DataHistoryYahoo() 
-    df = data_history.get_yahoo_stocks_top100_gainers()
+    df = data_history.get_stocks_gainers()
 
     if df is None or df.empty:
         return JsonResponse({"error": "No data found"}, status=404)
@@ -89,13 +89,13 @@ def get_yahoo_stock_gainers(request):
     # Converte DataFrame para dicionário JSON
     return JsonResponse({"data": df.to_dict(orient="records")})
 
-def get_yahoo_stock_trending(request):
+def get_stock_trending(request):
     """
     View to pass Top 100 Trending JSON.
     """
     try:
         data_history = DataHistoryYahoo() 
-        df = data_history.get_yahoo_stocks_trending()
+        df = data_history.get_stocks_trending()
 
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -109,13 +109,13 @@ def get_yahoo_stock_trending(request):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
-def get_yahoo_stock_most_active(request):
+def get_stock_most_active(request):
     """
     View to pass Top 100 Most Active JSON.
     """
     try:
         data_history = DataHistoryYahoo() 
-        df = data_history.get_yahoo_stocks_top100_most_active()
+        df = data_history.get_stocks_most_active()
 
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -177,7 +177,7 @@ def get_crossover_trend_metrics(request, symbol):
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
             data_history = DataHistoryYahoo()
-            df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
+            df = data_history.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -233,7 +233,7 @@ def get_adx_trend_metrics(request, symbol):
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
             data_history = DataHistoryYahoo()
-            df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
+            df = data_history.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -292,7 +292,7 @@ def get_sma_trend_metrics(request, symbol):
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
             data_history = DataHistoryYahoo()
-            df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
+            df = data_history.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -338,7 +338,7 @@ def get_rsi_trend_metrics(request, symbol):
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
             data_history = DataHistoryYahoo()
-            df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
+            df = data_history.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -391,7 +391,7 @@ def get_candle_detection(request, symbol):
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
             data_history = DataHistoryYahoo()
-            df = data_history.get_yahoo_data_history(symbol=symbol, period="1mo", interval="1d")
+            df = data_history.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -434,7 +434,7 @@ def get_candle_detection(request, symbol):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
-def get_yahoo_inst_holders(request, symbol):
+def get_inst_holders(request, symbol):
     """
     Return the list of major institutional holders
     """
@@ -447,7 +447,7 @@ def get_yahoo_inst_holders(request, symbol):
         symbol = validate_symbol(symbol)
 
         data_history = DataHistoryYahoo()  
-        df = data_history.get_yahoo_symbol_institutional_holders(symbol)
+        df = data_history.get_symbol_institutional_holders(symbol)
         
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -462,7 +462,7 @@ def get_yahoo_inst_holders(request, symbol):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
-def get_yahoo_recommendations(request, symbol):
+def get_recommendations(request, symbol):
     """
     Return recommendations about asset
     """
@@ -475,7 +475,7 @@ def get_yahoo_recommendations(request, symbol):
         symbol = validate_symbol(symbol)
 
         data_history = DataHistoryYahoo()  
-        df = data_history.get_yahoo_symbol_recommendations(symbol)
+        df = data_history.get_symbol_recommendations(symbol)
         
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -483,6 +483,43 @@ def get_yahoo_recommendations(request, symbol):
         df = df.replace({np.nan: None})
 
         return JsonResponse({"data": df.to_dict(orient="records")})
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+def get_fundamental_info(request, symbol):
+    """
+    Return fundamental information about asset to present quantitative analysis.
+    """
+    try:
+        symbol = symbol.strip().upper()
+
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        # Valida se o símbolo é correto
+        symbol = validate_symbol(symbol)
+
+        # Obtém os dados fundamentais
+        data_history = DataHistoryYahoo()  
+        fundamental_info = data_history.get_symbol_fundamental_info(symbol)
+
+        if not fundamental_info:
+            return JsonResponse({"error": "No data found"}, status=404)
+
+        # Converte np.nan para None antes de retornar
+        cleaned_data = {
+            category: {
+                key: (None if value is np.nan else value)
+                for key, value in data.items()
+            }
+            for category, data in fundamental_info.items()
+        }
+
+        return JsonResponse(cleaned_data)
 
     except ConnectionError:
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)

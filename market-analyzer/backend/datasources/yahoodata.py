@@ -12,8 +12,8 @@ class DataHistoryYahoo():
     def __init__(self) -> None:
         self
     
-    ########### STOCKS ###########
-    def get_yahoo_stocks_top100_gainers(self, table_class: str = None) -> pd.DataFrame:
+    ########### STOCKS TOPs ###########
+    def get_stocks_gainers(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo top 100 gainers
 
@@ -63,7 +63,7 @@ class DataHistoryYahoo():
         except Exception as e:
             print(f"Error processing data: {e}")
 
-    def get_yahoo_stocks_top100_most_active(self, table_class: str = None) -> pd.DataFrame:
+    def get_stocks_most_active(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo most active
 
@@ -111,7 +111,7 @@ class DataHistoryYahoo():
         except Exception as e:
             print(f"Error processing data: {e}")
     
-    def get_yahoo_stocks_trending(self, table_class: str = None) -> pd.DataFrame:
+    def get_stocks_trending(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo trending.
 
@@ -161,7 +161,7 @@ class DataHistoryYahoo():
             print(f"Error processing data: {e}")
 
     ########### FOREX ###########   
-    def get_yahoo_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
+    def get_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
         '''
         Data collection from yahoo
 
@@ -184,7 +184,7 @@ class DataHistoryYahoo():
 
         return yahoo_data_history
 
-    def get_yahoo_symbol_institutional_holders(self, symbol : str):
+    def get_symbol_institutional_holders(self, symbol : str):
         '''
         Return the list of major institutional holders
         '''
@@ -195,7 +195,7 @@ class DataHistoryYahoo():
         
         return yahoo_symbol_institutional_holders
 
-    def get_yahoo_symbol_recommendations(self, symbol : str):
+    def get_symbol_recommendations(self, symbol : str):
         '''
         Return recommendations about asset
         '''
@@ -206,14 +206,57 @@ class DataHistoryYahoo():
         )
         return yahoo_symbol_recommendations
 
-
-    ##### NOT IN USE ##### 
-    def get_yahoo_symbol_info(self, symbol : str):
+    def get_symbol_fundamental_info(self, symbol : str):
         '''
-        Return detailed information about asset
+        Return detailed fundamental information about asset
         '''
         yahoo_symbol_info = yf.Ticker(symbol).info
-        return yahoo_symbol_info
+        yahoo_symbol_fundamental_info = {
+            "liquidity_and_solvency": {
+                "Quick Ratio": yahoo_symbol_info.get("quickRatio", "N/A"),
+                "Current Ratio": yahoo_symbol_info.get("currentRatio", "N/A"),
+                "Total Cash": yahoo_symbol_info.get("totalCash", "N/A"),
+                "Total Debt": yahoo_symbol_info.get("totalDebt", "N/A"),
+                "Debt to Equity (D/E)": yahoo_symbol_info.get("totalDebt", "N/A"),
+            },
+            "profitability": {
+                "Margem Bruta": yahoo_symbol_info.get("grossMargins", "N/A"),
+                "Margem Operacional": yahoo_symbol_info.get("operatingMargins", "N/A"),
+                "Margem EBITDA": yahoo_symbol_info.get("ebitdaMargins", "N/A"),
+                "Lucro Líquido (Net Income)": yahoo_symbol_info.get("netIncomeToCommon", "N/A"),
+                "Profit Margin (Margem Líquida)": yahoo_symbol_info.get("profitMargins", "N/A"),
+                "Retorno sobre Ativos (ROA)": yahoo_symbol_info.get("returnOnAssets", "N/A"),
+                "Retorno sobre Patrimônio (ROE)": yahoo_symbol_info.get("returnOnEquity", "N/A"),
+            },
+            "growth": {
+                "Crescimento de Receita (YoY)": yahoo_symbol_info.get("revenueGrowth", "N/A"),
+                "Crescimento do Lucro Líquido (YoY)": yahoo_symbol_info.get("earningsQuarterlyGrowth", "N/A"),
+                "Earnings Growth (Previsão de Crescimento de Lucros)": yahoo_symbol_info.get("earningsGrowth", "N/A"),
+            },
+            "valuation": {
+                "P/E Ratio (Preço/Lucro)": yahoo_symbol_info.get("trailingPE", "N/A"),
+                "Forward P/E": yahoo_symbol_info.get("forwardPE", "N/A"),
+                "PEG Ratio": yahoo_symbol_info.get("trailingPegRatio", "N/A"),
+                "P/B Ratio (Preço/Valor Patrimonial)": yahoo_symbol_info.get("priceToBook", "N/A"),
+                "EV/EBITDA": yahoo_symbol_info.get("enterpriseToEbitda", "N/A"),
+            },
+            "dividends_and_buybacks": {
+                "Dividend Yield": yahoo_symbol_info.get("dividendYield", "N/A"),
+                "Payout Ratio": yahoo_symbol_info.get("payoutRatio", "N/A"),
+                "Média de Dividend Yield (5 anos)": yahoo_symbol_info.get("fiveYearAvgDividendYield", "N/A"),
+            },
+            "market_risk_and_sentiment": {
+                "Beta": yahoo_symbol_info.get("beta", "N/A"),
+                "Risco de Auditoria": yahoo_symbol_info.get("auditRisk", "N/A"),
+                "Risco do Conselho": yahoo_symbol_info.get("boardRisk", "N/A"),
+                "Short Interest": yahoo_symbol_info.get("sharesPercentSharesOut", "N/A"),
+                "Recomendação Média": yahoo_symbol_info.get("recommendationMean", "N/A"),
+                "Preço-Alvo Médio": yahoo_symbol_info.get("targetMeanPrice", "N/A")
+            }
+        }
+        return yahoo_symbol_fundamental_info
+
+    ##### NOT IN USE ##### 
     
     def get_yahoo_symbol_dividends(self, symbol : str):
         '''

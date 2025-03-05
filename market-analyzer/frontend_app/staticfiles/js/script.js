@@ -183,7 +183,6 @@ function fetchStockData(symbol) {
         });
 }
 
-
 function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeriod = 200) {
     fetch(`/stock/${symbol}/crossover_trend/?fast=${fastPeriod}&medium=${mediumPeriod}&slow=${slowPeriod}`)
         .then(response => response.json())

@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchBollingerData(symbol);
         fetchRSIData(symbol);
         fetchCandlePatternData(symbol);
+        fetchFundamentalInfo(symbol);
     }
 
     fetchYahooStockGainers();
@@ -125,8 +126,63 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-/* ─────────────── FUNÇÕES DE FORMATAÇÃO ─────────────── */
+/* ─────────────── FUNÇÃO PARA PEGAR DADOS FUNDAMENTAIS ─────────────── */
+function fetchFundamentalInfo(symbol) {
+    fetch(`/stock/${symbol}/fundamental_info/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Erro ao buscar dados fundamentais:", data.error);
+                return;
+            }
 
+            console.log("Dados Fundamentais Recebidos:", data);
+
+            // Populando cada tabela específica com os dados
+            populateFundamentalTable(data.liquidity_and_solvency, "Liquidez e Solvência", "tableLiquidity");
+            populateFundamentalTable(data.profitability, "Lucratividade", "tableProfitability");
+            populateFundamentalTable(data.growth, "Crescimento", "tableGrowth");
+            populateFundamentalTable(data.valuation, "Valuation", "tableValuation");
+            populateFundamentalTable(data.dividends_and_buybacks, "Dividendos e Buybacks", "tableDividends");
+            populateFundamentalTable(data.market_risk_and_sentiment, "Risco de Mercado", "tableRisk");
+        })
+        .catch(error => console.error("Erro ao carregar dados fundamentais:", error));
+}
+
+/* ─────────────── FUNÇÃO PARA PREENCHER TABELAS ─────────────── */
+
+function populateFundamentalTable(categoryData, categoryName, tableId) {
+    let tableContainer = document.getElementById(tableId);
+    
+    if (!tableContainer) {
+        console.error(`Elemento com ID '${tableId}' não encontrado.`);
+        return;
+    }
+
+    let tableHTML = `
+        <h3>${categoryName}</h3>
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Métrica</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    for (let key in categoryData) {
+        tableHTML += `
+            <tr>
+                <td>${key}</td>
+                <td>${categoryData[key] !== null ? categoryData[key] : "N/A"}</td>
+            </tr>
+        `;
+    }
+
+    tableHTML += `</tbody></table>`;
+    tableContainer.innerHTML = tableHTML;
+}
 
 /* ─────────────── FUNÇÕES DE EVENTOS ─────────────── */
 

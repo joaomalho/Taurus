@@ -50,11 +50,11 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 
 ## **🔧 Tech Stack**
 
-- **Backend:** Python
-- **Frontend:** Python, PyQt6
-- **Charts:** To Define
+- **Backend:** Python, JS
+- **Frontend:** Django, HTML, CSS  
+- **Charts:** D3js
 - **Data Analysis:** Pandas, NumPy, TA-Lib, ...
-- **Machine Learning (Future):** TensorFlow, Scikit-learn
+- **Machine Learning (Future):** TensorFlow, Scikit-learn ...
 
 ---
 ---
@@ -122,7 +122,7 @@ Taurus bridges the gap between complex market analysis and actionable insights, 
 Follow the Documentation (WIP) for setup, usage details, and FAQs.
 
 
-## **📝 Installation Prerequisites Guide** 
+## **📝 Installation Prerequisites Guide - WIP** 
 
 Before you begin, make sure you have the following:
 
@@ -205,48 +205,48 @@ Our tool is capable of detecting X-candle patterns in the market.
 
 Each candle pattern has an associated stop-loss target, take-profit target, and relevance level as outlined in the table below:
 
-| Pattern Name               | Classification   | Candles Range Detection   | Target Range 
-|:---------------------------|:-----------------|:--------------------------|:--------------------------
-| **Doji**                   | Reversal         | 3                         |
-| **Dragonfly Doji**         | Reversal         | 3                         |
-| **Gravestone Doji**        | Reversal         | 3                         |
-| **Engulfing**              | Reversal         | 3                         |
-| **Morning Star**           | Reversal         | 5-7                       |
-| **Evening Star**           | Reversal         | 5-7                       |
-| **Morning Doji Star**      | Reversal         | 5-7                       |
-| **Evening Doji Star**      | Reversal         | 5-7                       |
-| **Hammer**                 | Reversal         | 3                         |
-| **Inverted Hammer**        | Reversal         | 3                         |
-| **Hanging Man**            | Reversal         | 3                         |
-| **Shooting Star**          | Reversal         | 3                         |
-| **Marubozu**               | Continuation     | 3                         |
-| **Harami**                 | Reversal         | 3                         |
-| **Harami Cross**           | Reversal         | 3                         |
-| **Spinning Top**           | Continuation     | 3-5                       |
-| **Kicking**                | Reversal         | 3                         |
-| **Kicking by Length**      | Reversal         | 3                         |
-| **Tasuki Gap**             | Continuation     | 3-5                       |
-| **Gap Side By Side White** | Continuation     | 3-5                       |
-| **Counterattack**          | Reversal         | 3                         |
-| **Piercing**               | Reversal         | 3                         |
-| **Dark Cloud Cover**       | Reversal         | 3                         |
-| **Tri Star**               | Reversal         | 3                         |
-| **On Neck**                | Continuation     | 3                         |
-| **In Neck**                | Continuation     | 3                         |
-| **Thrusting**              | Continuation     | 3                         |
-| **Matching Low**           | Reversal         | 3                         |
-| **Three Black Crows**      | Complex          | 5-7                       |
-| **Three White Soldiers**   | Complex          | 5-7                       |
-| **Three Inside**           | Complex          | 5-7                       |
-| **Three Outside**          | Complex          | 5-7                       |
-| **Three Stars in South**   | Complex          | 5-7                       |
-| **Advance Block**          | Complex          | 5-7                       |
-| **Stalled Pattern**        | Complex          | 5-7                       |
-| **Abandoned Baby**         | Reversal         | 5-7                       |
-| **Unique 3 River**         | Complex          | 5-7                       |
-| **Belt Hold**              | Reversal         | 3                         |
-| **Separating Lines**       | Continuation     | 3                         |
-| **Upside Gap Two Crows**   | Complex          | 5-7                       |
+| Pattern Name               | Classification   | Candles Range Detection    
+|:---------------------------|:-----------------|:--------------------------
+| **Doji**                   | Reversal         | 3                         
+| **Dragonfly Doji**         | Reversal         | 3                         
+| **Gravestone Doji**        | Reversal         | 3                         
+| **Engulfing**              | Reversal         | 3                         
+| **Morning Star**           | Reversal         | 5-7                       
+| **Evening Star**           | Reversal         | 5-7                       
+| **Morning Doji Star**      | Reversal         | 5-7                       
+| **Evening Doji Star**      | Reversal         | 5-7                       
+| **Hammer**                 | Reversal         | 3                         
+| **Inverted Hammer**        | Reversal         | 3                         
+| **Hanging Man**            | Reversal         | 3                         
+| **Shooting Star**          | Reversal         | 3                         
+| **Marubozu**               | Continuation     | 3                         
+| **Harami**                 | Reversal         | 3                         
+| **Harami Cross**           | Reversal         | 3                         
+| **Spinning Top**           | Continuation     | 3-5                       
+| **Kicking**                | Reversal         | 3                         
+| **Kicking by Length**      | Reversal         | 3                         
+| **Tasuki Gap**             | Continuation     | 3-5                       
+| **Gap Side By Side White** | Continuation     | 3-5                       
+| **Counterattack**          | Reversal         | 3                         
+| **Piercing**               | Reversal         | 3                         
+| **Dark Cloud Cover**       | Reversal         | 3                         
+| **Tri Star**               | Reversal         | 3                         
+| **On Neck**                | Continuation     | 3                         
+| **In Neck**                | Continuation     | 3                         
+| **Thrusting**              | Continuation     | 3                         
+| **Matching Low**           | Reversal         | 3                         
+| **Three Black Crows**      | Complex          | 5-7                       
+| **Three White Soldiers**   | Complex          | 5-7                       
+| **Three Inside**           | Complex          | 5-7                       
+| **Three Outside**          | Complex          | 5-7                       
+| **Three Stars in South**   | Complex          | 5-7                       
+| **Advance Block**          | Complex          | 5-7                       
+| **Stalled Pattern**        | Complex          | 5-7                       
+| **Abandoned Baby**         | Reversal         | 5-7                       
+| **Unique 3 River**         | Complex          | 5-7                       
+| **Belt Hold**              | Reversal         | 3                         
+| **Separating Lines**       | Continuation     | 3                         
+| **Upside Gap Two Crows**   | Complex          | 5-7                       
 
 ---
 ---
@@ -276,7 +276,7 @@ It can be triggered via the application's auto calibration button. Please note t
 ---
 ---
 
-## **🏢 Open Insider Information**
+## **🏢 Insider Information**
 
 Real-time insider trading information is available for all US stocks. This data is sourced from the SEC and provides insights into the buying and selling activities of company insiders.
 
@@ -323,7 +323,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 📢 Join us today and contribute! 🤝
 
 🌍 Community:
-- 🗨️ **Discord** - 🔗 [Join Here](#https://discord.gg/fwDYajbt) - WIP
+- 🗨️ **Discord** - 🔗 [Join Here](#https://discord.gg/TnjNUGxr)
 - 👽 **Reddit** - 🔗 [Join Here](#) - WIP
 
 ---
@@ -342,8 +342,7 @@ We are also looking to grow our community with **key roles in market analysis**:
     -   Working with DJango:
         - Stock results page - WIP
 - Results
-    - Candles Patterns Metrics - WIP
-        - IF in the last 5 candles a pattern is detected AND stoploss not complete then decision of the candle.
+    - Candles Patterns Metrics
         - This for all candles pattern each one with is own conditions
         - Complete function `candles_patterns` 
             - Already listed all detectable functions
@@ -352,18 +351,22 @@ We are also looking to grow our community with **key roles in market analysis**:
             - Include `signal` and `relevance` for each candle.
             - Pass this values to Risk Manager  
 - Fundamental Analysis
-    - Included openinsider information
+    - Finish Stock Page Organization.
+- Additional Screens
     - Missing Catalog for penny, top of day, top of week.
-    - https://whalewisdom.com/stock/ctre Muito importante
+- Install scripts:
+    - Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script.
+
 
 ## **🚀 Latest Improvements**
-- **Risk Manager:** A new feature to help minimize losses in volatile markets.
-- **Valuation Metrics:** Powerful indicators for long-term strategies and fundamental analysis.
-- **Install scripts:** Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script.
 - **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
 - **GUI:** Implemented 3º version of GUI, Django.
+    - Main, Stock and Screener finished
+        - Organization & Data visualizations- WIP
+        - Documentation about metrics - WIP
 - **Auto Optimization** WIP
-- **Fundamental Analysis** Included top gainers, trendy, most active stocks, cryptos, currencies, and insider information.
+- **Fundamental Analysis** Included all Necessary information for fundamental quantitative information.
+
 
 
 
