@@ -217,7 +217,8 @@ class DataHistoryYahoo():
                 "Current Ratio": yahoo_symbol_info.get("currentRatio", "N/A"),
                 "Total Cash": yahoo_symbol_info.get("totalCash", "N/A"),
                 "Total Debt": yahoo_symbol_info.get("totalDebt", "N/A"),
-                "Debt to Equity (D/E)": yahoo_symbol_info.get("totalDebt", "N/A"),
+                "Debt to Equity (D/E)": yahoo_symbol_info.get("debtToEquity", "N/A"),
+                "Operation Cash Flow To Current Liabilities": yahoo_symbol_info.get("operatingCashflow", "N/A"),
             },
             "profitability": {
                 "Margem Bruta": yahoo_symbol_info.get("grossMargins", "N/A"),
