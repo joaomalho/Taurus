@@ -85,13 +85,6 @@
     background-color: var(--stock-info-button-hover-bg);
 }
 
-/* ============================= */
-/* GRÁFICOS */
-/* ============================= */
-.candlestick-chart {
-    width: 100%;
-    height: 500px;
-}
 
 /* ============================= */
 /* RESPONSIVIDADE */

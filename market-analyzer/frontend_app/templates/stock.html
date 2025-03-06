@@ -32,7 +32,7 @@
         <!-- Seção do Histórico de Preços -->
         <section id="priceHistory">
             <h2>Histórico de Preços</h2>
-            <div class="candlestick-chart" id="candlestickChart"></div>
+           <canvas class="candlestick-chart" id="lineChart"></canvas>
         </section>
 
         <!-- Seção de Análise Técnica -->
@@ -131,7 +131,7 @@
         <!-- Seção de Holders -->
         <section id="h-bar-chart-container-holders">
             <h2>Holders</h2>
-            <div id="h-bar-chart"></div>           
+            <canvas class="h-bar-chart" id="hBarChart"></canvas>         
         </section>
 
         <!-- Seção de Estimativas -->
@@ -148,7 +148,9 @@
         <p>&copy; 2024 Stock Data. All Rights Reserved.</p>
     </footer>
 
-    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/candlestick.js' %}"></script>
