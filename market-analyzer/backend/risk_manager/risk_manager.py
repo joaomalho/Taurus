@@ -40,3 +40,49 @@ class RiskManager():
         '''
         pass
     
+    def evaluate_metric(self, metric, value):
+        """
+        Evaluate a metric and return the qualitative conclusion
+        """
+        if value in ["N/A", None] or not isinstance(value, (int, float)):
+            return "N/A"
+
+        if metric in ["Quick Ratio", "Current Ratio", "Cash Ratio"]:
+            if value < 0.75:  
+                return "Very Negative"  # Muito abaixo de 1 é preocupante
+            elif value < 1:  
+                return "Negative"  # Ainda abaixo do ideal
+            elif value < 1.5:  
+                return "Neutral"  # Considerado aceitável
+            elif value < 2:  
+                return "Positive"  # Sinal de boa liquidez
+            else:  
+                return "Very Positive"  # Pode indicar excesso de liquidez
+
+        elif metric in ["Debt to Equity (D/E)", "Debt-to-Assets Ratio"]:
+            if value > 2.5:  
+                return "Very Negative"  # Muito endividada
+            elif value > 1.8:  
+                return "Negative"  # Alto risco, mas dentro do aceitável para setores alavancados
+            elif value > 1.2:  
+                return "Neutral"  # Risco moderado
+            elif value > 0.7:  
+                return "Positive"  # Boa estrutura de capital
+            else:  
+                return "Very Positive"  # Empresa tem pouca dependência de dívida
+
+        elif metric == "Interest Coverage Ratio":
+            if value < 1:  
+                return "Very Negative"  # Risco de insolvência
+            elif value < 2:  
+                return "Negative"  # Pode enfrentar dificuldades em crises
+            elif value < 3:  
+                return "Neutral"  # Razoável, mas precisa de monitoramento
+            elif value < 5:  
+                return "Positive"  # Empresa tem boa capacidade de pagar juros
+            else:  
+                return "Very Positive"  # Empresa tem altíssima solvência
+
+
+        return "Indefinido"
+

@@ -6,6 +6,7 @@ from django.core.validators import RegexValidator
 from backend.datasources.yahoodata import DataHistoryYahoo
 from backend.tecnical_analysis.trend_metrics import TrendMetrics
 from backend.tecnical_analysis.candles_patterns import CandlesPatterns
+from backend.risk_manager.risk_manager import RiskManager
 
 
 ############################# Pages #############################
@@ -492,37 +493,36 @@ def get_recommendations(request, symbol):
 
 def get_fundamental_info(request, symbol):
     """
-    Return fundamental information about asset to present quantitative analysis.
+    Retorna informações fundamentais com avaliação qualitativa.
     """
     try:
         symbol = symbol.strip().upper()
-
         if not symbol:
             return JsonResponse({"error": "Symbol is missing"}, status=400)
 
-        # Valida se o símbolo é correto
         symbol = validate_symbol(symbol)
 
-        # Obtém os dados fundamentais
-        data_history = DataHistoryYahoo()  
+        risk_manager = RiskManager()
+
+        data_history = DataHistoryYahoo()
         fundamental_info = data_history.get_symbol_fundamental_info(symbol)
 
         if not fundamental_info:
             return JsonResponse({"error": "No data found"}, status=404)
 
-        # Converte np.nan para None antes de retornar
-        cleaned_data = {
-            category: {
-                key: (None if value is np.nan else value)
+        cleaned_data = {}
+        for category, data in fundamental_info.items():
+            cleaned_data[category] = {
+                key: {
+                    "value": None if value is np.nan else value,
+                    "evaluation": risk_manager.evaluate_metric(key, value)
+                }
                 for key, value in data.items()
             }
-            for category, data in fundamental_info.items()
-        }
 
         return JsonResponse(cleaned_data)
 
     except ConnectionError:
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
-
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)

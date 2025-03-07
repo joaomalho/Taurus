@@ -3,7 +3,6 @@
 //////////////////////////////////// 
 
 // Bar Chart Institutional Holders with Tooltip
-// Bar Chart Institutional Holders with Tooltip
 document.addEventListener("DOMContentLoaded", function () {
     function fetchAndRenderChart(symbol) {
         fetch(`/stock/${symbol}/institutional_holders/`)
@@ -49,10 +48,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     backgroundColor: "rgba(54, 162, 235, 0.7)",
                     borderColor: "rgba(0,0,0,0)",
                     borderWidth: 1,
-                    barThickness: 15, // Define a largura fixa das barras
-                    maxBarThickness: 20, // Limita a largura máxima
-                    categoryPercentage: 0.5, // Reduz o espaço entre as categorias
-                    barPercentage: 0.9 // Reduz o espaço dentro das barras
+                    barThickness: 15,
+                    maxBarThickness: 20,
+                    categoryPercentage: 0.5,
+                    barPercentage: 0.9,
+                    borderRadius: 10
                 }]
             },
             options: {

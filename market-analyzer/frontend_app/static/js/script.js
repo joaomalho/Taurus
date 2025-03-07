@@ -138,8 +138,12 @@ function fetchFundamentalInfo(symbol) {
 
             console.log("Dados Fundamentais Recebidos:", data);
 
-            // Populando cada tabela específica com os dados
-            populateFundamentalTable(data.liquidity_and_solvency, "Liquidez e Solvência", "tableLiquidity");
+            // Define as métricas a mostrar para cada tabela
+            let selectedMetricsLiquidity = ["Quick Ratio", "Current Ratio", "Cash Ratio"];
+            let selectedMetricsProfitability = ["EBIT", "Operating Cash Flow"];
+            
+            populateFundamentalTable(data.liquidity_and_solvency, "tableLiquidity", selectedMetricsLiquidity);
+
             populateFundamentalTable(data.profitability, "Lucratividade", "tableProfitability");
             populateFundamentalTable(data.growth, "Crescimento", "tableGrowth");
             populateFundamentalTable(data.valuation, "Valuation", "tableValuation");
@@ -151,7 +155,7 @@ function fetchFundamentalInfo(symbol) {
 
 /* ─────────────── FUNÇÃO PARA PREENCHER TABELAS ─────────────── */
 
-function populateFundamentalTable(categoryData, categoryName, tableId) {
+function populateFundamentalTable(categoryData, tableId, selectedMetrics) {
     let tableContainer = document.getElementById(tableId);
     
     if (!tableContainer) {
@@ -159,29 +163,23 @@ function populateFundamentalTable(categoryData, categoryName, tableId) {
         return;
     }
 
-    let tableHTML = `
-        <h3>${categoryName}</h3>
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th>Métrica</th>
-                    <th>Valor</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
+    let tableData = selectedMetrics.map(metric => {
+        if (categoryData.hasOwnProperty(metric)) {
+            let value = categoryData[metric].value !== null ? categoryData[metric].value : "N/A";
+            let conclusion = categoryData[metric].evaluation || "N/A";
+            return [metric, value, conclusion];
+        }
+    }).filter(Boolean);
 
-    for (let key in categoryData) {
-        tableHTML += `
-            <tr>
-                <td>${key}</td>
-                <td>${categoryData[key] !== null ? categoryData[key] : "N/A"}</td>
-            </tr>
-        `;
-    }
 
-    tableHTML += `</tbody></table>`;
-    tableContainer.innerHTML = tableHTML;
+    new gridjs.Grid({
+        columns: ["Métrica", "Valor", "Avaliação"],
+        data: tableData,
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container",
+        }
+    }).render(tableContainer);
 }
 
 /* ─────────────── FUNÇÕES DE EVENTOS ─────────────── */
@@ -194,14 +192,13 @@ function setupSearchButton() {
         searchButton.addEventListener("click", function () {
             let symbol = stockInput.value.trim().toUpperCase();
 
-            // Validação: apenas letras maiúsculas e números são permitidos
             if (!symbol) {
-                alert("⚠️ Por favor, insira um símbolo de ação válido (ex: AAPL).");
+                alert("Por favor, insira um símbolo de ação válido (ex: AAPL).");
                 return;
             }
 
             if (!/^[A-Z0-9]{1,10}$/.test(symbol)) {
-                alert("⚠️ O símbolo da ação deve conter apenas letras maiúsculas e números (ex: AAPL, TSLA).");
+                alert("O símbolo da ação deve conter apenas letras maiúsculas e números (ex: AAPL, TSLA).");
                 return;
             }
 
@@ -226,17 +223,13 @@ function fetchStockData(symbol) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById("tableContainerStock").innerHTML = "<h2>Stock not found</h2>";
+                console.error("Erro ao buscar dados:", data.error);
                 return;
             }
 
-            // Apenas atualiza a tabela, sem interferir no gráfico
-            updateTable(data);
+            updateTable(data); // Agora usa Grid.js
         })
-        .catch(error => {
-            console.error("Erro ao buscar dados:", error);
-            document.getElementById("tableContainerStock").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
-        });
+        .catch(error => console.error("Erro ao buscar dados:", error));
 }
 
 function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeriod = 200) {
@@ -244,15 +237,12 @@ function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeri
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById("crossoverResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
-            } else {
-                displayCrossoverResults(data);
+                console.error("Erro ao buscar crossover:", data.error);
+                return;
             }
+            displayCrossoverResults(data);
         })
-        .catch(error => {
-            console.error("Erro ao buscar os dados do crossover:", error);
-            document.getElementById("crossoverResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
-        });
+        .catch(error => console.error("Erro ao buscar os dados do crossover:", error));
 }
 
 function fetchADXData(symbol, length = 14) {
@@ -260,15 +250,12 @@ function fetchADXData(symbol, length = 14) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById("AdxResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
-            } else {
-                displayADXResults(data);
+                console.error("Erro ao buscar ADX:", data.error);
+                return;
             }
+            displayADXResults(data);
         })
-        .catch(error => {
-            console.error("Erro ao buscar os dados do ADX:", error);
-            document.getElementById("AdxResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
-        });
+        .catch(error => console.error("Erro ao buscar os dados do ADX:", error));
 }
 
 function fetchBollingerData(symbol, length = 14, std_dev=2) {
@@ -276,15 +263,12 @@ function fetchBollingerData(symbol, length = 14, std_dev=2) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById("BollingerResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
-            } else {
-                displayBollingerResults(data);
+                console.error("Erro ao buscar Bollinger:", data.error);
+                return;
             }
+            displayBollingerResults(data);
         })
-        .catch(error => {
-            console.error("Erro ao buscar os dados do Bollinger:", error);
-            document.getElementById("BollingerResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
-        });
+        .catch(error => console.error("Erro ao buscar os dados do Bollinger:", error));
 }
 
 function fetchRSIData(symbol, length = 14, upper_level = 70, lower_level = 30) {
@@ -292,15 +276,12 @@ function fetchRSIData(symbol, length = 14, upper_level = 70, lower_level = 30) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById("RSIResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
-            } else {
-                displayRSIResults(data);
+                console.error("Erro ao buscar RSI:", data.error);
+                return;
             }
+            displayRSIResults(data);
         })
-        .catch(error => {
-            console.error("Erro ao buscar os dados do RSI:", error);
-            document.getElementById("RSIResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
-        });
+        .catch(error => console.error("Erro ao buscar os dados do RSI:", error));
 }
 
 function fetchCandlePatternData(symbol) {
@@ -308,19 +289,12 @@ function fetchCandlePatternData(symbol) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById("CandleResults").innerHTML = `<h3 style="color: red;">Erro: ${data.error}</h3>`;
-            } else {
-                if (typeof displayCandleResults === "function") {
-                    displayCandleResults(data);  // Certifique-se de que essa função existe
-                } else {
-                    console.error("❌ Função displayCandleResults não encontrada!");
-                }
+                console.error("Erro ao buscar padrões de velas:", data.error);
+                return;
             }
+            displayCandleResults(data);
         })
-        .catch(error => {
-            console.error("Erro ao buscar os dados do Candles:", error);
-            document.getElementById("CandleResults").innerHTML = `<h3 style="color: red;">Erro ao buscar os dados.</h3>`;
-        });
+        .catch(error => console.error("Erro ao buscar os dados do Candles:", error));
 }
 
 function fetchYahooStockGainers() {
@@ -328,15 +302,12 @@ function fetchYahooStockGainers() {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById("yahooStockGainersContainer").innerHTML = "<h2>Erro ao carregar os dados.</h2>";
-            } else {
-                populateYahooStockTable("yahooStockGainers", data.data);
+                console.error("Erro ao buscar stocks ganhadores:", data.error);
+                return;
             }
+            populateYahooStockTable("tableYahooGainers", data.data);
         })
-        .catch(error => {
-            console.error("Erro ao buscar dados:", error);
-            document.getElementById("yahooStockGainersContainer").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
-        });
+        .catch(error => console.error("Erro ao buscar stocks ganhadores:", error));
 }
 
 function fetchYahooStockTrending() {
@@ -344,15 +315,12 @@ function fetchYahooStockTrending() {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById("yahooStockTrendingContainer").innerHTML = "<h2>Erro ao carregar os dados.</h2>";
-            } else {
-                populateYahooStockTable("yahooStockTrending", data.data);
+                console.error("Erro ao buscar stocks em tendência:", data.error);
+                return;
             }
+            populateYahooStockTable("tableYahooTrending", data.data);
         })
-        .catch(error => {
-            console.error("Erro ao buscar dados:", error);
-            document.getElementById("yahooStockTrendingContainer").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
-        });
+        .catch(error => console.error("Erro ao buscar stocks em tendência:", error));
 }
 
 function fetchYahooStockMostActive() {
@@ -360,204 +328,115 @@ function fetchYahooStockMostActive() {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById("yahooStockMostActiveContainer").innerHTML = "<h2>Erro ao carregar os dados.</h2>";
-            } else {
-                populateYahooStockTable("yahooStockMostActive", data.data);
+                console.error("Erro ao buscar stocks mais ativos:", data.error);
+                return;
             }
+            populateYahooStockTable("tableYahooMostActive", data.data);
         })
-        .catch(error => {
-            console.error("Erro ao buscar dados:", error);
-            document.getElementById("yahooStockMostActiveContainer").innerHTML = "<h2>Erro ao buscar os dados.</h2>";
-        });
+        .catch(error => console.error("Erro ao buscar stocks mais ativos:", error));
 }
 
 
 /* ─────────────── FUNÇÕES DE MANIPULAÇÃO DE DADOS ─────────────── */
 
 function updateTable(data) {
-    let tableHTML = `
-        <h2>Market Data for ${data.symbol}</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Change</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>${data.name}</td>
-                    <td>${data.price}</td>
-                    <td>${data.change}</td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-    document.getElementById("tableContainerStock").innerHTML = tableHTML;
+    new gridjs.Grid({
+        columns: ["Nome", "Preço", "Variação"],
+        data: [[data.name, data.price, data.change]],
+        search: true,
+        pagination: true,
+        sort: true, 
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container",
+        }
+    }).render(document.getElementById("tableStockData"));
 }
 
 function displayCrossoverResults(data) {
-    let tableHTML = `
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th>EMA Short (${data.fast_period})</th>
-                    <th>EMA Medium (${data.medium_period})</th>
-                    <th>EMA Long (${data.slow_period})</th>
-                    <th>Signal</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>${parseFloat(data.ema1_now).toFixed(2)}</td>
-                    <td>${parseFloat(data.ema2_now).toFixed(2)}</td>
-                    <td>${parseFloat(data.ema3_now).toFixed(2)}</td>
-                    <td><strong>${data.signal}</strong></td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    document.getElementById("crossoverResults").innerHTML = tableHTML;
+    new gridjs.Grid({
+        columns: [`EMA Curta (${data.fast_period})`, `EMA Média (${data.medium_period})`, `EMA Longa (${data.slow_period})`, "Sinal"],
+        data: [[parseFloat(data.ema1_now).toFixed(2), parseFloat(data.ema2_now).toFixed(2), parseFloat(data.ema3_now).toFixed(2), data.signal]],
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container",
+        }
+    }).render(document.getElementById("tableCrossover"));
 }
 
 function displayADXResults(data) {
-    let tableHTML = `
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th>Periods</th>
-                    <th>ADX</th>
-                    <th>Signal</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>${data.length}</td>
-                    <td>${parseFloat(data.adx_now).toFixed(2)}</td>
-                    <td><strong>${data.signal}</strong></td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    document.getElementById("AdxResults").innerHTML = tableHTML;
+    new gridjs.Grid({
+        columns: ["Períodos", "ADX", "Sinal"],
+        data: [[data.length, parseFloat(data.adx_now).toFixed(2), data.signal]],
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container",
+        }
+    }).render(document.getElementById("tableADX"));
 }
 
 function displayBollingerResults(data) {
-    let tableHTML = `
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th>Periods</th>
-                    <th>Deviation</th>
-                    <th>Upper Band</th>
-                    <th>Middle Band</th>
-                    <th>Lower Band</th>
-                    <th>Signal</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>${data.length}</td>
-                    <td>${data.std_dev}</td>
-                    <td>${parseFloat(data.upper_band).toFixed(2)}</td>
-                    <td>${parseFloat(data.middle_band).toFixed(2)}</td>
-                    <td>${parseFloat(data.lower_band).toFixed(2)}</td>
-                    <td><strong>${data.signal}</strong></td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    document.getElementById("BollingerResults").innerHTML = tableHTML;
+    new gridjs.Grid({
+        columns: ["Períodos", "Desvio", "Banda Superior", "Banda Média", "Banda Inferior", "Sinal"],
+        data: [[data.length, data.std_dev, parseFloat(data.upper_band).toFixed(2), parseFloat(data.middle_band).toFixed(2), parseFloat(data.lower_band).toFixed(2), data.signal]],
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container",
+        }
+    }).render(document.getElementById("tableBollinger"));
 }
 
 function displayRSIResults(data) {
-    let tableHTML = `
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th>Periods</th>
-                    <th>Upper Level</th>
-                    <th>Lower Level</th>
-                    <th>Signal</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>${data.length}</td>
-                    <td>${parseFloat(data.rsi).toFixed(2)}</td>
-                    <td>${data.upper_level}</td>
-                    <td>${data.lower_level}</td>
-                    <td><strong>${data.signal}</strong></td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    document.getElementById("RSIResults").innerHTML = tableHTML;
+    new gridjs.Grid({
+        columns: ["Períodos", "Nível Superior", "Nível Inferior", "RSI", "Sinal"],
+        data: [[data.length, data.upper_level, data.lower_level, parseFloat(data.rsi).toFixed(2), data.signal]],
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container",
+        }
+    }).render(document.getElementById("tableRSI"));
 }
 
 function displayCandleResults(data) {
-    let tableHTML = `
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th>Pattern</th>
-                    <th>Stoploss</th>
-                    <th>Signal</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
+    let tableData = [];
     for (let pattern in data.patterns_detected) {
         data.patterns_detected[pattern].forEach(entry => {
-            tableHTML += `
-                <tr>
-                    <td>${pattern}</td>
-                    <td>${parseFloat(entry.Stoploss).toFixed(5)}</td>
-                    <td>${entry.Signal}</td>
-                    <td>${entry.Date}</td>
-                </tr>
-            `;
+            tableData.push([pattern, parseFloat(entry.Stoploss).toFixed(5), entry.Signal, entry.Date]);
         });
     }
 
-    tableHTML += "</tbody></table>";
-
-    document.getElementById("CandleResults").innerHTML = tableHTML;
+    new gridjs.Grid({
+        columns: ["Padrão", "Stoploss", "Sinal", "Data"],
+        data: tableData,
+        search: true,
+        pagination: true,
+        sort: true, 
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container",
+        }
+    }).render(document.getElementById("tableCandlePatterns"));
 }
 
-function populateYahooStockTable(containerPrefix, data) {
-    let headerRow = document.getElementById(`${containerPrefix}Header`);
-    let tableBody = document.getElementById(`${containerPrefix}Body`);
-
-    headerRow.innerHTML = "";
-    tableBody.innerHTML = "";
-
-    if (data.length === 0) {
-        tableBody.innerHTML = "<tr><td colspan='100%'>Nenhum dado disponível</td></tr>";
+function populateYahooStockTable(containerId, data) {
+    if (!data || data.length === 0) {
+        document.getElementById(containerId).innerHTML = "<h2>Nenhum dado disponível</h2>";
         return;
     }
 
-    let headers = Object.keys(data[0]);
-    headers.forEach(header => {
-        let th = document.createElement("th");
-        th.textContent = header;
-        headerRow.appendChild(th);
-    });
+    let headers = Object.keys(data[0]); // Pegar os títulos automaticamente
 
-    data.forEach(row => {
-        let tr = document.createElement("tr");
-        headers.forEach(header => {
-            let td = document.createElement("td");
-            td.textContent = row[header] ? row[header] : "-";
-            tr.appendChild(td);
-        });
-        tableBody.appendChild(tr);
-    });
+    let tableData = data.map(row => headers.map(header => row[header] || "-"));
+
+    new gridjs.Grid({
+        columns: headers,
+        data: tableData,
+        search: true,
+        pagination: true,
+        sort: true, 
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container",
+        }
+    }).render(document.getElementById(containerId));
 }

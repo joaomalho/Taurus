@@ -5,6 +5,19 @@
 :root {
     --text-color: #ffffff;
     --white: #ffffff;
+    --primary-bg: #010409;
+    --border-color: #3d444d;
+    --border-light-color: #7e8185;
+    --secondary-bg: #0d1117;
+    --text-color: #ddd;
+    --p-text-color: #9198a1;
+    --button-bg: #010409;
+    --highlight-color: #9198a1;
+    --button-hover-bg: #212830;
+    --gridjs-header-bg: #212830;
+    --gridjs-header-text-color: white;
+    --table-custom-body-hover-bg: #ddd;
+    --link-color: #9A8655;
 }
 
 /* ============================= */
@@ -167,5 +180,90 @@
 
     .recommendation-legend div {
         font-size: 10px; /* Reduz fonte da legenda */
+    }
+}
+
+
+/* ============================= */
+/* TABELAS GERAIS */
+/* ============================= */
+.gridjs-container {
+    max-width: 100%;
+    overflow-x: auto;
+    background-color: var(--primary-bg);
+    border-radius: 8px;
+    padding: 10px;
+    border-color: var(--border-color);
+}
+
+.gridjs-table {
+    width: 100%;
+    font-size: 14px;
+    border-collapse: collapse;
+    border: none;
+}
+
+.gridjs-th {
+    background-color: var(--gridjs-header-bg) !important;
+    color: var(--gridjs-header-text-color) !important;
+    text-align: left;
+    padding: 10px;
+}
+
+.gridjs-td {
+    text-align: left;
+    padding: 8px;
+    color: var(--text-colo);
+}
+
+.gridjs-pagination {
+    background-color: transparent;
+}
+
+/* Força o tamanho e estilo dos botões da paginação */
+.gridjs-pagination button {
+    background-color: transparent !important; /* Cor de fundo */
+    color: var(--secondary-bg) !important; /* Cor do texto */
+    font-size: 12px !important; /* 🔹 Aumenta o tamanho do texto */
+    width: 100px !important; /* 🔹 Permite que o tamanho se ajuste */
+    min-width: 20px !important; /* 🔹 Garante um tamanho mínimo */
+    height: 25px !important; /* 🔹 Define altura fixa */
+    /* border: 1px solid var(--border-light-color) !important; Cor da borda */
+    border-radius: 5px !important; /* Bordas arredondadas */
+    margin: 0px !important; /* 🔹 Dá espaçamento entre os botões */
+    transition: all 0.5s ease-in-out;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 🔹 Efeito hover */
+.gridjs-pagination button:hover {
+    background-color: var(--border-light-color) !important;
+    border-color: var(--border-light-color) !important;
+    color: var(--secondary-bg) !important;
+    
+}
+
+/* 🔹 Botão ativo (desativado porque está na página atual) */
+.gridjs-pagination button[disabled] {
+    background-color: var(--border-light-color) !important;
+    border-color: var(--border-light-color) !important;
+    color: var(--secondary-bg) !important;
+    cursor: default;
+}
+
+/* 🔹 Ajuste para telas menores */
+@media screen and (max-width: 768px) {
+    .gridjs-pagination {
+        flex-wrap: wrap;
+    }
+
+    .gridjs-pagination button {
+        font-size: 14px !important; /* 🔹 Reduz tamanho da fonte */
+        padding: 8px 12px !important; /* 🔹 Ajusta espaço interno */
+        width: auto !important; /* 🔹 Mantém ajuste automático */
+        min-width: 35px !important; /* 🔹 Garante mínimo para telas pequenas */
+        height: 35px !important; /* 🔹 Ajusta altura */
     }
 }

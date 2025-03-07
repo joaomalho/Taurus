@@ -8,6 +8,8 @@
     <title>Stock Data</title>
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
     <link rel="stylesheet" href="{% static 'css/screener.css' %}">
+    <link rel="stylesheet" href="{% static 'css/charts.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css">
 </head>
 
 <body>
@@ -30,37 +32,20 @@
     <main class="screener-info">
         <section id="yahooStockGainersContainer">
             <h2>Top Gainers</h2>
-            <div class="table-container">
-                <table class="table-custom" id="yahooStockGainersTable">
-                    <thead>
-                        <tr id="yahooStockGainersHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
-                    </thead>
-                    <tbody id="yahooStockGainersBody"></tbody>  <!-- Aqui os dados serão inseridos -->
-                </table>
-            </div>
+            <div id="tableYahooGainers"></div>
         </section>
 
         <section id="yahooStockTrendingContainer">
             <h2>Top Trending</h2>
             <div class="table-container">
-                <table class="table-custom" id="yahooStockTrendingTable">
-                    <thead>
-                        <tr id="yahooStockTrendingHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
-                    </thead>
-                    <tbody id="yahooStockTrendingBody"></tbody>  <!-- Aqui os dados serão inseridos -->
-                </table>
+                <div id="tableYahooTrending"></div>
             </div>
         </section>
         
         <section id="yahooStockMostActiveContainer">
             <h2>Top Most Active</h2>
             <div class="table-container">
-                <table class="table-custom" id="yahooStockMostActiveTable">
-                    <thead>
-                        <tr id="yahooStockMostActiveHeader"></tr>  <!-- Aqui os cabeçalhos serão adicionados via JS -->
-                    </thead>
-                    <tbody id="yahooStockMostActiveBody"></tbody>  <!-- Aqui os dados serão inseridos -->
-                </table>
+                <div id="tableYahooMostActive"></div>
             </div>
         </section>
     </main>
@@ -72,6 +57,7 @@
         <p>&copy; 2024 Stock Data. All Rights Reserved.</p>
     </footer>
 
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
     <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

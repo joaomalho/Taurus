@@ -210,15 +210,104 @@ class DataHistoryYahoo():
         '''
         Return detailed fundamental information about asset
         '''
+
+        yahoo_symbol_info = yf.Ticker(symbol).info
+        yahoo_symbol_balancesheet = yf.Ticker(symbol).balance_sheet
+        yahoo_symbol_income = yf.Ticker(symbol).income_stmt
+
+        # total_equity
+        if 'Stockholders Equity' in yahoo_symbol_balancesheet.index:
+            total_equity = yahoo_symbol_balancesheet.loc['Stockholders Equity'].iloc[0]
+            if pd.isna(total_equity) or total_equity == 0:
+                total_equity = "N/A"
+        else:
+            total_equity = "N/A"
+            
+        # cash_equivalents_short_term_investments
+        if 'Cash Cash Equivalents And Short Term Investments' in yahoo_symbol_balancesheet.index:
+            cash_equivalents_short_term_investments = yahoo_symbol_balancesheet.loc['Cash Cash Equivalents And Short Term Investments'].iloc[0]
+            if pd.isna(cash_equivalents_short_term_investments) or cash_equivalents_short_term_investments == 0:
+                cash_equivalents_short_term_investments = "N/A"
+        else:
+            cash_equivalents_short_term_investments = "N/A"
+
+        # cash_and_cash_equivalents
+        if 'Cash And Cash Equivalents' in yahoo_symbol_balancesheet.index:
+            cash_and_cash_equivalents = yahoo_symbol_balancesheet.loc['Cash And Cash Equivalents'].iloc[0]
+            if pd.isna(cash_and_cash_equivalents) or cash_and_cash_equivalents == 0:
+                cash_and_cash_equivalents = "N/A"
+        else:
+            cash_and_cash_equivalents = "N/A"
+
+        # current_liabilities
+        if 'Current Liabilities' in yahoo_symbol_balancesheet.index:
+            current_liabilities = yahoo_symbol_balancesheet.loc['Current Liabilities'].iloc[0]
+            if pd.isna(current_liabilities) or current_liabilities == 0:
+                current_liabilities = "N/A"
+        else:
+            current_liabilities = "N/A"
+
+        # cash_ratio
+        if cash_and_cash_equivalents != "N/A" and current_liabilities != "N/A" and current_liabilities != 0:
+            cash_ratio = cash_and_cash_equivalents / current_liabilities
+        else:
+            cash_ratio = "N/A"
+
+        # ebit
+        if 'EBIT' in yahoo_symbol_income.index:
+            ebit = yahoo_symbol_income.loc["EBIT"].iloc[0]
+            if pd.isna(ebit) or ebit == 0:
+                ebit = "N/A"
+
+        # interest_expenses
+        if 'Interest Expense' in yahoo_symbol_income.index:
+            interest_expenses = yahoo_symbol_income.loc["Interest Expense"].iloc[0]
+            if pd.isna(interest_expenses) or interest_expenses == 0:
+                interest_expenses = "N/A"
+
+        # interest_coverage_ratio
+        if ebit != "N/A" and interest_expenses not in ["N/A", 0]:
+            interest_coverage_ratio = ebit / interest_expenses
+        else:
+            interest_coverage_ratio = "N/A"
+
+        # total_assets
+        if 'Total Assets' in yahoo_symbol_balancesheet.index:
+            total_assets = yahoo_symbol_balancesheet.loc['Total Assets'].iloc[0]
+            if pd.isna(total_assets) or total_assets == 0:
+                total_assets = "N/A"
+        else:
+            total_assets = "N/A"
+
+        # debt_to_assets_ratio 
+        total_debt = yahoo_symbol_info.get("totalDebt", "N/A")
+        if total_assets != "N/A" and total_debt != "N/A":
+            debt_to_assets_ratio = total_debt / total_assets if total_assets != 0 else "N/A"
+        else:
+            debt_to_assets_ratio = "N/A"
+
         yahoo_symbol_info = yf.Ticker(symbol).info
         yahoo_symbol_fundamental_info = {
             "liquidity_and_solvency": {
+                # Liquidez e Solvência: Capacidade de pagamento
                 "Quick Ratio": yahoo_symbol_info.get("quickRatio", "N/A"),
                 "Current Ratio": yahoo_symbol_info.get("currentRatio", "N/A"),
                 "Total Cash": yahoo_symbol_info.get("totalCash", "N/A"),
                 "Total Debt": yahoo_symbol_info.get("totalDebt", "N/A"),
+                "Total Equity": total_equity,
+                # Aux
+                "Cash Cash Equivalents And Short Term Investments": cash_equivalents_short_term_investments,
+                "Cash And Cash Equivalents": cash_and_cash_equivalents,
+                "Current Liabilities": current_liabilities,
+                "EBIT": ebit,
+                "Interes Expenses": interest_expenses,
+                # Curto Prazo
+                "Cash Ratio": cash_ratio,
+                "Operating Cash Flow": yahoo_symbol_info.get("operatingCashflow", "N/A"),
+                # Longo Prazo
                 "Debt to Equity (D/E)": yahoo_symbol_info.get("debtToEquity", "N/A"),
-                "Operation Cash Flow To Current Liabilities": yahoo_symbol_info.get("operatingCashflow", "N/A"),
+                "Interest Coverage Ratio": interest_coverage_ratio,
+                "Debt-to-Assets Ratio": debt_to_assets_ratio,
             },
             "profitability": {
                 "Margem Bruta": yahoo_symbol_info.get("grossMargins", "N/A"),
@@ -256,6 +345,7 @@ class DataHistoryYahoo():
             }
         }
         return yahoo_symbol_fundamental_info
+
 
     ##### NOT IN USE ##### 
     

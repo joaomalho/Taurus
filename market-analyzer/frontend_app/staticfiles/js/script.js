@@ -151,7 +151,7 @@ function fetchFundamentalInfo(symbol) {
 
 /* ─────────────── FUNÇÃO PARA PREENCHER TABELAS ─────────────── */
 
-function populateFundamentalTable(categoryData, categoryName, tableId) {
+function populateFundamentalTable(categoryData, tableId) {
     let tableContainer = document.getElementById(tableId);
     
     if (!tableContainer) {
@@ -160,7 +160,6 @@ function populateFundamentalTable(categoryData, categoryName, tableId) {
     }
 
     let tableHTML = `
-        <h3>${categoryName}</h3>
         <table class="table-custom">
             <thead>
                 <tr>
@@ -172,12 +171,8 @@ function populateFundamentalTable(categoryData, categoryName, tableId) {
     `;
 
     for (let key in categoryData) {
-        tableHTML += `
-            <tr>
-                <td>${key}</td>
-                <td>${categoryData[key] !== null ? categoryData[key] : "N/A"}</td>
-            </tr>
-        `;
+        let value = categoryData[key] !== null ? categoryData[key] : "N/A";
+        tableHTML += `<tr><td>${key}</td><td>${value}</td></tr>`;
     }
 
     tableHTML += `</tbody></table>`;

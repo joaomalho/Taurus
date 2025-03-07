@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
     <link rel="stylesheet" href="{% static 'css/stock.css' %}">
     <link rel="stylesheet" href="{% static 'css/charts.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css">
+    
 </head>
 
 <body>
@@ -29,52 +31,48 @@
     <hr class="line1">
 
     <main class="stock-info">
-        <!-- Seção do Histórico de Preços -->
+        <!-- Histórico de Preços -->
         <section id="priceHistory">
             <h2>Histórico de Preços</h2>
            <canvas class="candlestick-chart" id="lineChart"></canvas>
         </section>
 
-        <!-- Seção de Análise Técnica -->
+        <!-- Análise Técnica -->
         <section id="technicalStockZone">
             <h2>Technical Analysis</h2>
-            <div class="table-container" id="technicalAnalysisTableContainer"></div>
+            <div id="tableTechnical"></div>
         </section>
 
-        <!-- Seção de Tendências -->
+        <!-- Tendências -->
         <section id="trendAnalysis">
             <h2>Trend</h2>
+
             <article id="crossoverAnalysis">
                 <h3>Exponential Average Crossover (Direction)</h3>
                 <form id="crossoverForm">
                     <label for="fastPeriod">Short EMA:</label>
                     <input type="number" id="fastPeriod" value="14" min="1">
-                
                     <label for="mediumPeriod">Medium EMA:</label>
                     <input type="number" id="mediumPeriod" value="25" min="1">
-                
                     <label for="slowPeriod">Long EMA:</label>
                     <input type="number" id="slowPeriod" value="200" min="1">
-                
-                    <button id="crossoverButton">Calculate</button>
+                    <button class=executeButtons id="crossoverButton">Calculate</button>
                 </form>
-                <div id="crossoverResults"></div>
+                <div id="tableCrossover"></div>
             </article>
 
             <article id="adxAnalysis">
                 <h3>ADX (Strengh)</h3>
-
                 <form id="AdxForm">
                     <label for="adxLength">Periods:</label>
                     <input type="number" id="adxLength" value="14" min="1">
-                
-                    <button id="AdxButton">Calculate</button>
+                    <button class=executeButtons id="AdxButton">Calculate</button>
                 </form>
-                <div id="AdxResults"></div>
+                <div id="tableADX"></div>
             </article>
         </section>
 
-        <!-- Seção de Volatilidade -->
+        <!-- Volatilidade -->
         <section id="volatilityAnalysis">
             <h2>Volatility</h2>
             <article id="bollingerBands">
@@ -84,13 +82,13 @@
                     <input type="number" id="bollingerLength" value="14" min="1">
                     <label for="std_bol">Standard Deviation:</label>
                     <input type="number" id="std_bol" value="2" min="1">
-                    <button id="BollingerButton">Calculate</button>
+                    <button class=executeButtons id="BollingerButton">Calculate</button>
                 </form>
-                <div id="BollingerResults"></div>
+                <div id="tableBollinger"></div>
             </article>
         </section>
 
-        <!-- Seção de Osciladores -->
+        <!-- Osciladores -->
         <section id="oscillators">
             <h2>Oscillators</h2>
             <article id="rsiAnalysis">
@@ -102,39 +100,37 @@
                     <input type="number" id="upper_level" value="70" min="50">
                     <label for="lower_level">Lower Level:</label>
                     <input type="number" id="lower_level" value="30" min="1">
-                    <button id="RSIButton">Calculate</button>
+                    <button class=executeButtons id="RSIButton">Calculate</button>
                 </form>
-                <div id="RSIResults"></div>
+                <div id="tableRSI"></div>
             </article>
         </section>
 
-        <!-- Seção de Padrões de Candlestick -->
+        <!-- Padrões de Candlestick -->
         <section id="candlePatterns">
             <h2>Candlestick Patterns</h2>
-            <button id="CandleButton">Detect</button>
-            <div id="CandleResults"></div>
+            <button class=executeButtons id="CandleButton">Detect</button>
+            <div id="tableCandlePatterns"></div>
         </section>
 
-        <!-- Seção de Análise Fundamental -->
+        <!-- Análise Fundamental -->
         <section id="fundamentalAnalysis">
             <h2>Fundamental Analysis</h2>
-    
             <div id="tableLiquidity"></div>
             <div id="tableProfitability"></div>
             <div id="tableGrowth"></div>
             <div id="tableValuation"></div>
             <div id="tableDividends"></div>
             <div id="tableRisk"></div>
-            
         </section>
        
-        <!-- Seção de Holders -->
+        <!-- Holders -->
         <section id="h-bar-chart-container-holders">
             <h2>Holders</h2>
             <canvas class="h-bar-chart" id="hBarChart"></canvas>         
         </section>
 
-        <!-- Seção de Estimativas -->
+        <!-- Estimativas -->
         <section id="stack-bar-recommendation-chart-container">
             <h2>Recommendations</h2>
             <div id="stack-bar-recommendation-chart"></div>           
@@ -151,7 +147,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-    
+    <!-- Grid.js -->
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>    
+    <!-- Scripts Customizados -->
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/candlestick.js' %}"></script>
     <script src="{% static 'js/charts.js' %}"></script>

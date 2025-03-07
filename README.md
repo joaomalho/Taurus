@@ -51,8 +51,8 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 ## **🔧 Tech Stack**
 
 - **Backend:** Python, JS
-- **Frontend:** Django, HTML, CSS  
-- **Charts:** D3js
+- **Frontend:** Django, HTML, CSS, Grid.js and Charts.js 
+- **Charts:** Charts.js
 - **Data Analysis:** Pandas, NumPy, TA-Lib, ...
 - **Machine Learning (Future):** TensorFlow, Scikit-learn ...
 
@@ -339,8 +339,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 - Risk Manager
     -   Condition do decision making - WIP
 - FrontEnd firt version release
-    -   Working with DJango:
-        - Stock results page - WIP
+    -   Working with Grid.js and Charts.js
 - Results
     - Candles Patterns Metrics
         - This for all candles pattern each one with is own conditions
@@ -362,7 +361,8 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
 - **GUI:** Implemented 3º version of GUI, Django.
     - Main, Stock and Screener finished
-        - Organization & Data visualizations- WIP
+        - Organization & Data visualizations
+            - Improvement for Grid.js and Charts.js
         - Documentation about metrics - WIP
 - **Auto Optimization** WIP
 - **Fundamental Analysis** Included all Necessary information for fundamental quantitative information.
