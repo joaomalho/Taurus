@@ -31,6 +31,12 @@
     <hr class="line1">
 
     <main class="stock-info">
+
+        <section id="Information">
+            
+        </section>
+
+        
         <!-- Histórico de Preços -->
         <section id="priceHistory">
             <h2>Histórico de Preços</h2>
@@ -54,6 +60,12 @@
                         <label for="slowPeriod">Long EMA:</label>
                         <input type="number" id="slowPeriod" value="200" min="1">
                     </form>
+                    <div>
+                        <p>EMA Curta: <span id="emaShort"></span></p>
+                        <p>EMA Média: <span id="emaMedium"></span></p>
+                        <p>EMA Longa: <span id="emaLong"></span></p>
+                        <p>Sinal: <span id="Signal"></span></p>
+                    </div>
                     <div id="tableCrossover"></div>
                 </div>
 
@@ -74,7 +86,7 @@
                         <label for="bollingerLength">Periods:</label>
                         <input type="number" id="bollingerLength" value="14" min="1">
                         <label for="std_bol">Standard Deviation:</label>
-                        <input type="number" id="std_bol" value="2" min="1">
+                        <input type="number" id="std_bol" value="5" min="1">
                     </form>
                     <div id="tableBollinger"></div>
                 </div>

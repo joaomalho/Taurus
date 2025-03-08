@@ -210,10 +210,31 @@ class DataHistoryYahoo():
         '''
         Return detailed fundamental information about asset
         '''
+        
+        try:
+            yahoo_symbol_info = yf.Ticker(symbol).info
+        except:
+            yahoo_symbol_info = {}
+        try:
+            yahoo_symbol_balancesheet = yf.Ticker(symbol).balance_sheet
+        except:
+            yahoo_symbol_balancesheet = pd.DataFrame()
+        try:
+            yahoo_symbol_income = yf.Ticker(symbol).income_stmt
+        except:
+            yahoo_symbol_income = pd.DataFrame()
 
-        yahoo_symbol_info = yf.Ticker(symbol).info
-        yahoo_symbol_balancesheet = yf.Ticker(symbol).balance_sheet
-        yahoo_symbol_income = yf.Ticker(symbol).income_stmt
+        # Inicializar todas as variáveis com "N/A"
+        total_equity = "N/A"
+        cash_equivalents_short_term_investments = "N/A"
+        cash_and_cash_equivalents = "N/A"
+        current_liabilities = "N/A"
+        cash_ratio = "N/A"
+        ebit = "N/A"
+        interest_expenses = "N/A"
+        interest_coverage_ratio = "N/A"
+        total_assets = "N/A"
+        debt_to_assets_ratio = "N/A"
 
         # total_equity
         if 'Stockholders Equity' in yahoo_symbol_balancesheet.index:
@@ -345,6 +366,14 @@ class DataHistoryYahoo():
             }
         }
         return yahoo_symbol_fundamental_info
+
+# 'regularMarketChangePercent': -0.8822443,
+
+# 'recommendationKey': 'buy',
+# 'numberOfAnalystOpinions': 39,
+
+#  'bookValue': 4.438,
+#  'priceToBook': 53.16133,
 
 
     ##### NOT IN USE ##### 

@@ -354,14 +354,15 @@ function updateTable(data) {
 }
 
 function displayCrossoverResults(data) {
-    new gridjs.Grid({
-        columns: [`EMA Curta (${data.fast_period})`, `EMA Média (${data.medium_period})`, `EMA Longa (${data.slow_period})`, "Sinal"],
-        data: [[parseFloat(data.ema1_now).toFixed(2), parseFloat(data.ema2_now).toFixed(2), parseFloat(data.ema3_now).toFixed(2), data.signal]],
-        className: {
-            table: "gridjs-table",
-            container: "gridjs-container",
-        }
-    }).render(document.getElementById("tableCrossover"));
+    const emaShort = parseFloat(data.ema1_now).toFixed(2);
+    const emaMedium = parseFloat(data.ema2_now).toFixed(2);
+    const emaLong = parseFloat(data.ema3_now).toFixed(2);
+    const signal = data.signal;
+
+    document.getElementById("emaShort").textContent = emaShort;
+    document.getElementById("emaMedium").textContent = emaMedium;
+    document.getElementById("emaLong").textContent = emaLong;
+    document.getElementById("Signal").textContent = signal;
 }
 
 function displayADXResults(data) {
