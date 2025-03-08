@@ -87,6 +87,52 @@
 
 
 /* ============================= */
+/* CARDS*/
+/* ============================= */
+
+.technical-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Espaçamento entre blocos */
+    justify-content: space-around; /* Alinha horizontalmente */
+}
+
+.technical-block {
+    background-color: #1a1a1a;  /* Cor de fundo escura para contraste */
+    border: 1px solid #4CAF50;  /* Linha verde para destacar */
+    border-radius: 10px;
+    padding: 15px;
+    width: 500px; 
+    height: 500px;
+    text-align: center;
+    box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.7);
+    display: block;
+}
+
+.technical-block button {
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+
+.technical-block h3 {
+    margin-bottom: 10px;
+    color: #4CAF50; /* Cor do título */
+}
+
+.technical-block form {
+    display: block;
+    margin-bottom: 15px;
+}
+
+canvas {
+    width: 100%;
+    height: 200px;
+    margin-top: 10px;
+}
+
+
+
+/* ============================= */
 /* RESPONSIVIDADE */
 /* ============================= */
 @media screen and (max-width: 768px) {

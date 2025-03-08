@@ -40,88 +40,97 @@
         <!-- Análise Técnica -->
         <section id="technicalStockZone">
             <h2>Technical Analysis</h2>
-            <div id="tableTechnical"></div>
-        </section>
-
-        <!-- Tendências -->
-        <section id="trendAnalysis">
             <h2>Trend</h2>
 
-            <article id="crossoverAnalysis">
-                <h3>Exponential Average Crossover (Direction)</h3>
-                <form id="crossoverForm">
-                    <label for="fastPeriod">Short EMA:</label>
-                    <input type="number" id="fastPeriod" value="14" min="1">
-                    <label for="mediumPeriod">Medium EMA:</label>
-                    <input type="number" id="mediumPeriod" value="25" min="1">
-                    <label for="slowPeriod">Long EMA:</label>
-                    <input type="number" id="slowPeriod" value="200" min="1">
+            <div class="technical-grid">
+                <div class="technical-block">
+                    <h3>Exponential Average Crossover (Direction)</h3>
                     <button class=executeButtons id="crossoverButton">Calculate</button>
-                </form>
-                <div id="tableCrossover"></div>
-            </article>
+                    <form id="crossoverForm">
+                        <label for="fastPeriod">Short EMA:</label>
+                        <input type="number" id="fastPeriod" value="14" min="1">
+                        <label for="mediumPeriod">Medium EMA:</label>
+                        <input type="number" id="mediumPeriod" value="25" min="1">
+                        <label for="slowPeriod">Long EMA:</label>
+                        <input type="number" id="slowPeriod" value="200" min="1">
+                    </form>
+                    <div id="tableCrossover"></div>
+                </div>
 
-            <article id="adxAnalysis">
-                <h3>ADX (Strengh)</h3>
-                <form id="AdxForm">
-                    <label for="adxLength">Periods:</label>
-                    <input type="number" id="adxLength" value="14" min="1">
+                <div class="technical-block">
+                    <h3>ADX (Strengh)</h3>
                     <button class=executeButtons id="AdxButton">Calculate</button>
-                </form>
-                <div id="tableADX"></div>
-            </article>
-        </section>
+                    <form id="AdxForm">
+                        <label for="adxLength">Periods:</label>
+                        <input type="number" id="adxLength" value="14" min="1">
+                    </form>
+                    <div id="tableADX"></div>
+                </div>
 
-        <!-- Volatilidade -->
-        <section id="volatilityAnalysis">
-            <h2>Volatility</h2>
-            <article id="bollingerBands">
-                <h3>Bollinger Bands</h3>
-                <form id="BollingerForm">
-                    <label for="bollingerLength">Periods:</label>
-                    <input type="number" id="bollingerLength" value="14" min="1">
-                    <label for="std_bol">Standard Deviation:</label>
-                    <input type="number" id="std_bol" value="2" min="1">
+                <div class="technical-block">
+                    <h3>Bollinger Bands</h3>
                     <button class=executeButtons id="BollingerButton">Calculate</button>
-                </form>
-                <div id="tableBollinger"></div>
-            </article>
-        </section>
+                    <form id="BollingerForm">
+                        <label for="bollingerLength">Periods:</label>
+                        <input type="number" id="bollingerLength" value="14" min="1">
+                        <label for="std_bol">Standard Deviation:</label>
+                        <input type="number" id="std_bol" value="2" min="1">
+                    </form>
+                    <div id="tableBollinger"></div>
+                </div>
 
-        <!-- Osciladores -->
-        <section id="oscillators">
-            <h2>Oscillators</h2>
-            <article id="rsiAnalysis">
-                <h3>Relative Strength Index</h3>
-                <form id="RSIForm">
-                    <label for="rsiLength">Periods:</label>
-                    <input type="number" id="rsiLength" value="14" min="1">
-                    <label for="upper_level">Upper Level:</label>
-                    <input type="number" id="upper_level" value="70" min="50">
-                    <label for="lower_level">Lower Level:</label>
-                    <input type="number" id="lower_level" value="30" min="1">
+                <div class="technical-block">
+                    <h3>Relative Strength Index</h3>
                     <button class=executeButtons id="RSIButton">Calculate</button>
-                </form>
-                <div id="tableRSI"></div>
-            </article>
+                    <form id="RSIForm">
+                        <label for="rsiLength">Periods:</label>
+                        <input type="number" id="rsiLength" value="14" min="1">
+                        <label for="upper_level">Upper Level:</label>
+                        <input type="number" id="upper_level" value="70" min="50">
+                        <label for="lower_level">Lower Level:</label>
+                        <input type="number" id="lower_level" value="30" min="1">
+                    </form>
+                    <div id="tableRSI"></div>
+                </div>
+            </div>
         </section>
 
         <!-- Padrões de Candlestick -->
         <section id="candlePatterns">
             <h2>Candlestick Patterns</h2>
-            <button class=executeButtons id="CandleButton">Detect</button>
-            <div id="tableCandlePatterns"></div>
+            <div class="candles-zone">
+                <button class=executeButtons id="CandleButton">Detect</button>
+                <div id="tableCandlePatterns"></div>
+            </div>
         </section>
 
         <!-- Análise Fundamental -->
         <section id="fundamentalAnalysis">
             <h2>Fundamental Analysis</h2>
-            <div id="tableLiquidity"></div>
-            <div id="tableProfitability"></div>
-            <div id="tableGrowth"></div>
-            <div id="tableValuation"></div>
-            <div id="tableDividends"></div>
-            <div id="tableRisk"></div>
+            <div class="fundamental-block">
+                <h2>Liquidez e Solvência: Capacidade de Pagamento</h2>
+                <div id="tableLiquidity"></div>
+            </div>
+            <div class="fundamental-block">
+                <h2>Lucratividade</h2>
+                <div id="tableProfitability"></div>
+            </div>
+            <div class="fundamental-block">
+                <h2>Crescimento</h2>
+                <div id="tableGrowth"></div>
+            </div>
+            <div class="fundamental-block">
+                <h2>Valuation</h2>
+                <div id="tableValuation"></div>
+            </div>
+            <div class="fundamental-block">
+                <h2>Dividendos e Recompras</h2>
+                <div id="tableDividends"></div>
+            </div>
+            <div class="fundamental-block">
+                <h2> Risco e Sentimento de Mercado</h2>
+                <div id="tableRisk"></div>
+            </div>
         </section>
        
         <!-- Holders -->
