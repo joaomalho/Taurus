@@ -21,13 +21,22 @@
 }
 
 /* ============================= */
-/* LINE CHARTS */
+/* CANDLESTICK CHART */
 /* ============================= */
-.candlestick-chart {
+.candlestick-chart-container {
     width: 100%;
-    max-width: 100%;
-    height: 800px; /* Defina um valor fixo */
-    max-height: 200px; /* Limite a altura */
+    height: 500px;
+    max-height: 500px;
+    position: relative;
+    overflow: visible;
+    border: 1px solid #485c7b;
+    margin-bottom: 30px;
+}
+
+#candlestickChart {
+    width: 100%;
+    height: 100%;
+    position: relative;
 }
 
 /* ============================= */

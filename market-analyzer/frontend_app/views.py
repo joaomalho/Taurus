@@ -493,7 +493,7 @@ def get_recommendations(request, symbol):
 
 def get_fundamental_info(request, symbol):
     """
-    Retorna informações fundamentais com avaliação qualitativa.
+    Return fundamnetal information valuation qualitative.
     """
     try:
         symbol = symbol.strip().upper()
@@ -526,3 +526,31 @@ def get_fundamental_info(request, symbol):
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+def get_bio_info(request, symbol):
+    """
+    Return company information about the company.
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        bio_info = data_history.get_symbol_bio_info(symbol)
+
+        if not bio_info:
+            return JsonResponse({"error": "No data found"}, status=404)
+
+        bio_info = {k: (None if v == "N/A" else v) for k, v in bio_info.items()}
+
+        return JsonResponse({"data": bio_info})
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+

@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.getElementById("RSIButton").addEventListener("click", function () {
-        let rsiLength = document.getElementById("rsiLength ").value;
+        let rsiLength = document.getElementById("rsiLength").value;
         let upperLevel = document.getElementById("upper_level").value;
         let lowerLevel = document.getElementById("lower_level").value;
     
@@ -354,48 +354,45 @@ function updateTable(data) {
 }
 
 function displayCrossoverResults(data) {
-    const emaShort = parseFloat(data.ema1_now).toFixed(2);
-    const emaMedium = parseFloat(data.ema2_now).toFixed(2);
-    const emaLong = parseFloat(data.ema3_now).toFixed(2);
+    // const emaShort = parseFloat(data.ema1_now).toFixed(2);
+    // const emaMedium = parseFloat(data.ema2_now).toFixed(2);
+    // const emaLong = parseFloat(data.ema3_now).toFixed(2);
     const signal = data.signal;
 
-    document.getElementById("emaShort").textContent = emaShort;
-    document.getElementById("emaMedium").textContent = emaMedium;
-    document.getElementById("emaLong").textContent = emaLong;
-    document.getElementById("Signal").textContent = signal;
+    // document.getElementById("emaShort").textContent = emaShort;
+    // document.getElementById("emaMedium").textContent = emaMedium;
+    // document.getElementById("emaLong").textContent = emaLong;
+    document.getElementById("CrossSignal").textContent = signal;
 }
 
 function displayADXResults(data) {
-    new gridjs.Grid({
-        columns: ["Períodos", "ADX", "Sinal"],
-        data: [[data.length, parseFloat(data.adx_now).toFixed(2), data.signal]],
-        className: {
-            table: "gridjs-table",
-            container: "gridjs-container",
-        }
-    }).render(document.getElementById("tableADX"));
+    // const periods = parseFloat(data.length).toFixed(2);
+    // const adx = data.adx_now;
+    const signal = data.signal;
+
+    // document.getElementById("AdxPeriods").textContent = periods;
+    // document.getElementById("ADX").textContent = adx;
+    document.getElementById("AdxSignal").textContent = signal;
 }
 
 function displayBollingerResults(data) {
-    new gridjs.Grid({
-        columns: ["Períodos", "Desvio", "Banda Superior", "Banda Média", "Banda Inferior", "Sinal"],
-        data: [[data.length, data.std_dev, parseFloat(data.upper_band).toFixed(2), parseFloat(data.middle_band).toFixed(2), parseFloat(data.lower_band).toFixed(2), data.signal]],
-        className: {
-            table: "gridjs-table",
-            container: "gridjs-container",
-        }
-    }).render(document.getElementById("tableBollinger"));
+    // const periods = data.length;
+    // const std = data.std_dev;
+    const signal = data.signal;
+  
+    // document.getElementById("BollPeriods").textContent = periods;
+    // document.getElementById("BollStd").textContent = std;
+    document.getElementById("BollSignal").textContent = signal;
 }
 
 function displayRSIResults(data) {
-    new gridjs.Grid({
-        columns: ["Períodos", "Nível Superior", "Nível Inferior", "RSI", "Sinal"],
-        data: [[data.length, data.upper_level, data.lower_level, parseFloat(data.rsi).toFixed(2), data.signal]],
-        className: {
-            table: "gridjs-table",
-            container: "gridjs-container",
-        }
-    }).render(document.getElementById("tableRSI"));
+    // const periods = data.length;
+    // const rsi = data.rsi;
+    const signal = data.signal;
+  
+    // document.getElementById("RsiPeriods").textContent = periods;
+    // document.getElementById("rsi").textContent = rsi;
+    document.getElementById("RsiSignal").textContent = signal;
 }
 
 function displayCandleResults(data) {

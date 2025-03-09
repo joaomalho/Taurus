@@ -14,12 +14,21 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchRSIData(symbol);
         fetchCandlePatternData(symbol);
         fetchFundamentalInfo(symbol);
+        fetchBioData(symbol);
     }
 
     fetchYahooStockGainers();
     fetchYahooStockTrending();
     fetchYahooStockMostActive();
 
+    setupBioToggle();
+
+    // ─────────────── EVENTOS DOS BOTÕES ───────────────
+    setupTechnicalAnalysisEvents();
+}); 
+
+/* ─────────────── FUNÇÕES DE EVENTOS PARA OS BOTÕES ─────────────── */
+function setupTechnicalAnalysisEvents() {
     document.getElementById("crossoverButton").addEventListener("click", function () {
         let fastPeriod = document.getElementById("fastPeriod").value;
         let mediumPeriod = document.getElementById("mediumPeriod").value;
@@ -123,7 +132,67 @@ document.addEventListener("DOMContentLoaded", function () {
             
         fetchCandlePatternData(symbol);
     });
-});
+}
+
+/* ─────────────── FUNÇÃO PARA CONFIGURAR O TOGGLE DO CARD ─────────────── */
+function setupBioToggle() {
+    const bioToggle = document.getElementById("bioToggle");
+    const bioContent = document.querySelector(".bio-content");
+    const toggleIcon = document.querySelector(".toggle-icon");
+
+    if (!bioToggle || !bioContent) {
+        console.error("Elemento do card biográfico não encontrado.");
+        return;
+    }
+
+    bioToggle.addEventListener("click", () => {
+        if (bioContent.style.display === "none" || bioContent.style.display === "") {
+            bioContent.style.display = "block";
+            toggleIcon.textContent = "-";
+        } else {
+            bioContent.style.display = "none";
+            toggleIcon.textContent = "+";
+        }
+    });
+}
+
+/* ─────────────── FUNÇÃO PARA EXIBIR A BIOGRAFIA ─────────────── */
+function displayBioResults(data) {
+    const bioData = data.data; // Corrigido para acessar os dados internos
+
+    const elements = {
+        LongName: bioData.LongName,
+        BusinessName: bioData.BusinessName,
+        Symbol: bioData.Symbol,
+        City: bioData.City,
+        State: bioData.State,
+        ZipCode: bioData.ZipCode,
+        Country: bioData.Country,
+        Sector: bioData.Sector,
+        Industry: bioData.Industry,
+        Employees: bioData.Employees,
+        Website: bioData.Website,
+        ReportWebsite: bioData.ReportWebsite,
+        QuoteSource: bioData.QuoteSource,
+        QuoteType: bioData.QuoteType,
+        FinancialCurrency: bioData.FinancialCurrency,
+        CurrentPrice: bioData.CurrentPrice,
+        PreviousClose: bioData.PreviousClose,
+        OpenPrice: bioData.OpenPrice
+    };
+
+    for (const [key, value] of Object.entries(elements)) {
+        const element = document.getElementById(key);
+        if (element) {
+            if (key === "Website" || key === "ReportWebsite") {
+                element.href = value;
+                element.textContent = value;
+            } else {
+                element.textContent = value || "N/A";
+            }
+        }
+    }
+}
 
 
 /* ─────────────── FUNÇÃO PARA PEGAR DADOS FUNDAMENTAIS ─────────────── */
@@ -231,6 +300,21 @@ function fetchStockData(symbol) {
         })
         .catch(error => console.error("Erro ao buscar dados:", error));
 }
+
+function fetchBioData(symbol) {
+    fetch(`/stock/${symbol}/bio_info`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Erro ao buscar Bio:", data.error);
+                return;
+            }
+            displayBioResults(data); 
+        })
+        .catch(error => console.error("Erro ao buscar os dados do Bio:", error));
+}
+
+
 
 function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeriod = 200) {
     fetch(`/stock/${symbol}/crossover_trend/?fast=${fastPeriod}&medium=${mediumPeriod}&slow=${slowPeriod}`)
@@ -351,6 +435,33 @@ function updateTable(data) {
             container: "gridjs-container",
         }
     }).render(document.getElementById("tableStockData"));
+}
+
+function displayBioResults(data) {
+
+    const bioData = data.data;
+    
+    document.getElementById("LongName").textContent = bioData.LongName;
+    document.getElementById("BusinessName").textContent = bioData.BusinessName;
+    document.getElementById("Symbol").textContent = bioData.Symbol;
+    document.getElementById("City").textContent = bioData.City;
+    document.getElementById("State").textContent = bioData.State;
+    document.getElementById("ZipCode").textContent = bioData.ZipCode;
+    document.getElementById("Country").textContent = bioData.Country;
+    document.getElementById("Sector").textContent = bioData.Sector;
+    document.getElementById("Industry").textContent = bioData.Industry;
+    document.getElementById("Employees").textContent = bioData.Employees;
+    document.getElementById("Website").href = bioData.Website;
+    document.getElementById("Website").textContent = bioData.Website;
+    document.getElementById("ReportWebsite").href = bioData.ReportWebsite;
+    document.getElementById("ReportWebsite").textContent = bioData.ReportWebsite;
+    document.getElementById("QuoteSource").textContent = bioData.QuoteSource;
+    document.getElementById("QuoteType").textContent = bioData.QuoteType;
+    document.getElementById("FinancialCurrency").textContent = bioData.FinancialCurrency;
+    document.getElementById("CurrentPrice").textContent = bioData.CurrentPrice;
+    document.getElementById("PreviousClose").textContent = bioData.PreviousClose;
+    document.getElementById("OpenPrice").textContent = bioData.OpenPrice;
+
 }
 
 function displayCrossoverResults(data) {

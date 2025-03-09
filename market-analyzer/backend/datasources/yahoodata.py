@@ -367,6 +367,40 @@ class DataHistoryYahoo():
         }
         return yahoo_symbol_fundamental_info
 
+    def get_symbol_bio_info(self, symbol : str):
+        '''
+        Return detailed company information.
+        '''
+        
+        try:
+            yahoo_symbol_info = yf.Ticker(symbol).info
+        except:
+            yahoo_symbol_info = {}
+
+        yahoo_symbol_about_info = {
+                "LongName": yahoo_symbol_info.get("longName", "N/A"),
+                "BusinessName": yahoo_symbol_info.get("longBusinessSummary", "N/A"),
+                "Symbol": yahoo_symbol_info.get("symbol", "N/A"),
+                "City": yahoo_symbol_info.get("city", "N/A"),
+                "State": yahoo_symbol_info.get("state", "N/A"),
+                "ZipCode": yahoo_symbol_info.get("zip", "N/A"),
+                "Country": yahoo_symbol_info.get("country", "N/A"),
+                "Sector": yahoo_symbol_info.get("sector", "N/A"),
+                "Industry": yahoo_symbol_info.get("industry", "N/A"),
+                "Employees": yahoo_symbol_info.get("fullTimeEmployees", "N/A"),
+                "Website": yahoo_symbol_info.get("website", "N/A"),
+                "ReportWebsite": yahoo_symbol_info.get("irWebsite", "N/A"),
+                "QuoteSource": yahoo_symbol_info.get("quoteSourceName", "N/A"),
+                "QuoteType": yahoo_symbol_info.get("quoteType", "N/A"),
+                "FinancialCurrency": yahoo_symbol_info.get("financialCurrency", "N/A"),
+                "CurrentPrice": yahoo_symbol_info.get("currentPrice", "N/A"),
+                "PreviousClose": yahoo_symbol_info.get("previousClose", "N/A"),
+                "OpenPrice": yahoo_symbol_info.get("open", "N/A"),
+        }
+
+        return yahoo_symbol_about_info
+
+
 # 'regularMarketChangePercent': -0.8822443,
 
 # 'recommendationKey': 'buy',
