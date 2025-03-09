@@ -158,7 +158,7 @@ function setupBioToggle() {
 
 /* ─────────────── FUNÇÃO PARA EXIBIR A BIOGRAFIA ─────────────── */
 function displayBioResults(data) {
-    const bioData = data.data; // Corrigido para acessar os dados internos
+    const bioData = data.data;
 
     const elements = {
         LongName: bioData.LongName,
@@ -193,7 +193,6 @@ function displayBioResults(data) {
         }
     }
 }
-
 
 /* ─────────────── FUNÇÃO PARA PEGAR DADOS FUNDAMENTAIS ─────────────── */
 function fetchFundamentalInfo(symbol) {
