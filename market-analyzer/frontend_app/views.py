@@ -28,7 +28,7 @@ def validate_symbol(symbol):
     """
     Valida se o símbolo é uma string alfanumérica com no máximo 10 caracteres.
     """
-    validator = RegexValidator(regex=r'^[A-Z0-9]{1,10}$', message="Invalid symbol format.")
+    validator = RegexValidator(regex=r'^[A-Z0-9.]{1,10}$', message="Invalid symbol format.")
     try:
         validator(symbol)
         return symbol

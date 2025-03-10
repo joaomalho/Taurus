@@ -36,15 +36,11 @@
         <section id="Information">
             <div class="bio-card">
                 <div class="bio-header" id="bioToggle">
-                    <h2>Company Information</h2>
+                    <h2 id="LongName"></h2>
                     <span class="toggle-icon">+</span>
                 </div>
             
-                <div class="bio-content">
-                    <!-- Nome da Empresa e Descrição -->
-                    <div class="bio-header-content">
-                        <h1 id="LongName"></h1>
-                    </div>
+                <div class="bio-content hidden">
                     
                     <!-- Bio Sector -->
                     <div class="bio-sector">
@@ -53,17 +49,17 @@
                         <p><strong>Employees:</strong> <span id="Employees"></span></p>
                     </div>
 
-                    <!-- Bio Sector -->
+                    <!-- Bio Descrip -->
                     <div class="bio-description">
                         <p class="bio-description" id="BusinessName"></p>
                     </div>                    
 
                     <!-- Informações Gerais em Grid -->
                     <div class="bio-grid">
-                        <p><strong>City:</strong> <span id="City"></span></p>
-                        <p><strong>State:</strong> <span id="State"></span></p>
-                        <p><strong>Zip Code:</strong> <span id="ZipCode"></span></p>
                         <p><strong>Country:</strong> <span id="Country"></span></p>
+                        <p><strong>City:</strong> <span id="City"></span></p>
+                        <!-- <p><strong>State:</strong> <span id="State"></span></p> -->
+                        <!-- <p><strong>Zip Code:</strong> <span id="ZipCode"></span></p> -->
                     </div>
             
                     <!-- Links de Referência -->
@@ -82,10 +78,7 @@
                     </div>
                 </div>
             </div>
-            
         </section>
-        
-
         
         <!-- Histórico de Preços -->
         <section id="priceHistory">
@@ -99,71 +92,93 @@
         <section id="technicalStockZone">
             <h2>Technical Analysis</h2>
             
-            <div class="technical-grid">
-                <h2>Trend</h2>
-                <div class="technical-block">
-                    <h3>Exponential Average Crossover (Direction)</h3>
-                    <button class=executeButtons id="crossoverButton">Calculate</button>
-                    <form id="crossoverForm">
-                        <label for="fastPeriod">Short EMA:</label>
-                        <input type="number" id="fastPeriod" value="14" min="1">
-                        <label for="mediumPeriod">Medium EMA:</label>
-                        <input type="number" id="mediumPeriod" value="25" min="1">
-                        <label for="slowPeriod">Long EMA:</label>
-                        <input type="number" id="slowPeriod" value="200" min="1">
-                    </form>
-                    <div>
-                        <p>Signal: <span id="CrossSignal"></span></p>
-                    </div>
+            <div class="technical-card">
+                <div class="technical-header" id="tecTrend">
+                    <h2>Trend</h2>
+                    <span class="toggle-icon">+</span>
                 </div>
+            
+                <div class="trend-content hidden">
 
-                <div class="technical-block">
-                    <h3>ADX (Strengh)</h3>
-                    <button class=executeButtons id="AdxButton">Calculate</button>
-                    <form id="AdxForm">
-                        <label for="adxLength">Periods:</label>
-                        <input type="number" id="adxLength" value="14" min="1">
-                    </form>
-                    <div>
-                        <p>Signal: <span id="AdxSignal"></span></p>
+                    <div class="tec-trend-crossover">
+                        <h3>Exponential Average Crossover (Direction)</h3>
+                        <button class=executeButtons id="crossoverButton">Calculate</button>
+                        <form id="crossoverForm">
+                            <label for="fastPeriod">Short EMA:</label>
+                            <input type="number" id="fastPeriod" value="14" min="1">
+                            <label for="mediumPeriod">Medium EMA:</label>
+                            <input type="number" id="mediumPeriod" value="25" min="1">
+                            <label for="slowPeriod">Long EMA:</label>
+                            <input type="number" id="slowPeriod" value="200" min="1">
+                        </form>
+                        <div>
+                            <p>Signal: <span id="CrossSignal"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="tec-trend-adx">
+                        <h3>ADX (Strengh)</h3>
+                        <button class=executeButtons id="AdxButton">Calculate</button>
+                        <form id="AdxForm">
+                            <label for="adxLength">Periods:</label>
+                            <input type="number" id="adxLength" value="14" min="1">
+                        </form>
+                        <div>
+                            <p>Signal: <span id="AdxSignal"></span></p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="technical-grid">
-                <h2>Volatility</h2>
+            <div class="technical-card">
+                <div class="technical-header" id="tecVolatility">
+                    <h2>Volatility</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
 
-                <div class="technical-block">
-                    <h3>Bollinger Bands</h3>
-                    <button class=executeButtons id="BollingerButton">Calculate</button>
-                    <form id="BollingerForm">
-                        <label for="bollingerLength">Periods:</label>
-                        <input type="number" id="bollingerLength" value="14" min="1">
-                        <label for="std_bol">Standard Deviation:</label>
-                        <input type="number" id="std_bol" value="2" min="1">
-                    </form>
-                    <div>
-                        <p>Signal: <span id="BollSignal"></span></p>
+                <div class="volatility-content hidden">
+
+                    <div class="tec-volatility">
+                        <h3>Bollinger Bands</h3>
+                        <button class=executeButtons id="BollingerButton">Calculate</button>
+                        <form id="BollingerForm">
+                            <label for="bollingerLength">Periods:</label>
+                            <input type="number" id="bollingerLength" value="14" min="1">
+                            <label for="std_bol">Standard Deviation:</label>
+                            <input type="number" id="std_bol" value="2" min="1">
+                        </form>
+                        <div>
+                            <p>Signal: <span id="BollSignal"></span></p>
+                        </div>
                     </div>
                 </div>
             </div>
                 
-            <div class="technical-grid">
-                <h2>Oscilators</h2>
+            <div class="technical-card">
+                <div class="technical-header" id="tecOscilators">
+                    <h2>Oscilators</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
 
-                <div class="technical-block">
-                    <h3>Relative Strength Index</h3>
-                    <button class=executeButtons id="RSIButton">Calculate</button>
-                    <form id="RSIForm">
-                        <label for="rsiLength">Periods:</label>
-                        <input type="number" id="rsiLength" value="14" min="1">
-                        <label for="upper_level">Upper Level:</label>
-                        <input type="number" id="upper_level" value="70" min="50">
-                        <label for="lower_level">Lower Level:</label>
-                        <input type="number" id="lower_level" value="30" min="1">
-                    </form>
-                    <div>
-                        <p>Signal: <span id="RsiSignal"></span></p>
+                <div class="oscilators-content hidden">
+
+                    <div class="tec-oscilators">
+                        <h3>Relative Strength Index</h3>
+                        <button class=executeButtons id="RSIButton">Calculate</button>
+                        <form id="RSIForm">
+                            <label for="rsiLength">Periods:</label>
+                            <input type="number" id="rsiLength" value="14" min="1">
+                            <label for="upper_level">Upper Level:</label>
+                            <input type="number" id="upper_level" value="70" min="50">
+                            <label for="lower_level">Lower Level:</label>
+                            <input type="number" id="lower_level" value="30" min="1">
+                        </form>
+                        <div>
+                            <p>RSI: <span id="Rsi"></span></p>
+                        </div>
+                        <div>
+                            <p>Signal: <span id="RsiSignal"></span></p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -181,27 +196,44 @@
         <!-- Análise Fundamental -->
         <section id="fundamentalAnalysis">
             <h2>Fundamental Analysis</h2>
-            <div class="fundamental-block">
-                <h2>Liquidez e Solvência: Capacidade de Pagamento</h2>
-                <div id="tableLiquidity"></div>
+
+
+            <div class="fundamental-card">
+                <div class="fundamental-header" id="funLiquidity">
+                    <h2>Liquidez e Solvência: Capacidade de Pagamento</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+                
+                <div class="liquidity-content hidden">
+                
+                    <div class="fund-liquidity">
+                        <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span></p>
+                        <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span></p>
+                        <p><strong>Total Cash:</strong> <span id="TotalCash"></span></p>
+                        <p><strong>Total Debt:</strong> <span id="TotalDebt"></span></p>
+                        <p><strong>Cash Ratio:</strong> <span id="CashRatio"></span></p>
+                    </div>
+
+                </div>
             </div>
-            <div class="fundamental-block">
+
+            <div class="fundamental-card">
                 <h2>Lucratividade</h2>
                 <div id="tableProfitability"></div>
             </div>
-            <div class="fundamental-block">
+            <div class="fundamental-card">
                 <h2>Crescimento</h2>
                 <div id="tableGrowth"></div>
             </div>
-            <div class="fundamental-block">
+            <div class="fundamental-card">
                 <h2>Valuation</h2>
                 <div id="tableValuation"></div>
             </div>
-            <div class="fundamental-block">
+            <div class="fundamental-card">
                 <h2>Dividendos e Recompras</h2>
                 <div id="tableDividends"></div>
             </div>
-            <div class="fundamental-block">
+            <div class="fundamental-card">
                 <h2> Risco e Sentimento de Mercado</h2>
                 <div id="tableRisk"></div>
             </div>

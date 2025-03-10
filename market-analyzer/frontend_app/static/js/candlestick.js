@@ -31,10 +31,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const parsedData = data.data.map(entry => ({
             time: entry.Date,
-            open: parseFloat(entry.Open),
-            high: parseFloat(entry.High),
-            low: parseFloat(entry.Low),
-            close: parseFloat(entry.Close)
+            open: parseFloat(entry.Open).toFixed(5),
+            high: parseFloat(entry.High).toFixed(5),
+            low: parseFloat(entry.Low).toFixed(5),
+            close: parseFloat(entry.Close).toFixed(5)
         }));
 
         renderCandlestickChart(parsedData);
@@ -45,8 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!chart) {
             chart = LightweightCharts.createChart(chartContainer, {
-                width: chartContainer.clientWidth,
-                height: chartContainer.clientHeight,
                 layout: {
                     backgroundColor: 'transparent',
                     textColor: '#9198a1',
@@ -74,7 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 wickUpColor: '#26a69a',
             });
 
-            // ➡️ Clique para mostrar detalhes da vela
             chart.subscribeClick((param) => {
                 if (param.time) {
                     const candle = priceData.find(c => c.time === param.time);
@@ -92,17 +89,14 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        // ✅ `setData()` apenas na primeira renderização
         if (!candleSeries) {
             candleSeries.setData(priceData);
         } else {
-            // ✅ `update()` para adicionar novos dados de forma eficiente
             priceData.forEach(dataPoint => {
                 candleSeries.update(dataPoint);
             });
         }
 
-        // 🔥 Destaque de uma vela específica
         const highlightCandle = priceData[2];  // Exemplo: destaca a 3ª vela
         const markers = [
             {

@@ -9,9 +9,99 @@
     --stock-info-input-text-color: #ddd;
     --stock-info-button-hover-bg:#212830;
     --section-bg: transparent;
-    --section-padding: 20px 0 40px;
-    --article-bg: transparent;
-    --article-padding: 15px;
+    --link-color: #9A8655;
+    --text-color: #ddd;
+    --button-hover-bg: #212830;
+}
+
+/* ============================= */
+/* CARD BIOGRÁFICO - EMPRESA */
+/* ============================= */
+.bio-card {
+    border: 1px solid var(--stock-info-border-color); 
+    border-radius: 10px;
+    width: 100%;
+    max-width: 100%; 
+    margin-top: 15px; 
+    overflow: hidden; /* Previne que conteúdo "escape" quando recolhido */
+}
+
+.bio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: transparent; */
+    color: var(--text-color);
+    padding: 15px 15px;
+    cursor: pointer;
+    /* border-radius: 10px; */
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.bio-header:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.bio-header h2 {
+    color: var(--link-color);
+    font-size: 18px;
+    margin: 0;
+}
+
+.toggle-icon {
+    color: var(--stock-info-titles);
+    font-weight: bold;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.bio-content {
+    display: none;
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.bio-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--stock-info-input-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.bio-content a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.bio-content a:hover {
+    text-decoration: underline;
+    color: var(--button-hover-bg);
+}
+
+.bio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.bio-sector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.bio-financial {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
 }
 
 /* ============================= */
@@ -31,18 +121,12 @@
 /* ============================= */
 .stock-info section {
     background-color: var(--section-bg);
-    width: 90%;
-    max-width: 1200px;
-    padding: var(--section-padding);
+    width: 100%;
+    max-width: 90%;
     border-radius: 10px;
     flex-direction: row;
 }
 
-.stock-info article {
-    background-color: var(--article-bg);
-    padding: var(--article-padding);
-    border-radius: 8px;
-}
 
 /* ============================= */
 /* TÍTULOS */
@@ -53,7 +137,6 @@
         color: var(--stock-info-titles);
         text-align: center;
 }
-
 
 /* ============================= */
 /* INPUTS E BOTÕES */
@@ -129,8 +212,6 @@ canvas {
     height: 100%;
     margin-top: 10px;
 }
-
-
 
 /* ============================= */
 /* RESPONSIVIDADE */

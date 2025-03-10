@@ -12,10 +12,21 @@
     --link-color: #9A8655;
     --text-color: #ddd;
     --button-hover-bg: #212830;
+    --secondary-bg: #0d1117;
+}
+
+.hidden {
+    display: none !important;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    margin-top: 10px;
 }
 
 /* ============================= */
-/* CARD BIOGRÁFICO - EMPRESA */
+/* CARD BIO */
 /* ============================= */
 .bio-card {
     border: 1px solid var(--stock-info-border-color); 
@@ -23,24 +34,26 @@
     width: 100%;
     max-width: 100%; 
     margin-top: 15px; 
-    overflow: hidden; /* Previne que conteúdo "escape" quando recolhido */
+    overflow: hidden; 
 }
 
 .bio-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* background-color: transparent; */
     color: var(--text-color);
     padding: 15px 15px;
     cursor: pointer;
-    /* border-radius: 10px; */
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     transition: background-color 0.3s ease;
 }
 
 .bio-header:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.bio-header.active {
     background-color: var(--button-hover-bg);
 }
 
@@ -58,7 +71,6 @@
 }
 
 .bio-content {
-    display: none;
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
     line-height: 1.5;
@@ -67,7 +79,7 @@
 .bio-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--stock-info-input-bg);
+    background-color: var(--secondary-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
@@ -79,25 +91,11 @@
 }
 
 .bio-content a:hover {
-    text-decoration: underline;
     color: var(--button-hover-bg);
+    text-decoration: underline;
 }
 
-.bio-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.bio-sector {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.bio-financial {
+.bio-grid, .bio-sector, .bio-description, .bio-links, .bio-financial {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 10px;
@@ -157,7 +155,7 @@
     width: 150px;
     height: 28px;
     border: 1px solid var(--stock-info-border-color);
-    background-color: var(--stock-info-button-bg);
+    background-color: var(--secondary-bg);
     color: #9198a1;
     border-radius: 5px;
     cursor: pointer;
@@ -170,48 +168,170 @@
 
 
 /* ============================= */
-/* CARDS*/
+/* TECHNICAL CARDS */
 /* ============================= */
-
-.technical-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; /* Espaçamento entre blocos */
-    justify-content: space-around; /* Alinha horizontalmente */
-}
-
-.technical-block {
-    background-color: #1a1a1a;  /* Cor de fundo escura para contraste */
-    border: 1px solid #4CAF50;  /* Linha verde para destacar */
+.technical-card {
+    border: 1px solid var(--stock-info-border-color); 
     border-radius: 10px;
-    padding: 15px;
-    width: 500px; 
-    height: 500px;
-    text-align: center;
-    box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.7);
-    display: block;
-}
-
-.technical-block button {
-    margin-bottom: 15px;
-    margin-top: 10px;
-}
-
-.technical-block h3 {
-    margin-bottom: 10px;
-    color: #4CAF50; /* Cor do título */
-}
-
-.technical-block form {
-    display: block;
-    margin-bottom: 15px;
-}
-
-canvas {
     width: 100%;
-    height: 100%;
-    margin-top: 10px;
+    max-width: 100%; 
+    margin-top: 15px; 
+    overflow: hidden;
+    align-items: center; 
 }
+
+.technical-card form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.technical-card button {
+    align-items: center;
+    gap: 10px;
+}
+
+.technical-card label {
+    color: var(--stock-info-titles);
+    text-align: left;
+    max-width: 100%;
+    white-space: nowrap; 
+}
+
+.technical-card h3 {
+    color: var(--stock-info-titles);
+}
+
+.technical-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-color);
+    padding: 15px 15px;
+    cursor: pointer;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.technical-header:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.technical-header.active {
+    background-color: var(--button-hover-bg);
+}
+
+.technical-header h2 {
+    color: var(--link-color);
+    font-size: 18px;
+    margin: 0;
+}
+
+.trend-content, .volatility-content, .oscilators-content {
+    display: flex;
+    flex-wrap: wrap;   /* Permite que os elementos quebrem conforme necessário */
+    align-items: center;
+    gap: 15px;         /* Espaço adequado entre os elementos */
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.trend-content p, .volatility-content p, .oscilators-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--secondary-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color);
+    text-align: right;
+}
+
+.trend-content a, .volatility-content a, .oscilators-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.trend-content a:hover, .volatility-content a:hover, .oscilators-content a:hover {
+    color: var(--button-hover-bg);
+}
+
+.tec-trend-crossover, .tec-trend-adx, .tec-volatility, .tec-oscilators {
+    display: flex;
+    align-items: center;
+    gap: 15px;         /* Espaçamento ideal */
+    flex-wrap: wrap;
+}
+
+
+/* ============================= */
+/* FUNDAMENTAL CARDS */
+/* ============================= */
+.fundamental-card {
+    border: 1px solid var(--stock-info-border-color); 
+    border-radius: 10px;
+    width: 100%;
+    max-width: 100%; 
+    margin-top: 15px; 
+    overflow: hidden; 
+}
+
+.fundamental-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-color);
+    padding: 15px 15px;
+    cursor: pointer;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.fundamental-header:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.fundamental-header.active {
+    background-color: var(--button-hover-bg);
+}
+
+.fundamental-header h2 {
+    color: var(--link-color);
+    font-size: 18px;
+    margin: 0;
+}
+
+.liquidity-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.liquidity-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--secondary-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.liquidity-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.liquidity-content a:hover {
+    color: var(--button-hover-bg);
+}
+
+.fund-liquidity, .fund-profitability, .fund-growth, .fund-valuation, .fund-dividends, .fund-risk {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
 
 /* ============================= */
 /* RESPONSIVIDADE */
@@ -226,5 +346,16 @@ canvas {
         width: 130px;
         height: 30px;
         font-size: 12px;
+    }
+
+    .trend-content, .volatility-content, .oscilators-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .trend-content form,
+    .volatility-content form,
+    .oscilators-content form {
+        width: 100%;
     }
 }

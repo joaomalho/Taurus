@@ -21,10 +21,37 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchYahooStockTrending();
     fetchYahooStockMostActive();
 
-    setupBioToggle();
-
     // ─────────────── EVENTOS DOS BOTÕES ───────────────
     setupTechnicalAnalysisEvents();
+
+    // ─────────────── CONFIGURAÇÃO DOS TOGGLES ───────────────
+    setupToggle({
+        toggleSelector: "#bioToggle",
+        contentSelector: ".bio-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#tecTrend",
+        contentSelector: ".trend-content",
+        iconSelector: ".toggle-icon"
+    });
+    setupToggle({
+        toggleSelector: "#tecVolatility",
+        contentSelector: ".volatility-content",
+        iconSelector: ".toggle-icon"
+    });
+    setupToggle({
+        toggleSelector: "#tecOscilators",
+        contentSelector: ".oscilators-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#funLiquidity",
+        contentSelector: ".liquidity-content",
+        iconSelector: ".toggle-icon"
+    });
 }); 
 
 /* ─────────────── FUNÇÕES DE EVENTOS PARA OS BOTÕES ─────────────── */
@@ -135,123 +162,57 @@ function setupTechnicalAnalysisEvents() {
 }
 
 /* ─────────────── FUNÇÃO PARA CONFIGURAR O TOGGLE DO CARD ─────────────── */
-function setupBioToggle() {
-    const bioToggle = document.getElementById("bioToggle");
-    const bioContent = document.querySelector(".bio-content");
-    const toggleIcon = document.querySelector(".toggle-icon");
+function setupToggle({ toggleSelector, contentSelector, iconSelector = null }) {
+    const toggleElement = document.querySelector(toggleSelector);
+    const contentElement = document.querySelector(contentSelector);
+    const toggleIcon = iconSelector ? document.querySelector(iconSelector) : null;
 
-    if (!bioToggle || !bioContent) {
-        console.error("Elemento do card biográfico não encontrado.");
+    if (!toggleElement || !contentElement) {
+        console.error(`Elemento(s) não encontrado(s) para os seletores fornecidos.`);
         return;
     }
 
-    bioToggle.addEventListener("click", () => {
-        if (bioContent.style.display === "none" || bioContent.style.display === "") {
-            bioContent.style.display = "block";
-            toggleIcon.textContent = "-";
-        } else {
-            bioContent.style.display = "none";
-            toggleIcon.textContent = "+";
+    toggleElement.addEventListener("click", () => {
+        contentElement.classList.toggle("hidden");
+        toggleElement.classList.toggle("active");
+        const isHidden = contentElement.classList.contains("hidden");
+
+        if (toggleIcon) {
+            toggleIcon.textContent = isHidden ? "+" : "-";
         }
     });
 }
 
-/* ─────────────── FUNÇÃO PARA EXIBIR A BIOGRAFIA ─────────────── */
-function displayBioResults(data) {
-    const bioData = data.data;
 
-    const elements = {
-        LongName: bioData.LongName,
-        BusinessName: bioData.BusinessName,
-        Symbol: bioData.Symbol,
-        City: bioData.City,
-        State: bioData.State,
-        ZipCode: bioData.ZipCode,
-        Country: bioData.Country,
-        Sector: bioData.Sector,
-        Industry: bioData.Industry,
-        Employees: bioData.Employees,
-        Website: bioData.Website,
-        ReportWebsite: bioData.ReportWebsite,
-        QuoteSource: bioData.QuoteSource,
-        QuoteType: bioData.QuoteType,
-        FinancialCurrency: bioData.FinancialCurrency,
-        CurrentPrice: bioData.CurrentPrice,
-        PreviousClose: bioData.PreviousClose,
-        OpenPrice: bioData.OpenPrice
-    };
-
-    for (const [key, value] of Object.entries(elements)) {
-        const element = document.getElementById(key);
-        if (element) {
-            if (key === "Website" || key === "ReportWebsite") {
-                element.href = value;
-                element.textContent = value;
-            } else {
-                element.textContent = value || "N/A";
-            }
-        }
-    }
+/* ─────── FUNÇÃO PARA FORMATAR NÚMEROS GRANDES ─────── */
+function formatNumber(value) {
+    return value ? value.toLocaleString('en-EN') : "N/A"; 
 }
 
-/* ─────────────── FUNÇÃO PARA PEGAR DADOS FUNDAMENTAIS ─────────────── */
-function fetchFundamentalInfo(symbol) {
-    fetch(`/stock/${symbol}/fundamental_info/`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error("Erro ao buscar dados fundamentais:", data.error);
-                return;
-            }
-
-            console.log("Dados Fundamentais Recebidos:", data);
-
-            // Define as métricas a mostrar para cada tabela
-            let selectedMetricsLiquidity = ["Quick Ratio", "Current Ratio", "Cash Ratio"];
-            let selectedMetricsProfitability = ["EBIT", "Operating Cash Flow"];
-            
-            populateFundamentalTable(data.liquidity_and_solvency, "tableLiquidity", selectedMetricsLiquidity);
-
-            populateFundamentalTable(data.profitability, "Lucratividade", "tableProfitability");
-            populateFundamentalTable(data.growth, "Crescimento", "tableGrowth");
-            populateFundamentalTable(data.valuation, "Valuation", "tableValuation");
-            populateFundamentalTable(data.dividends_and_buybacks, "Dividendos e Buybacks", "tableDividends");
-            populateFundamentalTable(data.market_risk_and_sentiment, "Risco de Mercado", "tableRisk");
-        })
-        .catch(error => console.error("Erro ao carregar dados fundamentais:", error));
+/* ─────── FUNÇÃO PARA FORMATAR VALORES MONETÁRIOS ─────── */
+function formatCurrency(value) {
+    return value
+        ? value.toLocaleString('en-EN', { style: 'currency', currency: 'USD' })
+        : "N/A";
 }
 
-/* ─────────────── FUNÇÃO PARA PREENCHER TABELAS ─────────────── */
-
-function populateFundamentalTable(categoryData, tableId, selectedMetrics) {
-    let tableContainer = document.getElementById(tableId);
-    
-    if (!tableContainer) {
-        console.error(`Elemento com ID '${tableId}' não encontrado.`);
-        return;
-    }
-
-    let tableData = selectedMetrics.map(metric => {
-        if (categoryData.hasOwnProperty(metric)) {
-            let value = categoryData[metric].value !== null ? categoryData[metric].value : "N/A";
-            let conclusion = categoryData[metric].evaluation || "N/A";
-            return [metric, value, conclusion];
-        }
-    }).filter(Boolean);
-
+/* ─────────────── FUNÇÕES DE CRIAÇÃO DE TABELAS ─────────────── */
+function createGridTable(data, columns, containerId) {
 
     new gridjs.Grid({
-        columns: ["Métrica", "Valor", "Avaliação"],
-        data: tableData,
+        columns: columns,
+        data: data.map(row => columns.map(col => row[col] || "N/A")),
+        search: true,
+        pagination: { limit: 5 },
+        sort: true,
         className: {
             table: "gridjs-table",
-            container: "gridjs-container",
+            container: "gridjs-container"
         }
-    }).render(tableContainer);
+    }).render(document.getElementById(containerId));
 }
 
 /* ─────────────── FUNÇÕES DE EVENTOS ─────────────── */
-
 function setupSearchButton() {
     let searchButton = document.getElementById("searchButton");
     let stockInput = document.getElementById("stockSymbol");
@@ -265,8 +226,8 @@ function setupSearchButton() {
                 return;
             }
 
-            if (!/^[A-Z0-9]{1,10}$/.test(symbol)) {
-                alert("O símbolo da ação deve conter apenas letras maiúsculas e números (ex: AAPL, TSLA).");
+            if (!/^[A-Z0-9.]{1,10}$/.test(symbol)) {
+                alert("O símbolo da ação deve conter apenas letras maiúsculas, números e pontos (ex: AAPL, TSLA, RHM.DE).");
                 return;
             }
 
@@ -313,7 +274,19 @@ function fetchBioData(symbol) {
         .catch(error => console.error("Erro ao buscar os dados do Bio:", error));
 }
 
-
+/* ─────────────── FUNÇÃO PARA PEGAR DADOS FUNDAMENTAIS ─────────────── */
+function fetchFundamentalInfo(symbol) {
+    fetch(`/stock/${symbol}/fundamental_info/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Erro ao buscar dados fundamentais:", data.error);
+                return;
+            }
+            displayFundamentalResults(data);
+        })
+        .catch(error => console.error("Erro ao carregar dados fundamentais:", error));
+}
 
 function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeriod = 200) {
     fetch(`/stock/${symbol}/crossover_trend/?fast=${fastPeriod}&medium=${mediumPeriod}&slow=${slowPeriod}`)
@@ -436,33 +409,6 @@ function updateTable(data) {
     }).render(document.getElementById("tableStockData"));
 }
 
-function displayBioResults(data) {
-
-    const bioData = data.data;
-    
-    document.getElementById("LongName").textContent = bioData.LongName;
-    document.getElementById("BusinessName").textContent = bioData.BusinessName;
-    document.getElementById("Symbol").textContent = bioData.Symbol;
-    document.getElementById("City").textContent = bioData.City;
-    document.getElementById("State").textContent = bioData.State;
-    document.getElementById("ZipCode").textContent = bioData.ZipCode;
-    document.getElementById("Country").textContent = bioData.Country;
-    document.getElementById("Sector").textContent = bioData.Sector;
-    document.getElementById("Industry").textContent = bioData.Industry;
-    document.getElementById("Employees").textContent = bioData.Employees;
-    document.getElementById("Website").href = bioData.Website;
-    document.getElementById("Website").textContent = bioData.Website;
-    document.getElementById("ReportWebsite").href = bioData.ReportWebsite;
-    document.getElementById("ReportWebsite").textContent = bioData.ReportWebsite;
-    document.getElementById("QuoteSource").textContent = bioData.QuoteSource;
-    document.getElementById("QuoteType").textContent = bioData.QuoteType;
-    document.getElementById("FinancialCurrency").textContent = bioData.FinancialCurrency;
-    document.getElementById("CurrentPrice").textContent = bioData.CurrentPrice;
-    document.getElementById("PreviousClose").textContent = bioData.PreviousClose;
-    document.getElementById("OpenPrice").textContent = bioData.OpenPrice;
-
-}
-
 function displayCrossoverResults(data) {
     // const emaShort = parseFloat(data.ema1_now).toFixed(2);
     // const emaMedium = parseFloat(data.ema2_now).toFixed(2);
@@ -497,11 +443,11 @@ function displayBollingerResults(data) {
 
 function displayRSIResults(data) {
     // const periods = data.length;
-    // const rsi = data.rsi;
+    const rsi = parseFloat(data.rsi).toFixed(2);
     const signal = data.signal;
   
     // document.getElementById("RsiPeriods").textContent = periods;
-    // document.getElementById("rsi").textContent = rsi;
+    document.getElementById("Rsi").textContent = rsi;
     document.getElementById("RsiSignal").textContent = signal;
 }
 
@@ -509,21 +455,15 @@ function displayCandleResults(data) {
     let tableData = [];
     for (let pattern in data.patterns_detected) {
         data.patterns_detected[pattern].forEach(entry => {
-            tableData.push([pattern, parseFloat(entry.Stoploss).toFixed(5), entry.Signal, entry.Date]);
+            tableData.push({
+                "Padrão": pattern,
+                "Stoploss": entry.Stoploss ? formatCurrency(entry.Stoploss) : "N/A",
+                "Sinal": entry.Signal || "N/A",
+                "Data": entry.Date || "N/A"
+            });
         });
     }
-
-    new gridjs.Grid({
-        columns: ["Padrão", "Stoploss", "Sinal", "Data"],
-        data: tableData,
-        search: true,
-        pagination: true,
-        sort: true, 
-        className: {
-            table: "gridjs-table",
-            container: "gridjs-container",
-        }
-    }).render(document.getElementById("tableCandlePatterns"));
+    createGridTable(tableData, ["Padrão", "Stoploss", "Sinal", "Data"], "tableCandlePatterns");
 }
 
 function populateYahooStockTable(containerId, data) {
@@ -547,4 +487,78 @@ function populateYahooStockTable(containerId, data) {
             container: "gridjs-container",
         }
     }).render(document.getElementById(containerId));
+}
+
+function displayBioResults(data) {
+    const bioData = data.data;
+
+    const elements = {
+        LongName: bioData.LongName,
+        BusinessName: bioData.BusinessName || "N/A",
+        Symbol: bioData.Symbol || "N/A",
+        City: bioData.City || "N/A",
+        State: bioData.State || "N/A",
+        ZipCode: bioData.ZipCode || "N/A",
+        Country: bioData.Country || "N/A",
+        Sector: bioData.Sector || "N/A",
+        Industry: bioData.Industry || "N/A",
+        Employees: bioData.Employees ? formatNumber(bioData.Employees) : "N/A",
+        Website: bioData.Website || "N/A",
+        ReportWebsite: bioData.ReportWebsite || "N/A",
+        QuoteSource: bioData.QuoteSource || "N/A",
+        QuoteType: bioData.QuoteType || "N/A",
+        FinancialCurrency: bioData.FinancialCurrency || "N/A",
+        CurrentPrice: bioData.CurrentPrice ? formatCurrency(bioData.CurrentPrice) : "N/A",
+        PreviousClose: bioData.PreviousClose ? formatCurrency(bioData.PreviousClose) : "N/A",
+        OpenPrice: bioData.OpenPrice ? formatCurrency(bioData.OpenPrice) : "N/A"
+    };
+
+    for (const [key, value] of Object.entries(elements)) {
+        const element = document.getElementById(key);
+        if (element) {
+            if ((key === "Website" || key === "ReportWebsite") && value !== "N/A") {
+                element.href = value;
+                element.textContent = value;
+            } else {
+                element.textContent = value;
+            }
+        }
+    }
+}
+
+/* ─────────────── FUNÇÃO PARA PREENCHER TABELAS ─────────────── */
+function displayFundamentalResults(data) {
+    const liquiditySolvencyData = data.liquidity_and_solvency;
+    const profitabilityData = data.profitability;
+    const growthData = data.growth;
+    const valuationData = data.valuation;
+    const dividendsBuybacksData = data.dividends_and_buybacks;
+    const marketRiskData = data.market_risk_and_sentiment;
+    
+    const elements = {
+        // Lquidity Solvency Data
+        QuickRatio: liquiditySolvencyData.QuickRatio.value || "N/A",
+        CurrentRatio: liquiditySolvencyData.CurrentRatio.value || "N/A",
+        TotalCash: liquiditySolvencyData.TotalCash.value || "N/A",
+        TotalDebt: liquiditySolvencyData.TotalDebt.value || "N/A",
+        TotalEquity: liquiditySolvencyData.TotalEquity.value || "N/A",
+        CashCashEquivalentsAndShortTermInvestments: liquiditySolvencyData.CashCashEquivalentsAndShortTermInvestments.value || "N/A",
+        CashAndCashEquivalents: liquiditySolvencyData.CashAndCashEquivalents.value || "N/A",
+        CurrentLiabilities: liquiditySolvencyData.CurrentLiabilities.value || "N/A",
+        EBIT: liquiditySolvencyData.EBIT.value || "N/A",
+        InteresExpenses: liquiditySolvencyData.InteresExpenses.value || "N/A",
+        CashRatio: liquiditySolvencyData.CashRatio.value || "N/A",
+        OperatingCashFlow: liquiditySolvencyData.OperatingCashFlow.value || "N/A",
+        DebttoEquity: liquiditySolvencyData.DebttoEquity.value || "N/A",
+        InterestCoverageRatio: liquiditySolvencyData.InterestCoverageRatio.value || "N/A",
+        DebttoAssetsRatio: liquiditySolvencyData.DebttoAssetsRatio.value || "N/A",
+        // Lquidity Solvency Data
+    };
+
+    for (const [key, value] of Object.entries(elements)) {
+        const element = document.getElementById(key);
+        if (element) {
+            element.textContent = value !== "N/A" ? formatNumber(value) : "N/A";
+        }
+    }
 }
