@@ -205,37 +205,137 @@
                 </div>
                 
                 <div class="liquidity-content hidden">
-                
+                    <div >
+                        <h3>Liquidity Short Term</h3>
+                    </div>
                     <div class="fund-liquidity">
                         <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span></p>
                         <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span></p>
-                        <p><strong>Total Cash:</strong> <span id="TotalCash"></span></p>
-                        <p><strong>Total Debt:</strong> <span id="TotalDebt"></span></p>
                         <p><strong>Cash Ratio:</strong> <span id="CashRatio"></span></p>
+                        <p><strong>Operational Cash Flow:</strong> <span id="OperatingCashFlow"></span></p>
                     </div>
-
+                    <div class="fund-liquidity">
+                        <h3>Liquidity Long Term</h3>
+                    </div>
+                    <div class="fund-liquidity">
+                        <p><strong>Debt to Equity(D/E Ratio):</strong> <span id="DebttoEquity"></span></p>
+                        <p><strong>Debt to Assets Ratio:</strong> <span id="DebttoAssetsRatio"></span></p>
+                        <p><strong>Interest Coverage Ratio:</strong> <span id="InterestCoverageRatio"></span></p>
+                    </div>
+                    <div class="fund-liquidity">
+                        <h3>Cash Reserve (Finantial Security)</h3>
+                    </div>
+                    <div class="fund-liquidity">
+                        <p><strong>Total Cash:</strong> <span id="TotalCash"></span></p>
+                        <p><strong>Cash Equivalents & Short-Term Investments:</strong> <span id="CashCashEquivalentsAndShortTermInvestments"></span></p>
+                    </div>
+                    <div class="fund-liquidity">
+                        <h3>Operational Efficiency</h3>
+                    </div>
+                    <div class="fund-liquidity">
+                        <p><strong>EBIT (Operating Profit):</strong> <span id="EBIT"></span></p>
+                        <p><strong>Interest Expenses:</strong> <span id="InteresExpenses"></span></p>
+                    </div>
                 </div>
             </div>
 
             <div class="fundamental-card">
-                <h2>Lucratividade</h2>
-                <div id="tableProfitability"></div>
+
+                <div class="fundamental-header" id="funProfitability">
+                    <h2>Profitability</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="profitability-content hidden">
+                    <div >
+                        <h3>Efficiency, Profitability and Value Generation</h3>
+                    </div>
+                    <div class="fund-profitability">
+                        <p><strong>Gross Margin:</strong> <span id="grossMargins"></span></p>
+                        <p><strong>Operating Margin:</strong> <span id="operatingMargins"></span></p>
+                        <p><strong>EBITDA Margin:</strong> <span id="EBITDAMargins"></span></p>
+                        <p><strong>Profit Margin:</strong> <span id="ProfitMargin"></span></p>
+                        <p><strong>Return On Assets(ROA):</strong> <span id="returnOnAssetsROA"></span></p>
+                        <p><strong>Return On Equity(ROE):</strong> <span id="returnOnEquityROE"></span></p>
+                    </div>
+                </div>
             </div>
+
             <div class="fundamental-card">
-                <h2>Crescimento</h2>
-                <div id="tableGrowth"></div>
+                <div class="fundamental-header" id="funGrowth">
+                    <h2>Growth</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="growth-content hidden">
+                    <div >
+                        <h3>Growth</h3>
+                    </div>
+                    <div class="fund-growth">
+                        <p><strong>Revenue Growth:</strong> <span id="revenueGrowth"></span></p>
+                        <p><strong>Earnings Growth:</strong> <span id="earningsGrowth"></span></p>
+                        <p><strong>Earnings Quarterly Growth:</strong> <span id="earningsQuarterlyGrowth"></span></p>
+                    </div>
+                </div>
             </div>
+
             <div class="fundamental-card">
-                <h2>Valuation</h2>
-                <div id="tableValuation"></div>
+                <div class="fundamental-header" id="funValuation">
+                    <h2>Valuation</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="valuation-content hidden">
+                    <div>
+                        <h3>Undervalued, Overvalued</h3>
+                    </div>
+                    <div class="fund-valuation">
+                        <p><strong>Trailing P/E:</strong> <span id="trailingPE"></span></p>
+                        <p><strong>Forward P/E:</strong> <span id="forwardPE"></span></p>
+                        <p><strong>PEG Ratio:</strong> <span id="PEGRatio"></span></p>
+                        <p><strong>P/B Ratio:</strong> <span id="PBRatio"></span></p>
+                        <p><strong>EV/EBITDA:</strong> <span id="enterpriseToEbitda"></span></p>
+                    </div>
+                </div>
             </div>
+            
             <div class="fundamental-card">
-                <h2>Dividendos e Recompras</h2>
-                <div id="tableDividends"></div>
+                <div class="fundamental-header" id="funDividends">
+                    <h2>Dividends & Buybacks</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="dividends-content hidden">
+                    <div>
+                        <h3>Distribution</h3>
+                    </div>
+                    <div class="fund-dividends">
+                        <p><strong>Dividend Yield:</strong> <span id="dividendYield"></span></p>
+                        <p><strong>Payout Ratio:</strong> <span id="payoutRatio"></span></p>
+                        <p><strong>Avg Dividend Yield(5y):</strong> <span id="fiveYearAvgDividendYield"></span></p>
+                    </div>
+                </div>
             </div>
+            
             <div class="fundamental-card">
-                <h2> Risco e Sentimento de Mercado</h2>
-                <div id="tableRisk"></div>
+                <div class="fundamental-header" id="funRisk">
+                    <h2>Risk & Market Sentiment</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="risk-content hidden">
+                    <div>
+                        <h3>Stability</h3>
+                    </div>
+                    <div class="fund-risk">
+                        <p><strong>Beta:</strong> <span id="beta"></span></p>
+                        <p><strong>Audit Risk:</strong> <span id="auditRisk"></span></p>
+                        <p><strong>Board Risk:</strong> <span id="boardRisk"></span></p>
+                        <p><strong>Short Interest:</strong> <span id="sharesPercentSharesOut"></span></p>
+                        <p><strong>Recommendaton Mean:</strong> <span id="recommendationMean"></span></p>
+                        <p><strong>Target Mean Price:</strong> <span id="targetMeanPrice"></span></p>
+                    </div>
+                </div>
             </div>
         </section>
        

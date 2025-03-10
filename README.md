@@ -348,11 +348,11 @@ We are also looking to grow our community with **key roles in market analysis**:
 - Technical Analysis
     - Pivots Point - `ToDo: Medium`
     - Candles Patterns Metrics
-        - This for all candles pattern each one with is own conditions
+        - Include stoploss into chart
+        - Filter for candles in use
         - Complete function `candles_patterns` 
             - Pass this values to Risk Manager (Add to Candlestick chart) - `ToDo`
 - Fundamental Analysis
-    - Finish Stock Page Organization. - `ToDo: High`
     - Sentiment Analysis of Recent News - `ToDo: Low`
     - Economic Calendar Correlations - `ToDo`
     

@@ -210,7 +210,6 @@ class DataHistoryYahoo():
         '''
         Return detailed fundamental information about asset
         '''
-        
         try:
             yahoo_symbol_info = yf.Ticker(symbol).info
         except:
@@ -326,43 +325,43 @@ class DataHistoryYahoo():
                 "CashRatio": cash_ratio,
                 "OperatingCashFlow": yahoo_symbol_info.get("operatingCashflow", "N/A"),
                 # Longo Prazo
-                "DebttoEquity": yahoo_symbol_info.get("debtToEquity", "N/A"), #(D/E)
+                "DebttoEquity": yahoo_symbol_info.get("debtToEquity", "N/A"),
                 "InterestCoverageRatio": interest_coverage_ratio,
                 "DebttoAssetsRatio": debt_to_assets_ratio,
             },
             "profitability": {
-                "Margem Bruta": yahoo_symbol_info.get("grossMargins", "N/A"),
-                "Margem Operacional": yahoo_symbol_info.get("operatingMargins", "N/A"),
-                "Margem EBITDA": yahoo_symbol_info.get("ebitdaMargins", "N/A"),
-                "Lucro Líquido (Net Income)": yahoo_symbol_info.get("netIncomeToCommon", "N/A"),
-                "Profit Margin (Margem Líquida)": yahoo_symbol_info.get("profitMargins", "N/A"),
-                "Retorno sobre Ativos (ROA)": yahoo_symbol_info.get("returnOnAssets", "N/A"),
-                "Retorno sobre Patrimônio (ROE)": yahoo_symbol_info.get("returnOnEquity", "N/A"),
+                "grossMargins": yahoo_symbol_info.get("grossMargins", "N/A"),
+                "operatingMargins": yahoo_symbol_info.get("operatingMargins", "N/A"),
+                "EBITDAMargins": yahoo_symbol_info.get("ebitdaMargins", "N/A"),
+                "NetIncome": yahoo_symbol_info.get("netIncomeToCommon", "N/A"),
+                "ProfitMargin": yahoo_symbol_info.get("profitMargins", "N/A"),
+                "returnOnAssetsROA": yahoo_symbol_info.get("returnOnAssets", "N/A"),
+                "returnOnEquityROE": yahoo_symbol_info.get("returnOnEquity", "N/A"),
             },
             "growth": {
-                "Crescimento de Receita (YoY)": yahoo_symbol_info.get("revenueGrowth", "N/A"),
-                "Crescimento do Lucro Líquido (YoY)": yahoo_symbol_info.get("earningsQuarterlyGrowth", "N/A"),
-                "Earnings Growth (Previsão de Crescimento de Lucros)": yahoo_symbol_info.get("earningsGrowth", "N/A"),
+                "revenueGrowth": yahoo_symbol_info.get("revenueGrowth", "N/A"),
+                "earningsQuarterlyGrowth": yahoo_symbol_info.get("earningsQuarterlyGrowth", "N/A"),
+                "earningsGrowth": yahoo_symbol_info.get("earningsGrowth", "N/A"),
             },
             "valuation": {
-                "P/E Ratio (Preço/Lucro)": yahoo_symbol_info.get("trailingPE", "N/A"),
-                "Forward P/E": yahoo_symbol_info.get("forwardPE", "N/A"),
-                "PEG Ratio": yahoo_symbol_info.get("trailingPegRatio", "N/A"),
-                "P/B Ratio (Preço/Valor Patrimonial)": yahoo_symbol_info.get("priceToBook", "N/A"),
-                "EV/EBITDA": yahoo_symbol_info.get("enterpriseToEbitda", "N/A"),
+                "trailingPE": yahoo_symbol_info.get("trailingPE", "N/A"),
+                "forwardPE": yahoo_symbol_info.get("forwardPE", "N/A"),
+                "PEGRatio": yahoo_symbol_info.get("trailingPegRatio", "N/A"),
+                "PBRatio": yahoo_symbol_info.get("priceToBook", "N/A"),
+                "enterpriseToEbitda": yahoo_symbol_info.get("enterpriseToEbitda", "N/A"),
             },
             "dividends_and_buybacks": {
-                "Dividend Yield": yahoo_symbol_info.get("dividendYield", "N/A"),
-                "Payout Ratio": yahoo_symbol_info.get("payoutRatio", "N/A"),
-                "Média de Dividend Yield (5 anos)": yahoo_symbol_info.get("fiveYearAvgDividendYield", "N/A"),
+                "dividendYield": yahoo_symbol_info.get("dividendYield", "N/A"),
+                "payoutRatio": yahoo_symbol_info.get("payoutRatio", "N/A"),
+                "fiveYearAvgDividendYield": yahoo_symbol_info.get("fiveYearAvgDividendYield", "N/A"),
             },
             "market_risk_and_sentiment": {
-                "Beta": yahoo_symbol_info.get("beta", "N/A"),
-                "Risco de Auditoria": yahoo_symbol_info.get("auditRisk", "N/A"),
-                "Risco do Conselho": yahoo_symbol_info.get("boardRisk", "N/A"),
-                "Short Interest": yahoo_symbol_info.get("sharesPercentSharesOut", "N/A"),
-                "Recomendação Média": yahoo_symbol_info.get("recommendationMean", "N/A"),
-                "Preço-Alvo Médio": yahoo_symbol_info.get("targetMeanPrice", "N/A")
+                "beta": yahoo_symbol_info.get("beta", "N/A"),
+                "auditRisk": yahoo_symbol_info.get("auditRisk", "N/A"),
+                "boardRisk": yahoo_symbol_info.get("boardRisk", "N/A"),
+                "sharesPercentSharesOut": yahoo_symbol_info.get("sharesPercentSharesOut", "N/A"),
+                "recommendationMean": yahoo_symbol_info.get("recommendationMean", "N/A"),
+                "targetMeanPrice": yahoo_symbol_info.get("targetMeanPrice", "N/A")
             }
         }
         return yahoo_symbol_fundamental_info
@@ -400,16 +399,6 @@ class DataHistoryYahoo():
 
         return yahoo_symbol_about_info
 
-
-# 'regularMarketChangePercent': -0.8822443,
-
-# 'recommendationKey': 'buy',
-# 'numberOfAnalystOpinions': 39,
-
-#  'bookValue': 4.438,
-#  'priceToBook': 53.16133,
-
-
     ##### NOT IN USE ##### 
     
     def get_yahoo_symbol_dividends(self, symbol : str):
@@ -441,7 +430,6 @@ class DataHistoryYahoo():
         yahoo_symbol_major_holders = yf.Ticker(symbol).major_holders
         return yahoo_symbol_major_holders
 
-    
     def get_yahoo_symbol_balance_sheet(self, symbol : str):
         '''
         Return the patrimonial balance sheet

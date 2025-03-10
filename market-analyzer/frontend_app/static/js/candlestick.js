@@ -56,6 +56,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 priceScale: {
                     borderColor: '#3d444d',
                 },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal
+                },
                 timeScale: {
                     borderColor: '#3d444d',
                     timeVisible: true,
@@ -84,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
             window.addEventListener('resize', () => {
                 chart.applyOptions({
                     width: chartContainer.clientWidth,
-                    height: chartContainer.clientHeight // Garantir espaço extra para a legenda
+                    height: chartContainer.clientHeight 
                 });
             });
         }
@@ -96,6 +99,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 candleSeries.update(dataPoint);
             });
         }
+
+
+
+
+
+
 
         const highlightCandle = priceData[2];  // Exemplo: destaca a 3ª vela
         const markers = [
@@ -120,11 +129,5 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Nenhum símbolo encontrado na URL!");
     }
 
-
-    // function updateRealTimeData(newDataPoint) {
-    //     if (candleSeries) {
-    //         candleSeries.update(newDataPoint);  // Atualiza apenas o novo candle
-    //     }
-    // }
 
 });
