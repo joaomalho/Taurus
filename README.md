@@ -18,14 +18,19 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 - `Average Directional Index (ADX)`
 - `Bollinger Bands`
 - `Relative Strength Index (RSI)`
+- `Candle Pattern Detection`
+- `Pivots Points`
 
 ### Fundamental Analysis:
-- 📰 Sentiment Analysis of Recent News
+- 📊 Fundamental Analysis through complete Income Statements, Cash Flows, Balance Sheets and Insiders Decisions. 
 - 💡 Analysts Opinion Metrics
+- 📰 Sentiment Analysis of Recent News
+- 📅 Economic Calendar Correlations
 
 ### Risk Management:
 - 📉 Max Drawdown and Expectancy
-- 🛡️ Sharpe Ratio Calculations
+- 🛡️ Essential Ratios Consideration (Financial, Liquidity, Growth, Profitability, ...)
+- 🎯 StopLoss detection
 
 ### Real-Time Data:
 - Track Stocks, ETFs, Currencies, and Cryptocurrencies with near-instant updates.
@@ -337,20 +342,20 @@ We are also looking to grow our community with **key roles in market analysis**:
 - Install tool (Upgrade & Uninstall Methods, and visual) - Install review due new dependencies
     - Add a visual window in screen - Next Version
 - Risk Manager
-    -   Condition do decision making - WIP
+    - Condition do decision making - WIP
 - FrontEnd firt version release
-    -   Working with Grid.js and Charts.js
-- Results
+    - Add metrics and drawn to candlestik graph. - `ToDo: Medium`
+- Technical Analysis
+    - Pivots Point - `ToDo: Medium`
     - Candles Patterns Metrics
         - This for all candles pattern each one with is own conditions
         - Complete function `candles_patterns` 
-            - Already listed all detectable functions
-            - 1 Version of stoploss also included
-            - Finish "which candle" should be regarded to consider stoploss values
-            - Include `signal` and `relevance` for each candle.
-            - Pass this values to Risk Manager  
+            - Pass this values to Risk Manager (Add to Candlestick chart) - `ToDo`
 - Fundamental Analysis
-    - Finish Stock Page Organization.
+    - Finish Stock Page Organization. - `ToDo: High`
+    - Sentiment Analysis of Recent News - `ToDo: Low`
+    - Economic Calendar Correlations - `ToDo`
+    
 - Additional Screens
     - Missing Catalog for penny, top of day, top of week.
 - Install scripts:
@@ -362,7 +367,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **GUI:** Implemented 3º version of GUI, Django.
     - Main, Stock and Screener finished
         - Organization & Data visualizations
-            - Improvement for Grid.js, Charts.js and lightweight-charts
+            - Improvement with Lightweight-charts (Same usablity has Trading View)
         - Documentation about metrics - WIP
 - **Auto Optimization** WIP
 - **Fundamental Analysis** Included all Necessary information for fundamental quantitative information.
