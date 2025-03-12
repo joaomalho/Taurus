@@ -344,7 +344,8 @@ We are also looking to grow our community with **key roles in market analysis**:
 - Risk Manager
     - Condition do decision making - WIP
 - FrontEnd firt version release
-    - Add metrics and drawn to candlestik graph. - `ToDo: Medium`
+    - Add metrics and drawn to candlestik graph.
+    - Select to appear and desapear. `ToDo: Medium`
 - Technical Analysis
     - Pivots Point - `ToDo: Medium`
     - Candles Patterns Metrics

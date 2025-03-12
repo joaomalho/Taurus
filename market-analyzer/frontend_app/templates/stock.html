@@ -200,7 +200,7 @@
 
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funLiquidity">
-                    <h2>Liquidez e Solvência: Capacidade de Pagamento</h2>
+                    <h2>Liquidez e Solvabilidade: Capacidade de Pagamento</h2>
                     <span class="toggle-icon">+</span>
                 </div>
                 
@@ -209,8 +209,16 @@
                         <h3>Liquidity Short Term</h3>
                     </div>
                     <div class="fund-liquidity">
-                        <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span></p>
-                        <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span></p>
+                        <div >
+                            <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span></p>
+                            <p><strong>Quick Ratio Classification:</strong> <span id="QuickRatioClass"></span></p>
+                            <canvas id="QuickRatioGaugeChart"></canvas>
+                        </div>
+                        <div >
+                            <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span></p>
+                            <p><strong>Current Ratio Classification:</strong> <span id="CurrentRatioClass"></span></p>
+                            <canvas id="CurrentRatioGaugeChart"></canvas>
+                        </div>
                         <p><strong>Cash Ratio:</strong> <span id="CashRatio"></span></p>
                         <p><strong>Operational Cash Flow:</strong> <span id="OperatingCashFlow"></span></p>
                     </div>

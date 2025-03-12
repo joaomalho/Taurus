@@ -325,6 +325,122 @@ canvas {
     color: var(--button-hover-bg);
 }
 
+
+.profitability-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.profitability-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--secondary-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.profitability-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.profitability-content a:hover {
+    color: var(--button-hover-bg);
+}
+
+.growth-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.growth-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--secondary-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.growth-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.growth-content a:hover {
+    color: var(--button-hover-bg);
+}
+
+.valuation-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.valuation-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--secondary-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.valuation-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.valuation-content a:hover {
+    color: var(--button-hover-bg);
+}
+
+.dividends-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.dividends-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--secondary-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.dividends-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.dividends-content a:hover {
+    color: var(--button-hover-bg);
+}
+
+.risk-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.risk-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--secondary-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.risk-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.risk-content a:hover {
+    color: var(--button-hover-bg);
+}
+
 .fund-liquidity, .fund-profitability, .fund-growth, .fund-valuation, .fund-dividends, .fund-risk {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

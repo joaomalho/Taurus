@@ -52,6 +52,37 @@ document.addEventListener("DOMContentLoaded", function () {
         contentSelector: ".liquidity-content",
         iconSelector: ".toggle-icon"
     });
+
+    setupToggle({
+        toggleSelector: "#funProfitability",
+        contentSelector: ".profitability-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#funGrowth",
+        contentSelector: ".growth-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#funValuation",
+        contentSelector: ".valuation-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#funDividends",
+        contentSelector: ".dividends-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#funRisk",
+        contentSelector: ".risk-content",
+        iconSelector: ".toggle-icon"
+    });
+
 }); 
 
 /* ─────────────── FUNÇÕES DE EVENTOS PARA OS BOTÕES ─────────────── */
@@ -542,19 +573,50 @@ function displayFundamentalResults(data) {
         TotalCash: liquiditySolvencyData.TotalCash.value || "N/A",
         TotalDebt: liquiditySolvencyData.TotalDebt.value || "N/A",
         TotalEquity: liquiditySolvencyData.TotalEquity.value || "N/A",
+        // Aux
         CashCashEquivalentsAndShortTermInvestments: liquiditySolvencyData.CashCashEquivalentsAndShortTermInvestments.value || "N/A",
         CashAndCashEquivalents: liquiditySolvencyData.CashAndCashEquivalents.value || "N/A",
         CurrentLiabilities: liquiditySolvencyData.CurrentLiabilities.value || "N/A",
         EBIT: liquiditySolvencyData.EBIT.value || "N/A",
         InteresExpenses: liquiditySolvencyData.InteresExpenses.value || "N/A",
+        // Curto Prazo
         CashRatio: liquiditySolvencyData.CashRatio.value || "N/A",
         OperatingCashFlow: liquiditySolvencyData.OperatingCashFlow.value || "N/A",
+        // Longo Prazo
         DebttoEquity: liquiditySolvencyData.DebttoEquity.value || "N/A",
         InterestCoverageRatio: liquiditySolvencyData.InterestCoverageRatio.value || "N/A",
         DebttoAssetsRatio: liquiditySolvencyData.DebttoAssetsRatio.value || "N/A",
-        // Lquidity Solvency Data
-    };
-
+        // Profitability Data
+        grossMargins: profitabilityData.grossMargins.value || "N/A",
+        operatingMargins: profitabilityData.operatingMargins.value || "N/A",
+        EBITDAMargins: profitabilityData.EBITDAMargins.value || "N/A",
+        NetIncome: profitabilityData.NetIncome.value || "N/A",
+        ProfitMargin: profitabilityData.ProfitMargin.value || "N/A",
+        returnOnAssetsROA: profitabilityData.returnOnAssetsROA.value || "N/A",
+        returnOnEquityROE: profitabilityData.returnOnEquityROE.value || "N/A",
+        // Growth
+        revenueGrowth: growthData.revenueGrowth.value || "N/A",
+        earningsQuarterlyGrowth: growthData.earningsQuarterlyGrowth.value || "N/A",
+        earningsGrowth: growthData.earningsGrowth.value || "N/A",
+        // Valuation
+        trailingPE: valuationData.trailingPE.value || "N/A",
+        forwardPE: valuationData.forwardPE.value || "N/A",
+        PEGRatio: valuationData.PEGRatio.value || "N/A",
+        PBRatio: valuationData.PBRatio.value || "N/A",
+        enterpriseToEbitda: valuationData.enterpriseToEbitda.value || "N/A",
+        // Dividends
+        dividendYield: dividendsBuybacksData.dividendYield.value || "N/A",
+        payoutRatio: dividendsBuybacksData.payoutRatio.value || "N/A",
+        fiveYearAvgDividendYield: dividendsBuybacksData.fiveYearAvgDividendYield.value || "N/A",
+        // Market Risk Sentiment
+        beta: marketRiskData.beta.value || "N/A",
+        auditRisk: marketRiskData.auditRisk.value || "N/A",
+        boardRisk: marketRiskData.boardRisk.value || "N/A",
+        sharesPercentSharesOut: marketRiskData.sharesPercentSharesOut.value || "N/A",
+        recommendationMean: marketRiskData.recommendationMean.value || "N/A",
+        targetMeanPrice: marketRiskData.targetMeanPrice.value || "N/A",
+        }
+    
     for (const [key, value] of Object.entries(elements)) {
         const element = document.getElementById(key);
         if (element) {
