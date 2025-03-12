@@ -449,6 +449,19 @@ canvas {
 }
 
 
+.fund-liquidity p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+#QuickRatioClass,
+#CurrentRatioClass,
+#CashRatioClass {
+    font-weight: bold;
+}
+
 /* ============================= */
 /* RESPONSIVIDADE */
 /* ============================= */

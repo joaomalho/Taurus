@@ -149,16 +149,31 @@ function renderGaugeChart(canvasId, metric, value) {
             const yCenter = chart.getDatasetMeta(0).data[0].y;
             const outRadius = chart.getDatasetMeta(0).data[0].outRadius;
             const innerRadius = chart.getDatasetMeta(0).data[0].innerRadius;
+            const withSlice = (outRadius - innerRadius) / 2;
+            const radius = 15;
+            const angle = Math.PI / 180;
+
+            const needleValue = data.datasets[0].needleValue
 
             ctx.translate(xCenter, yCenter)
             
+            // needle
             ctx.beginPath();
-            
-            ctx.moveTo(0 - 15, 0);
-            ctx.lineTo(0 , 0 - innerRadius - 50);
-            ctx.lineTo(0 + 15, 0);
+            ctx.strokeStyle = 'grey';
+            ctx.fillStyle = 'grey';
+            ctx.lineWidth = 1;
+            ctx.moveTo(0 - radius, 0);
+            ctx.lineTo(0 , 0 - innerRadius);
+            ctx.lineTo(0 + radius, 0);
+            ctx.closePath();
             ctx.stroke();
-
+            ctx.fill();
+            
+            // dot
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, angle * 0, angle * 360, false);
+            ctx.fill();
+            
             ctx.restore();
         }
     }
@@ -186,7 +201,8 @@ function renderGaugeChart(canvasId, metric, value) {
                     borderWidth: 0,
                     circumference: 180,
                     rotation: 270,
-                    cutout: '50%' // Mais fino para representar apenas a linha do ponteiro
+                    cutout: '80%',
+                    angleValue: maxIntervalValue
                 }
             ]
         },

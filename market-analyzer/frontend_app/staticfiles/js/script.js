@@ -214,35 +214,6 @@ function setupToggle({ toggleSelector, contentSelector, iconSelector = null }) {
     });
 }
 
-
-/* ─────── FUNÇÃO PARA FORMATAR NÚMEROS GRANDES ─────── */
-function formatNumber(value) {
-    return value ? value.toLocaleString('en-EN') : "N/A"; 
-}
-
-/* ─────── FUNÇÃO PARA FORMATAR VALORES MONETÁRIOS ─────── */
-function formatCurrency(value) {
-    return value
-        ? value.toLocaleString('en-EN', { style: 'currency', currency: 'USD' })
-        : "N/A";
-}
-
-/* ─────────────── FUNÇÕES DE CRIAÇÃO DE TABELAS ─────────────── */
-function createGridTable(data, columns, containerId) {
-
-    new gridjs.Grid({
-        columns: columns,
-        data: data.map(row => columns.map(col => row[col] || "N/A")),
-        search: true,
-        pagination: { limit: 5 },
-        sort: true,
-        className: {
-            table: "gridjs-table",
-            container: "gridjs-container"
-        }
-    }).render(document.getElementById(containerId));
-}
-
 /* ─────────────── FUNÇÕES DE EVENTOS ─────────────── */
 function setupSearchButton() {
     let searchButton = document.getElementById("searchButton");
@@ -276,8 +247,91 @@ function setupScreenerButton() {
     }
 }
 
-/* ─────────────── FUNÇÕES DE REQUISIÇÃO ─────────────── */
+/* ─────── FUNÇÃO PARA FORMATAR NÚMEROS GRANDES ─────── */
+function formatNumber(value) {
+    return value ? value.toLocaleString('en-EN') : "N/A"; 
+}
 
+/* ─────── FUNÇÃO PARA FORMATAR VALORES MONETÁRIOS ─────── */
+function formatCurrency(value) {
+    return value
+        ? value.toLocaleString('en-EN', { style: 'currency', currency: 'USD' })
+        : "N/A";
+}
+
+/* ─────────────── FUNÇÕES DE CRIAÇÃO DE TABELAS ─────────────── */
+function createGridTable(data, columns, containerId) {
+    
+    new gridjs.Grid({
+        columns: columns,
+        data: data.map(row => columns.map(col => row[col] || "N/A")),
+        search: true,
+        pagination: { limit: 5 },
+        sort: true,
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container"
+        }
+    }).render(document.getElementById(containerId));
+}
+
+/* ─────────────── FUNÇÕES DE CLASSIFICAÇÃO DE METRICAS + CHARTS─────────────── */
+function classifyMetricForGauge(metric, value) {
+    if (value === "N/A") return { classification: "N/A", color: "#9E9E9E", intervals: [0, 100] };
+
+    switch (metric) {
+        case "QuickRatio":
+            return {
+                classification: value >= 2 ? "Excelente"
+                    : value >= 1.5 ? "Bom"
+                    : value >= 1.0 ? "Razoável"
+                    : value >= 0.5 ? "Fraco"
+                    : "Muito Fraco",
+                color: value >= 2 ? "#4CAF50"
+                    : value >= 1.5 ? "#8BC34A"
+                    : value >= 1.0 ? "#FFEB3B"
+                    : value >= 0.5 ? "#FF9800"
+                    : "#F44336",
+                intervals: [0.5, 1, 1.5, 2]
+            };
+
+        case "CurrentRatio":
+            return {
+                classification: value >= 2.5 ? "Excelente"
+                    : value >= 1.5 ? "Bom"
+                    : value >= 1.0 ? "Razoável"
+                    : value >= 0.5 ? "Fraco"
+                    : "Muito Fraco",
+                color: value >= 2.5 ? "#4CAF50"
+                    : value >= 1.5 ? "#8BC34A"
+                    : value >= 1.0 ? "#FFEB3B"
+                    : value >= 0.5 ? "#FF9800"
+                    : "#F44336",
+                intervals: [0.5, 1, 1.5, 2.5]
+            };
+
+        case "CashRatio":
+            return {
+                classification: value >= 1.5 ? "Excelente"
+                    : value >= 1.0 ? "Bom"
+                    : value >= 0.5 ? "Razoável"
+                    : value >= 0.1 ? "Fraco"
+                    : "Muito Fraco",
+                color: value >= 1.5 ? "#4CAF50"
+                    : value >= 1.0 ? "#8BC34A"
+                    : value >= 0.5 ? "#FFEB3B"
+                    : value >= 0.1 ? "#FF9800"
+                    : "#F44336",
+                intervals: [0.1, 0.5, 1, 1.5]
+            };
+
+        default:
+            return { classification: "N/A", color: "#9E9E9E", intervals: [0, 100] };
+    }
+}
+
+
+/* ─────────────── FUNÇÕES DE REQUISIÇÃO ─────────────── */
 function fetchStockData(symbol) {
     fetch(`/stock/${symbol}/data_history/?period=1mo&interval=1d`)
         .then(response => response.json())
@@ -305,7 +359,7 @@ function fetchBioData(symbol) {
         .catch(error => console.error("Erro ao buscar os dados do Bio:", error));
 }
 
-/* ─────────────── FUNÇÃO PARA PEGAR DADOS FUNDAMENTAIS ─────────────── */
+/* ─────────────── FUNÇÃO PARA DADOS FUNDAMENTAIS ─────────────── */
 function fetchFundamentalInfo(symbol) {
     fetch(`/stock/${symbol}/fundamental_info/`)
         .then(response => response.json())
@@ -617,10 +671,23 @@ function displayFundamentalResults(data) {
         targetMeanPrice: marketRiskData.targetMeanPrice.value || "N/A",
         }
     
-    for (const [key, value] of Object.entries(elements)) {
-        const element = document.getElementById(key);
-        if (element) {
-            element.textContent = value !== "N/A" ? formatNumber(value) : "N/A";
+        for (const [key, value] of Object.entries(elements)) {
+            const element = document.getElementById(key);
+            const classificationElement = document.getElementById(`${key}Class`);
+    
+            if (element) {
+                element.textContent = value !== "N/A" ? formatNumber(value) : "N/A";
+            }
+    
+            if (classificationElement) {
+                const { classification } = classifyMetricForGauge(key, value);
+                classificationElement.textContent = classification;
+                // classificationElement.className = getClassificationColor(classification);
+            }
+
+            // Renderizar Gauge Charts
+            if (value !== "N/A") {
+                renderGaugeChart(`${key}GaugeChart`, key, parseFloat(value));
+            }
         }
-    }
 }

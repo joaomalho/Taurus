@@ -125,3 +125,88 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// Gauge Chart Fundamental
+
+function renderGaugeChart(canvasId, metric, value) {
+    const ctx = document.getElementById(canvasId)?.getContext('2d');
+    if (!ctx) {
+        console.error(`Elemento com ID '${canvasId}' não encontrado.`);
+        return;
+    }
+
+    const { classification, color, intervals } = classifyMetricForGauge(metric, value);
+
+    const maxIntervalValue = intervals[intervals.length - 1];
+    const pointerValue = Math.min(value, maxIntervalValue);
+
+    const gaugeNeedle = {
+        id: 'gaugeNeedle',
+        afterDatasetsDraw(chart, args, plugins) {
+            const { ctx, data } = chart;
+
+            ctx.save();
+            const xCenter = chart.getDatasetMeta(0).data[0].x;
+            const yCenter = chart.getDatasetMeta(0).data[0].y;
+            const outRadius = chart.getDatasetMeta(0).data[0].outRadius;
+            const innerRadius = chart.getDatasetMeta(0).data[0].innerRadius;
+
+            ctx.translate(xCenter, yCenter)
+            
+            ctx.beginPath();
+            
+            ctx.moveTo(0 - 15, 0);
+            ctx.lineTo(0 , 0 - innerRadius - 50);
+            ctx.lineTo(0 + 15, 0);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: intervals.map(i => i.toFixed(2)),
+            datasets: [
+                {
+                    data: [
+                        intervals[0],
+                        intervals[1] - intervals[0],
+                        intervals[2] - intervals[1],
+                        intervals[3] - intervals[2],
+                        maxIntervalValue  - intervals[3]
+                    ],
+                    backgroundColor: ['#F44336', '#FF9800', '#FFEB3B', '#8BC34A', '#4CAF50'],
+                    borderWidth: 0
+                },
+                {
+                    // Ponteiro para o valor atual
+                    data: [pointerValue, maxIntervalValue - pointerValue],
+                    backgroundColor: ['#000000', '#9A8655'],
+                    borderWidth: 0,
+                    circumference: 180,
+                    rotation: 270,
+                    cutout: '50%' // Mais fino para representar apenas a linha do ponteiro
+                }
+            ]
+        },
+        options: {
+            circumference: 180,
+            rotation: 270,
+            aspectRatio: 1.5,
+            cutout: '25%',
+            plugins: {
+                legend: { display: true },
+                tooltip: { enabled: true }
+            }
+        },
+        plugins: [gaugeNeedle]
+    });
+
+    // Exibe a classificação ao lado do gráfico
+    const labelElement = document.getElementById(`${canvasId}Class`);
+    if (labelElement) {
+        labelElement.textContent = classification;
+        labelElement.style.color = color;
+    }
+}
