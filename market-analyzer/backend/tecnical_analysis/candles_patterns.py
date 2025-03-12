@@ -31,7 +31,7 @@ class CandlesPatterns:
                 "morning_star", "evening_star", "marubozu", "harami",
                 "harami_cross", "kicking", "kicking_by_length", "tasuki_gap",
                 "gap_side_by_side_white", "counter_attack", "piercing",
-                "dark_cloud_cover", "tri_star"
+                "dark_cloud_cover", "tri_star", "spinning_top"
             ]:
                 stoploss = round(data['Low'][i], 5) if signal > 0 else round(data['High'][i], 5)
             elif pattern_name in [

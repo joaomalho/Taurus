@@ -100,13 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-
-
-
-
-
-
-        const highlightCandle = priceData[2];  // Exemplo: destaca a 3ª vela
+        const highlightCandle = priceData[2]; 
         const markers = [
             {
                 time: highlightCandle.time,

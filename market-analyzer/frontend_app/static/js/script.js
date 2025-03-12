@@ -287,11 +287,11 @@ function classifyMetricForGauge(metric, value) {
                     : value >= 1.0 ? "Razoável"
                     : value >= 0.5 ? "Fraco"
                     : "Muito Fraco",
-                color: value >= 2 ? "#4CAF50"
-                    : value >= 1.5 ? "#8BC34A"
-                    : value >= 1.0 ? "#FFEB3B"
-                    : value >= 0.5 ? "#FF9800"
-                    : "#F44336",
+                color: value >= 2 ? "#068008"
+                    : value >= 1.5 ? "#089981"
+                    : value >= 1.0 ? "#f2b636"
+                    : value >= 0.5 ? "#f24536"
+                    : "#ed0000",
                 intervals: [0.5, 1, 1.5, 2]
             };
 
@@ -302,11 +302,11 @@ function classifyMetricForGauge(metric, value) {
                     : value >= 1.0 ? "Razoável"
                     : value >= 0.5 ? "Fraco"
                     : "Muito Fraco",
-                color: value >= 2.5 ? "#4CAF50"
-                    : value >= 1.5 ? "#8BC34A"
-                    : value >= 1.0 ? "#FFEB3B"
-                    : value >= 0.5 ? "#FF9800"
-                    : "#F44336",
+                color: value >= 2.5 ? "#068008"
+                    : value >= 1.5 ? "#089981"
+                    : value >= 1.0 ? "#f2b636"
+                    : value >= 0.5 ? "#f24536"
+                    : "#ed0000",
                 intervals: [0.5, 1, 1.5, 2.5]
             };
 
@@ -317,11 +317,11 @@ function classifyMetricForGauge(metric, value) {
                     : value >= 0.5 ? "Razoável"
                     : value >= 0.1 ? "Fraco"
                     : "Muito Fraco",
-                color: value >= 1.5 ? "#4CAF50"
-                    : value >= 1.0 ? "#8BC34A"
-                    : value >= 0.5 ? "#FFEB3B"
-                    : value >= 0.1 ? "#FF9800"
-                    : "#F44336",
+                color: value >= 1.5 ? "#068008"
+                    : value >= 1.0 ? "#089981"
+                    : value >= 0.5 ? "#f2b636"
+                    : value >= 0.1 ? "#f24536"
+                    : "#ed0000",
                 intervals: [0.1, 0.5, 1, 1.5]
             };
 
