@@ -655,6 +655,7 @@ function displayFundamentalResults(data) {
         earningsGrowth: growthData.earningsGrowth.value || "N/A",
         // Valuation
         trailingPE: valuationData.trailingPE.value || "N/A",
+        sectorTrailingPE: valuationData.sectorTrailingPE.value || "N/A",
         forwardPE: valuationData.forwardPE.value || "N/A",
         PEGRatio: valuationData.PEGRatio.value || "N/A",
         PBRatio: valuationData.PBRatio.value || "N/A",

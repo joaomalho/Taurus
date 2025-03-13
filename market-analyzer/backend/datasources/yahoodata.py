@@ -13,6 +13,39 @@ class DataHistoryYahoo():
         self
     
     ########### STOCKS TOPs ###########
+    def get_symbol_bio_info(self, symbol : str):
+        '''
+        Return detailed company information.
+        '''
+        
+        try:
+            yahoo_symbol_info = yf.Ticker(symbol).info
+        except:
+            yahoo_symbol_info = {}
+
+        yahoo_symbol_about_info = {
+                "LongName": yahoo_symbol_info.get("longName", "N/A"),
+                "BusinessName": yahoo_symbol_info.get("longBusinessSummary", "N/A"),
+                "Symbol": yahoo_symbol_info.get("symbol", "N/A"),
+                "City": yahoo_symbol_info.get("city", "N/A"),
+                "State": yahoo_symbol_info.get("state", "N/A"),
+                "ZipCode": yahoo_symbol_info.get("zip", "N/A"),
+                "Country": yahoo_symbol_info.get("country", "N/A"),
+                "Sector": yahoo_symbol_info.get("sector", "N/A"),
+                "Industry": yahoo_symbol_info.get("industry", "N/A"),
+                "Employees": yahoo_symbol_info.get("fullTimeEmployees", "N/A"),
+                "Website": yahoo_symbol_info.get("website", "N/A"),
+                "ReportWebsite": yahoo_symbol_info.get("irWebsite", "N/A"),
+                "QuoteSource": yahoo_symbol_info.get("quoteSourceName", "N/A"),
+                "QuoteType": yahoo_symbol_info.get("quoteType", "N/A"),
+                "FinancialCurrency": yahoo_symbol_info.get("financialCurrency", "N/A"),
+                "CurrentPrice": yahoo_symbol_info.get("currentPrice", "N/A"),
+                "PreviousClose": yahoo_symbol_info.get("previousClose", "N/A"),
+                "OpenPrice": yahoo_symbol_info.get("open", "N/A"),
+        }
+
+        return yahoo_symbol_about_info
+
     def get_stocks_gainers(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo top 100 gainers
@@ -160,7 +193,6 @@ class DataHistoryYahoo():
         except Exception as e:
             print(f"Error processing data: {e}")
 
-    ########### FOREX ###########   
     def get_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
         '''
         Data collection from yahoo
@@ -206,6 +238,35 @@ class DataHistoryYahoo():
         )
         return yahoo_symbol_recommendations
 
+    def get_sector_etf_info(self, sector : str, search_value : str = "info"):
+        """
+        Return information about symbol ETF sector.
+        """
+        sector_map = {
+            "Technology": "XLK",
+            "Financial Services": "XLF",
+            "Consumer Cyclical": "XLY",
+            "Healthcare": "XLV",
+            "Communication Services": "XLC",
+            "Industrials": "XLI",
+            "Consumer Defensive": "XLP",
+            "Energy": "XLE",
+            "Real Estate": "XLRE",
+            "Basic Materials": "XLB",
+            "Utilities": "XLU",
+        }
+
+        etf_symbol = sector_map.get(sector)
+        if not etf_symbol:
+            return "N/A"
+
+        ticker = yf.Ticker(etf_symbol)
+
+        if search_value == "info":
+            return ticker.info
+        else:
+            return ticker.info.get(search_value, "N/A")
+   
     def get_symbol_fundamental_info(self, symbol : str):
         '''
         Return detailed fundamental information about asset
@@ -222,7 +283,8 @@ class DataHistoryYahoo():
             yahoo_symbol_income = yf.Ticker(symbol).income_stmt
         except:
             yahoo_symbol_income = pd.DataFrame()
-
+        
+        
         # Inicializar todas as variáveis com "N/A"
         total_equity = "N/A"
         cash_equivalents_short_term_investments = "N/A"
@@ -306,6 +368,11 @@ class DataHistoryYahoo():
         else:
             debt_to_assets_ratio = "N/A"
 
+        # PE adjusted to market
+        sector = yahoo_symbol_info.get("sector")
+        dh = DataHistoryYahoo()
+        sector_pe = dh.get_sector_etf_info(sector, "trailingPE")
+
         yahoo_symbol_info = yf.Ticker(symbol).info
         yahoo_symbol_fundamental_info = {
             "liquidity_and_solvency": {
@@ -345,6 +412,7 @@ class DataHistoryYahoo():
             },
             "valuation": {
                 "trailingPE": yahoo_symbol_info.get("trailingPE", "N/A"),
+                "sectorTrailingPE": sector_pe,
                 "forwardPE": yahoo_symbol_info.get("forwardPE", "N/A"),
                 "PEGRatio": yahoo_symbol_info.get("trailingPegRatio", "N/A"),
                 "PBRatio": yahoo_symbol_info.get("priceToBook", "N/A"),
@@ -366,39 +434,8 @@ class DataHistoryYahoo():
         }
         return yahoo_symbol_fundamental_info
 
-    def get_symbol_bio_info(self, symbol : str):
-        '''
-        Return detailed company information.
-        '''
-        
-        try:
-            yahoo_symbol_info = yf.Ticker(symbol).info
-        except:
-            yahoo_symbol_info = {}
-
-        yahoo_symbol_about_info = {
-                "LongName": yahoo_symbol_info.get("longName", "N/A"),
-                "BusinessName": yahoo_symbol_info.get("longBusinessSummary", "N/A"),
-                "Symbol": yahoo_symbol_info.get("symbol", "N/A"),
-                "City": yahoo_symbol_info.get("city", "N/A"),
-                "State": yahoo_symbol_info.get("state", "N/A"),
-                "ZipCode": yahoo_symbol_info.get("zip", "N/A"),
-                "Country": yahoo_symbol_info.get("country", "N/A"),
-                "Sector": yahoo_symbol_info.get("sector", "N/A"),
-                "Industry": yahoo_symbol_info.get("industry", "N/A"),
-                "Employees": yahoo_symbol_info.get("fullTimeEmployees", "N/A"),
-                "Website": yahoo_symbol_info.get("website", "N/A"),
-                "ReportWebsite": yahoo_symbol_info.get("irWebsite", "N/A"),
-                "QuoteSource": yahoo_symbol_info.get("quoteSourceName", "N/A"),
-                "QuoteType": yahoo_symbol_info.get("quoteType", "N/A"),
-                "FinancialCurrency": yahoo_symbol_info.get("financialCurrency", "N/A"),
-                "CurrentPrice": yahoo_symbol_info.get("currentPrice", "N/A"),
-                "PreviousClose": yahoo_symbol_info.get("previousClose", "N/A"),
-                "OpenPrice": yahoo_symbol_info.get("open", "N/A"),
-        }
-
-        return yahoo_symbol_about_info
-
+     
+   ########### FOREX ###########   
     ##### NOT IN USE ##### 
     
     def get_yahoo_symbol_dividends(self, symbol : str):
@@ -467,25 +504,6 @@ class DataHistoryYahoo():
         yahoo_symbol_news = yf.Ticker(symbol).news
         return yahoo_symbol_news
 
-    def get_yahoo_symbol_fast_info(self, symbol : str):
-        '''
-        Return the fast information about asset
-
-        Data:
-        exchange : str
-            Exchange on which the asset is traded
-        marketCap : float
-            Marker Cap of asset
-        quoteType: str
-            Asset type (EQUITY, CRYPTO, FOREX..)
-        shares : int
-            Total Number of shares in circulation            
-        '''
-        yahoo_symbol_fast_info_exchange = yf.Ticker(symbol).fast_info.exchange
-        yahoo_symbol_fast_info_marketcap = yf.Ticker(symbol).fast_info.market_cap
-        yahoo_symbol_fast_info_quotetype = yf.Ticker(symbol).fast_info.quote_type
-        yahoo_symbol_fast_info_shares = yf.Ticker(symbol).fast_info.shares
-        return yahoo_symbol_fast_info_exchange, yahoo_symbol_fast_info_marketcap, yahoo_symbol_fast_info_quotetype, yahoo_symbol_fast_info_shares
     
     ########### WORLD INDICES ###########
     def get_yahoo_indices(self, table_class: str = None) -> pd.DataFrame:

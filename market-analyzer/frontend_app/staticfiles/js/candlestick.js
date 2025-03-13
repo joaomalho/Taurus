@@ -74,16 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 wickDownColor: '#ef5350',
                 wickUpColor: '#26a69a',
             });
-    
-            chart.subscribeClick((param) => {
-                if (param.time) {
-                    const candle = priceData.find(c => c.time === param.time);
-                    if (candle) {
-                        alert(`Vela Selecionada:\nAbertura: ${candle.open}\nFechamento: ${candle.close}\nAlta: ${candle.high}\nBaixa: ${candle.low}`);
-                    }
-                }
-            });
-    
+        
             window.addEventListener('resize', () => {
                 chart.applyOptions({
                     width: chartContainer.clientWidth,
@@ -122,17 +113,19 @@ document.addEventListener("DOMContentLoaded", function () {
     function addTooltip(chartContainer, chart, priceData) {
         const tooltip = document.createElement("div");
         tooltip.style.position = "absolute";
-        tooltip.style.background = "#2b2b2b";
-        tooltip.style.color = "#fff";
+        tooltip.style.background = "#0d1117";
+        tooltip.style.color = "#ddd";
+        tooltip.fontSize = "12px";
         tooltip.style.padding = "8px 12px";
         tooltip.style.borderRadius = "6px";
-        tooltip.style.pointerEvents = "none";  // Evita interferência com o gráfico
+        tooltip.style.pointerEvents = "none";
         tooltip.style.visibility = "hidden";
-        tooltip.style.zIndex = "100";         // Sobrepor ao gráfico
+        tooltip.style.opacity = "0.8";
+        tooltip.style.zIndex = "999";
+
         chartContainer.appendChild(tooltip);
     
         chart.subscribeCrosshairMove((param) => {
-            // Verificar se o cursor está sobre uma vela válida
             if (!param.time || !param.seriesPrices) {
                 tooltip.style.visibility = "hidden";
                 return;
@@ -143,9 +136,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // Exibir apenas se houver uma vela sob o cursor
             if (priceDataPoint) {
                 const { time, open, high, low, close } = priceDataPoint;
-    
+
+
                 tooltip.innerHTML = `
-                    <strong>Data:</strong> ${time}<br>
                     <strong>Abertura:</strong> ${open}<br>
                     <strong>Fechamento:</strong> ${close}<br>
                     <strong>Máxima:</strong> ${high}<br>
