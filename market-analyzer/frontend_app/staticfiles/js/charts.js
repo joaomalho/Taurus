@@ -141,27 +141,44 @@ function renderGaugeChart(canvasId, metric, value) {
 
     const gaugeNeedle = {
         id: 'gaugeNeedle',
-        afterDatasetsDraw(chart, args, plugins) {
-            const { ctx, data } = chart;
+        afterDatasetsDraw(chart) {
+            const { ctx, chartArea } = chart;
+            const { top, bottom, left, right } = chartArea;
+            const centerX = (left + right) / 2;
+            const centerY = bottom - 20;
+
+            const radius = (bottom - top) / 2; // Tamanho adequado da agulha
+
+            // Cálculo correto do ângulo da agulha (mapeado na escala 0-180 graus)
+            const angle = (Math.PI / 180) * (270 + (pointerValue / maxIntervalValue) * 180);
 
             ctx.save();
-            const xCenter = chart.getDatasetMeta(0).data[0].x;
-            const yCenter = chart.getDatasetMeta(0).data[0].y;
-            const outRadius = chart.getDatasetMeta(0).data[0].outRadius;
-            const innerRadius = chart.getDatasetMeta(0).data[0].innerRadius;
 
-            ctx.translate(xCenter, yCenter)
-            
+            // Desenho da agulha
+            ctx.translate(centerX, centerY);
+            ctx.rotate(angle);
+
             ctx.beginPath();
-            
-            ctx.moveTo(0 - 15, 0);
-            ctx.lineTo(0 , 0 - innerRadius - 50);
-            ctx.lineTo(0 + 15, 0);
+            ctx.moveTo(0, -radius * 1.5); // Ponta da agulha
+            ctx.lineTo(-15, 0); // Base esquerda
+            ctx.lineTo(15, 0); // Base direita
+            ctx.closePath();
+            ctx.fillStyle = 'grey';
+            ctx.fill();
+
+            ctx.lineWidth = 2;       // Espessura da borda
+            ctx.strokeStyle = 'black';
             ctx.stroke();
+
+            // Círculo central da agulha
+            ctx.beginPath();
+            ctx.arc(0, 0, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = 'grey';
+            ctx.fill();
 
             ctx.restore();
         }
-    }
+    };
 
     new Chart(ctx, {
         type: 'doughnut',
@@ -176,8 +193,9 @@ function renderGaugeChart(canvasId, metric, value) {
                         intervals[3] - intervals[2],
                         maxIntervalValue  - intervals[3]
                     ],
-                    backgroundColor: ['#F44336', '#FF9800', '#FFEB3B', '#8BC34A', '#4CAF50'],
-                    borderWidth: 0
+                    backgroundColor: ['#ed0000', '#f24536', '#f2b636', '#089981', '#068008'],
+                    borderWidth: 2,
+                    borderColor: 'black' 
                 },
                 {
                     // Ponteiro para o valor atual
@@ -186,15 +204,18 @@ function renderGaugeChart(canvasId, metric, value) {
                     borderWidth: 0,
                     circumference: 180,
                     rotation: 270,
-                    cutout: '50%' // Mais fino para representar apenas a linha do ponteiro
+                    cutout: '100%',
+                    angleValue: maxIntervalValue
                 }
             ]
         },
         options: {
+            responsive : true,
+            maintainAspectRatio: false,
             circumference: 180,
             rotation: 270,
             aspectRatio: 1.5,
-            cutout: '25%',
+            cutout: '15%',
             plugins: {
                 legend: { display: true },
                 tooltip: { enabled: true }
@@ -203,7 +224,6 @@ function renderGaugeChart(canvasId, metric, value) {
         plugins: [gaugeNeedle]
     });
 
-    // Exibe a classificação ao lado do gráfico
     const labelElement = document.getElementById(`${canvasId}Class`);
     if (labelElement) {
         labelElement.textContent = classification;

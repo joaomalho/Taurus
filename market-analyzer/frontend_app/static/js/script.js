@@ -544,11 +544,12 @@ function displayCandleResults(data) {
                 "Padrão": pattern,
                 "Stoploss": entry.Stoploss ? formatCurrency(entry.Stoploss) : "N/A",
                 "Sinal": entry.Signal || "N/A",
-                "Data": entry.Date || "N/A"
+                "Data": entry.Date || "N/A",
+                "Resultado": entry.Result || "N/A",
             });
         });
     }
-    createGridTable(tableData, ["Padrão", "Stoploss", "Sinal", "Data"], "tableCandlePatterns");
+    createGridTable(tableData, ["Padrão", "Stoploss", "Sinal", "Data", "Resultado"], "tableCandlePatterns");
 }
 
 function populateYahooStockTable(containerId, data) {

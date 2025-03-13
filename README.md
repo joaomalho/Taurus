@@ -208,7 +208,7 @@ Taurus provides comprehensive, detailed and real-time access to the forex, stock
 
 Our tool is capable of detecting X-candle patterns in the market.
 
-Each candle pattern has an associated stop-loss target, take-profit target, and relevance level as outlined in the table below:
+Each candle pattern has an associated stop-loss target and relevance level as outlined in the table below:
 
 | Pattern Name               | Classification   | Candles Range Detection    
 |:---------------------------|:-----------------|:--------------------------
@@ -253,6 +253,7 @@ Each candle pattern has an associated stop-loss target, take-profit target, and 
 | **Separating Lines**       | Continuation     | 3                         
 | **Upside Gap Two Crows**   | Complex          | 5-7                       
 
+Application only presents candles which stoploss was not acomplished. 
 ---
 ---
 
@@ -349,10 +350,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 - Technical Analysis
     - Pivots Point - `ToDo: Medium`
     - Candles Patterns Metrics
-        - Include stoploss into chart
-        - Filter for candles in use
-        - Complete function `candles_patterns` 
-            - Pass this values to Risk Manager (Add to Candlestick chart) - `ToDo`
+        - Include stoploss into chart tooltip plus icon for candles - `ToDo: High: WIP` 
 - Fundamental Analysis
     - Sentiment Analysis of Recent News - `ToDo: Low`
     - Economic Calendar Correlations - `ToDo`

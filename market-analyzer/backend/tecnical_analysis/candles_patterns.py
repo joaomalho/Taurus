@@ -1,5 +1,7 @@
 import talib
 import numpy as np
+from datetime import datetime, timedelta
+from backend.risk_manager.risk_manager import RiskManager
 
 class CandlesPatterns:
     """
@@ -20,12 +22,16 @@ class CandlesPatterns:
         detected_indices = np.nonzero(detection)[0]
 
         results = []
-        
+        three_months_ago = datetime.now() - timedelta(days=90)
+
         for i in detected_indices:
             date = dates[i]
+
+            if datetime.strptime(date, "%Y-%m-%d %H:%M") < three_months_ago:
+                continue  
+
             signal = int(detection[i])
 
-            # Determinar stop-loss com base no tipo de padrão
             if pattern_name in [
                 "doji", "dragonfly_doji", "gravestone_doji", "engulfing",
                 "morning_star", "evening_star", "marubozu", "harami",
@@ -49,11 +55,18 @@ class CandlesPatterns:
             else:
                 stoploss = None
 
-            results.append({
-                'Signal': signal,
-                'Stoploss': stoploss,
-                'Date': date
-            })
+            rm = RiskManager()
+            # Utiliza a nova função para verificar se o Stoploss foi atingido
+            future_close_prices = data['Close'][i + 1:i + 6]
+            hit_stoploss = rm.stoploss_candles_conditions(signal, stoploss, future_close_prices)
+
+            if stoploss:
+                results.append({
+                    'Signal': signal,
+                    'Stoploss': stoploss,
+                    'Date': date,
+                    'Result': hit_stoploss
+                })
 
         return results
 

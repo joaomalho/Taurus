@@ -377,18 +377,11 @@ def get_candle_detection(request, symbol):
                 if len(data_list) < 5:
                     return JsonResponse({"error": "Not enough data for pattern detection."}, status=400)
 
-                # ➤ Filtrar para obter apenas dados dos últimos 3 meses
-                three_months_ago = datetime.now() - timedelta(days=90)
-                filtered_data = [entry for entry in data_list if datetime.strptime(entry["Date"], "%Y-%m-%d") >= three_months_ago]
-
-                if len(filtered_data) < 5:
-                    return JsonResponse({"error": "Not enough recent data for pattern detection."}, status=400)
-
-                close_prices = np.array([entry["Close"] for entry in filtered_data if "Close" in entry], dtype=np.float64)
-                low_prices = np.array([entry["Low"] for entry in filtered_data if "Low" in entry], dtype=np.float64)
-                high_prices = np.array([entry["High"] for entry in filtered_data if "High" in entry], dtype=np.float64)
-                open_prices = np.array([entry["Open"] for entry in filtered_data if "Open" in entry], dtype=np.float64)
-                dates = np.array([entry["Date"] for entry in filtered_data if "Date" in entry])
+                close_prices = np.array([entry["Close"] for entry in data_list if "Close" in entry], dtype=np.float64)
+                low_prices = np.array([entry["Low"] for entry in data_list if "Low" in entry], dtype=np.float64)
+                high_prices = np.array([entry["High"] for entry in data_list if "High" in entry], dtype=np.float64)
+                open_prices = np.array([entry["Open"] for entry in data_list if "Open" in entry], dtype=np.float64)
+                dates = np.array([entry["Date"] for entry in data_list if "Date" in entry])
 
                 if np.isnan(close_prices).any() or np.isnan(open_prices).any():
                     return JsonResponse({"error": "Invalid data: missing Close or Open prices."}, status=400)
@@ -429,7 +422,7 @@ def get_candle_detection(request, symbol):
                 }, dates)
 
                 if isinstance(detection_result, list) and detection_result:
-                    detected_patterns[method_name] = detection_result[-5:]  # Últimos 5 resultados
+                    detected_patterns[method_name] = detection_result[-5:]
             except Exception as e:
                 detected_patterns[method_name] = f"Error processing pattern: {str(e)}"
 

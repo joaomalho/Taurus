@@ -86,3 +86,18 @@ class RiskManager():
 
         return "Indefinido"
 
+
+    def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
+        """
+        Verify if stoploss were hitted in candle patterns
+        """
+        if stoploss is None:
+            return "N/A"
+
+        if signal == -100:
+            return "Hit Stoploss (Above)" if any(close > stoploss for close in future_close_prices) else "No Hit"
+
+        if signal == 100:
+            return "Hit Stoploss (Below)" if any(close < stoploss for close in future_close_prices) else "No Hit"
+
+        return "N/A"

@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderCandlestickChart(priceData) {
         const chartContainer = document.getElementById("candlestickChart");
-
+    
         if (!chart) {
             chart = LightweightCharts.createChart(chartContainer, {
                 layout: {
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     secondsVisible: false,
                 },
             });
-
+    
             candleSeries = chart.addCandlestickSeries({
                 upColor: '#26a69a',
                 downColor: '#ef5350',
@@ -74,16 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 wickDownColor: '#ef5350',
                 wickUpColor: '#26a69a',
             });
-
-            chart.subscribeClick((param) => {
-                if (param.time) {
-                    const candle = priceData.find(c => c.time === param.time);
-                    if (candle) {
-                        alert(`Vela Selecionada:\nAbertura: ${candle.open}\nFechamento: ${candle.close}\nAlta: ${candle.high}\nBaixa: ${candle.low}`);
-                    }
-                }
-            });
-
+        
             window.addEventListener('resize', () => {
                 chart.applyOptions({
                     width: chartContainer.clientWidth,
@@ -91,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
         }
-
+    
         if (!candleSeries) {
             candleSeries.setData(priceData);
         } else {
@@ -99,20 +90,71 @@ document.addEventListener("DOMContentLoaded", function () {
                 candleSeries.update(dataPoint);
             });
         }
-
-        const highlightCandle = priceData[2]; 
+    
+        // Marcar a penúltima vela com um "ícone" usando Unicode
+        const highlightCandle = priceData[priceData.length - 2];
         const markers = [
             {
                 time: highlightCandle.time,
                 position: 'aboveBar',
-                color: 'yellow',
-                shape: 'arrowDown',
-                text: 'Destaque'
+                // color: 'yellow',
+                // shape: 'arrowDown',
+                text: '🚩'
             }
         ];
-
+    
         candleSeries.setMarkers(markers);
+
+        addTooltip(chartContainer, chart, priceData);
+
+
     }
+    
+    function addTooltip(chartContainer, chart, priceData) {
+        const tooltip = document.createElement("div");
+        tooltip.style.position = "absolute";
+        tooltip.style.background = "#0d1117";
+        tooltip.style.color = "#ddd";
+        tooltip.fontSize = "12px";
+        tooltip.style.padding = "8px 12px";
+        tooltip.style.borderRadius = "6px";
+        tooltip.style.pointerEvents = "none";
+        tooltip.style.visibility = "hidden";
+        tooltip.style.opacity = "0.8";
+        tooltip.style.zIndex = "999";
+
+        chartContainer.appendChild(tooltip);
+    
+        chart.subscribeCrosshairMove((param) => {
+            if (!param.time || !param.seriesPrices) {
+                tooltip.style.visibility = "hidden";
+                return;
+            }
+    
+            const priceDataPoint = priceData.find(c => c.time === param.time);
+    
+            // Exibir apenas se houver uma vela sob o cursor
+            if (priceDataPoint) {
+                const { time, open, high, low, close } = priceDataPoint;
+
+
+                tooltip.innerHTML = `
+                    <strong>Abertura:</strong> ${open}<br>
+                    <strong>Fechamento:</strong> ${close}<br>
+                    <strong>Máxima:</strong> ${high}<br>
+                    <strong>Mínima:</strong> ${low}
+                `;
+    
+                tooltip.style.visibility = "visible";
+                tooltip.style.left = `${param.point.x + 10}px`;
+                tooltip.style.top = `${param.point.y - 50}px`;
+            } else {
+                tooltip.style.visibility = "hidden";
+            }
+        });
+    }
+    
+    
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
