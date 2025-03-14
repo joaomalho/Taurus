@@ -302,6 +302,8 @@ canvas {
     margin: 0;
 }
 
+/* LIQUIDITY */
+
 .liquidity-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
@@ -325,6 +327,7 @@ canvas {
     color: var(--button-hover-bg);
 }
 
+/* PROFITABILITY */
 
 .profitability-content {
     padding: 15px 20px;
@@ -349,6 +352,8 @@ canvas {
     color: var(--button-hover-bg);
 }
 
+/* GROWTH */
+
 .growth-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
@@ -371,6 +376,8 @@ canvas {
 .growth-content a:hover {
     color: var(--button-hover-bg);
 }
+
+/* VALUATION */
 
 .valuation-content {
     padding: 15px 20px;
@@ -395,6 +402,9 @@ canvas {
     color: var(--button-hover-bg);
 }
 
+
+/* DIVIDENDS */
+
 .dividends-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
@@ -417,6 +427,8 @@ canvas {
 .dividends-content a:hover {
     color: var(--button-hover-bg);
 }
+
+/* RISK */
 
 .risk-content {
     padding: 15px 20px;

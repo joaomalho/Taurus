@@ -40,51 +40,143 @@ class RiskManager():
         '''
         pass
     
-    def evaluate_metric(self, metric, value):
+    def evaluate_metrics(self, metrics):
         """
-        Evaluate a metric and return the qualitative conclusion
+        Evaluate fundamental metrics.
         """
-        if value in ["N/A", None] or not isinstance(value, (int, float)):
-            return "N/A"
 
-        if metric in ["Quick Ratio", "Current Ratio", "Cash Ratio"]:
-            if value < 0.75:  
-                return "Very Negative"  # Muito abaixo de 1 é preocupante
-            elif value < 1:  
-                return "Negative"  # Ainda abaixo do ideal
-            elif value < 1.5:  
-                return "Neutral"  # Considerado aceitável
-            elif value < 2:  
-                return "Positive"  # Sinal de boa liquidez
-            else:  
-                return "Very Positive"  # Pode indicar excesso de liquidez
+        evaluated_metrics = {}
 
-        elif metric in ["Debt to Equity (D/E)", "Debt-to-Assets Ratio"]:
-            if value > 2.5:  
-                return "Very Negative"  # Muito endividada
-            elif value > 1.8:  
-                return "Negative"  # Alto risco, mas dentro do aceitável para setores alavancados
-            elif value > 1.2:  
-                return "Neutral"  # Risco moderado
-            elif value > 0.7:  
-                return "Positive"  # Boa estrutura de capital
-            else:  
-                return "Very Positive"  # Empresa tem pouca dependência de dívida
+        if "QuickRatio" in metrics:
+            quick_ratio = metrics.get("QuickRatio", "N/A")
+            if quick_ratio == "N/A":
+                evaluated_metrics["QuickRatio"] = "N/A"
+            elif quick_ratio < 0.75:
+                evaluated_metrics["QuickRatio"] = "Very Negative"
+            elif quick_ratio < 1:
+                evaluated_metrics["QuickRatio"] = "Negative"
+            elif quick_ratio < 1.5:
+                evaluated_metrics["QuickRatio"] = "Neutral"
+            elif quick_ratio < 2:
+                evaluated_metrics["QuickRatio"] = "Positive"
+            else:
+                evaluated_metrics["QuickRatio"] = "Very Positive"
 
-        elif metric == "Interest Coverage Ratio":
-            if value < 1:  
-                return "Very Negative"  # Risco de insolvência
-            elif value < 2:  
-                return "Negative"  # Pode enfrentar dificuldades em crises
-            elif value < 3:  
-                return "Neutral"  # Razoável, mas precisa de monitoramento
-            elif value < 5:  
-                return "Positive"  # Empresa tem boa capacidade de pagar juros
-            else:  
-                return "Very Positive"  # Empresa tem altíssima solvência
+        if "CurrentRatio" in metrics:
+            current_ratio = metrics.get("CurrentRatio", "N/A")
+            if current_ratio == "N/A":
+                evaluated_metrics["CurrentRatio"] = "N/A"
+            elif current_ratio < 0.75:
+                evaluated_metrics["CurrentRatio"] = "Very Negative"
+            elif current_ratio < 1:
+                evaluated_metrics["CurrentRatio"] = "Negative"
+            elif current_ratio < 1.5:
+                evaluated_metrics["CurrentRatio"] = "Neutral"
+            elif current_ratio < 2:
+                evaluated_metrics["CurrentRatio"] = "Positive"
+            else:
+                evaluated_metrics["CurrentRatio"] = "Very Positive"
 
+        if "CashRatio" in metrics:
+            cash_ratio = metrics.get("CashRatio", "N/A")
+            if cash_ratio == "N/A":
+                evaluated_metrics["CashRatio"] = "N/A"
+            elif cash_ratio < 0.75:
+                evaluated_metrics["CashRatio"] = "Very Negative"
+            elif cash_ratio < 1:
+                evaluated_metrics["CashRatio"] = "Negative"
+            elif cash_ratio < 1.5:
+                evaluated_metrics["CashRatio"] = "Neutral"
+            elif cash_ratio < 2:
+                evaluated_metrics["CashRatio"] = "Positive"
+            else:
+                evaluated_metrics["CashRatio"] = "Very Positive"
 
-        return "Indefinido"
+        if "DebttoEquity" in metrics:
+            debt_to_equity = metrics.get("DebttoEquity", "N/A")
+            if debt_to_equity == "N/A":
+                evaluated_metrics["DebttoEquity"] = "N/A"
+            elif debt_to_equity > 2.5:
+                evaluated_metrics["DebttoEquity"] = "Very Negative"
+            elif debt_to_equity > 1.8:
+                evaluated_metrics["DebttoEquity"] = "Negative"
+            elif debt_to_equity > 1.2:
+                evaluated_metrics["DebttoEquity"] = "Neutral"
+            elif debt_to_equity > 0.7:
+                evaluated_metrics["DebttoEquity"] = "Positive"
+            else:
+                evaluated_metrics["DebttoEquity"] = "Very Positive"
+
+        if "DebttoAssetsRatio" in metrics:
+            debt_to_assets = metrics.get("DebttoAssetsRatio", "N/A")
+            if debt_to_assets == "N/A":
+                evaluated_metrics["DebttoAssetsRatio"] = "N/A"
+            elif debt_to_assets > 2.5:
+                evaluated_metrics["DebttoAssetsRatio"] = "Very Negative"
+            elif debt_to_assets > 1.8:
+                evaluated_metrics["DebttoAssetsRatio"] = "Negative"
+            elif debt_to_assets > 1.2:
+                evaluated_metrics["DebttoAssetsRatio"] = "Neutral"
+            elif debt_to_assets > 0.7:
+                evaluated_metrics["DebttoAssetsRatio"] = "Positive"
+            else:
+                evaluated_metrics["DebttoAssetsRatio"] = "Very Positive"
+
+        if "InterestCoverageRatio" in metrics:
+            interest_cover_ratio = metrics.get("InterestCoverageRatio", "N/A")
+            if interest_cover_ratio == "N/A":
+                evaluated_metrics["InterestCoverageRatio"] = "N/A"
+            elif interest_cover_ratio < 1:
+                evaluated_metrics["InterestCoverageRatio"] = "Very Negative"
+            elif interest_cover_ratio < 2:
+                evaluated_metrics["InterestCoverageRatio"] = "Negative"
+            elif interest_cover_ratio < 3:
+                evaluated_metrics["InterestCoverageRatio"] = "Neutral"
+            elif interest_cover_ratio < 5:
+                evaluated_metrics["InterestCoverageRatio"] = "Positive"
+            else:
+                evaluated_metrics["InterestCoverageRatio"] = "Very Positive"
+
+        if "trailingPE" in metrics and "sectorTrailingPE" in metrics and "forwardPE" in metrics:
+            trailing_pe = metrics.get("trailingPE", "N/A")
+            sector_pe = metrics.get("sectorTrailingPE", "N/A")
+            forward_pe = metrics.get("forwardPE", "N/A")
+            if trailing_pe == "N/A" and sector_pe == "N/A" and forward_pe == "N/A":
+                evaluated_metrics["Pe_Valuation"] = "N/A"
+            else:
+                score_pe = 0
+
+                if trailing_pe < sector_pe:
+                    score_pe += 1
+                elif trailing_pe > sector_pe:
+                    score_pe -= 1
+
+                if forward_pe < sector_pe:
+                    score_pe += 1
+                elif forward_pe > sector_pe:
+                    score_pe -= 1
+
+                if trailing_pe > forward_pe:
+                    score_pe += 1
+                elif trailing_pe < forward_pe:
+                    score_pe -= 1
+
+                if score_pe == 3:
+                    evaluated_metrics["Pe_Valuation"] = "Very Low Undervalued"
+                elif score_pe == 2:
+                    evaluated_metrics["Pe_Valuation"] = "Low Undervalued"
+                elif score_pe == 1:
+                    evaluated_metrics["Pe_Valuation"] = "Undervalued"
+                elif score_pe == 0:
+                    evaluated_metrics["Pe_Valuation"] = "Neutral Valued"
+                elif score_pe == -1:
+                    evaluated_metrics["Pe_Valuation"] = "Overvalued"
+                elif score_pe == -2:
+                    evaluated_metrics["Pe_Valuation"] = "High Overvalued"
+                else:
+                    evaluated_metrics["Pe_Valuation"] = "Very High Overvalued"
+            
+        return evaluated_metrics if evaluated_metrics else "Indefinido"
 
 
     def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
@@ -101,3 +193,8 @@ class RiskManager():
             return "Hit Stoploss (Below)" if any(close < stoploss for close in future_close_prices) else "No Hit"
 
         return "N/A"
+    
+
+        
+        
+

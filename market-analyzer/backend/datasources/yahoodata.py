@@ -372,7 +372,7 @@ class DataHistoryYahoo():
         sector = yahoo_symbol_info.get("sector")
         dh = DataHistoryYahoo()
         sector_pe = dh.get_sector_etf_info(sector, "trailingPE")
-
+        
         yahoo_symbol_info = yf.Ticker(symbol).info
         yahoo_symbol_fundamental_info = {
             "liquidity_and_solvency": {
