@@ -47,8 +47,8 @@ class RiskManager():
 
         evaluated_metrics = {}
 
-        if "QuickRatio" in metrics:
-            quick_ratio = metrics.get("QuickRatio", "N/A")
+        if 'QuickRatio' in metrics.get('liquidity_and_solvency', {}):
+            quick_ratio = metrics.get('liquidity_and_solvency', {}).get('QuickRatio', 'N/A')
             if quick_ratio == "N/A":
                 evaluated_metrics["QuickRatio"] = "N/A"
             elif quick_ratio < 0.75:
@@ -62,8 +62,8 @@ class RiskManager():
             else:
                 evaluated_metrics["QuickRatio"] = "Very Positive"
 
-        if "CurrentRatio" in metrics:
-            current_ratio = metrics.get("CurrentRatio", "N/A")
+        if 'CurrentRatio' in metrics.get('liquidity_and_solvency', {}):
+            current_ratio = metrics.get('liquidity_and_solvency', {}).get('CurrentRatio', 'N/A')
             if current_ratio == "N/A":
                 evaluated_metrics["CurrentRatio"] = "N/A"
             elif current_ratio < 0.75:
@@ -77,8 +77,8 @@ class RiskManager():
             else:
                 evaluated_metrics["CurrentRatio"] = "Very Positive"
 
-        if "CashRatio" in metrics:
-            cash_ratio = metrics.get("CashRatio", "N/A")
+        if 'CashRatio' in metrics.get('liquidity_and_solvency', {}):
+            cash_ratio = metrics.get('liquidity_and_solvency', {}).get('CashRatio', 'N/A')
             if cash_ratio == "N/A":
                 evaluated_metrics["CashRatio"] = "N/A"
             elif cash_ratio < 0.75:
@@ -92,8 +92,8 @@ class RiskManager():
             else:
                 evaluated_metrics["CashRatio"] = "Very Positive"
 
-        if "DebttoEquity" in metrics:
-            debt_to_equity = metrics.get("DebttoEquity", "N/A")
+        if 'DebttoEquity' in metrics.get('liquidity_and_solvency', {}):
+            debt_to_equity = metrics.get('liquidity_and_solvency', {}).get('DebttoEquity', 'N/A')
             if debt_to_equity == "N/A":
                 evaluated_metrics["DebttoEquity"] = "N/A"
             elif debt_to_equity > 2.5:
@@ -107,8 +107,8 @@ class RiskManager():
             else:
                 evaluated_metrics["DebttoEquity"] = "Very Positive"
 
-        if "DebttoAssetsRatio" in metrics:
-            debt_to_assets = metrics.get("DebttoAssetsRatio", "N/A")
+        if 'DebttoAssetsRatio' in metrics.get('liquidity_and_solvency', {}):
+            debt_to_assets = metrics.get('liquidity_and_solvency', {}).get('DebttoAssetsRatio', 'N/A')
             if debt_to_assets == "N/A":
                 evaluated_metrics["DebttoAssetsRatio"] = "N/A"
             elif debt_to_assets > 2.5:
@@ -122,8 +122,8 @@ class RiskManager():
             else:
                 evaluated_metrics["DebttoAssetsRatio"] = "Very Positive"
 
-        if "InterestCoverageRatio" in metrics:
-            interest_cover_ratio = metrics.get("InterestCoverageRatio", "N/A")
+        if 'InterestCoverageRatio' in metrics.get('liquidity_and_solvency', {}):
+            interest_cover_ratio = metrics.get('liquidity_and_solvency', {}).get('InterestCoverageRatio', 'N/A')
             if interest_cover_ratio == "N/A":
                 evaluated_metrics["InterestCoverageRatio"] = "N/A"
             elif interest_cover_ratio < 1:
@@ -137,11 +137,11 @@ class RiskManager():
             else:
                 evaluated_metrics["InterestCoverageRatio"] = "Very Positive"
 
-        if "trailingPE" in metrics and "sectorTrailingPE" in metrics and "forwardPE" in metrics:
+        if "trailingPE" in metrics.get('valuation', {}) and "sectorTrailingPE" in metrics.get('valuation', {}) and "forwardPE" in metrics.get('valuation', {}):
             try:
-                trailing_pe = metrics.get("trailingPE", "N/A")
-                sector_pe = metrics.get("sectorTrailingPE", "N/A")
-                forward_pe = metrics.get("forwardPE", "N/A")
+                trailing_pe = metrics.get('valuation', {}).get("trailingPE", "N/A")
+                sector_pe = metrics.get('valuation', {}).get("sectorTrailingPE", "N/A")
+                forward_pe = metrics.get('valuation', {}).get("forwardPE", "N/A")
             except (ValueError, TypeError):
                 evaluated_metrics["trailingPE"] = "N/A"
                 return evaluated_metrics
