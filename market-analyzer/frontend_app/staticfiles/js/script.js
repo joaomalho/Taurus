@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchRSIData(symbol);
         fetchCandlePatternData(symbol);
         fetchFundamentalInfo(symbol);
+        // fetchFundamentalInfoClassification(symbol);
         fetchBioData(symbol);
     }
 
@@ -373,6 +374,19 @@ function fetchFundamentalInfo(symbol) {
         .catch(error => console.error("Erro ao carregar dados fundamentais:", error));
 }
 
+// function fetchFundamentalInfoClassification(symbol) {
+//     fetch(`/stock/${symbol}/fundamental_evaluations/`)
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.error) {
+//                 console.error("Erro ao buscar Classificações:", data.error);
+//                 return;
+//             }
+//             displayFundamentalResultsClassification(data);
+//         })
+//         .catch(error => console.error("Erro ao carregar Classificações:", error));
+// }
+
 function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeriod = 200) {
     fetch(`/stock/${symbol}/crossover_trend/?fast=${fastPeriod}&medium=${mediumPeriod}&slow=${slowPeriod}`)
         .then(response => response.json())
@@ -612,7 +626,7 @@ function displayBioResults(data) {
     }
 }
 
-/* ─────────────── FUNÇÃO PARA PREENCHER TABELAS ─────────────── */
+/* ─────────────── FUNÇÃO PARA PREENCHER FUNDAMENTALS ─────────────── */
 function displayFundamentalResults(data) {
     const liquiditySolvencyData = data.liquidity_and_solvency;
     const profitabilityData = data.profitability;
@@ -622,74 +636,75 @@ function displayFundamentalResults(data) {
     const marketRiskData = data.market_risk_and_sentiment;
     
     const elements = {
-        // Lquidity Solvency Data
-        QuickRatio: liquiditySolvencyData.QuickRatio.value || "N/A",
-        CurrentRatio: liquiditySolvencyData.CurrentRatio.value || "N/A",
-        TotalCash: liquiditySolvencyData.TotalCash.value || "N/A",
-        TotalDebt: liquiditySolvencyData.TotalDebt.value || "N/A",
-        TotalEquity: liquiditySolvencyData.TotalEquity.value || "N/A",
-        // Aux
-        CashCashEquivalentsAndShortTermInvestments: liquiditySolvencyData.CashCashEquivalentsAndShortTermInvestments.value || "N/A",
-        CashAndCashEquivalents: liquiditySolvencyData.CashAndCashEquivalents.value || "N/A",
-        CurrentLiabilities: liquiditySolvencyData.CurrentLiabilities.value || "N/A",
-        EBIT: liquiditySolvencyData.EBIT.value || "N/A",
-        InteresExpenses: liquiditySolvencyData.InteresExpenses.value || "N/A",
-        // Curto Prazo
-        CashRatio: liquiditySolvencyData.CashRatio.value || "N/A",
-        OperatingCashFlow: liquiditySolvencyData.OperatingCashFlow.value || "N/A",
-        // Longo Prazo
-        DebttoEquity: liquiditySolvencyData.DebttoEquity.value || "N/A",
-        InterestCoverageRatio: liquiditySolvencyData.InterestCoverageRatio.value || "N/A",
-        DebttoAssetsRatio: liquiditySolvencyData.DebttoAssetsRatio.value || "N/A",
+        // Liquidity Solvency Data
+        QuickRatio: liquiditySolvencyData.QuickRatio || {},
+        CurrentRatio: liquiditySolvencyData.CurrentRatio || {},
+        TotalCash: liquiditySolvencyData.TotalCash || {},
+        TotalDebt: liquiditySolvencyData.TotalDebt || {},
+        TotalEquity: liquiditySolvencyData.TotalEquity || {},
+        CashRatio: liquiditySolvencyData.CashRatio || {},
+        OperatingCashFlow: liquiditySolvencyData.OperatingCashFlow || {},
+        DebttoEquity: liquiditySolvencyData.DebttoEquity || {},
+        InterestCoverageRatio: liquiditySolvencyData.InterestCoverageRatio || {},
+        DebttoAssetsRatio: liquiditySolvencyData.DebttoAssetsRatio || {},
         // Profitability Data
-        grossMargins: profitabilityData.grossMargins.value || "N/A",
-        operatingMargins: profitabilityData.operatingMargins.value || "N/A",
-        EBITDAMargins: profitabilityData.EBITDAMargins.value || "N/A",
-        NetIncome: profitabilityData.NetIncome.value || "N/A",
-        ProfitMargin: profitabilityData.ProfitMargin.value || "N/A",
-        returnOnAssetsROA: profitabilityData.returnOnAssetsROA.value || "N/A",
-        returnOnEquityROE: profitabilityData.returnOnEquityROE.value || "N/A",
+        grossMargins: profitabilityData.grossMargins || {},
+        operatingMargins: profitabilityData.operatingMargins || {},
+        EBITDAMargins: profitabilityData.EBITDAMargins || {},
+        NetIncome: profitabilityData.NetIncome || {},
+        ProfitMargin: profitabilityData.ProfitMargin || {},
+        returnOnAssetsROA: profitabilityData.returnOnAssetsROA || {},
+        returnOnEquityROE: profitabilityData.returnOnEquityROE || {},
         // Growth
-        revenueGrowth: growthData.revenueGrowth.value || "N/A",
-        earningsQuarterlyGrowth: growthData.earningsQuarterlyGrowth.value || "N/A",
-        earningsGrowth: growthData.earningsGrowth.value || "N/A",
+        revenueGrowth: growthData.revenueGrowth || {},
+        earningsQuarterlyGrowth: growthData.earningsQuarterlyGrowth || {},
+        earningsGrowth: growthData.earningsGrowth || {},
         // Valuation
-        trailingPE: valuationData.trailingPE.value || "N/A",
-        sectorTrailingPE: valuationData.sectorTrailingPE.value || "N/A",
-        forwardPE: valuationData.forwardPE.value || "N/A",
-        PEGRatio: valuationData.PEGRatio.value || "N/A",
-        PBRatio: valuationData.PBRatio.value || "N/A",
-        enterpriseToEbitda: valuationData.enterpriseToEbitda.value || "N/A",
+        trailingPE: valuationData.trailingPE || {},
+        sectorTrailingPE: valuationData.sectorTrailingPE || {},
+        forwardPE: valuationData.forwardPE || {},
+        PEGRatio: valuationData.PEGRatio || {},
+        PBRatio: valuationData.PBRatio || {},
+        enterpriseToEbitda: valuationData.enterpriseToEbitda || {},
         // Dividends
-        dividendYield: dividendsBuybacksData.dividendYield.value || "N/A",
-        payoutRatio: dividendsBuybacksData.payoutRatio.value || "N/A",
-        fiveYearAvgDividendYield: dividendsBuybacksData.fiveYearAvgDividendYield.value || "N/A",
+        dividendYield: dividendsBuybacksData.dividendYield || {},
+        payoutRatio: dividendsBuybacksData.payoutRatio || {},
+        fiveYearAvgDividendYield: dividendsBuybacksData.fiveYearAvgDividendYield || {},
         // Market Risk Sentiment
-        beta: marketRiskData.beta.value || "N/A",
-        auditRisk: marketRiskData.auditRisk.value || "N/A",
-        boardRisk: marketRiskData.boardRisk.value || "N/A",
-        sharesPercentSharesOut: marketRiskData.sharesPercentSharesOut.value || "N/A",
-        recommendationMean: marketRiskData.recommendationMean.value || "N/A",
-        targetMeanPrice: marketRiskData.targetMeanPrice.value || "N/A",
-        }
-    
-        for (const [key, value] of Object.entries(elements)) {
-            const element = document.getElementById(key);
-            const classificationElement = document.getElementById(`${key}Class`);
-    
-            if (element) {
-                element.textContent = value !== "N/A" ? formatNumber(value) : "N/A";
-            }
-    
-            if (classificationElement) {
-                const { classification } = classifyMetricForGauge(key, value);
-                classificationElement.textContent = classification;
-                // classificationElement.className = getClassificationColor(classification);
-            }
+        beta: marketRiskData.beta || {},
+        auditRisk: marketRiskData.auditRisk || {},
+        boardRisk: marketRiskData.boardRisk || {},
+        sharesPercentSharesOut: marketRiskData.sharesPercentSharesOut || {},
+        recommendationMean: marketRiskData.recommendationMean || {},
+        targetMeanPrice: marketRiskData.targetMeanPrice || {}
+    }
 
-            // Renderizar Gauge Charts
-            if (value !== "N/A") {
-                renderGaugeChart(`${key}GaugeChart`, key, parseFloat(value));
-            }
+    for (const [key, data] of Object.entries(elements)) {
+        const valueElement = document.getElementById(key);
+
+        const value = data.value || "N/A";
+
+        if (valueElement) {
+            valueElement.textContent = value !== "N/A" ? formatNumber(value) : "N/A";
         }
+    }
 }
+
+// function displayFundamentalResultsClassification(data) {
+//     const elements = {
+//         QuickRatio: data.evaluations.liquidity_and_solvency?.QuickRatio || "N/A",
+//         CurrentRatio: data.evaluations.liquidity_and_solvency?.CurrentRatio || "N/A",
+//         CashRatio: data.evaluations.liquidity_and_solvency?.CashRatio || "N/A",
+//         DebttoEquity: data.evaluations.liquidity_and_solvency?.DebttoEquity || "N/A",
+//         DebttoAssetsRatio: data.evaluations.liquidity_and_solvency?.DebttoAssetsRatio || "N/A",
+//         InterestCoverageRatio: data.evaluations.liquidity_and_solvency?.InterestCoverageRatio || "N/A"
+//     }
+
+//     for (const [key, evaluation] of Object.entries(elements)) {
+//         const classificationElement = document.getElementById(`${key}Class`);
+
+//         if (classificationElement) {
+//             classificationElement.textContent = evaluation;
+//         }
+//     }
+// }

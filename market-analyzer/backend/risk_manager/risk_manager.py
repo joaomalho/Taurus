@@ -138,11 +138,16 @@ class RiskManager():
                 evaluated_metrics["InterestCoverageRatio"] = "Very Positive"
 
         if "trailingPE" in metrics and "sectorTrailingPE" in metrics and "forwardPE" in metrics:
-            trailing_pe = metrics.get("trailingPE", "N/A")
-            sector_pe = metrics.get("sectorTrailingPE", "N/A")
-            forward_pe = metrics.get("forwardPE", "N/A")
-            if trailing_pe == "N/A" and sector_pe == "N/A" and forward_pe == "N/A":
-                evaluated_metrics["Pe_Valuation"] = "N/A"
+            try:
+                trailing_pe = metrics.get("trailingPE", "N/A")
+                sector_pe = metrics.get("sectorTrailingPE", "N/A")
+                forward_pe = metrics.get("forwardPE", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["trailingPE"] = "N/A"
+                return evaluated_metrics
+
+            if trailing_pe is None or sector_pe is None or forward_pe is None:
+                evaluated_metrics["trailingPE"] = "N/A"
             else:
                 score_pe = 0
 
@@ -161,23 +166,22 @@ class RiskManager():
                 elif trailing_pe < forward_pe:
                     score_pe -= 1
 
-                if score_pe == 3:
-                    evaluated_metrics["Pe_Valuation"] = "Very Low Undervalued"
+                if score_pe >= 3:
+                    evaluated_metrics["trailingPE"] = "Very Low Undervalued"
                 elif score_pe == 2:
-                    evaluated_metrics["Pe_Valuation"] = "Low Undervalued"
+                    evaluated_metrics["trailingPE"] = "Low Undervalued"
                 elif score_pe == 1:
-                    evaluated_metrics["Pe_Valuation"] = "Undervalued"
+                    evaluated_metrics["trailingPE"] = "Undervalued"
                 elif score_pe == 0:
-                    evaluated_metrics["Pe_Valuation"] = "Neutral Valued"
+                    evaluated_metrics["trailingPE"] = "Neutral Valued"
                 elif score_pe == -1:
-                    evaluated_metrics["Pe_Valuation"] = "Overvalued"
+                    evaluated_metrics["trailingPE"] = "Overvalued"
                 elif score_pe == -2:
-                    evaluated_metrics["Pe_Valuation"] = "High Overvalued"
+                    evaluated_metrics["trailingPE"] = "High Overvalued"
                 else:
-                    evaluated_metrics["Pe_Valuation"] = "Very High Overvalued"
-            
-        return evaluated_metrics if evaluated_metrics else "Indefinido"
+                    evaluated_metrics["trailingPE"] = "Very High Overvalued"
 
+        return evaluated_metrics if evaluated_metrics else "Indefinido"
 
     def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
         """

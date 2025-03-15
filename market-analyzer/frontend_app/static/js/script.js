@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchRSIData(symbol);
         fetchCandlePatternData(symbol);
         fetchFundamentalInfo(symbol);
-        // fetchFundamentalInfoClassification(symbol);
+        fetchFundamentalInfoClassification(symbol);
         fetchBioData(symbol);
     }
 
@@ -374,18 +374,18 @@ function fetchFundamentalInfo(symbol) {
         .catch(error => console.error("Erro ao carregar dados fundamentais:", error));
 }
 
-// function fetchFundamentalInfoClassification(symbol) {
-//     fetch(`/stock/${symbol}/fundamental_evaluations/`)
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.error) {
-//                 console.error("Erro ao buscar Classificações:", data.error);
-//                 return;
-//             }
-//             displayFundamentalResultsClassification(data);
-//         })
-//         .catch(error => console.error("Erro ao carregar Classificações:", error));
-// }
+function fetchFundamentalInfoClassification(symbol) {
+    fetch(`/stock/${symbol}/fundamental_evaluations/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Erro ao buscar Classificações:", data.error);
+                return;
+            }
+            displayFundamentalResultsClassification(data);
+        })
+        .catch(error => console.error("Erro ao carregar Classificações:", error));
+}
 
 function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeriod = 200) {
     fetch(`/stock/${symbol}/crossover_trend/?fast=${fastPeriod}&medium=${mediumPeriod}&slow=${slowPeriod}`)
@@ -690,21 +690,22 @@ function displayFundamentalResults(data) {
     }
 }
 
-// function displayFundamentalResultsClassification(data) {
-//     const elements = {
-//         QuickRatio: data.evaluations.liquidity_and_solvency?.QuickRatio || "N/A",
-//         CurrentRatio: data.evaluations.liquidity_and_solvency?.CurrentRatio || "N/A",
-//         CashRatio: data.evaluations.liquidity_and_solvency?.CashRatio || "N/A",
-//         DebttoEquity: data.evaluations.liquidity_and_solvency?.DebttoEquity || "N/A",
-//         DebttoAssetsRatio: data.evaluations.liquidity_and_solvency?.DebttoAssetsRatio || "N/A",
-//         InterestCoverageRatio: data.evaluations.liquidity_and_solvency?.InterestCoverageRatio || "N/A"
-//     }
+function displayFundamentalResultsClassification(data) {
+    const elements = {
+        QuickRatio: data.evaluations.liquidity_and_solvency?.QuickRatio || "N/A",
+        CurrentRatio: data.evaluations.liquidity_and_solvency?.CurrentRatio || "N/A",
+        CashRatio: data.evaluations.liquidity_and_solvency?.CashRatio || "N/A",
+        DebttoEquity: data.evaluations.liquidity_and_solvency?.DebttoEquity || "N/A",
+        DebttoAssetsRatio: data.evaluations.liquidity_and_solvency?.DebttoAssetsRatio || "N/A",
+        InterestCoverageRatio: data.evaluations.liquidity_and_solvency?.InterestCoverageRatio || "N/A",
+        trailingPE: data.evaluations.liquidity_and_solvency?.trailingPE || "N/A"
+    }
 
-//     for (const [key, evaluation] of Object.entries(elements)) {
-//         const classificationElement = document.getElementById(`${key}Class`);
+    for (const [key, evaluation] of Object.entries(elements)) {
+        const classificationElement = document.getElementById(`${key}Class`);
 
-//         if (classificationElement) {
-//             classificationElement.textContent = evaluation;
-//         }
-//     }
-// }
+        if (classificationElement) {
+            classificationElement.textContent = evaluation;
+        }
+    }
+}

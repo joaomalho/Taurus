@@ -106,7 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let symbol = pathParts[2];
 
     if (symbol) {
-        console.log("Carregando gráfico de Holders para:", symbol);
         fetchAndRenderChart(symbol);
     } else {
         console.error("Nenhum símbolo encontrado na URL!");

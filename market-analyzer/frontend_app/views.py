@@ -521,45 +521,45 @@ def get_fundamental_info(request, symbol):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
-# def get_fundamental_evaluations(request, symbol):
-#     """
-#     Return only the fundamental evaluation (qualitative data) without nested JSON.
-#     """
-#     try:
-#         symbol = symbol.strip().upper()
-#         if not symbol:
-#             return JsonResponse({"error": "Symbol is missing"}, status=400)
+def get_fundamental_evaluations(request, symbol):
+    """
+    Return only the fundamental evaluation (qualitative data) without nested JSON.
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
 
-#         symbol = validate_symbol(symbol)
+        symbol = validate_symbol(symbol)
 
-#         data_history = DataHistoryYahoo()
-#         fundamental_info = data_history.get_symbol_fundamental_info(symbol)
+        data_history = DataHistoryYahoo()
+        fundamental_info = data_history.get_symbol_fundamental_info(symbol)
 
-#         if not fundamental_info:
-#             return JsonResponse({"error": "No data found"}, status=404)
+        if not fundamental_info:
+            return JsonResponse({"error": "No data found"}, status=404)
 
-#         risk_manager = RiskManager()
+        risk_manager = RiskManager()
 
-#         evaluations_data = {}
+        evaluations_data = {}
 
-#         for category, data in fundamental_info.items():
-#             evaluations_data[category] = {}
+        for category, data in fundamental_info.items():
+            evaluations_data[category] = {}
 
-#             for key, value in data.items():
-#                 cleaned_value = None if value is np.nan else value
-#                 evaluation_result = risk_manager.evaluate_metrics({key: cleaned_value})
+            for key, value in data.items():
+                cleaned_value = None if value is np.nan else value
+                evaluation_result = risk_manager.evaluate_metrics({key: cleaned_value})
 
-#                 if isinstance(evaluation_result, dict) and key in evaluation_result:
-#                     evaluations_data[category][key] = evaluation_result[key]
-#                 else:
-#                     evaluations_data[category][key] = evaluation_result
+                if isinstance(evaluation_result, dict) and key in evaluation_result:
+                    evaluations_data[category][key] = evaluation_result[key]
+                else:
+                    evaluations_data[category][key] = evaluation_result
 
-#         return JsonResponse({"evaluations": evaluations_data})
+        return JsonResponse({"evaluations": evaluations_data})
 
-#     except ConnectionError:
-#         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
-#     except Exception as e:
-#         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
 def get_bio_info(request, symbol):

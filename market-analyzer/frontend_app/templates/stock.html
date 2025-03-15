@@ -9,9 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
     <link rel="stylesheet" href="{% static 'css/stock.css' %}">
     <link rel="stylesheet" href="{% static 'css/charts.css' %}">
-    <link rel="stylesheet" href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css">
-    
-    
+    <link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}">
 </head>
 
 <body>
@@ -211,11 +209,11 @@
                     <div class="fund-liquidity">
                         <div>
                             <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span></p>
-                            <p><strong>Quick Ratio Classification:</strong> <span></span></p>
+                            <p><strong>Quick Ratio Classification:</strong> <span id="QuickRatioClass"></span></p>
                         </div>
                         <div>
                             <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span></p>
-                            <p><strong>Current Ratio Classification:</strong> <span ></span></p>
+                            <p><strong>Current Ratio Classification:</strong> <span id="CurrentRatioClass"></span></p>
                         </div>
                         <p><strong>Cash Ratio:</strong> <span id="CashRatio"></span></p>
                         <p><strong>Operational Cash Flow:</strong> <span id="OperatingCashFlow"></span></p>
@@ -301,6 +299,7 @@
                             <p><strong>Trailing P/E:</strong> <span id="trailingPE"></span></p>
                             <p><strong>Sector P/E:</strong> <span id="sectorTrailingPE"></span></p>
                             <p><strong>Forward P/E:</strong> <span id="forwardPE"></span></p>
+                            <p><strong>P/E Classification:</strong> <span id="trailingPEClass"></span></p>
                         </div>
                         <div>
                             <h3>PE : G Ratio</h3>
@@ -377,15 +376,15 @@
     </footer>
 
     <!-- Candlestick.js -->
-    <script src="https://unpkg.com/lightweight-charts@3.8.0/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="{% static 'js/lightweight-charts.standalone.production.js' %}"></script>
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="{% static 'js/chart.js' %}"></script>
+    <script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script>    
     <!-- Grid.js -->
-    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>    
+    <script src="{% static 'js/gridjs.umd.js' %}"></script>    
     <!-- Scripts Customizados -->
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/candlestick.js' %}"></script>
-    <script src="{% static 'js/charts.js' %}"></script>
+    <script src="{% static 'js/chartsandgraphs.js' %}"></script>
 </body>
 </html>
