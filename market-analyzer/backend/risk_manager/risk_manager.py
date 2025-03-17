@@ -181,8 +181,44 @@ class RiskManager():
                 else:
                     evaluated_metrics["trailingPE"] = "Very High Overvalued"
 
-        return evaluated_metrics if evaluated_metrics else "Indefinido"
+        if "PEGRatio" in metrics.get('valuation', {}):
+            try:
+                peg_ratio = metrics.get('valuation', {}).get("PEGRatio", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["PEGRatio"] = "N/A"
+                return evaluated_metrics
 
+            if not peg_ratio:
+                evaluated_metrics["PEGRatio"] = "N/A"
+            else:
+                if peg_ratio < 1:
+                    evaluated_metrics["PEGRatio"] = "Undervalued"
+                elif peg_ratio == 1:
+                    evaluated_metrics["PEGRatio"] = "Neutral Valued"
+                else:
+                    evaluated_metrics["PEGRatio"] = "Overvalued"
+
+        if "divCoverageRate" in metrics.get('dividends_and_buybacks', {}):
+            try:
+                div_coverage_ratio = metrics.get('dividends_and_buybacks', {}).get("divCoverageRate", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["divCoverageRate"] = "N/A"
+                return evaluated_metrics
+            
+            if not div_coverage_ratio:
+                evaluated_metrics["divCoverageRate"] = "N/A"
+            else:
+                if div_coverage_ratio <= 1:
+                    evaluated_metrics["divCoverageRate"] = "No Coverage"
+                elif div_coverage_ratio <= 1.5:
+                    evaluated_metrics["divCoverageRate"] = "Bad Coverage"
+                elif div_coverage_ratio <= 3:
+                    evaluated_metrics["divCoverageRate"] = "Good Coverage"
+                else:
+                    evaluated_metrics["divCoverageRate"] = "Greedy Coverage"
+    
+
+        return evaluated_metrics if evaluated_metrics else "Indefinido"
 
     def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
         """

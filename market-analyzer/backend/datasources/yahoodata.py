@@ -368,6 +368,14 @@ class DataHistoryYahoo():
         else:
             debt_to_assets_ratio = "N/A"
 
+        #Dividend Coverage Ratio
+        eps_ann = yahoo_symbol_info.get("epsCurrentYear", "N/A")
+        dividend_rate = yahoo_symbol_info.get("dividendRate", "N/A")
+        if eps_ann != "N/A" and dividend_rate != "N/A":
+            div_coverage_rate = eps_ann / dividend_rate if dividend_rate != 0 else "N/A"
+        else:
+            div_coverage_rate = "N/A" 
+
         # PE adjusted to market
         sector = yahoo_symbol_info.get("sector")
         dh = DataHistoryYahoo()
@@ -419,6 +427,7 @@ class DataHistoryYahoo():
                 "enterpriseToEbitda": yahoo_symbol_info.get("enterpriseToEbitda", "N/A"),
             },
             "dividends_and_buybacks": {
+                "divCoverageRate": div_coverage_rate,
                 "dividendYield": yahoo_symbol_info.get("dividendYield", "N/A"),
                 "payoutRatio": yahoo_symbol_info.get("payoutRatio", "N/A"),
                 "fiveYearAvgDividendYield": yahoo_symbol_info.get("fiveYearAvgDividendYield", "N/A"),
