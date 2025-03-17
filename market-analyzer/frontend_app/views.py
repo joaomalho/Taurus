@@ -543,16 +543,15 @@ def get_fundamental_evaluations(request, symbol):
         evaluations_data = {}
 
         for category, data in fundamental_info.items():
+            evaluation_result = risk_manager.evaluate_metrics({category: data})
+
             evaluations_data[category] = {}
 
             for key, value in data.items():
-                cleaned_value = None if value is np.nan else value
-                evaluation_result = risk_manager.evaluate_metrics({key: cleaned_value})
-
                 if isinstance(evaluation_result, dict) and key in evaluation_result:
                     evaluations_data[category][key] = evaluation_result[key]
                 else:
-                    evaluations_data[category][key] = evaluation_result
+                    evaluations_data[category][key] = value
 
         return JsonResponse({"evaluations": evaluations_data})
 
@@ -560,6 +559,7 @@ def get_fundamental_evaluations(request, symbol):
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
 
 
 def get_bio_info(request, symbol):

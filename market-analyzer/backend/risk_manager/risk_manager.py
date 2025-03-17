@@ -146,7 +146,7 @@ class RiskManager():
                 evaluated_metrics["trailingPE"] = "N/A"
                 return evaluated_metrics
 
-            if trailing_pe is None or sector_pe is None or forward_pe is None:
+            if not trailing_pe or not sector_pe or not forward_pe:
                 evaluated_metrics["trailingPE"] = "N/A"
             else:
                 score_pe = 0
@@ -182,6 +182,7 @@ class RiskManager():
                     evaluated_metrics["trailingPE"] = "Very High Overvalued"
 
         return evaluated_metrics if evaluated_metrics else "Indefinido"
+
 
     def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
         """

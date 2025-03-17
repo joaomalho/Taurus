@@ -698,7 +698,7 @@ function displayFundamentalResultsClassification(data) {
         DebttoEquity: data.evaluations.liquidity_and_solvency?.DebttoEquity || "N/A",
         DebttoAssetsRatio: data.evaluations.liquidity_and_solvency?.DebttoAssetsRatio || "N/A",
         InterestCoverageRatio: data.evaluations.liquidity_and_solvency?.InterestCoverageRatio || "N/A",
-        trailingPE: data.evaluations.liquidity_and_solvency?.trailingPE || "N/A"
+        trailingPE: data.evaluations.valuation?.trailingPE || "N/A"
     }
 
     for (const [key, evaluation] of Object.entries(elements)) {
