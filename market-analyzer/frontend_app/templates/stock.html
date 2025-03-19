@@ -184,10 +184,20 @@
 
         <!-- Padrões de Candlestick -->
         <section id="candlePatterns">
-            <h2>Candlestick Patterns</h2>
-            <div class="candles-zone">
-                <button class=executeButtons id="CandleButton">Detect</button>
-                <div id="tableCandlePatterns"></div>
+
+            <div class="technical-card">
+                <div class="technical-header" id="tecCandles">
+                    <h2>Candlestick Patterns</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="candles-content hidden">
+
+                    <div class="tec-candles">
+                        <button class=executeButtons id="CandleButton">Detect</button>
+                        <div id="tableCandlePatterns"></div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -195,6 +205,57 @@
         <section id="fundamentalAnalysis">
             <h2>Fundamental Analysis</h2>
 
+            <!-- Valuation -->
+            <div class="fundamental-card">
+                <div class="fundamental-header" id="funValuation">
+                    <h2>Valuation</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="valuation-content hidden">
+                    <div>
+                        <h3>Undervalued, Overvalued</h3>
+                    </div>
+                    <div class="fund-valuation">
+                        <div>
+                            <h3>Price : Earnings</h3>
+                            <p><strong>P/E Classification:</strong> <span id="trailingPEClass"></span></p>
+                            <p><strong>Trailing P/E:</strong> <span id="trailingPE"></span></p>
+                            <p><strong>Sector P/E:</strong> <span id="sectorTrailingPE"></span></p>
+                            <p><strong>Forward P/E:</strong> <span id="forwardPE"></span></p>
+                        </div>
+                        <div>
+                            <h3>PE : G Ratio</h3>
+                            <p><strong>PEG Classification:</strong> <span id="PEGRatioClass"></span></p>
+                            <p><strong>PEG Ratio:</strong> <span id="PEGRatio"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dividends -->
+            <div class="fundamental-card">
+                <div class="fundamental-header" id="funDividends">
+                    <h2>Dividends & Buybacks</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="dividends-content hidden">
+                    <div>
+                        <h3>Distribution</h3>
+                    </div>
+                    <div class="fund-dividends">
+                        <div>
+                            <p><strong>Coverage Ratio Classification:</strong> <span id="divCoverageRateClass"></span></p>
+                            <p><strong>Coverage Ratio:</strong> <span id="divCoverageRate"></span></p>
+                        </div>
+                        <div>
+                            <p><strong>Dividend Yield:</strong> <span id="dividendYield"></span></p>
+                            <p><strong>Avg Dividend Yield(5y):</strong> <span id="fiveYearAvgDividendYield"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funLiquidity">
@@ -264,39 +325,6 @@
                     </div>
                 </div>
             </div>
-        
-            <div class="fundamental-card">
-                <div class="fundamental-header" id="funValuation">
-                    <h2>Valuation</h2>
-                    <span class="toggle-icon">+</span>
-                </div>
-
-                <div class="valuation-content hidden">
-                    <div>
-                        <h3>Undervalued, Overvalued</h3>
-                    </div>
-                    <div class="fund-valuation">
-                        <div>
-                            <h3>Price : Earnings</h3>
-                            <p><strong>Trailing P/E:</strong> <span id="trailingPE"></span></p>
-                            <p><strong>Sector P/E:</strong> <span id="sectorTrailingPE"></span></p>
-                            <p><strong>Forward P/E:</strong> <span id="forwardPE"></span></p>
-                            <p><strong>P/E Classification:</strong> <span id="trailingPEClass"></span></p>
-                        </div>
-                        <div>
-                            <h3>PE : G Ratio</h3>
-                            <p><strong>PEG Ratio:</strong> <span id="PEGRatio"></span></p>
-                            <p><strong>PEG Classification:</strong> <span id="PEGRatioClass"></span></p>
-                        </div>
-                        <div>
-                            <p><strong>P/B Ratio:</strong> <span id="PBRatio"></span></p>
-                        </div>
-                        <div>
-                            <p><strong>EV/EBITDA:</strong> <span id="enterpriseToEbitda"></span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funGrowth">
@@ -316,25 +344,7 @@
                 </div>
             </div>
             
-            <div class="fundamental-card">
-                <div class="fundamental-header" id="funDividends">
-                    <h2>Dividends & Buybacks</h2>
-                    <span class="toggle-icon">+</span>
-                </div>
 
-                <div class="dividends-content hidden">
-                    <div>
-                        <h3>Distribution</h3>
-                    </div>
-                    <div class="fund-dividends">
-                        <p><strong>Dividend Yield:</strong> <span id="dividendYield"></span></p>
-                        <p><strong>Coverage Ratio:</strong> <span id="divCoverageRate"></span></p>
-                        <p><strong>Coverage Ratio Classification:</strong> <span id="divCoverageRateClass"></span></p>
-                        <p><strong>Payout Ratio:</strong> <span id="payoutRatio"></span></p>
-                        <p><strong>Avg Dividend Yield(5y):</strong> <span id="fiveYearAvgDividendYield"></span></p>
-                    </div>
-                </div>
-            </div>
             
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funRisk">

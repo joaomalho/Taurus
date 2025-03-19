@@ -667,6 +667,7 @@ function displayFundamentalResults(data) {
         PBRatio: valuationData.PBRatio || {},
         enterpriseToEbitda: valuationData.enterpriseToEbitda || {},
         // Dividends
+        divCoverageRate: dividendsBuybacksData.divCoverageRate || {},
         dividendYield: dividendsBuybacksData.dividendYield || {},
         payoutRatio: dividendsBuybacksData.payoutRatio || {},
         fiveYearAvgDividendYield: dividendsBuybacksData.fiveYearAvgDividendYield || {},
@@ -698,7 +699,9 @@ function displayFundamentalResultsClassification(data) {
         DebttoEquity: data.evaluations.liquidity_and_solvency?.DebttoEquity || "N/A",
         DebttoAssetsRatio: data.evaluations.liquidity_and_solvency?.DebttoAssetsRatio || "N/A",
         InterestCoverageRatio: data.evaluations.liquidity_and_solvency?.InterestCoverageRatio || "N/A",
-        trailingPE: data.evaluations.valuation?.trailingPE || "N/A"
+        trailingPE: data.evaluations.valuation?.trailingPE || "N/A",
+        PEGRatio: data.evaluations.valuation?.PEGRatio || "N/A",
+        divCoverageRate: data.evaluations.dividends_and_buybacks?.divCoverageRate || "N/A"
     }
 
     for (const [key, evaluation] of Object.entries(elements)) {
