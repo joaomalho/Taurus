@@ -47,6 +47,12 @@ document.addEventListener("DOMContentLoaded", function () {
         contentSelector: ".oscilators-content",
         iconSelector: ".toggle-icon"
     });
+ 
+    setupToggle({
+        toggleSelector: "#tecCandles",
+        contentSelector: ".candles-content",
+        iconSelector: ".toggle-icon"
+    });
 
     setupToggle({
         toggleSelector: "#funLiquidity",
