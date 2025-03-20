@@ -4,6 +4,7 @@ import pandas as pd
 import yfinance as yf
 from datetime import datetime
 from bs4 import BeautifulSoup
+from funcionalities.formulas import Formulas
 
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
@@ -300,7 +301,7 @@ class DataHistoryYahoo():
         # total_equity
         if 'StockholdersEquity' in yahoo_symbol_balancesheet.index:
             total_equity = yahoo_symbol_balancesheet.loc['StockholdersEquity'].iloc[0]
-            if pd.isna(total_equity) or total_equity == 0:
+            if pd.isna(total_equity):
                 total_equity = "N/A"
         else:
             total_equity = "N/A"
@@ -308,7 +309,7 @@ class DataHistoryYahoo():
         # cash_equivalents_short_term_investments
         if 'CashCashEquivalentsAndShortTermInvestments' in yahoo_symbol_balancesheet.index:
             cash_equivalents_short_term_investments = yahoo_symbol_balancesheet.loc['CashCashEquivalentsAndShortTermInvestments'].iloc[0]
-            if pd.isna(cash_equivalents_short_term_investments) or cash_equivalents_short_term_investments == 0:
+            if pd.isna(cash_equivalents_short_term_investments):
                 cash_equivalents_short_term_investments = "N/A"
         else:
             cash_equivalents_short_term_investments = "N/A"
@@ -316,7 +317,7 @@ class DataHistoryYahoo():
         # cash_and_cash_equivalents
         if 'CashAndCashEquivalents' in yahoo_symbol_balancesheet.index:
             cash_and_cash_equivalents = yahoo_symbol_balancesheet.loc['CashAndCashEquivalents'].iloc[0]
-            if pd.isna(cash_and_cash_equivalents) or cash_and_cash_equivalents == 0:
+            if pd.isna(cash_and_cash_equivalents):
                 cash_and_cash_equivalents = "N/A"
         else:
             cash_and_cash_equivalents = "N/A"
@@ -324,7 +325,7 @@ class DataHistoryYahoo():
         # current_liabilities
         if 'CurrentLiabilities' in yahoo_symbol_balancesheet.index:
             current_liabilities = yahoo_symbol_balancesheet.loc['CurrentLiabilities'].iloc[0]
-            if pd.isna(current_liabilities) or current_liabilities == 0:
+            if pd.isna(current_liabilities):
                 current_liabilities = "N/A"
         else:
             current_liabilities = "N/A"
@@ -338,13 +339,13 @@ class DataHistoryYahoo():
         # ebit
         if 'EBIT' in yahoo_symbol_income.index:
             ebit = yahoo_symbol_income.loc["EBIT"].iloc[0]
-            if pd.isna(ebit) or ebit == 0:
+            if pd.isna(ebit):
                 ebit = "N/A"
 
         # interest_expenses
         if 'InterestExpense' in yahoo_symbol_income.index:
             interest_expenses = yahoo_symbol_income.loc["InterestExpense"].iloc[0]
-            if pd.isna(interest_expenses) or interest_expenses == 0:
+            if pd.isna(interest_expenses):
                 interest_expenses = "N/A"
 
         # interest_coverage_ratio
@@ -356,7 +357,7 @@ class DataHistoryYahoo():
         # total_assets
         if 'TotalAssets' in yahoo_symbol_balancesheet.index:
             total_assets = yahoo_symbol_balancesheet.loc['TotalAssets'].iloc[0]
-            if pd.isna(total_assets) or total_assets == 0:
+            if pd.isna(total_assets):
                 total_assets = "N/A"
         else:
             total_assets = "N/A"
@@ -442,6 +443,61 @@ class DataHistoryYahoo():
             }
         }
         return yahoo_symbol_fundamental_info
+
+    def get_symbol_fundamental_income_statment(self, symbol : str):
+        '''
+        Return detailed fundamental information about income statement
+        '''
+        try:
+            yahoo_symbol_income = yf.Ticker(symbol).income_stmt
+        except:
+            yahoo_symbol_income = pd.DataFrame()
+        
+        # Inicializar todas as variáveis com "N/A"
+        net_income = "N/A"
+        total_revenue = "N/A"
+        cost_of_revenue = "N/A"
+        gross_profit = "N/A"
+        
+        # net_income
+        if 'Net Income' in yahoo_symbol_income.index:
+            net_income = yahoo_symbol_income.loc['Net Income'].iloc[0]
+            if pd.isna(net_income):
+                net_income = "N/A"
+        else:
+            net_income = "N/A"
+
+        # total_revenue
+        if 'Total Revenue' in yahoo_symbol_income.index:
+            total_revenue = yahoo_symbol_income.loc['Total Revenue'].iloc[0]
+            if pd.isna(total_revenue):
+                total_revenue = "N/A"
+        else:
+            total_revenue = "N/A"
+
+        # cost_of_revenue
+        if 'Cost Of Revenue' in yahoo_symbol_income.index:
+            cost_of_revenue = yahoo_symbol_income.loc['Cost Of Revenue'].iloc[0]
+            if pd.isna(cost_of_revenue):
+                cost_of_revenue = "N/A"
+        else:
+            cost_of_revenue = "N/A"
+
+        # gross_profit
+        if 'Gross Profit' in yahoo_symbol_income.index:
+            gross_profit = yahoo_symbol_income.loc['Gross Profit'].iloc[0]
+            if pd.isna(gross_profit):
+                gross_profit = "N/A"
+        else:
+            gross_profit = "N/A"
+                    
+        fm = Formulas()
+        
+        yoy_cost_of_revenue = fm.get_yoy_metric(cost_of_revenue)
+        yoy_total_revenue = fm.get_yoy_metric(total_revenue)
+
+        cagr_cost_of_revenue = fm.get_cagr_metric(cost_of_revenue)
+        cagr_total_revenue = fm.get_cagr_metric(total_revenue)
 
      
    ########### FOREX ###########   
