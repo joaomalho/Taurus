@@ -4,7 +4,7 @@ import pandas as pd
 import yfinance as yf
 from datetime import datetime
 from bs4 import BeautifulSoup
-from funcionalities.formulas import Formulas
+from backend.funcionalities.formulas import Formulas
 
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
@@ -285,18 +285,86 @@ class DataHistoryYahoo():
         except:
             yahoo_symbol_income = pd.DataFrame()
         
+        # Valuation
+        sector = yahoo_symbol_info.get("sector")
+        dh = DataHistoryYahoo()
+        sector_pe = dh.get_sector_etf_info(sector, "trailingPE")
+
+        # Dividends & BuyBacks
+        eps_ann = yahoo_symbol_info.get("epsCurrentYear", "N/A")
+        dividend_rate = yahoo_symbol_info.get("dividendRate", "N/A")
+        if eps_ann != "N/A" and dividend_rate != "N/A":
+            div_coverage_rate = eps_ann / dividend_rate if dividend_rate != 0 else "N/A"
+        else:
+            div_coverage_rate = "N/A" 
+
+        # Profitability
+        # net_income
+        if 'Net Income' in yahoo_symbol_income.index:
+            net_income = yahoo_symbol_income.loc['Net Income']
+            if pd.isna(net_income).all():
+                net_income = "N/A"
+
+        # total_revenue
+        if 'Total Revenue' in yahoo_symbol_income.index:
+            total_revenue = yahoo_symbol_income.loc['Total Revenue']
+            if pd.isna(total_revenue).all():
+                total_revenue = "N/A"
+
+        # cost_of_revenue
+        if 'Cost Of Revenue' in yahoo_symbol_income.index:
+            cost_of_revenue = yahoo_symbol_income.loc['Cost Of Revenue']
+            if pd.isna(cost_of_revenue).all():
+                cost_of_revenue = "N/A"
+
+        # gross_profit
+        if 'Gross Profit' in yahoo_symbol_income.index:
+            gross_profit = yahoo_symbol_income.loc['Gross Profit']
+            if pd.isna(gross_profit).all():
+                gross_profit = "N/A"
+
+        # operating_expenses
+        if 'Operating Expense' in yahoo_symbol_income.index:
+            operating_expenses = yahoo_symbol_income.loc['Operating Expense']
+            if pd.isna(operating_expenses).all():
+                operating_expenses = "N/A"
+                    
+        fm = Formulas()
         
-        # Inicializar todas as variáveis com "N/A"
-        total_equity = "N/A"
-        cash_equivalents_short_term_investments = "N/A"
-        cash_and_cash_equivalents = "N/A"
-        current_liabilities = "N/A"
-        cash_ratio = "N/A"
-        ebit = "N/A"
-        interest_expenses = "N/A"
-        interest_coverage_ratio = "N/A"
-        total_assets = "N/A"
-        debt_to_assets_ratio = "N/A"
+        yoy_cost_of_revenue = fm.get_yoy_metric(cost_of_revenue)
+        yoy_total_revenue = fm.get_yoy_metric(total_revenue)
+        yoy_operating_expenses = fm.get_yoy_metric(operating_expenses)
+
+        cagr_cost_of_revenue = fm.get_cagr_metric(cost_of_revenue)
+        cagr_total_revenue = fm.get_cagr_metric(total_revenue)
+        cagr_operating_expenses = fm.get_cagr_metric(operating_expenses)
+
+        # Growth & NetWorth & Health
+        # total_assets
+        if 'Total Assets' in yahoo_symbol_balancesheet.index:
+            total_assets = yahoo_symbol_balancesheet.loc['Total Assets']
+            if pd.isna(total_assets).all():
+                total_assets = "N/A"
+        
+        # current_liabilities
+        if 'Current Liabilities' in yahoo_symbol_balancesheet.index:
+            current_liabilities = yahoo_symbol_balancesheet.loc['Current Liabilities']
+            if pd.isna(current_liabilities).all():
+                current_liabilities = "N/A"
+
+        # non_current_liabilities
+        if 'Total Non Current Liabilities Net Minority Interest' in yahoo_symbol_balancesheet.index:
+            non_current_liabilities = yahoo_symbol_balancesheet.loc['Total Non Current Liabilities Net Minority Interest']
+            if pd.isna(non_current_liabilities).all():
+                non_current_liabilities = "N/A"
+
+        # net_worth
+        if total_assets.iloc[0] != "N/A" and current_liabilities.iloc[0] != "N/A" and non_current_liabilities.iloc[0] != "N/A":
+            net_worth = total_assets.iloc[0] - (current_liabilities.iloc[0] + non_current_liabilities.iloc[0])
+        else:
+            net_worth = "N/A"
+
+
 
         # total_equity
         if 'StockholdersEquity' in yahoo_symbol_balancesheet.index:
@@ -305,7 +373,7 @@ class DataHistoryYahoo():
                 total_equity = "N/A"
         else:
             total_equity = "N/A"
-            
+        
         # cash_equivalents_short_term_investments
         if 'CashCashEquivalentsAndShortTermInvestments' in yahoo_symbol_balancesheet.index:
             cash_equivalents_short_term_investments = yahoo_symbol_balancesheet.loc['CashCashEquivalentsAndShortTermInvestments'].iloc[0]
@@ -343,6 +411,7 @@ class DataHistoryYahoo():
                 ebit = "N/A"
 
         # interest_expenses
+        interest_expenses = 'N/A'
         if 'InterestExpense' in yahoo_symbol_income.index:
             interest_expenses = yahoo_symbol_income.loc["InterestExpense"].iloc[0]
             if pd.isna(interest_expenses):
@@ -369,21 +438,39 @@ class DataHistoryYahoo():
         else:
             debt_to_assets_ratio = "N/A"
 
-        #Dividend Coverage Ratio
-        eps_ann = yahoo_symbol_info.get("epsCurrentYear", "N/A")
-        dividend_rate = yahoo_symbol_info.get("dividendRate", "N/A")
-        if eps_ann != "N/A" and dividend_rate != "N/A":
-            div_coverage_rate = eps_ann / dividend_rate if dividend_rate != 0 else "N/A"
-        else:
-            div_coverage_rate = "N/A" 
 
-        # PE adjusted to market
-        sector = yahoo_symbol_info.get("sector")
-        dh = DataHistoryYahoo()
-        sector_pe = dh.get_sector_etf_info(sector, "trailingPE")
+
         
         yahoo_symbol_info = yf.Ticker(symbol).info
         yahoo_symbol_fundamental_info = {
+            "valuation": {
+                "trailingPE": yahoo_symbol_info.get("trailingPE", "N/A"),
+                "sectorTrailingPE": sector_pe,
+                "forwardPE": yahoo_symbol_info.get("forwardPE", "N/A"),
+                "PEGRatio": yahoo_symbol_info.get("trailingPegRatio", "N/A"),
+            },
+            "dividends_and_buybacks": {
+                "divCoverageRate": div_coverage_rate,
+                "dividendYield": yahoo_symbol_info.get("dividendYield", "N/A"),
+                "fiveYearAvgDividendYield": yahoo_symbol_info.get("fiveYearAvgDividendYield", "N/A"),
+            },
+            "profitability": {
+                "NetIncome": net_income.iloc[0],
+                "TotalRevenue": total_revenue.iloc[0],
+                "CostOfRevenue": cost_of_revenue.iloc[0],
+                "GrossProfit": gross_profit.iloc[0],
+                "OperatingExpenses": operating_expenses.iloc[0],
+                "CostOfRevenueCAGR": cagr_cost_of_revenue,
+                "TotalRevenueCAGR": cagr_total_revenue,
+                "OperatingExpensesCAGR": cagr_operating_expenses,
+                # "CostOfRevenueYOY": yoy_cost_of_revenue,
+                # "TotalRevenueYOY": yoy_total_revenue,
+            },
+            "growth": {
+                "revenueGrowth": yahoo_symbol_info.get("revenueGrowth", "N/A"),
+                "earningsQuarterlyGrowth": yahoo_symbol_info.get("earningsQuarterlyGrowth", "N/A"),
+                "earningsGrowth": yahoo_symbol_info.get("earningsGrowth", "N/A"),
+            },
             "liquidity_and_solvency": {
                 # Liquidez e Solvência: Capacidade de pagamento
                 "QuickRatio": yahoo_symbol_info.get("quickRatio", "N/A"),
@@ -404,34 +491,6 @@ class DataHistoryYahoo():
                 "DebttoEquity": yahoo_symbol_info.get("debtToEquity", "N/A"),
                 "InterestCoverageRatio": interest_coverage_ratio,
                 "DebttoAssetsRatio": debt_to_assets_ratio,
-            },
-            "profitability": {
-                "grossMargins": yahoo_symbol_info.get("grossMargins", "N/A"),
-                "operatingMargins": yahoo_symbol_info.get("operatingMargins", "N/A"),
-                "EBITDAMargins": yahoo_symbol_info.get("ebitdaMargins", "N/A"),
-                "NetIncome": yahoo_symbol_info.get("netIncomeToCommon", "N/A"),
-                "ProfitMargin": yahoo_symbol_info.get("profitMargins", "N/A"),
-                "returnOnAssetsROA": yahoo_symbol_info.get("returnOnAssets", "N/A"),
-                "returnOnEquityROE": yahoo_symbol_info.get("returnOnEquity", "N/A"),
-            },
-            "growth": {
-                "revenueGrowth": yahoo_symbol_info.get("revenueGrowth", "N/A"),
-                "earningsQuarterlyGrowth": yahoo_symbol_info.get("earningsQuarterlyGrowth", "N/A"),
-                "earningsGrowth": yahoo_symbol_info.get("earningsGrowth", "N/A"),
-            },
-            "valuation": {
-                "trailingPE": yahoo_symbol_info.get("trailingPE", "N/A"),
-                "sectorTrailingPE": sector_pe,
-                "forwardPE": yahoo_symbol_info.get("forwardPE", "N/A"),
-                "PEGRatio": yahoo_symbol_info.get("trailingPegRatio", "N/A"),
-                "PBRatio": yahoo_symbol_info.get("priceToBook", "N/A"),
-                "enterpriseToEbitda": yahoo_symbol_info.get("enterpriseToEbitda", "N/A"),
-            },
-            "dividends_and_buybacks": {
-                "divCoverageRate": div_coverage_rate,
-                "dividendYield": yahoo_symbol_info.get("dividendYield", "N/A"),
-                "payoutRatio": yahoo_symbol_info.get("payoutRatio", "N/A"),
-                "fiveYearAvgDividendYield": yahoo_symbol_info.get("fiveYearAvgDividendYield", "N/A"),
             },
             "market_risk_and_sentiment": {
                 "beta": yahoo_symbol_info.get("beta", "N/A"),
@@ -499,7 +558,7 @@ class DataHistoryYahoo():
         cagr_cost_of_revenue = fm.get_cagr_metric(cost_of_revenue)
         cagr_total_revenue = fm.get_cagr_metric(total_revenue)
 
-     
+
    ########### FOREX ###########   
     ##### NOT IN USE ##### 
     

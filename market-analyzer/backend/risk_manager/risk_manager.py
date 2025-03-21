@@ -211,13 +211,42 @@ class RiskManager():
                 if div_coverage_ratio <= 1:
                     evaluated_metrics["divCoverageRate"] = "No Coverage"
                 elif div_coverage_ratio <= 1.5:
-                    evaluated_metrics["divCoverageRate"] = "Bad Coverage"
+                    evaluated_metrics["divCoverageRate"] = "Bad Coverage (Cut)"
                 elif div_coverage_ratio <= 3:
                     evaluated_metrics["divCoverageRate"] = "Good Coverage"
                 else:
-                    evaluated_metrics["divCoverageRate"] = "Greedy Coverage"
+                    evaluated_metrics["divCoverageRate"] = "Very Good Coverage (Greedy)"
     
+        if "CostOfRevenueCAGR" in metrics.get('profitability', {}):
+            try:
+                cost_revenue_cagr = metrics.get('profitability', {}).get("CostOfRevenueCAGR", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["CostOfRevenueCAGR"] = "N/A"
+                return evaluated_metrics
+            
+            if not cost_revenue_cagr:
+                evaluated_metrics["CostOfRevenueCAGR"] = "N/A"
+            else:
+                if cost_revenue_cagr <= 0:
+                    evaluated_metrics["CostOfRevenueCAGR"] = "Good"
+                else:
+                    evaluated_metrics["CostOfRevenueCAGR"] = "Not Good"
 
+        if "TotalRevenueCAGR" in metrics.get('profitability', {}):
+            try:
+                total_revenue_cagr = metrics.get('profitability', {}).get("TotalRevenueCAGR", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["TotalRevenueCAGR"] = "N/A"
+                return evaluated_metrics
+            
+            if not total_revenue_cagr:
+                evaluated_metrics["TotalRevenueCAGR"] = "N/A"
+            else:
+                if total_revenue_cagr <= 0:
+                    evaluated_metrics["TotalRevenueCAGR"] = "Not Good"
+                else:
+                    evaluated_metrics["TotalRevenueCAGR"] = "Good"
+    
         return evaluated_metrics if evaluated_metrics else "Indefinido"
 
     def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
