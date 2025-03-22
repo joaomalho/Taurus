@@ -437,12 +437,73 @@ class DataHistoryYahoo():
         # market_cap
         market_cap = yahoo_symbol_info.get('marketCap', "N/A")
 
-        #free_cashflow_yield
+        # free_cashflow_yield
         if market_cap != "N/A" and free_cashflow.iloc[0] != "N/A":
             free_cashflow_yield = (free_cashflow.iloc[0] / market_cap) * 100
         else:
             free_cashflow_yield = "N/A"
 
+        # Ratios
+        # current_ratio
+        if current_assets.iloc[0] != "N/A" and current_liabilities.iloc[0] != "N/A":
+            current_ratio = (current_assets / current_liabilities) * 100
+        else:
+            current_ratio = "N/A"
+        
+        # cagr_current_ratio
+        cagr_current_ratio = fm.get_cagr_metric(current_ratio)
+        
+        # cash_ratio
+        if cash_cash_equivalents.iloc[0] != "N/A" and current_liabilities.iloc[0] != "N/A":
+            cash_ratio = (cash_cash_equivalents / current_liabilities) * 100
+        else:
+            cash_ratio = "N/A"
+        
+        # cagr_cash_ratio
+        cagr_cash_ratio = fm.get_cagr_metric(cash_ratio)
+
+        # gross_margin
+        if gross_profit.iloc[0] != "N/A" and total_revenue.iloc[0] != "N/A":
+            gross_margin = (gross_profit / total_revenue ) * 100
+        else:
+            gross_margin = "N/A"
+
+        # cagr_gross_margin
+        # cagr_gross_margin = fm.get_cagr_metric(gross_margin)
+
+        # operating_income
+        if 'Operating Income' in yahoo_symbol_income.index:
+            operating_income = yahoo_symbol_income.loc['Operating Income']
+            if pd.isna(operating_income).all():
+                operating_income = "N/A"
+
+        # operation_margin
+        if operating_income.iloc[0] != "N/A" and total_revenue.iloc[0] != "N/A":
+            operating_margin = (operating_income / total_revenue ) * 100
+        else:
+            operating_margin = "N/A"
+
+        # cagr_operating_margin
+        cagr_operating_margin = fm.get_cagr_metric(operating_margin)
+
+        # profit_margin
+        if net_income.iloc[0] != "N/A" and total_revenue.iloc[0] != "N/A":
+            profit_margin = (net_income / total_revenue) * 100
+        else:
+            profit_margin = "N/A"
+
+        # cagr_profit_margin
+        cagr_profit_margin = fm.get_cagr_metric(profit_margin)
+        
+        # return_on_equity
+        if net_income.iloc[0] != "N/A" and stockholders_equity.iloc[0] != "N/A":
+            return_on_equity = (net_income / stockholders_equity) * 100
+        else:
+            return_on_equity = "N/A"
+
+        # cagr_return_on_equity
+        cagr_return_on_equity = fm.get_cagr_metric(return_on_equity)
+        
         yahoo_symbol_fundamental_info = {
             "valuation": {
                 "trailingPE": yahoo_symbol_info.get("trailingPE", "N/A"),
@@ -494,6 +555,22 @@ class DataHistoryYahoo():
                 "CapitalExpenditure": capital_expenditure.iloc[0],
                 "MarketCap": market_cap,
                 "FreeCashflowYield": free_cashflow_yield,
+            },
+            "ratios": {
+                # Health & Debt
+                "CurrentRatio": current_ratio.iloc[0],
+                "CurrentRatioCAGR": cagr_current_ratio,
+                "CashRatio": cash_ratio.iloc[0],
+                "CashRatioCAGR": cagr_cash_ratio,
+                # Margins
+                "GrossMargin": gross_margin.iloc[0],
+                # "GrossMarginCAGR": cagr_gross_margin,
+                "OperatingMargin": operating_margin.iloc[0],
+                "OperatingMarginCAGR": cagr_operating_margin,
+                "ProfitMargin": profit_margin.iloc[0],
+                "ProfitMarginCAGR": cagr_profit_margin,
+                "ReturnOnEquity": return_on_equity.iloc[0],
+                "ReturnOnEquityCAGR": cagr_return_on_equity,
             },
             "market_risk_and_sentiment": {
                 "beta": yahoo_symbol_info.get("beta", "N/A"),

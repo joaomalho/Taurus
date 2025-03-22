@@ -85,6 +85,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     setupToggle({
+        toggleSelector: "#funRatios",
+        contentSelector: ".ratios-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
         toggleSelector: "#funRisk",
         contentSelector: ".risk-content",
         iconSelector: ".toggle-icon"
@@ -639,6 +645,7 @@ function displayFundamentalResults(data) {
     const profitabilityData = data.profitability;
     const liquidityData = data.liquidity;
     const cashflowData = data.cashflow;
+    const ratiosData = data.ratios;
     const marketRiskData = data.market_risk_and_sentiment;
     
     const elements = {
@@ -683,6 +690,19 @@ function displayFundamentalResults(data) {
         CapitalExpenditure: cashflowData.CapitalExpenditure || {},
         MarketCap: cashflowData.MarketCap || {},
         FreeCashflowYield: cashflowData.FreeCashflowYield || {},
+        // Ratios
+        CurrentRatio: ratiosData.CurrentRatio || {},
+        CurrentRatioCAGR: ratiosData.CurrentRatioCAGR || {},
+        CashRatio: ratiosData.CashRatio || {},
+        CashRatioCAGR: ratiosData.CashRatioCAGR || {},
+        GrossMargin: ratiosData.GrossMargin || {},
+        // GrossMarginCAGR: ratiosData.GrossMarginCAGR || {},
+        OperatingMargin: ratiosData.OperatingMargin || {},
+        OperatingMarginCAGR: ratiosData.OperatingMarginCAGR || {},
+        ProfitMargin: ratiosData.ProfitMargin || {},
+        ProfitMarginCAGR: ratiosData.ProfitMarginCAGR || {},
+        ReturnOnEquity: ratiosData.ReturnOnEquityCAGR || {},
+        ReturnOnEquityCAGR: ratiosData.ReturnOnEquityCAGR || {},
         // Market Risk Sentiment
         beta: marketRiskData.beta || {},
         auditRisk: marketRiskData.auditRisk || {},
@@ -716,7 +736,19 @@ function displayFundamentalResultsClassification(data) {
         StockholdersEquityCAGR: data.evaluations.liquidity?.StockholdersEquityCAGR || "N/A",
         TotalAssetsCAGR: data.evaluations.liquidity?.TotalAssetsCAGR || "N/A",
         TotalLiabilitiesCAGR: data.evaluations.liquidity?.TotalLiabilitiesCAGR || "N/A",
-        FreeCashflowYield: data.evaluations.cashflow?.FreeCashflowYield || "N/A"
+        FreeCashflowYield: data.evaluations.cashflow?.FreeCashflowYield || "N/A",
+        CurrentRatio: data.evaluations.ratios?.CurrentRatio || "N/A",
+        CurrentRatioCAGR: data.evaluations.ratios?.CurrentRatioCAGR || "N/A",
+        CashRatio: data.evaluations.ratios?.CashRatio || "N/A",
+        CashRatioCAGR: data.evaluations.ratios?.CashRatioCAGR || "N/A",
+        GrossMargin: data.evaluations.ratios?.GrossMargin || "N/A",
+        // GrossMarginCAGR: data.evaluations.ratios?.GrossMarginCAGR || "N/A",
+        OperatingMargin: data.evaluations.ratios?.OperatingMargin || "N/A",
+        OperatingMarginCAGR: data.evaluations.ratios?.OperatingMarginCAGR || "N/A",
+        ProfitMargin: data.evaluations.ratios?.ProfitMargin || "N/A",
+        ProfitMarginCAGR: data.evaluations.ratios?.ProfitMarginCAGR || "N/A",
+        ReturnOnEquity: data.evaluations.ratios?.ReturnOnEquity || "N/A",
+        ReturnOnEquityCAGR: data.evaluations.ratios?.ReturnOnEquityCAGR || "N/A",
     }
 
     for (const [key, evaluation] of Object.entries(elements)) {
