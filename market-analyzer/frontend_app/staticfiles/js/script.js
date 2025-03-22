@@ -67,8 +67,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     setupToggle({
-        toggleSelector: "#funGrowth",
-        contentSelector: ".growth-content",
+        toggleSelector: "#funHealth",
+        contentSelector: ".health-content",
         iconSelector: ".toggle-icon"
     });
 
@@ -634,11 +634,11 @@ function displayBioResults(data) {
 
 /* ─────────────── FUNÇÃO PARA PREENCHER FUNDAMENTALS ─────────────── */
 function displayFundamentalResults(data) {
-    const liquiditySolvencyData = data.liquidity_and_solvency;
-    const profitabilityData = data.profitability;
-    const growthData = data.growth;
     const valuationData = data.valuation;
-    const dividendsBuybacksData = data.dividends_and_buybacks;
+    const dividendsData = data.dividends;
+    const profitabilityData = data.profitability;
+    const liquidityData = data.liquidity;
+    const solvencyData = data.solvency;
     const marketRiskData = data.market_risk_and_sentiment;
     
     const elements = {
@@ -648,9 +648,9 @@ function displayFundamentalResults(data) {
         forwardPE: valuationData.forwardPE || {},
         PEGRatio: valuationData.PEGRatio || {},
         // Dividends
-        divCoverageRate: dividendsBuybacksData.divCoverageRate || {},
-        dividendYield: dividendsBuybacksData.dividendYield || {},
-        fiveYearAvgDividendYield: dividendsBuybacksData.fiveYearAvgDividendYield || {},
+        divCoverageRate: dividendsData.divCoverageRate || {},
+        dividendYield: dividendsData.dividendYield || {},
+        fiveYearAvgDividendYield: dividendsData.fiveYearAvgDividendYield || {},
         // Profitability
         NetIncome: profitabilityData.NetIncome || {},
         TotalRevenue: profitabilityData.TotalRevenue || {},
@@ -662,21 +662,20 @@ function displayFundamentalResults(data) {
         OperatingExpensesCAGR: profitabilityData.OperatingExpensesCAGR || {},
         // CostOfRevenueYOY: profitabilityData.CostOfRevenueYOY || {},
         // TotalRevenueYOY: profitabilityData.TotalRevenueYOY || {},
-        // Growth & NetWorth & Health
-        revenueGrowth: growthData.revenueGrowth || {},
-        earningsQuarterlyGrowth: growthData.earningsQuarterlyGrowth || {},
-        earningsGrowth: growthData.earningsGrowth || {},        
-        // Liquidity Solvency Data
-        QuickRatio: liquiditySolvencyData.QuickRatio || {},
-        CurrentRatio: liquiditySolvencyData.CurrentRatio || {},
-        TotalCash: liquiditySolvencyData.TotalCash || {},
-        TotalDebt: liquiditySolvencyData.TotalDebt || {},
-        TotalEquity: liquiditySolvencyData.TotalEquity || {},
-        CashRatio: liquiditySolvencyData.CashRatio || {},
-        OperatingCashFlow: liquiditySolvencyData.OperatingCashFlow || {},
-        DebttoEquity: liquiditySolvencyData.DebttoEquity || {},
-        InterestCoverageRatio: liquiditySolvencyData.InterestCoverageRatio || {},
-        DebttoAssetsRatio: liquiditySolvencyData.DebttoAssetsRatio || {},
+        // Debt 
+        TotalAssets: liquidityData.TotalAssets || {},
+        TotalLiabilities: liquidityData.TotalLiabilities || {},
+        NetWorth: liquidityData.NetWorth || {},        
+        ShortTermDebtCoverage: liquidityData.ShortTermDebtCoverage || {},        
+        CurrentAssets: liquidityData.CurrentAssets || {},        
+        CurrentLiabilities: liquidityData.CurrentLiabilities || {},        
+        LongTermDebtCoverage: liquidityData.LongTermDebtCoverage || {},        
+        NonCurrentAssets: liquidityData.NonCurrentAssets || {},        
+        NonCurrentLiabilities: liquidityData.NonCurrentLiabilities || {},        
+        TotalAssetsCAGR: liquidityData.TotalAssetsCAGR || {},        
+        TotalLiabilitiesCAGR: liquidityData.TotalLiabilitiesCAGR || {},        
+        //  Solvency Data
+        QuickRatio: solvencyData.QuickRatio || {},
         // Market Risk Sentiment
         beta: marketRiskData.beta || {},
         auditRisk: marketRiskData.auditRisk || {},
@@ -701,9 +700,14 @@ function displayFundamentalResultsClassification(data) {
     const elements = {
         trailingPE: data.evaluations.valuation?.trailingPE || "N/A",
         PEGRatio: data.evaluations.valuation?.PEGRatio || "N/A",
-        divCoverageRate: data.evaluations.dividends_and_buybacks?.divCoverageRate || "N/A",
+        divCoverageRate: data.evaluations.dividends?.divCoverageRate || "N/A",
         CostOfRevenueCAGR: data.evaluations.profitability?.CostOfRevenueCAGR || "N/A",
-        TotalRevenueCAGR: data.evaluations.profitability?.TotalRevenueCAGR || "N/A"
+        TotalRevenueCAGR: data.evaluations.profitability?.TotalRevenueCAGR || "N/A",
+        NetWorth: data.evaluations.liquidity?.NetWorth || "N/A",
+        ShortTermDebtCoverage: data.evaluations.liquidity?.ShortTermDebtCoverage || "N/A",
+        LongTermDebtCoverage: data.evaluations.liquidity?.LongTermDebtCoverage || "N/A",
+        TotalAssetsCAGR: data.evaluations.liquidity?.TotalAssetsCAGR || "N/A",
+        TotalLiabilitiesCAGR: data.evaluations.liquidity?.TotalLiabilitiesCAGR || "N/A"
     }
 
     for (const [key, evaluation] of Object.entries(elements)) {

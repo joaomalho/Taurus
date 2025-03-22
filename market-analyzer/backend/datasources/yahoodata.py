@@ -284,6 +284,10 @@ class DataHistoryYahoo():
             yahoo_symbol_income = yf.Ticker(symbol).income_stmt
         except:
             yahoo_symbol_income = pd.DataFrame()
+        try:
+            yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
+        except:
+            yahoo_symbol_cashflow = pd.DataFrame()
         
         # Valuation
         sector = yahoo_symbol_info.get("sector")
@@ -396,7 +400,49 @@ class DataHistoryYahoo():
 
         cagr_total_liabilities = fm.get_cagr_metric(total_liabilities)
         cagr_total_assets = fm.get_cagr_metric(total_assets)
+
+        # cash_cash_equivalents
+        if 'Cash And Cash Equivalents' in yahoo_symbol_balancesheet.index:
+            cash_cash_equivalents = yahoo_symbol_balancesheet.loc['Cash And Cash Equivalents']
+            if pd.isna(cash_cash_equivalents).all():
+                cash_cash_equivalents = "N/A"
+
+        # stockholders_equity
+        if 'Stockholders Equity' in yahoo_symbol_balancesheet.index:
+            stockholders_equity = yahoo_symbol_balancesheet.loc['Stockholders Equity']
+            if pd.isna(stockholders_equity).all():
+                stockholders_equity = "N/A"
         
+        cagr_stockholder_equity = fm.get_cagr_metric(stockholders_equity)
+        
+        # Cashflow
+        # free_cashflow
+        if 'Free Cash Flow' in yahoo_symbol_cashflow.index:
+            free_cashflow = yahoo_symbol_cashflow.loc['Free Cash Flow']
+            if pd.isna(free_cashflow).all():
+                free_cashflow = "N/A"
+        
+        # operating_cashflow
+        if 'Operating Cash Flow' in yahoo_symbol_cashflow.index:
+            operating_cashflow = yahoo_symbol_cashflow.loc['Operating Cash Flow']
+            if pd.isna(operating_cashflow).all():
+                operating_cashflow = "N/A"
+
+        # capital_expenditure
+        if 'Capital Expenditure' in yahoo_symbol_cashflow.index:
+            capital_expenditure = yahoo_symbol_cashflow.loc['Capital Expenditure']
+            if pd.isna(capital_expenditure).all():
+                capital_expenditure = "N/A"
+
+        # market_cap
+        market_cap = yahoo_symbol_info.get('marketCap', "N/A")
+
+        #free_cashflow_yield
+        if market_cap != "N/A" and free_cashflow.iloc[0] != "N/A":
+            free_cashflow_yield = (free_cashflow.iloc[0] / market_cap) * 100
+        else:
+            free_cashflow_yield = "N/A"
+
         yahoo_symbol_fundamental_info = {
             "valuation": {
                 "trailingPE": yahoo_symbol_info.get("trailingPE", "N/A"),
@@ -426,6 +472,7 @@ class DataHistoryYahoo():
                 "TotalAssets": total_assets.iloc[0],
                 "TotalLiabilities": total_liabilities.iloc[0],
                 "NetWorth": net_worth,
+                "CashCashEquivalents": cash_cash_equivalents.iloc[0],
                 # Short Term 1y
                 "ShortTermDebtCoverage" : short_term_debt_coverage.iloc[0],
                 "CurrentAssets": current_assets.iloc[0],
@@ -437,10 +484,16 @@ class DataHistoryYahoo():
                 # Growth
                 "TotalAssetsCAGR": cagr_total_assets,
                 "TotalLiabilitiesCAGR": cagr_total_liabilities,
+                # Stockholders Equity
+                "StockholdersEquityCAGR": cagr_stockholder_equity,
+                "StockholdersEquity": stockholders_equity.iloc[0],
             },
-            "solvency": {
-                # Liquidez e Solvência: Capacidade de pagamento
-                "QuickRatio": yahoo_symbol_info.get("quickRatio", "N/A"),
+            "cashflow": {
+                "FreeCashflow": free_cashflow.iloc[0],
+                "OperatingCashflow": operating_cashflow.iloc[0],
+                "CapitalExpenditure": capital_expenditure.iloc[0],
+                "MarketCap": market_cap,
+                "FreeCashflowYield": free_cashflow_yield,
             },
             "market_risk_and_sentiment": {
                 "beta": yahoo_symbol_info.get("beta", "N/A"),

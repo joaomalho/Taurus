@@ -239,7 +239,43 @@ class RiskManager():
                     evaluated_metrics["TotalLiabilitiesCAGR"] = "Good"
                 else:
                     evaluated_metrics["TotalLiabilitiesCAGR"] = "Not Good"
-    
+
+            # Stockholders Equity
+        if "StockholdersEquityCAGR" in metrics.get('liquidity', {}):
+            try:
+                stockholders_equity_cagr = metrics.get('liquidity', {}).get("StockholdersEquityCAGR", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["StockholdersEquityCAGR"] = "N/A"
+                return evaluated_metrics
+            
+            if not stockholders_equity_cagr:
+                evaluated_metrics["StockholdersEquityCAGR"] = "N/A"
+            else:
+                if stockholders_equity_cagr <= 0:
+                    evaluated_metrics["StockholdersEquityCAGR"] = "Not Good"
+                else:
+                    evaluated_metrics["StockholdersEquityCAGR"] = "Good"
+
+        # Cash
+            # Free Cashflow Yield
+        if "FreeCashflowYield" in metrics.get('cashflow', {}):
+            try:
+                free_cashflow_yield = metrics.get('cashflow', {}).get("FreeCashflowYield", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["FreeCashflowYield"] = "N/A"
+                return evaluated_metrics
+            
+            if not free_cashflow_yield:
+                evaluated_metrics["FreeCashflowYield"] = "N/A"
+            else:
+                if free_cashflow_yield <= 2:
+                    evaluated_metrics["FreeCashflowYield"] = "Overvalued / Bad to Generate Cash."
+                elif free_cashflow_yield <=5:
+                    evaluated_metrics["FreeCashflowYield"] = "Healthy / Consistent to Generates Cash"
+                else:
+                    evaluated_metrics["FreeCashflowYield"] = "Undervalued / Highly Profitable"
+
+
         return evaluated_metrics if evaluated_metrics else "Indefinido"
 
     def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):

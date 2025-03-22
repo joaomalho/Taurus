@@ -47,16 +47,22 @@ document.addEventListener("DOMContentLoaded", function () {
         contentSelector: ".oscilators-content",
         iconSelector: ".toggle-icon"
     });
- 
+    
     setupToggle({
         toggleSelector: "#tecCandles",
         contentSelector: ".candles-content",
         iconSelector: ".toggle-icon"
     });
+    
+    setupToggle({
+        toggleSelector: "#funValuation",
+        contentSelector: ".valuation-content",
+        iconSelector: ".toggle-icon"
+    });
 
     setupToggle({
-        toggleSelector: "#funLiquidity",
-        contentSelector: ".liquidity-content",
+        toggleSelector: "#funDividends",
+        contentSelector: ".dividends-content",
         iconSelector: ".toggle-icon"
     });
 
@@ -73,14 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     setupToggle({
-        toggleSelector: "#funValuation",
-        contentSelector: ".valuation-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#funDividends",
-        contentSelector: ".dividends-content",
+        toggleSelector: "#funCashflow",
+        contentSelector: ".cashflow-content",
         iconSelector: ".toggle-icon"
     });
 
@@ -638,7 +638,7 @@ function displayFundamentalResults(data) {
     const dividendsData = data.dividends;
     const profitabilityData = data.profitability;
     const liquidityData = data.liquidity;
-    const solvencyData = data.solvency;
+    const cashflowData = data.cashflow;
     const marketRiskData = data.market_risk_and_sentiment;
     
     const elements = {
@@ -666,6 +666,7 @@ function displayFundamentalResults(data) {
         TotalAssets: liquidityData.TotalAssets || {},
         TotalLiabilities: liquidityData.TotalLiabilities || {},
         NetWorth: liquidityData.NetWorth || {},        
+        CashCashEquivalents: liquidityData.CashCashEquivalents || {},        
         ShortTermDebtCoverage: liquidityData.ShortTermDebtCoverage || {},        
         CurrentAssets: liquidityData.CurrentAssets || {},        
         CurrentLiabilities: liquidityData.CurrentLiabilities || {},        
@@ -674,8 +675,14 @@ function displayFundamentalResults(data) {
         NonCurrentLiabilities: liquidityData.NonCurrentLiabilities || {},        
         TotalAssetsCAGR: liquidityData.TotalAssetsCAGR || {},        
         TotalLiabilitiesCAGR: liquidityData.TotalLiabilitiesCAGR || {},        
-        //  Solvency Data
-        QuickRatio: solvencyData.QuickRatio || {},
+        StockholdersEquityCAGR: liquidityData.StockholdersEquityCAGR || {},        
+        StockholdersEquity: liquidityData.StockholdersEquity || {},        
+        // Cashflow
+        FreeCashflow: cashflowData.FreeCashflow || {},
+        OperatingCashflow: cashflowData.OperatingCashflow || {},
+        CapitalExpenditure: cashflowData.CapitalExpenditure || {},
+        MarketCap: cashflowData.MarketCap || {},
+        FreeCashflowYield: cashflowData.FreeCashflowYield || {},
         // Market Risk Sentiment
         beta: marketRiskData.beta || {},
         auditRisk: marketRiskData.auditRisk || {},
@@ -706,8 +713,10 @@ function displayFundamentalResultsClassification(data) {
         NetWorth: data.evaluations.liquidity?.NetWorth || "N/A",
         ShortTermDebtCoverage: data.evaluations.liquidity?.ShortTermDebtCoverage || "N/A",
         LongTermDebtCoverage: data.evaluations.liquidity?.LongTermDebtCoverage || "N/A",
+        StockholdersEquityCAGR: data.evaluations.liquidity?.StockholdersEquityCAGR || "N/A",
         TotalAssetsCAGR: data.evaluations.liquidity?.TotalAssetsCAGR || "N/A",
-        TotalLiabilitiesCAGR: data.evaluations.liquidity?.TotalLiabilitiesCAGR || "N/A"
+        TotalLiabilitiesCAGR: data.evaluations.liquidity?.TotalLiabilitiesCAGR || "N/A",
+        FreeCashflowYield: data.evaluations.cashflow?.FreeCashflowYield || "N/A"
     }
 
     for (const [key, evaluation] of Object.entries(elements)) {
