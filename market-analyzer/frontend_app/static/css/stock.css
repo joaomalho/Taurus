@@ -352,15 +352,15 @@ canvas {
     color: var(--button-hover-bg);
 }
 
-/* GROWTH */
+/* HEALTH */
 
-.growth-content {
+.health-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
     line-height: 1.5;
 }
 
-.growth-content p {
+.health-content p {
     margin: 6px 0;
     padding: 8px 12px;
     background-color: var(--secondary-bg);
@@ -368,12 +368,12 @@ canvas {
     border-left: 4px solid var(--stock-info-border-color); 
 }
 
-.growth-content a {
+.health-content a {
     color: var(--link-color);
     font-weight: bold;
 }
 
-.growth-content a:hover {
+.health-content a:hover {
     color: var(--button-hover-bg);
 }
 
@@ -453,7 +453,7 @@ canvas {
     color: var(--button-hover-bg);
 }
 
-.fund-liquidity, .fund-profitability, .fund-growth, .fund-valuation, .fund-dividends, .fund-risk {
+.fund-liquidity, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-risk {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 10px;

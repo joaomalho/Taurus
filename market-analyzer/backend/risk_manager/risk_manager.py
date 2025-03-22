@@ -47,96 +47,7 @@ class RiskManager():
 
         evaluated_metrics = {}
 
-        if 'QuickRatio' in metrics.get('liquidity_and_solvency', {}):
-            quick_ratio = metrics.get('liquidity_and_solvency', {}).get('QuickRatio', 'N/A')
-            if quick_ratio == "N/A":
-                evaluated_metrics["QuickRatio"] = "N/A"
-            elif quick_ratio < 0.75:
-                evaluated_metrics["QuickRatio"] = "Very Negative"
-            elif quick_ratio < 1:
-                evaluated_metrics["QuickRatio"] = "Negative"
-            elif quick_ratio < 1.5:
-                evaluated_metrics["QuickRatio"] = "Neutral"
-            elif quick_ratio < 2:
-                evaluated_metrics["QuickRatio"] = "Positive"
-            else:
-                evaluated_metrics["QuickRatio"] = "Very Positive"
-
-        if 'CurrentRatio' in metrics.get('liquidity_and_solvency', {}):
-            current_ratio = metrics.get('liquidity_and_solvency', {}).get('CurrentRatio', 'N/A')
-            if current_ratio == "N/A":
-                evaluated_metrics["CurrentRatio"] = "N/A"
-            elif current_ratio < 0.75:
-                evaluated_metrics["CurrentRatio"] = "Very Negative"
-            elif current_ratio < 1:
-                evaluated_metrics["CurrentRatio"] = "Negative"
-            elif current_ratio < 1.5:
-                evaluated_metrics["CurrentRatio"] = "Neutral"
-            elif current_ratio < 2:
-                evaluated_metrics["CurrentRatio"] = "Positive"
-            else:
-                evaluated_metrics["CurrentRatio"] = "Very Positive"
-
-        if 'CashRatio' in metrics.get('liquidity_and_solvency', {}):
-            cash_ratio = metrics.get('liquidity_and_solvency', {}).get('CashRatio', 'N/A')
-            if cash_ratio == "N/A":
-                evaluated_metrics["CashRatio"] = "N/A"
-            elif cash_ratio < 0.75:
-                evaluated_metrics["CashRatio"] = "Very Negative"
-            elif cash_ratio < 1:
-                evaluated_metrics["CashRatio"] = "Negative"
-            elif cash_ratio < 1.5:
-                evaluated_metrics["CashRatio"] = "Neutral"
-            elif cash_ratio < 2:
-                evaluated_metrics["CashRatio"] = "Positive"
-            else:
-                evaluated_metrics["CashRatio"] = "Very Positive"
-
-        if 'DebttoEquity' in metrics.get('liquidity_and_solvency', {}):
-            debt_to_equity = metrics.get('liquidity_and_solvency', {}).get('DebttoEquity', 'N/A')
-            if debt_to_equity == "N/A":
-                evaluated_metrics["DebttoEquity"] = "N/A"
-            elif debt_to_equity > 2.5:
-                evaluated_metrics["DebttoEquity"] = "Very Negative"
-            elif debt_to_equity > 1.8:
-                evaluated_metrics["DebttoEquity"] = "Negative"
-            elif debt_to_equity > 1.2:
-                evaluated_metrics["DebttoEquity"] = "Neutral"
-            elif debt_to_equity > 0.7:
-                evaluated_metrics["DebttoEquity"] = "Positive"
-            else:
-                evaluated_metrics["DebttoEquity"] = "Very Positive"
-
-        if 'DebttoAssetsRatio' in metrics.get('liquidity_and_solvency', {}):
-            debt_to_assets = metrics.get('liquidity_and_solvency', {}).get('DebttoAssetsRatio', 'N/A')
-            if debt_to_assets == "N/A":
-                evaluated_metrics["DebttoAssetsRatio"] = "N/A"
-            elif debt_to_assets > 2.5:
-                evaluated_metrics["DebttoAssetsRatio"] = "Very Negative"
-            elif debt_to_assets > 1.8:
-                evaluated_metrics["DebttoAssetsRatio"] = "Negative"
-            elif debt_to_assets > 1.2:
-                evaluated_metrics["DebttoAssetsRatio"] = "Neutral"
-            elif debt_to_assets > 0.7:
-                evaluated_metrics["DebttoAssetsRatio"] = "Positive"
-            else:
-                evaluated_metrics["DebttoAssetsRatio"] = "Very Positive"
-
-        if 'InterestCoverageRatio' in metrics.get('liquidity_and_solvency', {}):
-            interest_cover_ratio = metrics.get('liquidity_and_solvency', {}).get('InterestCoverageRatio', 'N/A')
-            if interest_cover_ratio == "N/A":
-                evaluated_metrics["InterestCoverageRatio"] = "N/A"
-            elif interest_cover_ratio < 1:
-                evaluated_metrics["InterestCoverageRatio"] = "Very Negative"
-            elif interest_cover_ratio < 2:
-                evaluated_metrics["InterestCoverageRatio"] = "Negative"
-            elif interest_cover_ratio < 3:
-                evaluated_metrics["InterestCoverageRatio"] = "Neutral"
-            elif interest_cover_ratio < 5:
-                evaluated_metrics["InterestCoverageRatio"] = "Positive"
-            else:
-                evaluated_metrics["InterestCoverageRatio"] = "Very Positive"
-
+        # Valuation
         if "trailingPE" in metrics.get('valuation', {}) and "sectorTrailingPE" in metrics.get('valuation', {}) and "forwardPE" in metrics.get('valuation', {}):
             try:
                 trailing_pe = metrics.get('valuation', {}).get("trailingPE", "N/A")
@@ -198,9 +109,10 @@ class RiskManager():
                 else:
                     evaluated_metrics["PEGRatio"] = "Overvalued"
 
-        if "divCoverageRate" in metrics.get('dividends_and_buybacks', {}):
+        # Dividends
+        if "divCoverageRate" in metrics.get('dividends', {}):
             try:
-                div_coverage_ratio = metrics.get('dividends_and_buybacks', {}).get("divCoverageRate", "N/A")
+                div_coverage_ratio = metrics.get('dividends', {}).get("divCoverageRate", "N/A")
             except (ValueError, TypeError):
                 evaluated_metrics["divCoverageRate"] = "N/A"
                 return evaluated_metrics
@@ -216,7 +128,8 @@ class RiskManager():
                     evaluated_metrics["divCoverageRate"] = "Good Coverage"
                 else:
                     evaluated_metrics["divCoverageRate"] = "Very Good Coverage (Greedy)"
-    
+        
+        # Profitability
         if "CostOfRevenueCAGR" in metrics.get('profitability', {}):
             try:
                 cost_revenue_cagr = metrics.get('profitability', {}).get("CostOfRevenueCAGR", "N/A")
@@ -246,6 +159,86 @@ class RiskManager():
                     evaluated_metrics["TotalRevenueCAGR"] = "Not Good"
                 else:
                     evaluated_metrics["TotalRevenueCAGR"] = "Good"
+
+        # Debt
+        if "NetWorth" in metrics.get('liquidity', {}):
+            try:
+                net_worth = metrics.get('liquidity', {}).get("NetWorth", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["NetWorth"] = "N/A"
+                return evaluated_metrics
+            
+            if not net_worth:
+                evaluated_metrics["NetWorth"] = "N/A"
+            else:
+                if net_worth <= 0:
+                    evaluated_metrics["NetWorth"] = "Not Good (In Debt)"
+                else:
+                    evaluated_metrics["NetWorth"] = "Good"
+
+            # Short Term Debt Coverage 
+        if "ShortTermDebtCoverage" in metrics.get('liquidity', {}):
+            try:
+                short_debt_cov = metrics.get('liquidity', {}).get("ShortTermDebtCoverage", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["ShortTermDebtCoverage"] = "N/A"
+                return evaluated_metrics
+            
+            if not short_debt_cov:
+                evaluated_metrics["ShortTermDebtCoverage"] = "N/A"
+            else:
+                if short_debt_cov <= 0:
+                    evaluated_metrics["ShortTermDebtCoverage"] = "Not Good (In Debt)"
+                else:
+                    evaluated_metrics["ShortTermDebtCoverage"] = "Good"
+    
+            # Long Term Debt Coverage 
+        if "LongTermDebtCoverage" in metrics.get('liquidity', {}):
+            try:
+                long_debt_cov = metrics.get('liquidity', {}).get("LongTermDebtCoverage", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["LongTermDebtCoverage"] = "N/A"
+                return evaluated_metrics
+            
+            if not long_debt_cov:
+                evaluated_metrics["LongTermDebtCoverage"] = "N/A"
+            else:
+                if long_debt_cov <= 0:
+                    evaluated_metrics["LongTermDebtCoverage"] = "Not Good (In Debt)"
+                else:
+                    evaluated_metrics["LongTermDebtCoverage"] = "Good"
+
+            # Assets Growth
+        if "TotalAssetsCAGR" in metrics.get('liquidity', {}):
+            try:
+                total_assets_cagr = metrics.get('liquidity', {}).get("TotalAssetsCAGR", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["TotalAssetsCAGR"] = "N/A"
+                return evaluated_metrics
+            
+            if not total_assets_cagr:
+                evaluated_metrics["TotalAssetsCAGR"] = "N/A"
+            else:
+                if total_assets_cagr <= 0:
+                    evaluated_metrics["TotalAssetsCAGR"] = "Not Good"
+                else:
+                    evaluated_metrics["TotalAssetsCAGR"] = "Good"
+
+            # Liabilities Growth
+        if "TotalLiabilitiesCAGR" in metrics.get('liquidity', {}):
+            try:
+                total_liabilities_cagr = metrics.get('liquidity', {}).get("TotalLiabilitiesCAGR", "N/A")
+            except (ValueError, TypeError):
+                evaluated_metrics["TotalLiabilitiesCAGR"] = "N/A"
+                return evaluated_metrics
+            
+            if not total_liabilities_cagr:
+                evaluated_metrics["TotalLiabilitiesCAGR"] = "N/A"
+            else:
+                if total_liabilities_cagr <= 0:
+                    evaluated_metrics["TotalLiabilitiesCAGR"] = "Good"
+                else:
+                    evaluated_metrics["TotalLiabilitiesCAGR"] = "Not Good"
     
         return evaluated_metrics if evaluated_metrics else "Indefinido"
 

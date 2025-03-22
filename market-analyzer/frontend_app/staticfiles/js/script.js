@@ -642,6 +642,30 @@ function displayFundamentalResults(data) {
     const marketRiskData = data.market_risk_and_sentiment;
     
     const elements = {
+        // Valuation
+        trailingPE: valuationData.trailingPE || {},
+        sectorTrailingPE: valuationData.sectorTrailingPE || {},
+        forwardPE: valuationData.forwardPE || {},
+        PEGRatio: valuationData.PEGRatio || {},
+        // Dividends
+        divCoverageRate: dividendsBuybacksData.divCoverageRate || {},
+        dividendYield: dividendsBuybacksData.dividendYield || {},
+        fiveYearAvgDividendYield: dividendsBuybacksData.fiveYearAvgDividendYield || {},
+        // Profitability
+        NetIncome: profitabilityData.NetIncome || {},
+        TotalRevenue: profitabilityData.TotalRevenue || {},
+        CostOfRevenue: profitabilityData.CostOfRevenue || {},
+        GrossProfit: profitabilityData.GrossProfit || {},
+        OperatingExpenses: profitabilityData.OperatingExpenses || {},
+        CostOfRevenueCAGR: profitabilityData.CostOfRevenueCAGR || {},
+        TotalRevenueCAGR: profitabilityData.TotalRevenueCAGR || {},
+        OperatingExpensesCAGR: profitabilityData.OperatingExpensesCAGR || {},
+        // CostOfRevenueYOY: profitabilityData.CostOfRevenueYOY || {},
+        // TotalRevenueYOY: profitabilityData.TotalRevenueYOY || {},
+        // Growth & NetWorth & Health
+        revenueGrowth: growthData.revenueGrowth || {},
+        earningsQuarterlyGrowth: growthData.earningsQuarterlyGrowth || {},
+        earningsGrowth: growthData.earningsGrowth || {},        
         // Liquidity Solvency Data
         QuickRatio: liquiditySolvencyData.QuickRatio || {},
         CurrentRatio: liquiditySolvencyData.CurrentRatio || {},
@@ -653,30 +677,6 @@ function displayFundamentalResults(data) {
         DebttoEquity: liquiditySolvencyData.DebttoEquity || {},
         InterestCoverageRatio: liquiditySolvencyData.InterestCoverageRatio || {},
         DebttoAssetsRatio: liquiditySolvencyData.DebttoAssetsRatio || {},
-        // Profitability Data
-        grossMargins: profitabilityData.grossMargins || {},
-        operatingMargins: profitabilityData.operatingMargins || {},
-        EBITDAMargins: profitabilityData.EBITDAMargins || {},
-        NetIncome: profitabilityData.NetIncome || {},
-        ProfitMargin: profitabilityData.ProfitMargin || {},
-        returnOnAssetsROA: profitabilityData.returnOnAssetsROA || {},
-        returnOnEquityROE: profitabilityData.returnOnEquityROE || {},
-        // Growth
-        revenueGrowth: growthData.revenueGrowth || {},
-        earningsQuarterlyGrowth: growthData.earningsQuarterlyGrowth || {},
-        earningsGrowth: growthData.earningsGrowth || {},
-        // Valuation
-        trailingPE: valuationData.trailingPE || {},
-        sectorTrailingPE: valuationData.sectorTrailingPE || {},
-        forwardPE: valuationData.forwardPE || {},
-        PEGRatio: valuationData.PEGRatio || {},
-        PBRatio: valuationData.PBRatio || {},
-        enterpriseToEbitda: valuationData.enterpriseToEbitda || {},
-        // Dividends
-        divCoverageRate: dividendsBuybacksData.divCoverageRate || {},
-        dividendYield: dividendsBuybacksData.dividendYield || {},
-        payoutRatio: dividendsBuybacksData.payoutRatio || {},
-        fiveYearAvgDividendYield: dividendsBuybacksData.fiveYearAvgDividendYield || {},
         // Market Risk Sentiment
         beta: marketRiskData.beta || {},
         auditRisk: marketRiskData.auditRisk || {},
@@ -699,15 +699,11 @@ function displayFundamentalResults(data) {
 
 function displayFundamentalResultsClassification(data) {
     const elements = {
-        QuickRatio: data.evaluations.liquidity_and_solvency?.QuickRatio || "N/A",
-        CurrentRatio: data.evaluations.liquidity_and_solvency?.CurrentRatio || "N/A",
-        CashRatio: data.evaluations.liquidity_and_solvency?.CashRatio || "N/A",
-        DebttoEquity: data.evaluations.liquidity_and_solvency?.DebttoEquity || "N/A",
-        DebttoAssetsRatio: data.evaluations.liquidity_and_solvency?.DebttoAssetsRatio || "N/A",
-        InterestCoverageRatio: data.evaluations.liquidity_and_solvency?.InterestCoverageRatio || "N/A",
         trailingPE: data.evaluations.valuation?.trailingPE || "N/A",
         PEGRatio: data.evaluations.valuation?.PEGRatio || "N/A",
-        divCoverageRate: data.evaluations.dividends_and_buybacks?.divCoverageRate || "N/A"
+        divCoverageRate: data.evaluations.dividends_and_buybacks?.divCoverageRate || "N/A",
+        CostOfRevenueCAGR: data.evaluations.profitability?.CostOfRevenueCAGR || "N/A",
+        TotalRevenueCAGR: data.evaluations.profitability?.TotalRevenueCAGR || "N/A"
     }
 
     for (const [key, evaluation] of Object.entries(elements)) {

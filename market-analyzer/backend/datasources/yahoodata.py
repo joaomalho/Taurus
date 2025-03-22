@@ -358,90 +358,45 @@ class DataHistoryYahoo():
             if pd.isna(non_current_liabilities).all():
                 non_current_liabilities = "N/A"
 
+        # total_liabilities
+        if current_liabilities.iloc[0] != "N/A" and non_current_liabilities.iloc[0] != "N/A":
+            total_liabilities = current_liabilities + non_current_liabilities
+        else:
+            total_liabilities = "N/A"
+
         # net_worth
         if total_assets.iloc[0] != "N/A" and current_liabilities.iloc[0] != "N/A" and non_current_liabilities.iloc[0] != "N/A":
-            net_worth = total_assets.iloc[0] - (current_liabilities.iloc[0] + non_current_liabilities.iloc[0])
+            net_worth = total_assets.iloc[0] - total_liabilities.iloc[0]
         else:
             net_worth = "N/A"
 
+        # current_assets
+        if 'Current Assets' in yahoo_symbol_balancesheet.index:
+            current_assets = yahoo_symbol_balancesheet.loc['Current Assets']
+            if pd.isna(current_assets).all():
+                current_assets = "N/A"
 
-
-        # total_equity
-        if 'StockholdersEquity' in yahoo_symbol_balancesheet.index:
-            total_equity = yahoo_symbol_balancesheet.loc['StockholdersEquity'].iloc[0]
-            if pd.isna(total_equity):
-                total_equity = "N/A"
-        else:
-            total_equity = "N/A"
+        # non_current_assets
+        if 'Total Non Current Assets' in yahoo_symbol_balancesheet.index:
+            non_current_assets = yahoo_symbol_balancesheet.loc['Total Non Current Assets']
+            if pd.isna(non_current_assets).all():
+                non_current_assets = "N/A"
         
-        # cash_equivalents_short_term_investments
-        if 'CashCashEquivalentsAndShortTermInvestments' in yahoo_symbol_balancesheet.index:
-            cash_equivalents_short_term_investments = yahoo_symbol_balancesheet.loc['CashCashEquivalentsAndShortTermInvestments'].iloc[0]
-            if pd.isna(cash_equivalents_short_term_investments):
-                cash_equivalents_short_term_investments = "N/A"
+        # short_term_debt_coverage
+        if current_assets.iloc[0] != "N/A" and current_liabilities.iloc[0] != "N/A":
+            short_term_debt_coverage = current_assets - current_liabilities
         else:
-            cash_equivalents_short_term_investments = "N/A"
+            short_term_debt_coverage = "N/A"
 
-        # cash_and_cash_equivalents
-        if 'CashAndCashEquivalents' in yahoo_symbol_balancesheet.index:
-            cash_and_cash_equivalents = yahoo_symbol_balancesheet.loc['CashAndCashEquivalents'].iloc[0]
-            if pd.isna(cash_and_cash_equivalents):
-                cash_and_cash_equivalents = "N/A"
+        # long_term_debt_coverage
+        if non_current_assets.iloc[0] != "N/A" and non_current_liabilities.iloc[0] != "N/A":
+            long_term_debt_coverage = non_current_assets - non_current_liabilities
         else:
-            cash_and_cash_equivalents = "N/A"
+            long_term_debt_coverage = "N/A"
 
-        # current_liabilities
-        if 'CurrentLiabilities' in yahoo_symbol_balancesheet.index:
-            current_liabilities = yahoo_symbol_balancesheet.loc['CurrentLiabilities'].iloc[0]
-            if pd.isna(current_liabilities):
-                current_liabilities = "N/A"
-        else:
-            current_liabilities = "N/A"
-
-        # cash_ratio
-        if cash_and_cash_equivalents != "N/A" and current_liabilities != "N/A" and current_liabilities != 0:
-            cash_ratio = cash_and_cash_equivalents / current_liabilities
-        else:
-            cash_ratio = "N/A"
-
-        # ebit
-        if 'EBIT' in yahoo_symbol_income.index:
-            ebit = yahoo_symbol_income.loc["EBIT"].iloc[0]
-            if pd.isna(ebit):
-                ebit = "N/A"
-
-        # interest_expenses
-        interest_expenses = 'N/A'
-        if 'InterestExpense' in yahoo_symbol_income.index:
-            interest_expenses = yahoo_symbol_income.loc["InterestExpense"].iloc[0]
-            if pd.isna(interest_expenses):
-                interest_expenses = "N/A"
-
-        # interest_coverage_ratio
-        if ebit != "N/A" and interest_expenses not in ["N/A", 0]:
-            interest_coverage_ratio = ebit / interest_expenses
-        else:
-            interest_coverage_ratio = "N/A"
-
-        # total_assets
-        if 'TotalAssets' in yahoo_symbol_balancesheet.index:
-            total_assets = yahoo_symbol_balancesheet.loc['TotalAssets'].iloc[0]
-            if pd.isna(total_assets):
-                total_assets = "N/A"
-        else:
-            total_assets = "N/A"
-
-        # debt_to_assets_ratio 
-        total_debt = yahoo_symbol_info.get("totalDebt", "N/A")
-        if total_assets != "N/A" and total_debt != "N/A":
-            debt_to_assets_ratio = total_debt / total_assets if total_assets != 0 else "N/A"
-        else:
-            debt_to_assets_ratio = "N/A"
-
-
-
+        cagr_total_liabilities = fm.get_cagr_metric(total_liabilities)
+        cagr_total_assets = fm.get_cagr_metric(total_assets)
         
-        yahoo_symbol_info = yf.Ticker(symbol).info
         yahoo_symbol_fundamental_info = {
             "valuation": {
                 "trailingPE": yahoo_symbol_info.get("trailingPE", "N/A"),
@@ -449,7 +404,7 @@ class DataHistoryYahoo():
                 "forwardPE": yahoo_symbol_info.get("forwardPE", "N/A"),
                 "PEGRatio": yahoo_symbol_info.get("trailingPegRatio", "N/A"),
             },
-            "dividends_and_buybacks": {
+            "dividends": {
                 "divCoverageRate": div_coverage_rate,
                 "dividendYield": yahoo_symbol_info.get("dividendYield", "N/A"),
                 "fiveYearAvgDividendYield": yahoo_symbol_info.get("fiveYearAvgDividendYield", "N/A"),
@@ -466,31 +421,26 @@ class DataHistoryYahoo():
                 # "CostOfRevenueYOY": yoy_cost_of_revenue,
                 # "TotalRevenueYOY": yoy_total_revenue,
             },
-            "growth": {
-                "revenueGrowth": yahoo_symbol_info.get("revenueGrowth", "N/A"),
-                "earningsQuarterlyGrowth": yahoo_symbol_info.get("earningsQuarterlyGrowth", "N/A"),
-                "earningsGrowth": yahoo_symbol_info.get("earningsGrowth", "N/A"),
+            "liquidity": {
+                # Actual
+                "TotalAssets": total_assets.iloc[0],
+                "TotalLiabilities": total_liabilities.iloc[0],
+                "NetWorth": net_worth,
+                # Short Term 1y
+                "ShortTermDebtCoverage" : short_term_debt_coverage.iloc[0],
+                "CurrentAssets": current_assets.iloc[0],
+                "CurrentLiabilities": current_liabilities.iloc[0],
+                # Long Term
+                "LongTermDebtCoverage" : long_term_debt_coverage.iloc[0],
+                "NonCurrentAssets": non_current_assets.iloc[0],
+                "NonCurrentLiabilities": non_current_liabilities.iloc[0],
+                # Growth
+                "TotalAssetsCAGR": cagr_total_assets,
+                "TotalLiabilitiesCAGR": cagr_total_liabilities,
             },
-            "liquidity_and_solvency": {
+            "solvency": {
                 # Liquidez e Solvência: Capacidade de pagamento
                 "QuickRatio": yahoo_symbol_info.get("quickRatio", "N/A"),
-                "CurrentRatio": yahoo_symbol_info.get("currentRatio", "N/A"),
-                "TotalCash": yahoo_symbol_info.get("totalCash", "N/A"),
-                "TotalDebt": yahoo_symbol_info.get("totalDebt", "N/A"),
-                "TotalEquity": total_equity,
-                # Aux
-                "CashCashEquivalentsAndShortTermInvestments": cash_equivalents_short_term_investments,
-                "CashAndCashEquivalents": cash_and_cash_equivalents,
-                "CurrentLiabilities": current_liabilities,
-                "EBIT": ebit,
-                "InteresExpenses": interest_expenses,
-                # Curto Prazo
-                "CashRatio": cash_ratio,
-                "OperatingCashFlow": yahoo_symbol_info.get("operatingCashflow", "N/A"),
-                # Longo Prazo
-                "DebttoEquity": yahoo_symbol_info.get("debtToEquity", "N/A"),
-                "InterestCoverageRatio": interest_coverage_ratio,
-                "DebttoAssetsRatio": debt_to_assets_ratio,
             },
             "market_risk_and_sentiment": {
                 "beta": yahoo_symbol_info.get("beta", "N/A"),
@@ -502,61 +452,6 @@ class DataHistoryYahoo():
             }
         }
         return yahoo_symbol_fundamental_info
-
-    def get_symbol_fundamental_income_statment(self, symbol : str):
-        '''
-        Return detailed fundamental information about income statement
-        '''
-        try:
-            yahoo_symbol_income = yf.Ticker(symbol).income_stmt
-        except:
-            yahoo_symbol_income = pd.DataFrame()
-        
-        # Inicializar todas as variáveis com "N/A"
-        net_income = "N/A"
-        total_revenue = "N/A"
-        cost_of_revenue = "N/A"
-        gross_profit = "N/A"
-        
-        # net_income
-        if 'Net Income' in yahoo_symbol_income.index:
-            net_income = yahoo_symbol_income.loc['Net Income'].iloc[0]
-            if pd.isna(net_income):
-                net_income = "N/A"
-        else:
-            net_income = "N/A"
-
-        # total_revenue
-        if 'Total Revenue' in yahoo_symbol_income.index:
-            total_revenue = yahoo_symbol_income.loc['Total Revenue'].iloc[0]
-            if pd.isna(total_revenue):
-                total_revenue = "N/A"
-        else:
-            total_revenue = "N/A"
-
-        # cost_of_revenue
-        if 'Cost Of Revenue' in yahoo_symbol_income.index:
-            cost_of_revenue = yahoo_symbol_income.loc['Cost Of Revenue'].iloc[0]
-            if pd.isna(cost_of_revenue):
-                cost_of_revenue = "N/A"
-        else:
-            cost_of_revenue = "N/A"
-
-        # gross_profit
-        if 'Gross Profit' in yahoo_symbol_income.index:
-            gross_profit = yahoo_symbol_income.loc['Gross Profit'].iloc[0]
-            if pd.isna(gross_profit):
-                gross_profit = "N/A"
-        else:
-            gross_profit = "N/A"
-                    
-        fm = Formulas()
-        
-        yoy_cost_of_revenue = fm.get_yoy_metric(cost_of_revenue)
-        yoy_total_revenue = fm.get_yoy_metric(total_revenue)
-
-        cagr_cost_of_revenue = fm.get_cagr_metric(cost_of_revenue)
-        cagr_total_revenue = fm.get_cagr_metric(total_revenue)
 
 
    ########### FOREX ###########   

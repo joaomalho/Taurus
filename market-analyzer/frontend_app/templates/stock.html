@@ -290,26 +290,50 @@
                 </div>
             </div>
 
+            <!-- Debt-->
             <div class="fundamental-card">
-                <div class="fundamental-header" id="funGrowth">
-                    <h2>Growth & NetWorth & Health</h2>
+                
+                <div class="fundamental-header" id="funHealth">
+                    <h2>Health & Debt</h2>
                     <span class="toggle-icon">+</span>
                 </div>
 
-                <div class="growth-content hidden">
+                <div class="health-content hidden">
                     <div >
                         <h3>Assets & Liabilities</h3>
                     </div>
-                    <div class="fund-growth">
-                        <p><strong>Revenue Growth:</strong> <span id="revenueGrowth"></span></p>
-                        <p><strong>Earnings Growth:</strong> <span id="earningsGrowth"></span></p>
-                        <p><strong>Earnings Quarterly Growth:</strong> <span id="earningsQuarterlyGrowth"></span></p>
+                    <div class="fund-health">
+                        <div>
+                            <h3>Actual</h3>
+                            <p><strong>Net Worth:</strong> <span id="NetWorth"></span></p>
+                            <p><strong>Total Assets:</strong> <span id="TotalAssets"></span></p>
+                            <p><strong>Total Liabilities:</strong> <span id="TotalLiabilities"></span></p>
+                        </div>
+                        <div>
+                            <h3>Short Term</h3>
+                            <p><strong>Debt Coverage Classification:</strong> <span id="ShortTermDebtCoverageClass"></span></p>
+                            <p><strong>Debt Coverage:</strong> <span id="ShortTermDebtCoverage"></span></p>
+                            <p><strong>Current Assets:</strong> <span id="CurrentAssets"></span></p>
+                            <p><strong>Current Liabilities:</strong> <span id="CurrentLiabilities"></span></p>
+                        </div>
+                        <div>
+                            <h3>Long Term</h3>
+                            <p><strong>Debt Coverage Classification:</strong> <span id="LongTermDebtCoverageClass"></span></p>
+                            <p><strong>Debt Coverage:</strong> <span id="LongTermDebtCoverage"></span></p>
+                            <p><strong>Non Current Assets:</strong> <span id="NonCurrentAssets"></span></p>
+                            <p><strong>Non Current Liabilities:</strong> <span id="NonCurrentLiabilities"></span></p>
+                        </div>
+                        <div>
+                            <h3>Growth</h3>
+                            <p><strong>Assets Growth CAGR Classification:</strong> <span id="TotalAssetsCAGRClass"></span></p>
+                            <p><strong>Assets Growth CAGR:</strong> <span id="TotalAssetsCAGR"></span></p>
+                            <p><strong>Liabilities Growth CAGR Classification:</strong> <span id="TotalLiabilitiesCAGRClass"></span></p>
+                            <p><strong>Liabilities Growth CAGR:</strong> <span id="TotalLiabilitiesCAGR"></span></p>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-
-            
+                        
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funLiquidity">
                     <h2>Liquidez e Solvabilidade: Capacidade de Pagamento</h2>
@@ -317,46 +341,16 @@
                 </div>
                 
                 <div class="liquidity-content hidden">
-                    <div >
+                    <div>
                         <h3>Liquidity Short Term</h3>
                     </div>
                     <div class="fund-liquidity">
                         <div>
                             <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span></p>
-                            <p><strong>Quick Ratio Classification:</strong> <span id="QuickRatioClass"></span></p>
                         </div>
-                        <div>
-                            <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span></p>
-                            <p><strong>Current Ratio Classification:</strong> <span id="CurrentRatioClass"></span></p>
-                        </div>
-                        <p><strong>Cash Ratio:</strong> <span id="CashRatio"></span></p>
-                        <p><strong>Operational Cash Flow:</strong> <span id="OperatingCashFlow"></span></p>
-                    </div>
-                    <div class="fund-liquidity">
-                        <h3>Liquidity Long Term</h3>
-                    </div>
-                    <div class="fund-liquidity">
-                        <p><strong>Debt to Equity(D/E Ratio):</strong> <span id="DebttoEquity"></span></p>
-                        <p><strong>Debt to Assets Ratio:</strong> <span id="DebttoAssetsRatio"></span></p>
-                        <p><strong>Interest Coverage Ratio:</strong> <span id="InterestCoverageRatio"></span></p>
-                    </div>
-                    <div class="fund-liquidity">
-                        <h3>Cash Reserve (Finantial Security)</h3>
-                    </div>
-                    <div class="fund-liquidity">
-                        <p><strong>Total Cash:</strong> <span id="TotalCash"></span></p>
-                        <p><strong>Cash Equivalents & Short-Term Investments:</strong> <span id="CashCashEquivalentsAndShortTermInvestments"></span></p>
-                    </div>
-                    <div class="fund-liquidity">
-                        <h3>Operational Efficiency</h3>
-                    </div>
-                    <div class="fund-liquidity">
-                        <p><strong>EBIT (Operating Profit):</strong> <span id="EBIT"></span></p>
-                        <p><strong>Interest Expenses:</strong> <span id="InteresExpenses"></span></p>
                     </div>
                 </div>
             </div>
-
 
             
             <div class="fundamental-card">
