@@ -7,7 +7,7 @@ from django.core.validators import RegexValidator
 from backend.datasources.yahoodata import DataHistoryYahoo
 from backend.tecnical_analysis.trend_metrics import TrendMetrics
 from backend.tecnical_analysis.candles_patterns import CandlesPatterns
-from backend.risk_manager.risk_manager import RiskManager
+from backend.risk_manager.risk_manager import RiskManagerFundamental
 
 
 ############################# Pages #############################
@@ -538,12 +538,12 @@ def get_fundamental_evaluations(request, symbol):
         if not fundamental_info:
             return JsonResponse({"error": "No data found"}, status=404)
 
-        risk_manager = RiskManager()
+        rmf = RiskManagerFundamental()
 
         evaluations_data = {}
 
         for category, data in fundamental_info.items():
-            evaluation_result = risk_manager.evaluate_metrics({category: data})
+            evaluation_result = rmf.evaluate_metrics({category: data})
 
             evaluations_data[category] = {}
 

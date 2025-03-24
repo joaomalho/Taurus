@@ -1,6 +1,6 @@
 import talib
 import pandas as pd
-import numpy as np
+from backend.risk_manager.risk_manager import RiskManagerTechnical
 
 class TrendMetrics():
     """
@@ -8,9 +8,7 @@ class TrendMetrics():
     """
 
     def __init__(self):
-        self.sma_bands_info = pd.DataFrame(columns=['function', 'signal', 'period', 'std', 'lower_band', 'middle_band', 'upper_band'])
-        self.rsi_info = pd.DataFrame(columns=['function', 'signal', 'period', 'upper_level', 'lower_level'])
-        self.macd_info = pd.DataFrame(columns=['function', 'signal', 'period', 'upper_level', 'lower_level'])
+        self
 
     ### Trend Metrics ###
     def get_crossover(self, close_prices, symbol, fastperiod: int, mediumperiod: int, slowperiod: int):
@@ -33,12 +31,8 @@ class TrendMetrics():
 
         ema_low, ema_mid, ema_high = ema1[-1], ema2[-1], ema3[-1]
 
-        if ema_low > ema_mid > ema_high:
-            crossover_signal = 'Buy'
-        elif ema_low < ema_mid < ema_high:
-            crossover_signal = 'Sell'
-        else:
-            crossover_signal = 'Flat'
+        rmt = RiskManagerTechnical()
+        crossover_signal = rmt.signal_decision_crossover(ema_low, ema_mid, ema_high)
 
         return {
             "symbol": symbol,
@@ -73,14 +67,8 @@ class TrendMetrics():
         
         adx_now = adx[-1]
 
-        if adx_now < 20:
-            adx_signal = 'Weak Trend'
-        elif 20 <= adx_now < 50:
-            adx_signal = 'Strong Trend'
-        elif 50 <= adx_now < 75:
-            adx_signal = 'Very Strong Trend'
-        else:
-            adx_signal = 'Extremely Strong Trend'
+        rmt = RiskManagerTechnical()
+        adx_signal = rmt.signal_decision_adx(adx_now)
 
         return {
             "symbol": symbol,
@@ -88,39 +76,6 @@ class TrendMetrics():
             "adx_now": round(adx_now, 4),
             "signal": adx_signal
         }
-
-    def get_macd(self, data: pd.DataFrame, fastperiod: int = 12, slowperiod: int = 26, signalperiod: int = 9):
-        """
-        This function calculates the MACD (Moving Average Convergence Divergence).
-        
-        Parameters:
-        - data: DataFrame containing the 'Close' column.
-        - fastperiod: Short-term EMA period.
-        - slowperiod: Long-term EMA period.
-        - signalperiod: Signal line EMA period.
-        
-        Returns:
-        - Updates self.result_df with MACD signals.
-        """
-
-        macd, macd_signal, macd_hist = talib.MACD(
-            data['Close'], fastperiod=fastperiod, slowperiod=slowperiod, signalperiod=signalperiod
-        )
-        macd_now, macd_signal_now = macd.iloc[-1], macd_signal.iloc[-1]
-        macd_signal_value = 'Buy' if macd_now > macd_signal_now else 'Sell' if macd_now < macd_signal_now else 'Flat'
-        
-        self.result_df = pd.concat([self.result_df, pd.DataFrame({
-            'function': ['MACD'],
-            'signal': [macd_signal_value]
-        })], ignore_index=True)
-
-        self.macd_info = pd.concat([self.macd_info, pd.DataFrame({
-            'function': ['ADX'],
-            'signal': [macd_signal],
-            'fast_period': [fastperiod],
-            'low_period': [slowperiod],
-            'signal_period': [signalperiod]
-        })], ignore_index=True)
 
     ### Volatility ###
     def get_sma_bands(self, symbol, close_prices, length, std_dev):
@@ -145,14 +100,9 @@ class TrendMetrics():
 
         last_close = close_prices[-1]
         lower_band, middle_band, upper_band = lower_band[-1], middle_band[-1], upper_band[-1]
-
-        if last_close <= lower_band:
-            bbands_signal = 'Buy'
-        elif last_close >= upper_band:
-            bbands_signal = 'Sell'
-        else:
-            bbands_signal = 'Flat'
         
+        rmt = RiskManagerTechnical()
+        bbands_signal = rmt.signal_decision_bbands(last_close, lower_band, upper_band)
         return {
             "symbol": symbol,
             "length": length,
@@ -183,12 +133,8 @@ class TrendMetrics():
         rsi = talib.RSI(close_prices, timeperiod=length)
         rsi_now = rsi[-1]
 
-        if rsi_now >= upper_level:
-            rsi_signal = 'Sell'
-        elif rsi_now <= lower_level:
-            rsi_signal = 'Buy'
-        else:
-            rsi_signal = 'Flat'
+        rmt = RiskManagerTechnical()
+        rsi_signal = rmt.signal_decision_rsi(rsi_now, upper_level, lower_level)
 
         return {
             "symbol": symbol,

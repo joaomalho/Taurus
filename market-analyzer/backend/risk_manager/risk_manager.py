@@ -1,23 +1,8 @@
-'''
-Collect data from candles
- - Detection + Relevance + Signal + Stop-loss
 
-Collect data from trend Metrics
- - Detection + Relevance + Signal + Stop-loss
-'''
-
-
-class RiskManager():
+class RiskManagerTechnical ():
 
     def __init__(self):
-        self.stoploss = None
-        self.takeprofit = None
-
-    def get_majority(self):
-        '''
-        This function get the majority of signal
-        '''
-        pass
+        self
 
     def relevance_candle(self):
         '''
@@ -31,15 +16,70 @@ class RiskManager():
     def take_profit_manager():
         pass
 
-    def decision_manager():
-        '''
-        Trend confirmation:
-            1. Crossoover signal Buy or Sell 
-            2. ADX > Threshold (storng trend)
-            3. MACD line cross signal Line to MACD < Signal line then Buy, MACD > Signal Line then Sell        
-        '''
-        pass
+    def signal_decision_rsi(self, rsi_now, upper_level, lower_level):
+        
+        if rsi_now >= upper_level:
+            rsi_signal = 'Sell'
+        elif rsi_now <= lower_level:
+            rsi_signal = 'Buy'
+        else:
+            rsi_signal = 'Flat'        
+        return rsi_signal
+
+    def signal_decision_bbands(self, last_close, lower_band, upper_band):
+        
+        if last_close <= lower_band:
+            bbands_signal = 'Buy'
+        elif last_close >= upper_band:
+            bbands_signal = 'Sell'
+        else:
+            bbands_signal = 'Flat'        
+        return bbands_signal
+
+    def signal_decision_adx(self, adx_now):
+        
+        if adx_now < 20:
+            adx_signal = 'Weak Trend'
+        elif 20 <= adx_now < 50:
+            adx_signal = 'Strong Trend'
+        elif 50 <= adx_now < 75:
+            adx_signal = 'Very Strong Trend'
+        else:
+            adx_signal = 'Extremely Strong Trend'
+        return adx_signal
+
+    def signal_decision_crossover(self, ema_low, ema_mid, ema_high):
+        
+        if ema_low > ema_mid > ema_high:
+            crossover_signal = 'Buy'
+        elif ema_low < ema_mid < ema_high:
+            crossover_signal = 'Sell'
+        else:
+            crossover_signal = 'Flat'
+        return crossover_signal
     
+    def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
+        """
+        Verify if stoploss were hitted in candle patterns
+        """
+        if stoploss is None:
+            return "N/A"
+
+        if signal == -100:
+            return "Hit Stoploss (Above)" if any(close > stoploss for close in future_close_prices) else "No Hit"
+
+        if signal == 100:
+            return "Hit Stoploss (Below)" if any(close < stoploss for close in future_close_prices) else "No Hit"
+
+        return "N/A"
+    
+
+class RiskManagerFundamental():
+
+    def __init__(self):
+        self.stoploss = None
+        self.takeprofit = None
+        
     def evaluate_metrics(self, metrics):
         """
         Evaluate fundamental metrics.
@@ -470,42 +510,24 @@ class RiskManager():
                 else:
                     evaluated_metrics["ReturnOnEquity"] = "Good - Highly Eficient Profit Generate"
 
-            # Profit Margin Growth
-        if "ProfitMarginCAGR" in metrics.get('ratios', {}):
+            # Return On Equity Growth
+        if "ReturnOnEquityCAGR" in metrics.get('ratios', {}):
             try:
-                return_on_equity_cagr = round(float(metrics.get('ratios', {}).get("ProfitMarginCAGR", "N/A")), 2)
+                return_on_equity_cagr = round(float(metrics.get('ratios', {}).get("ReturnOnEquityCAGR", "N/A")), 2)
             except (ValueError, TypeError):
-                evaluated_metrics["ProfitMarginCAGR"] = "N/A"
+                evaluated_metrics["ReturnOnEquityCAGR"] = "N/A"
                 return evaluated_metrics
             
             if not return_on_equity_cagr:
-                evaluated_metrics["ProfitMarginCAGR"] = "N/A"
+                evaluated_metrics["ReturnOnEquityCAGR"] = "N/A"
             else:
                 if return_on_equity_cagr <= 0:
-                    evaluated_metrics["ProfitMarginCAGR"] = "Not Good"
+                    evaluated_metrics["ReturnOnEquityCAGR"] = "Not Good"
                 else:
-                    evaluated_metrics["ProfitMarginCAGR"] = "Good"
+                    evaluated_metrics["ReturnOnEquityCAGR"] = "Good"
             
         
 
         return evaluated_metrics if evaluated_metrics else "Indefinido"
-
-    def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
-        """
-        Verify if stoploss were hitted in candle patterns
-        """
-        if stoploss is None:
-            return "N/A"
-
-        if signal == -100:
-            return "Hit Stoploss (Above)" if any(close > stoploss for close in future_close_prices) else "No Hit"
-
-        if signal == 100:
-            return "Hit Stoploss (Below)" if any(close < stoploss for close in future_close_prices) else "No Hit"
-
-        return "N/A"
-    
-
-        
-        
+ 
 

@@ -586,7 +586,16 @@ function populateYahooStockTable(containerId, data) {
 
     let headers = Object.keys(data[0]); // Pegar os títulos automaticamente
 
-    let tableData = data.map(row => headers.map(header => row[header] || "-"));
+    // Gerar dados com links para a coluna 'Symbol'
+    let tableData = data.map(row => 
+        headers.map(header => {
+            if (header === "Symbol") {
+                // Cria um link na célula do símbolo
+                return gridjs.html(`<a href="/stock/${row[header]}/" class="stock-link">${row[header]}</a>`);
+            }
+            return row[header] || "-";
+        })
+    );
 
     new gridjs.Grid({
         columns: headers,
@@ -600,6 +609,7 @@ function populateYahooStockTable(containerId, data) {
         }
     }).render(document.getElementById(containerId));
 }
+
 
 function displayBioResults(data) {
     const bioData = data.data;

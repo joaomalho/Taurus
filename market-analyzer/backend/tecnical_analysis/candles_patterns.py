@@ -1,7 +1,7 @@
 import talib
 import numpy as np
 from datetime import datetime, timedelta
-from backend.risk_manager.risk_manager import RiskManager
+from backend.risk_manager.risk_manager import RiskManagerTechnical
 
 class CandlesPatterns:
     """
@@ -9,8 +9,7 @@ class CandlesPatterns:
     """
 
     def __init__(self):
-        self.result_candles_history = []
-        self.result_candles = []
+        self
         
         
     def detect_pattern(self, data, pattern_function, pattern_name: str, dates):
@@ -55,10 +54,10 @@ class CandlesPatterns:
             else:
                 stoploss = None
 
-            rm = RiskManager()
+            rmt = RiskManagerTechnical()
             # Utiliza a nova função para verificar se o Stoploss foi atingido
             future_close_prices = data['Close'][i + 1:i + 6]
-            hit_stoploss = rm.stoploss_candles_conditions(signal, stoploss, future_close_prices)
+            hit_stoploss = rmt.stoploss_candles_conditions(signal, stoploss, future_close_prices)
 
             if stoploss:
                 results.append({

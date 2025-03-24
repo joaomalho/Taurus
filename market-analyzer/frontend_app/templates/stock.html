@@ -307,6 +307,7 @@
                     <div class="fund-health">
                         <div>
                             <h3>Actual</h3>
+                            <p><strong>Net Worth Classification:</strong> <span id="NetWorthClass"></span></p>
                             <p><strong>Net Worth:</strong> <span id="NetWorth"></span></p>
                             <p><strong>Total Assets:</strong> <span id="TotalAssets"></span></p>
                             <p><strong>Total Liabilities:</strong> <span id="TotalLiabilities"></span></p>
@@ -314,15 +315,15 @@
                         </div>
                         <div>
                             <h3>Short Term</h3>
-                            <p><strong>Debt Coverage Classification:</strong> <span id="ShortTermDebtCoverageClass"></span></p>
-                            <p><strong>Debt Coverage:</strong> <span id="ShortTermDebtCoverage"></span></p>
+                            <p><strong>Short Debt Coverage Classification:</strong> <span id="ShortTermDebtCoverageClass"></span></p>
+                            <p><strong>Short Debt Coverage:</strong> <span id="ShortTermDebtCoverage"></span></p>
                             <p><strong>Current Assets:</strong> <span id="CurrentAssets"></span></p>
                             <p><strong>Current Liabilities:</strong> <span id="CurrentLiabilities"></span></p>
                         </div>
                         <div>
                             <h3>Long Term</h3>
-                            <p><strong>Debt Coverage Classification:</strong> <span id="LongTermDebtCoverageClass"></span></p>
-                            <p><strong>Debt Coverage:</strong> <span id="LongTermDebtCoverage"></span></p>
+                            <p><strong>Long Debt Coverage Classification:</strong> <span id="LongTermDebtCoverageClass"></span></p>
+                            <p><strong>Long Debt Coverage:</strong> <span id="LongTermDebtCoverage"></span></p>
                             <p><strong>Non Current Assets:</strong> <span id="NonCurrentAssets"></span></p>
                             <p><strong>Non Current Liabilities:</strong> <span id="NonCurrentLiabilities"></span></p>
                         </div>
@@ -361,7 +362,7 @@
                             <p><strong>Capital Expenditure:</strong> <span id="CapitalExpenditure"></span></p>
                         </div>
                         <div>
-                            <h3>Cashflow Yield </h3>
+                            <h3>Cashflow Yield</h3>
                             <p><strong>Free Cashflow Yield Classification:</strong> <span id="FreeCashflowYieldClass"></span></p>
                             <p><strong>Free Cashflow Yield:</strong> <span id="FreeCashflowYield"></span></p>
                             <p><strong>Market Cap:</strong> <span id="MarketCap"></span></p>
@@ -383,9 +384,13 @@
                     <div class="fund-ratios">
                         <div>
                             <h3>Finantial Ratios</h3>
+                            <p><strong>Current Ratio Classification:</strong> <span id="CurrentRatioClass"></span></p>
                             <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span></p>
+                            <p><strong>Current Ratio CAGR Classification:</strong> <span id="CurrentRatioCAGRClass"></span></p>
                             <p><strong>Current Ratio CAGR:</strong> <span id="CurrentRatioCAGR"></span></p>
+                            <p><strong>Cash Ratio Classification:</strong> <span id="CashRatioClass"></span></p>
                             <p><strong>Cash Ratio:</strong> <span id="CashRatio"></span></p>
+                            <p><strong>Cash Ratio CAGR Classification:</strong> <span id="CashRatioCAGRClass"></span></p>
                             <p><strong>Cash Ratio CAGR:</strong> <span id="CashRatioCAGR"></span></p>
                         </div>
                         <div>
@@ -395,18 +400,20 @@
                             <!-- <p><strong>Gross Margin CAGR:</strong> <span id="GrossMarginCAGR"></span></p> -->
                             <p><strong>Operating Margin Classification:</strong> <span id="OperatingMarginClass"></span></p>
                             <p><strong>Operating Margin:</strong> <span id="OperatingMargin"></span></p>
+                            <p><strong>Operating Margin CAGR Classification:</strong> <span id="OperatingMarginCAGRClass"></span></p>
                             <p><strong>Operating Margin CAGR:</strong> <span id="OperatingMarginCAGR"></span></p>
                             <p><strong>Profit Margin Classification:</strong> <span id="ProfitMarginClass"></span></p>
                             <p><strong>Profit Margin:</strong> <span id="ProfitMargin"></span></p>
+                            <p><strong>Profit Margin CAGR Classification:</strong> <span id="ProfitMarginCAGRClass"></span></p>
                             <p><strong>Profit Margin CAGR:</strong> <span id="ProfitMarginCAGR"></span></p>
                             <p><strong>Return on Equity (ROE) Classification:</strong> <span id="ReturnOnEquityClass"></span></p>
                             <p><strong>Return on Equity (ROE):</strong> <span id="ReturnOnEquity"></span></p>
+                            <p><strong>Return on Equity (ROE) CAGR Classification:</strong> <span id="ReturnOnEquityCAGRClass"></span></p>
                             <p><strong>Return on Equity (ROE) CAGR:</strong> <span id="ReturnOnEquityCAGR"></span></p>
                         </div>
                     </div>
                 </div>
             </div>
-
 
             <!-- Risk-->
             <div class="fundamental-card">
@@ -429,6 +436,56 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Overview Decision -->
+            <div class="fundamental-card">
+
+                <div class="fundamental-header" id="funOverview">
+                    <h2>Overview Decision Resume</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="overview-content hidden">
+
+                    <div class="fund-overview">
+                        <div>
+                            <h3>Valuation</h3>
+                            <p><strong>P/E Classification:</strong> <span id="trailingPEClassOverview"></span></p>
+                            <p><strong>PEG Classification:</strong> <span id="PEGRatioClassOverview"></span></p>
+                            <h3>Dividends</h3>
+                            <p><strong>Coverage Ratio Classification:</strong> <span id="divCoverageRateClassOverview"></span></p>
+                            <h3>Profitability</h3>
+                            <p><strong>Cost Of Revenue CAGR Classification:</strong> <span id="CostOfRevenueCAGRClassOverview"></span></p>
+                            <p><strong>Total Of Revenue CAGR Classification:</strong> <span id="TotalRevenueCAGRClassOverview"></span></p>
+                            <h3>Debt</h3>
+                            <p><strong>Net Worth Classification:</strong> <span id="NetWorthClassOverview"></span></p>
+                            <p><strong>Short Debt Coverage Classification:</strong> <span id="ShortTermDebtCoverageClassOverview"></span></p>
+                            <p><strong>Long Debt Coverage Classification:</strong> <span id="LongTermDebtCoverageClassOverview"></span></p>
+                            <h3>Stockholders Equity</h3>
+                            <p><strong>Stockholders Equity CAGR Classification:</strong> <span id="StockholdersEquityCAGRClassOverview"></span></p>
+                            <h3>Growth</h3>
+                            <p><strong>Assets Growth CAGR Classification:</strong> <span id="TotalAssetsCAGRClassOverview"></span></p>
+                            <p><strong>Liabilities Growth CAGR Classification:</strong> <span id="TotalLiabilitiesCAGRClassOverview"></span></p>
+                            <h3>Cashflow</h3>
+                            <p><strong>Free Cashflow Yield Classification:</strong> <span id="FreeCashflowYieldClassOverview"></span></p>
+                            <h3>Finantials</h3>
+                            <p><strong>Current Ratio Classification:</strong> <span id="CurrentRatioClassOverview"></span></p>
+                            <p><strong>Current Ratio CAGR Classification:</strong> <span id="CurrentRatioCAGRClassOverview"></span></p>
+                            <p><strong>Cash Ratio Classification:</strong> <span id="CashRatioClassOverview"></span></p>
+                            <p><strong>Cash Ratio CAGR Classification:</strong> <span id="CashRatioCAGRClassOverview"></span></p>
+                            <h3>Margins</h3>
+                            <p><strong>Gross Margin Classification:</strong> <span id="GrossMarginClassOverview"></span></p>
+                            <p><strong>Operating Margin Classification:</strong> <span id="OperatingMarginClassOverview"></span></p>
+                            <p><strong>Operating Margin CAGR Classification:</strong> <span id="OperatingMarginCAGRClassOverview"></span></p>
+                            <p><strong>Profit Margin Classification:</strong> <span id="ProfitMarginClassOverview"></span></p>
+                            <p><strong>Profit Margin CAGR Classification:</strong> <span id="ProfitMarginCAGRClassOverview"></span></p>
+                            <p><strong>Return on Equity (ROE) Classification:</strong> <span id="ReturnOnEquityClassOverview"></span></p>
+                            <p><strong>Return on Equity (ROE) CAGR Classification:</strong> <span id="ReturnOnEquityCAGRClassOverview"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </section>
        
         <!-- Holders -->
@@ -437,11 +494,8 @@
             <canvas class="h-bar-chart" id="hBarChart"></canvas>         
         </section>
 
-        <!-- Estimativas -->
-        <!-- <section id="stack-bar-recommendation-chart-container">
-            <h2>Recommendations</h2>
-            <div id="stack-bar-recommendation-chart"></div>           
-        </section> -->
+       
+        
     </main>
 
     <footer class="footer">

@@ -96,6 +96,12 @@ document.addEventListener("DOMContentLoaded", function () {
         iconSelector: ".toggle-icon"
     });
 
+    setupToggle({
+        toggleSelector: "#funOverview",
+        contentSelector: ".overview-content",
+        iconSelector: ".toggle-icon"
+    });
+
 }); 
 
 /* ─────────────── FUNÇÕES DE EVENTOS PARA OS BOTÕES ─────────────── */
@@ -760,12 +766,18 @@ function displayFundamentalResultsClassification(data) {
         ReturnOnEquity: data.evaluations.ratios?.ReturnOnEquity || "N/A",
         ReturnOnEquityCAGR: data.evaluations.ratios?.ReturnOnEquityCAGR || "N/A",
     }
-
+    
     for (const [key, evaluation] of Object.entries(elements)) {
         const classificationElement = document.getElementById(`${key}Class`);
 
         if (classificationElement) {
             classificationElement.textContent = evaluation;
+        }
+        
+        const classificationElementOverview = document.getElementById(`${key}ClassOverview`);
+
+        if (classificationElementOverview) {
+            classificationElementOverview.textContent = evaluation;
         }
     }
 }
