@@ -15,7 +15,9 @@
 <body>
     <header class="main-header">
         <div class="header">
-            <img class="header-logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
+            <a href="/">
+                <img class="header-logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
+            </a>
             <div class="search-container">
                 <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
                 <button id="searchButton">Search</button>

@@ -701,7 +701,7 @@ function displayFundamentalResults(data) {
         OperatingMarginCAGR: ratiosData.OperatingMarginCAGR || {},
         ProfitMargin: ratiosData.ProfitMargin || {},
         ProfitMarginCAGR: ratiosData.ProfitMarginCAGR || {},
-        ReturnOnEquity: ratiosData.ReturnOnEquityCAGR || {},
+        ReturnOnEquity: ratiosData.ReturnOnEquity || {},
         ReturnOnEquityCAGR: ratiosData.ReturnOnEquityCAGR || {},
         // Market Risk Sentiment
         beta: marketRiskData.beta || {},

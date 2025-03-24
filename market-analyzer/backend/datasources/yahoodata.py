@@ -1,5 +1,6 @@
 import warnings
 import requests
+import numpy as np
 import pandas as pd
 import yfinance as yf
 from datetime import datetime
@@ -297,8 +298,8 @@ class DataHistoryYahoo():
         # Dividends & BuyBacks
         eps_ann = yahoo_symbol_info.get("epsCurrentYear", "N/A")
         dividend_rate = yahoo_symbol_info.get("dividendRate", "N/A")
-        if eps_ann != "N/A" and dividend_rate != "N/A":
-            div_coverage_rate = eps_ann / dividend_rate if dividend_rate != 0 else "N/A"
+        if eps_ann != "N/A" and dividend_rate != "N/A" and dividend_rate != 0:
+            div_coverage_rate = eps_ann / dividend_rate
         else:
             div_coverage_rate = "N/A" 
 
@@ -363,13 +364,14 @@ class DataHistoryYahoo():
                 non_current_liabilities = "N/A"
 
         # total_liabilities
-        if current_liabilities.iloc[0] != "N/A" and non_current_liabilities.iloc[0] != "N/A":
-            total_liabilities = current_liabilities + non_current_liabilities
+        if not current_liabilities.isna().all() and not non_current_liabilities.isna().all():
+            total_liabilities = (current_liabilities + non_current_liabilities)
         else:
             total_liabilities = "N/A"
 
         # net_worth
-        if total_assets.iloc[0] != "N/A" and current_liabilities.iloc[0] != "N/A" and non_current_liabilities.iloc[0] != "N/A":
+        if not total_assets.isna().all() and not current_liabilities.isna().all() and not non_current_liabilities.isna().all():
+            total_assets = total_assets.replace(0, np.nan)
             net_worth = total_assets.iloc[0] - total_liabilities.iloc[0]
         else:
             net_worth = "N/A"
@@ -387,13 +389,13 @@ class DataHistoryYahoo():
                 non_current_assets = "N/A"
         
         # short_term_debt_coverage
-        if current_assets.iloc[0] != "N/A" and current_liabilities.iloc[0] != "N/A":
+        if not current_assets.isna().all() and not current_liabilities.isna().all():
             short_term_debt_coverage = current_assets - current_liabilities
         else:
             short_term_debt_coverage = "N/A"
 
         # long_term_debt_coverage
-        if non_current_assets.iloc[0] != "N/A" and non_current_liabilities.iloc[0] != "N/A":
+        if not non_current_assets.isna().all() and not non_current_liabilities.isna().all():
             long_term_debt_coverage = non_current_assets - non_current_liabilities
         else:
             long_term_debt_coverage = "N/A"
@@ -438,15 +440,16 @@ class DataHistoryYahoo():
         market_cap = yahoo_symbol_info.get('marketCap', "N/A")
 
         # free_cashflow_yield
-        if market_cap != "N/A" and free_cashflow.iloc[0] != "N/A":
-            free_cashflow_yield = (free_cashflow.iloc[0] / market_cap) * 100
+        if not pd.isna(market_cap) and market_cap != 0 and not free_cashflow.isna().all():
+            free_cashflow_yield = ((free_cashflow.iloc[0] / market_cap) * 100)
         else:
             free_cashflow_yield = "N/A"
 
         # Ratios
         # current_ratio
-        if current_assets.iloc[0] != "N/A" and current_liabilities.iloc[0] != "N/A":
-            current_ratio = (current_assets / current_liabilities) * 100
+        if not current_assets.isna().all() and not current_liabilities.isna().all():
+            current_liabilities = current_liabilities.replace(0, np.nan)
+            current_ratio = ((current_assets / current_liabilities) * 100).fillna("N/A")
         else:
             current_ratio = "N/A"
         
@@ -454,8 +457,9 @@ class DataHistoryYahoo():
         cagr_current_ratio = fm.get_cagr_metric(current_ratio)
         
         # cash_ratio
-        if cash_cash_equivalents.iloc[0] != "N/A" and current_liabilities.iloc[0] != "N/A":
-            cash_ratio = (cash_cash_equivalents / current_liabilities) * 100
+        if not cash_cash_equivalents.isna().all() and not current_liabilities.isna().all():
+            current_liabilities = current_liabilities.replace(0, np.nan)
+            cash_ratio = ((cash_cash_equivalents / current_liabilities) * 100).fillna("N/A")
         else:
             cash_ratio = "N/A"
         
@@ -463,8 +467,9 @@ class DataHistoryYahoo():
         cagr_cash_ratio = fm.get_cagr_metric(cash_ratio)
 
         # gross_margin
-        if gross_profit.iloc[0] != "N/A" and total_revenue.iloc[0] != "N/A":
-            gross_margin = (gross_profit / total_revenue ) * 100
+        if not gross_profit.isna().all() and not total_revenue.isna().all():
+            total_revenue = total_revenue.replace(0, np.nan)
+            gross_margin = ((gross_profit / total_revenue) * 100).fillna("N/A")
         else:
             gross_margin = "N/A"
 
@@ -478,8 +483,9 @@ class DataHistoryYahoo():
                 operating_income = "N/A"
 
         # operation_margin
-        if operating_income.iloc[0] != "N/A" and total_revenue.iloc[0] != "N/A":
-            operating_margin = (operating_income / total_revenue ) * 100
+        if not operating_income.isna().all() and not total_revenue.isna().all():
+            total_revenue = total_revenue.replace(0, np.nan)
+            operating_margin = ((operating_income / total_revenue) * 100).fillna("N/A")
         else:
             operating_margin = "N/A"
 
@@ -487,8 +493,9 @@ class DataHistoryYahoo():
         cagr_operating_margin = fm.get_cagr_metric(operating_margin)
 
         # profit_margin
-        if net_income.iloc[0] != "N/A" and total_revenue.iloc[0] != "N/A":
-            profit_margin = (net_income / total_revenue) * 100
+        if not net_income.isna().all() and not total_revenue.isna().all():
+            total_revenue = total_revenue.replace(0, np.nan)
+            profit_margin = ((net_income / total_revenue) * 100).fillna("N/A")
         else:
             profit_margin = "N/A"
 
@@ -496,8 +503,9 @@ class DataHistoryYahoo():
         cagr_profit_margin = fm.get_cagr_metric(profit_margin)
         
         # return_on_equity
-        if net_income.iloc[0] != "N/A" and stockholders_equity.iloc[0] != "N/A":
-            return_on_equity = (net_income / stockholders_equity) * 100
+        if not net_income.isna().all() and not stockholders_equity.isna().all():
+            stockholders_equity = stockholders_equity.replace(0, np.nan)
+            return_on_equity = ((net_income / stockholders_equity) * 100).fillna("N/A")
         else:
             return_on_equity = "N/A"
 
