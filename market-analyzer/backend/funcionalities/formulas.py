@@ -1,5 +1,6 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
+from scipy.signal import argrelextrema
 
 class Formulas():
 
@@ -17,7 +18,6 @@ class Formulas():
                 yoy_growth = pd.Series("N/A", index=series.index)
 
         return yoy_growth
-
 
     def get_cagr_metric(self, series):
         if isinstance(series, pd.Series):
@@ -40,3 +40,32 @@ class Formulas():
         cagr_percent = cagr * 100 if cagr != "N/A" else "N/A"
 
         return cagr_percent
+    
+
+    def peak_detect(self, close, order):
+        '''
+        This function find the peaks of a timeframe    
+        '''
+
+        if len(close) < 5:
+            return [], [], 0, 0, []
+
+        if isinstance(close, pd.Series):
+            close_np = close.values  # Converte apenas os valores se for uma série Pandas
+        else:
+            close_np = np.array(close)
+
+        max_idx = list(argrelextrema(close_np, comparator=np.greater, order=order)[0])
+        min_idx = list(argrelextrema(close_np, comparator=np.less, order=order)[0])
+
+        idx = max_idx + min_idx + [len(close_np)-1]
+        idx.sort()
+
+        current_idx = idx[-5:]
+
+        start = min(current_idx)
+        end = max(current_idx)
+
+        current_pat = close_np[current_idx]
+
+        return current_idx, current_pat, start, end, idx
