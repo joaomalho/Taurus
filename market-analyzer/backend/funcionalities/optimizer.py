@@ -126,7 +126,7 @@ class ParamsOptimization():
         return results
 
 
-    def simulate_trading(self, results, initial_capital=10000, risk_per_trade=0.01):
+    def simulate_trading(self, results, initial_capital, risk_per_trade):
 
         df = pd.DataFrame(results)
         df = df.dropna(subset=["risk"]) 
@@ -163,6 +163,51 @@ class ParamsOptimization():
 
         return equity_df
 
+
+    def normalize_decision_rank(self, resumo):
+        # Cópia de trabalho
+        resumo_norm = resumo.copy()
+
+        # Garantir que não há NaNs nas colunas-chave antes de normalizar
+        cols_to_normalize = [
+            "capital_final",
+            "expectancy",
+            "reward_risk_medio",
+            "retorno_ponderado_medio",
+            "lucro_por_trade"
+        ]
+
+        # Preencher NaNs com o mínimo (tratamento conservador)
+        for col in cols_to_normalize:
+            if col in resumo_norm.columns:
+                min_val = resumo_norm[col].min()
+                resumo_norm[col] = resumo_norm[col].fillna(min_val)
+
+        # Normalizar (0 a 1)
+        scaler = MinMaxScaler()
+        normalized = pd.DataFrame(
+            scaler.fit_transform(resumo_norm[cols_to_normalize]),
+            columns=[col + "_norm" for col in cols_to_normalize]
+        )
+
+        # Juntar colunas normalizadas
+        resumo_norm = pd.concat([resumo_norm.reset_index(drop=True), normalized], axis=1)
+
+        # Score ponderado (ajuste pesos conforme a tua estratégia)
+        resumo_norm["score"] = (
+            resumo_norm["capital_final_norm"] * 0.40 +
+            resumo_norm["expectancy_norm"] * 0.25 +
+            resumo_norm["reward_risk_medio_norm"] * 0.15 +
+            resumo_norm["retorno_ponderado_medio_norm"] * 0.15 +
+            resumo_norm["lucro_por_trade_norm"] * 0.05
+        )
+
+        # Ranking
+        resumo_norm = resumo_norm.sort_values(by="score", ascending=False)
+        resumo_norm["ranking"] = range(1, len(resumo_norm) + 1)
+
+        return resumo_norm
+
     def run_full_backtest(self, data, future_window=20):
         """
         Testa várias combinações de (order, err_allowed, stop_factor) e avalia performance dos padrões harmônicos.
@@ -173,9 +218,16 @@ class ParamsOptimization():
         po = ParamsOptimization()
         summary = []
 
-        orders = [2, 3, 4, 5]
-        err_values = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
+        # orders = [2, 3, 4, 5]
+        # err_values = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
+        # stop_factors = [0.1, 0.2]
+        orders = [5]
+        err_values = [0.05, 0.06]
         stop_factors = [0.1, 0.2]
+        capex = 10000
+        risk_per_trade=0.01
+
+        summary = []
 
         for order in orders:
             for err in err_values:
@@ -202,77 +254,47 @@ class ParamsOptimization():
                     weighted_return_mean = df['weighted_return'].mean()
 
                     # Simulação de capital
-                    equity_df = po.simulate_trading(results)
+                    equity_df = po.simulate_trading(results, initial_capital=capex)
                     final_capital = equity_df['capital'].iloc[-1] if not equity_df.empty else None
+
+                    taxa_acerto = round(success_rate * 100, 2)
+                    reward_medio = round(reward_mean, 4) if reward_mean else None
+                    risk_medio = round(risk_mean, 4) if risk_mean else None
+                    reward_risk_medio = round(rr_mean, 4) if rr_mean else None
+                    retorno_ponderado_medio = round(weighted_return_mean, 4) if weighted_return_mean else None
+                    capital_final = round(final_capital, 2) if final_capital else None
+
+                    expectancy = (
+                        (taxa_acerto / 100) * reward_risk_medio - (1 - taxa_acerto / 100)
+                    ) if reward_risk_medio is not None else None
+
+                    lucro_por_trade = (
+                        (capital_final - capex) / total if total > 0 else None
+                    )
 
                     summary.append({
                         "order": order,
                         "err_allowed": err,
                         "stop_factor": stop,
-                        "padrões_detectados": total,
+                        "padroes_detectados": total,
                         "targets_atingidos": hits,
-                        "taxa_acerto": round(success_rate * 100, 2),
-                        "reward_médio": round(reward_mean, 4) if reward_mean else None,
-                        "risk_médio": round(risk_mean, 4) if risk_mean else None,
-                        "reward/risk_médio": round(rr_mean, 4) if rr_mean else None,
-                        "retorno_ponderado_médio": round(weighted_return_mean, 4) if weighted_return_mean else None,
-                        "capital_final": round(final_capital, 2) if final_capital else None
+                        "taxa_acerto": taxa_acerto,
+                        "reward_medio": reward_medio,
+                        "risk_medio": risk_medio,
+                        "reward_risk_medio": reward_risk_medio,
+                        "retorno_ponderado_medio": retorno_ponderado_medio,
+                        "expectancy": expectancy,
+                        "lucro_por_trade": lucro_por_trade,
+                        "capital_final": capital_final
                     })
 
         summary_df = pd.DataFrame(summary)
         summary_df = summary_df.sort_values(by="capital_final", ascending=False)
 
+        po.normalize_decision_rank(summary_df)
+
         return summary_df
     
-
-    def normalize_decision_rank(self, resumo):
-        # Cópia de trabalho
-        resumo_norm = resumo.copy()
-
-        # 1. Cálculo de expectancy (em unidades de risco)
-        resumo_norm["expectancy"] = (
-            (resumo_norm["taxa_acerto"] / 100) * resumo_norm["reward/risk_médio"] -
-            (1 - resumo_norm["taxa_acerto"] / 100)
-        )
-
-        # 2. Lucro médio por padrão detetado
-        resumo_norm["lucro_por_trade"] = (
-            (resumo_norm["capital_final"] - 10000) / resumo_norm["padrões_detectados"]
-        )
-
-        # 3. Normalizar as métricas (mas manter os valores reais também)
-        scaler = MinMaxScaler()
-        cols_to_normalize = [
-            "capital_final",
-            "expectancy",
-            "reward/risk_médio",
-            "retorno_ponderado_médio",
-            "lucro_por_trade"
-        ]
-        normalized = pd.DataFrame(
-            scaler.fit_transform(resumo_norm[cols_to_normalize]),
-            columns=[col + "_norm" for col in cols_to_normalize]
-        )
-
-        # Juntar colunas normalizadas com os dados originais
-        resumo_norm = pd.concat([resumo_norm.reset_index(drop=True), normalized], axis=1)
-
-        # 4. Criar o score ponderado com colunas normalizadas
-        resumo_norm["score"] = (
-            resumo_norm["capital_final_norm"] * 0.40 +
-            resumo_norm["expectancy_norm"] * 0.25 +
-            resumo_norm["reward/risk_médio_norm"] * 0.15 +
-            resumo_norm["retorno_ponderado_médio_norm"] * 0.15 +
-            resumo_norm["lucro_por_trade_norm"] * 0.05
-        )
-
-        # 5. Ranking final
-        resumo_norm = resumo_norm.sort_values(by="score", ascending=False)
-        resumo_norm["ranking"] = range(1, len(resumo_norm) + 1)
-
-        return resumo_norm
-
-
 
 ## POR IMPLEMENTAR
 
