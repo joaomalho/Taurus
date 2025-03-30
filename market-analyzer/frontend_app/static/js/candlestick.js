@@ -110,6 +110,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
     
+    function drawEMALines(chart, emaFast, emaMedium, emaSlow) {
+        // Adiciona série da Fast EMA
+        const fastLine = chart.addLineSeries({ color: '#FFD700', lineWidth: 2 });
+        fastLine.setData(emaFast);
+    
+        // Medium EMA
+        const mediumLine = chart.addLineSeries({ color: '#00BFFF', lineWidth: 2 });
+        mediumLine.setData(emaMedium);
+    
+        // Slow EMA
+        const slowLine = chart.addLineSeries({ color: '#FF4500', lineWidth: 2 });
+        slowLine.setData(emaSlow);
+    }
+
     function addTooltip(chartContainer, chart, priceData) {
         const tooltip = document.createElement("div");
         tooltip.style.position = "absolute";

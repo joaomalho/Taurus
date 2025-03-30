@@ -495,7 +495,7 @@ function fetchHarmonicPatternData(symbol) {
                 console.error("Erro ao buscar padrões de velas:", data.error);
                 return;
             }
-            displayCandleResults(data);
+            displayHarmonicResults(data);
         })
         .catch(error => console.error("Erro ao buscar os dados do Candles:", error));
 }
@@ -614,38 +614,42 @@ function displayCandleResults(data) {
     createGridTable(tableData, ["Padrão", "Stoploss", "Sinal", "Data", "Resultado"], "tableCandlePatterns");
 }
 
+
 function displayHarmonicResults(data) {
-    let tableData = [];
+    let tableDataHarmonic = [];
 
-    data.forEach(entry => {
-        const signal = entry.direction === 1 ? "Buy" : "Sell";
-        const result = entry.hit_tp ? `TP atingido: ${entry.hit_tp}` : (entry.stop_hit ? "Stop Loss" : "Aberto");
+    for (let pattern of data.patterns_detected || []) {
+        const signal = pattern.direction === 1 ? "Buy" : "Sell";
+        const result = pattern.hit_tp ? `TP atingido: ${pattern.hit_tp}` :
+                        (pattern.stop_hit ? "Stop Loss" : "Aberto");
 
-        tableData.push({
-            "Padrão": entry.pattern,
+        tableDataHarmonic.push({
+            "Padrão": pattern.pattern,
             "Direção": signal,
-            "Data (D)": entry.pattern_idx_dates?.[4] || "N/A",
-            "Preço (D)": entry.D_price?.toFixed(5) || "N/A",
-            "Stop": entry.STOP?.toFixed(5) || "N/A",
-            "TP1": entry.TP1?.toFixed(5) || "N/A",
-            "TP2": entry.TP2?.toFixed(5) || "N/A",
-            "TP3": entry.TP3?.toFixed(5) || "N/A",
-            "RR": entry.rr_ratio?.toFixed(2) || "N/A",
-            "Reward": entry.reward?.toFixed(5) || "N/A",
-            "Risk": entry.risk?.toFixed(5) || "N/A",
-            "CD_DIFF": entry.CD_DIFF?.toFixed(5) || "N/A",
-            "X→D Datas": entry.pattern_idx_dates?.join(" → ") || "N/A",
-            "X→D Preços": entry.pattern_idx_prices?.map(p => p.toFixed(5)).join(" → ") || "N/A",
+            "Data (D)": pattern.pattern_idx_dates?.[4] || "N/A",
+            "Preço (D)": pattern.D_price?.toFixed(5) || "N/A",
+            "Stop": pattern.STOP?.toFixed(5) || "N/A",
+            "TP1": pattern.TP1?.toFixed(5) || "N/A",
+            "TP2": pattern.TP2?.toFixed(5) || "N/A",
+            "TP3": pattern.TP3?.toFixed(5) || "N/A",
+            "RR": pattern.rr_ratio?.toFixed(2) || "N/A",
+            "Reward": pattern.reward?.toFixed(5) || "N/A",
+            "Risk": pattern.risk?.toFixed(5) || "N/A",
+            "CD_DIFF": pattern.CD_DIFF?.toFixed(5) || "N/A",
+            "X→D Datas": pattern.pattern_idx_dates?.join(" → ") || "N/A",
+            "X→D Preços": pattern.pattern_idx_prices?.map(p => p.toFixed(5)).join(" → ") || "N/A",
             "Resultado": result
         });
-    });
+    }
 
     createGridTable(
-        tableData,
-        ["Padrão", "Direção", "Data (D)", "Stoploss", "TP1", "TP2", "TP3", "Resultado", "RR","X→D Datas", "X→D Preços",'Resultado'],
+        tableDataHarmonic,
+        ["Padrão", "Direção", "Data (D)", "Preço (D)", "Stop", "TP1", "TP2", "TP3", "RR", "Reward", "Risk", "CD_DIFF", "X→D Datas", "X→D Preços", "Resultado"],
         "tableHarmonicPatterns"
     );
 }
+
+
 
 
 function populateYahooStockTable(containerId, data) {
