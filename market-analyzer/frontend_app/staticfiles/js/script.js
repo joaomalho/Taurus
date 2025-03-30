@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchBollingerData(symbol);
         fetchRSIData(symbol);
         fetchCandlePatternData(symbol);
+        fetchHarmonicPatternData(symbol);
         fetchFundamentalInfo(symbol);
         fetchFundamentalInfoClassification(symbol);
         fetchBioData(symbol);
@@ -51,6 +52,12 @@ document.addEventListener("DOMContentLoaded", function () {
     setupToggle({
         toggleSelector: "#tecCandles",
         contentSelector: ".candles-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#tecHarmonic",
+        contentSelector: ".harmonic-content",
         iconSelector: ".toggle-icon"
     });
     
@@ -93,6 +100,12 @@ document.addEventListener("DOMContentLoaded", function () {
     setupToggle({
         toggleSelector: "#funRisk",
         contentSelector: ".risk-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#funOverview",
+        contentSelector: ".overview-content",
         iconSelector: ".toggle-icon"
     });
 
@@ -202,6 +215,16 @@ function setupTechnicalAnalysisEvents() {
         }
             
         fetchCandlePatternData(symbol);
+    });
+
+    document.getElementById("HarmonicButton").addEventListener("click", function () {
+            
+        if (!symbol) {
+            alert("Por favor, selecione um ativo antes de calcular.");
+            return;
+        }
+            
+        fetchHarmonicPatternData(symbol);
     });
 }
 
@@ -464,6 +487,19 @@ function fetchCandlePatternData(symbol) {
         .catch(error => console.error("Erro ao buscar os dados do Candles:", error));
 }
 
+function fetchHarmonicPatternData(symbol) {
+    fetch(`/stock/${symbol}/harmonic_patterns/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Erro ao buscar padrões de velas:", data.error);
+                return;
+            }
+            displayCandleResults(data);
+        })
+        .catch(error => console.error("Erro ao buscar os dados do Candles:", error));
+}
+
 function fetchYahooStockGainers() {
     fetch("/screener/stock_gainers/")
         .then(response => response.json())
@@ -577,6 +613,40 @@ function displayCandleResults(data) {
     }
     createGridTable(tableData, ["Padrão", "Stoploss", "Sinal", "Data", "Resultado"], "tableCandlePatterns");
 }
+
+function displayHarmonicResults(data) {
+    let tableData = [];
+
+    data.forEach(entry => {
+        const signal = entry.direction === 1 ? "Buy" : "Sell";
+        const result = entry.hit_tp ? `TP atingido: ${entry.hit_tp}` : (entry.stop_hit ? "Stop Loss" : "Aberto");
+
+        tableData.push({
+            "Padrão": entry.pattern,
+            "Direção": signal,
+            "Data (D)": entry.pattern_idx_dates?.[4] || "N/A",
+            "Preço (D)": entry.D_price?.toFixed(5) || "N/A",
+            "Stop": entry.STOP?.toFixed(5) || "N/A",
+            "TP1": entry.TP1?.toFixed(5) || "N/A",
+            "TP2": entry.TP2?.toFixed(5) || "N/A",
+            "TP3": entry.TP3?.toFixed(5) || "N/A",
+            "RR": entry.rr_ratio?.toFixed(2) || "N/A",
+            "Reward": entry.reward?.toFixed(5) || "N/A",
+            "Risk": entry.risk?.toFixed(5) || "N/A",
+            "CD_DIFF": entry.CD_DIFF?.toFixed(5) || "N/A",
+            "X→D Datas": entry.pattern_idx_dates?.join(" → ") || "N/A",
+            "X→D Preços": entry.pattern_idx_prices?.map(p => p.toFixed(5)).join(" → ") || "N/A",
+            "Resultado": result
+        });
+    });
+
+    createGridTable(
+        tableData,
+        ["Padrão", "Direção", "Data (D)", "Stoploss", "TP1", "TP2", "TP3", "Resultado", "RR","X→D Datas", "X→D Preços",'Resultado'],
+        "tableHarmonicPatterns"
+    );
+}
+
 
 function populateYahooStockTable(containerId, data) {
     if (!data || data.length === 0) {
@@ -760,12 +830,18 @@ function displayFundamentalResultsClassification(data) {
         ReturnOnEquity: data.evaluations.ratios?.ReturnOnEquity || "N/A",
         ReturnOnEquityCAGR: data.evaluations.ratios?.ReturnOnEquityCAGR || "N/A",
     }
-
+    
     for (const [key, evaluation] of Object.entries(elements)) {
         const classificationElement = document.getElementById(`${key}Class`);
 
         if (classificationElement) {
             classificationElement.textContent = evaluation;
+        }
+        
+        const classificationElementOverview = document.getElementById(`${key}ClassOverview`);
+
+        if (classificationElementOverview) {
+            classificationElementOverview.textContent = evaluation;
         }
     }
 }

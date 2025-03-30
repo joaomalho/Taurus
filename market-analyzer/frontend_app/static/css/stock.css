@@ -228,7 +228,7 @@ canvas {
     margin: 0;
 }
 
-.trend-content, .volatility-content, .oscilators-content, .candles-content {
+.trend-content, .volatility-content, .oscilators-content, .candles-content, .harmonic-content {
     display: flex;
     flex-wrap: wrap;   /* Permite que os elementos quebrem conforme necessário */
     align-items: center;
@@ -238,7 +238,7 @@ canvas {
     line-height: 1.5;
 }
 
-.trend-content p, .volatility-content p, .oscilators-content p, .candles-content p {
+.trend-content p, .volatility-content p, .oscilators-content p, .candles-content p, .harmonic-content p {
     margin: 6px 0;
     padding: 8px 12px;
     background-color: var(--secondary-bg);
@@ -247,16 +247,16 @@ canvas {
     text-align: right;
 }
 
-.trend-content a, .volatility-content a, .oscilators-content a, .candles-content a {
+.trend-content a, .volatility-content a, .oscilators-content a, .candles-content a, .harmonic-content a {
     color: var(--link-color);
     font-weight: bold;
 }
 
-.trend-content a:hover, .volatility-content a:hover, .oscilators-content a:hover, .candles-content a:hover {
+.trend-content a:hover, .volatility-content a:hover, .oscilators-content a:hover, .candles-content a:hover, .harmonic-content a:hover {
     color: var(--button-hover-bg);
 }
 
-.tec-trend-crossover, .tec-trend-adx, .tec-volatility, .tec-oscilators, .tec-candles {
+.tec-trend-crossover, .tec-trend-adx, .tec-volatility, .tec-oscilators, .tec-candles, .tec-harmonic {
     display: flex;
     align-items: center;
     gap: 15px;         /* Espaçamento ideal */

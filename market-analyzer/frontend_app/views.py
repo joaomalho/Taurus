@@ -1,5 +1,6 @@
 import json
 import numpy as np
+import pandas as pd
 from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.http import JsonResponse, Http404
@@ -7,6 +8,7 @@ from django.core.validators import RegexValidator
 from backend.datasources.yahoodata import DataHistoryYahoo
 from backend.tecnical_analysis.trend_metrics import TrendMetrics
 from backend.tecnical_analysis.candles_patterns import CandlesPatterns
+from backend.tecnical_analysis.harmonic_patterns import HarmonicPatterns
 from backend.risk_manager.risk_manager import RiskManagerFundamental
 
 
@@ -35,6 +37,19 @@ def validate_symbol(symbol):
         return symbol
     except Exception:
         raise Http404("Invalid stock symbol.")
+
+import numpy as np
+
+def convert_numpy_types(obj):
+    if isinstance(obj, (np.integer,)):
+        return int(obj)
+    elif isinstance(obj, (np.floating,)):
+        return float(obj)
+    elif isinstance(obj, (np.ndarray,)):
+        return obj.tolist()
+    elif isinstance(obj, (pd.Timestamp,)):
+        return obj.isoformat()
+    return obj
 
 def get_data_history(request, symbol):
         '''
@@ -433,6 +448,46 @@ def get_candle_detection(request, symbol):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+def get_harmonic_patterns(request, symbol):
+    """
+    View to detect harmonic pattern and return signals to frontend.
+    """
+    try:
+        symbol = symbol.strip().upper()
+
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        raw_data = request.GET.get("data")
+
+        if raw_data:
+            try:
+                data_list = json.loads(raw_data)
+
+                if len(data_list) < 5:
+                    return JsonResponse({"error": "Not enough data for pattern detection."}, status=400)
+                
+            except (json.JSONDecodeError, KeyError, TypeError) as e:
+                return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
+        else:
+            dh = DataHistoryYahoo()
+            df = dh.get_data_history(symbol=symbol, period="1mo", interval="1d")
+
+            if df is None or df.empty:
+                return JsonResponse({"error": "No data found"}, status=404)
+
+        hp = HarmonicPatterns()
+        
+        result = hp.backtest_harmonic_patterns(data=df, err_allowed=0.02, order=5, stop_factor=0.1, future_window=20)
+
+        return JsonResponse({"patterns_detected": result})
+    
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
 
 def get_inst_holders(request, symbol):
     """

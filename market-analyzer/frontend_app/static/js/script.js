@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchBollingerData(symbol);
         fetchRSIData(symbol);
         fetchCandlePatternData(symbol);
+        fetchHarmonicPatternData(symbol);
         fetchFundamentalInfo(symbol);
         fetchFundamentalInfoClassification(symbol);
         fetchBioData(symbol);
@@ -51,6 +52,12 @@ document.addEventListener("DOMContentLoaded", function () {
     setupToggle({
         toggleSelector: "#tecCandles",
         contentSelector: ".candles-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#tecHarmonic",
+        contentSelector: ".harmonic-content",
         iconSelector: ".toggle-icon"
     });
     
@@ -208,6 +215,16 @@ function setupTechnicalAnalysisEvents() {
         }
             
         fetchCandlePatternData(symbol);
+    });
+
+    document.getElementById("HarmonicButton").addEventListener("click", function () {
+            
+        if (!symbol) {
+            alert("Por favor, selecione um ativo antes de calcular.");
+            return;
+        }
+            
+        fetchHarmonicPatternData(symbol);
     });
 }
 
@@ -470,6 +487,19 @@ function fetchCandlePatternData(symbol) {
         .catch(error => console.error("Erro ao buscar os dados do Candles:", error));
 }
 
+function fetchHarmonicPatternData(symbol) {
+    fetch(`/stock/${symbol}/harmonic_patterns/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Erro ao buscar padrões de velas:", data.error);
+                return;
+            }
+            displayHarmonicResults(data);
+        })
+        .catch(error => console.error("Erro ao buscar os dados do Candles:", error));
+}
+
 function fetchYahooStockGainers() {
     fetch("/screener/stock_gainers/")
         .then(response => response.json())
@@ -583,6 +613,44 @@ function displayCandleResults(data) {
     }
     createGridTable(tableData, ["Padrão", "Stoploss", "Sinal", "Data", "Resultado"], "tableCandlePatterns");
 }
+
+
+function displayHarmonicResults(data) {
+    let tableDataHarmonic = [];
+
+    for (let pattern of data.patterns_detected || []) {
+        const signal = pattern.direction === 1 ? "Buy" : "Sell";
+        const result = pattern.hit_tp ? `TP atingido: ${pattern.hit_tp}` :
+                        (pattern.stop_hit ? "Stop Loss" : "Aberto");
+
+        tableDataHarmonic.push({
+            "Padrão": pattern.pattern,
+            "Direção": signal,
+            "Data (D)": pattern.pattern_idx_dates?.[4] || "N/A",
+            "Preço (D)": pattern.D_price?.toFixed(5) || "N/A",
+            "Stop": pattern.STOP?.toFixed(5) || "N/A",
+            "TP1": pattern.TP1?.toFixed(5) || "N/A",
+            "TP2": pattern.TP2?.toFixed(5) || "N/A",
+            "TP3": pattern.TP3?.toFixed(5) || "N/A",
+            "RR": pattern.rr_ratio?.toFixed(2) || "N/A",
+            "Reward": pattern.reward?.toFixed(5) || "N/A",
+            "Risk": pattern.risk?.toFixed(5) || "N/A",
+            "CD_DIFF": pattern.CD_DIFF?.toFixed(5) || "N/A",
+            "X→D Datas": pattern.pattern_idx_dates?.join(" → ") || "N/A",
+            "X→D Preços": pattern.pattern_idx_prices?.map(p => p.toFixed(5)).join(" → ") || "N/A",
+            "Resultado": result
+        });
+    }
+
+    createGridTable(
+        tableDataHarmonic,
+        ["Padrão", "Direção", "Data (D)", "Preço (D)", "Stop", "TP1", "TP2", "TP3", "RR", "Reward", "Risk", "CD_DIFF", "X→D Datas", "X→D Preços", "Resultado"],
+        "tableHarmonicPatterns"
+    );
+}
+
+
+
 
 function populateYahooStockTable(containerId, data) {
     if (!data || data.length === 0) {

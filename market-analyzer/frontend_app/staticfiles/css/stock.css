@@ -452,6 +452,7 @@ canvas {
 .ratios-content a:hover {
     color: var(--button-hover-bg);
 }
+
 /* RISK */
 
 .risk-content {
@@ -477,6 +478,31 @@ canvas {
     color: var(--button-hover-bg);
 }
 
+/* OVERVIEW */
+
+.overview-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.overview-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--secondary-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.overview-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.overview-content a:hover {
+    color: var(--button-hover-bg);
+}
+
 .fund-cashflow, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-ratios, .fund-risk {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -484,12 +510,11 @@ canvas {
     margin-top: 15px;
 }
 
-
-
-#QuickRatioClass,
-#CurrentRatioClass,
-#CashRatioClass {
-    font-weight: bold;
+.fund-overview {
+    /* display: grid; */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
 }
 
 /* ============================= */

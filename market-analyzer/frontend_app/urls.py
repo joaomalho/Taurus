@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (home, stock_page, screener_page, get_stock_gainers, get_stock_trending,
                     get_stock_most_active, get_data_history, get_crossover_trend_metrics, get_adx_trend_metrics,
                     get_sma_trend_metrics, get_rsi_trend_metrics, get_candle_detection, get_inst_holders,
-                    get_recommendations, get_fundamental_info, get_bio_info, get_fundamental_evaluations
+                    get_recommendations, get_fundamental_info, get_bio_info, get_fundamental_evaluations, 
+                    get_harmonic_patterns
                     )
 
 urlpatterns = [
@@ -19,6 +20,7 @@ urlpatterns = [
     path('stock/<str:symbol>/bollinger_trend/', get_sma_trend_metrics, name='get_bollinger_trend'),
     path('stock/<str:symbol>/rsi_trend/', get_rsi_trend_metrics, name='get_rsi_trend'),
     path('stock/<str:symbol>/candle_patterns/', get_candle_detection, name='get_candle_patterns'),
+    path('stock/<str:symbol>/harmonic_patterns/', get_harmonic_patterns, name='get_harmonic_patterns'),
     path('stock/<str:symbol>/institutional_holders/', get_inst_holders, name='get_inst_holders'),
     path('stock/<str:symbol>/recommendations/', get_recommendations, name='get_recommendations'),
     path('stock/<str:symbol>/fundamental_info/', get_fundamental_info, name='get_fundamental_info'),
