@@ -431,6 +431,9 @@ function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeri
                 return;
             }
             displayCrossoverResults(data);
+
+            // Desenhar as EMAs no gráfico
+            // drawEMALines(chart, data.ema_fast, data.ema_medium, data.ema_slow);
         })
         .catch(error => console.error("Erro ao buscar os dados do crossover:", error));
 }

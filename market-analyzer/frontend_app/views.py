@@ -7,6 +7,7 @@ from django.http import JsonResponse, Http404
 from django.core.validators import RegexValidator
 from backend.datasources.yahoodata import DataHistoryYahoo
 from backend.tecnical_analysis.trend_metrics import TrendMetrics
+from backend.tecnical_analysis.candlestick_chart_data import CandlestickData
 from backend.tecnical_analysis.candles_patterns import CandlesPatterns
 from backend.tecnical_analysis.harmonic_patterns import HarmonicPatterns
 from backend.risk_manager.risk_manager import RiskManagerFundamental
@@ -208,6 +209,23 @@ def get_crossover_trend_metrics(request, symbol):
     
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+def get_crossover_trend_metrics_draw(request, symbol):
+    fast = int(request.GET.get("fast", 14))
+    medium = int(request.GET.get("medium", 25))
+    slow = int(request.GET.get("slow", 200))
+
+    dh = DataHistoryYahoo()
+    df = dh.get_data_history(symbol=symbol, period="1y", interval="1d")
+
+    if df is None or df.empty:
+        return JsonResponse({"error": "Sem dados"}, status=404)
+
+    cd = CandlestickData()
+
+    result = cd.get_ema_history(df, fast, medium, slow)
+    result["symbol"] = symbol.upper()
+    return JsonResponse(result)
 
 def get_adx_trend_metrics(request, symbol):
     """

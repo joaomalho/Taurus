@@ -3,7 +3,7 @@ from .views import (home, stock_page, screener_page, get_stock_gainers, get_stoc
                     get_stock_most_active, get_data_history, get_crossover_trend_metrics, get_adx_trend_metrics,
                     get_sma_trend_metrics, get_rsi_trend_metrics, get_candle_detection, get_inst_holders,
                     get_recommendations, get_fundamental_info, get_bio_info, get_fundamental_evaluations, 
-                    get_harmonic_patterns
+                    get_harmonic_patterns, get_crossover_trend_metrics_draw
                     )
 
 urlpatterns = [
@@ -27,6 +27,9 @@ urlpatterns = [
     path('stock/<str:symbol>/fundamental_evaluations/', get_fundamental_evaluations, name='fundamental_evaluations'),
     path('stock/<str:symbol>/bio_info/', get_bio_info, name='get_bio_info'),
 
+    ###### Candlestick Chart Draw ######
+    path("stock/<str:symbol>/crossover_draw/", get_crossover_trend_metrics_draw, name = 'get_crossover_trend_metrics_draw'),
+    
     ###### PAGE SCREENER ######
     path('screener/', screener_page, name='screener_page'),
 

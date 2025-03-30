@@ -1,3 +1,5 @@
+import { updateEMALines } from './candlestick.js';
+
 document.addEventListener("DOMContentLoaded", function () {
 
     setupSearchButton();
@@ -24,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchYahooStockMostActive();
 
     // ─────────────── EVENTOS DOS BOTÕES ───────────────
-    setupTechnicalAnalysisEvents();
+    setupTechnicalAnalysisEvents(symbol);
 
     // ─────────────── CONFIGURAÇÃO DOS TOGGLES ───────────────
     setupToggle({
@@ -112,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
 }); 
 
 /* ─────────────── FUNÇÕES DE EVENTOS PARA OS BOTÕES ─────────────── */
-function setupTechnicalAnalysisEvents() {
+function setupTechnicalAnalysisEvents(symbol) {
     document.getElementById("crossoverButton").addEventListener("click", function () {
         let fastPeriod = document.getElementById("fastPeriod").value;
         let mediumPeriod = document.getElementById("mediumPeriod").value;
@@ -133,6 +135,10 @@ function setupTechnicalAnalysisEvents() {
         }
 
         fetchCrossoverData(symbol, fastPeriod, mediumPeriod, slowPeriod);
+
+        // Atualizar EMAs no gráfico
+        updateEMALines(symbol, fastPeriod, mediumPeriod, slowPeriod);
+
     });
 
     document.getElementById("AdxButton").addEventListener("click", function () {
@@ -617,7 +623,6 @@ function displayCandleResults(data) {
     createGridTable(tableData, ["Padrão", "Stoploss", "Sinal", "Data", "Resultado"], "tableCandlePatterns");
 }
 
-
 function displayHarmonicResults(data) {
     let tableDataHarmonic = [];
 
@@ -686,7 +691,6 @@ function populateYahooStockTable(containerId, data) {
         }
     }).render(document.getElementById(containerId));
 }
-
 
 function displayBioResults(data) {
     const bioData = data.data;

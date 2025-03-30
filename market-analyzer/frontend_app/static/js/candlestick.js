@@ -1,5 +1,70 @@
 let chart;         // Gráfico criado apenas uma vez
 let candleSeries;  // Série de candles global
+let emaFastSeries, emaMediumSeries, emaSlowSeries;
+
+export function updateEMALines(symbol, fast, medium, slow) {
+    fetch(`/stock/${symbol}/crossover_draw/?fast=${fast}&medium=${medium}&slow=${slow}`)
+        .then(res => res.json())
+        .then(emaData => {
+            if (emaData.error) {
+                console.error("Erro ao buscar EMAs:", emaData.error);
+                return;
+            }
+
+            clearEmaSeries();
+
+            renderEMALines(emaData.ema_fast, "#b0570875", "EMA Fast");
+            renderEMALines(emaData.ema_medium, "#b0750875", "EMA Medium");
+            renderEMALines(emaData.ema_slow, "#b0990875", "EMA Slow");
+        })
+        .catch(err => console.error("Erro ao buscar EMAs:", err));
+}
+
+function renderEMALines(emaData, color, label) {
+    const lineSeries = chart.addLineSeries({
+        color: color,                 // Cor da linha principal
+        lineWidth: 1,                // Espessura da linha
+        lineStyle: 0,                // Estilo: 0=linha sólida, 1=tracejada, 2=pontilhada
+        lineType: 0,                 // Tipo: 0=simples, 1=com áreas de gaps
+        crossHairMarkerVisible: true,  // Mostra o ponto de intersecção no crosshair
+        crossHairMarkerRadius: 3,      // Tamanho do marcador do crosshair
+        lastValueVisible: true,        // Mostra o último valor da linha
+        priceLineVisible: false,        // Linha horizontal com o último valor
+        priceLineColor: color,         // Cor da linha de preço
+        priceLineStyle: 0,             // Estilo da linha de preço (0 = sólida)
+        priceLineWidth: 1,             // Espessura da linha de preço
+        title: label,                  // Título da série (pode aparecer em legendas)
+        visible: true,                 // Se a série está visível ou não
+        overlay: true,                 // Se sobrepõe o gráfico principal
+    });
+
+    lineSeries.setData(
+        emaData.map(point => ({
+            time: point.time,
+            value: point.value
+        }))
+    );
+
+    if (label.includes("Fast")) emaFastSeries = lineSeries;
+    if (label.includes("Medium")) emaMediumSeries = lineSeries;
+    if (label.includes("Slow")) emaSlowSeries = lineSeries;
+}
+
+function clearEmaSeries() {
+    if (emaFastSeries) {
+        chart.removeSeries(emaFastSeries);
+        emaFastSeries = null;
+    }
+    if (emaMediumSeries) {
+        chart.removeSeries(emaMediumSeries);
+        emaMediumSeries = null;
+    }
+    if (emaSlowSeries) {
+        chart.removeSeries(emaSlowSeries);
+        emaSlowSeries = null;
+    }
+}
+
 
 document.addEventListener("DOMContentLoaded", function () {
     function fetchAndRenderCandlestickChart(symbol, period, interval) {
@@ -106,23 +171,11 @@ document.addEventListener("DOMContentLoaded", function () {
         candleSeries.setMarkers(markers);
 
         addTooltip(chartContainer, chart, priceData);
-
+        
+        updateEMALines(symbol, 14, 25, 200);
 
     }
     
-    function drawEMALines(chart, emaFast, emaMedium, emaSlow) {
-        // Adiciona série da Fast EMA
-        const fastLine = chart.addLineSeries({ color: '#FFD700', lineWidth: 2 });
-        fastLine.setData(emaFast);
-    
-        // Medium EMA
-        const mediumLine = chart.addLineSeries({ color: '#00BFFF', lineWidth: 2 });
-        mediumLine.setData(emaMedium);
-    
-        // Slow EMA
-        const slowLine = chart.addLineSeries({ color: '#FF4500', lineWidth: 2 });
-        slowLine.setData(emaSlow);
-    }
 
     function addTooltip(chartContainer, chart, priceData) {
         const tooltip = document.createElement("div");
@@ -168,8 +221,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     
-    
-
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
 

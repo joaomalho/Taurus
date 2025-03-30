@@ -106,10 +106,20 @@ document.addEventListener("DOMContentLoaded", function () {
         candleSeries.setMarkers(markers);
 
         addTooltip(chartContainer, chart, priceData);
-
+        
+        // === Buscar e desenhar as EMAs ===
+        fetch(`/stock/${symbol}/crossover_draw/?fast=14&medium=25&slow=200`)
+        .then(res => res.json())
+        .then(emaData => {
+            renderEMALines(emaData.ema_fast, "#FFD700", "EMA Fast");     // amarelo
+            renderEMALines(emaData.ema_medium, "#00FFFF", "EMA Medium"); // azul claro
+            renderEMALines(emaData.ema_slow, "#FF69B4", "EMA Slow");     // rosa
+        })
+        .catch(err => console.error("Erro ao buscar EMAs:", err));
 
     }
     
+
     function addTooltip(chartContainer, chart, priceData) {
         const tooltip = document.createElement("div");
         tooltip.style.position = "absolute";
@@ -154,7 +164,20 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     
+    function renderEMALines(emaData, color, label) {
+        const lineSeries = chart.addLineSeries({
+            color: color,
+            lineWidth: 2,
+            title: label
+        });
     
+        lineSeries.setData(
+            emaData.map(point => ({
+                time: point.time,
+                value: point.value
+            }))
+        );
+    }
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
