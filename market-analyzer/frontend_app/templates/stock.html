@@ -84,7 +84,9 @@
         <section id="priceHistory">
             <h2>Histórico de Preços</h2>
             <div class="candlestick-chart-container">
-                <div id="candlestickChart"></div>
+                <div id="candlestickChart">
+                    <div class="customLegend" id="customLegend"></div>
+                </div>
             </div>
         </section>
 
@@ -533,7 +535,7 @@
     <script src="{% static 'js/gridjs.umd.js' %}"></script>    
     <!-- Scripts Customizados -->
     <script type="module" src="{% static 'js/script.js' %}"></script>
-    <script src="{% static 'js/candlestick.js' %}"></script>
+    <script type="module" src="{% static 'js/candlestick.js' %}"></script>
     <script src="{% static 'js/chartsandgraphs.js' %}"></script>
 </body>
 </html>
