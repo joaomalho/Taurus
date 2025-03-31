@@ -35,7 +35,8 @@ function renderEMALines(emaData, color, label) {
         priceLineWidth: 1,             // Espessura da linha de preço
         title: label,                  // Título da série (pode aparecer em legendas)
         visible: true,                 // Se a série está visível ou não
-        overlay: true,                 // Se sobrepõe o gráfico principal
+        overlay: true, 
+        priceScaleId: 'right'           // Sobrepõe o gráfico principal
     });
 
     lineSeries.setData(
@@ -176,45 +177,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
     
-
     function addTooltip(chartContainer, chart, priceData) {
         const tooltip = document.createElement("div");
         tooltip.style.position = "absolute";
         tooltip.style.background = "#0d1117";
         tooltip.style.color = "#ddd";
-        tooltip.fontSize = "12px";
+        tooltip.style.fontSize = "12px";
         tooltip.style.padding = "8px 12px";
         tooltip.style.borderRadius = "6px";
         tooltip.style.pointerEvents = "none";
         tooltip.style.visibility = "hidden";
         tooltip.style.opacity = "0.8";
         tooltip.style.zIndex = "999";
-
+    
         chartContainer.appendChild(tooltip);
     
         chart.subscribeCrosshairMove((param) => {
-            if (!param.time || !param.seriesPrices) {
+            if (!param.time || !param.seriesPrices || !param.point) {
                 tooltip.style.visibility = "hidden";
                 return;
             }
     
             const priceDataPoint = priceData.find(c => c.time === param.time);
     
-            // Exibir apenas se houver uma vela sob o cursor
             if (priceDataPoint) {
-                const { time, open, high, low, close } = priceDataPoint;
-
-
-                tooltip.innerHTML = `
-                    <strong>Abertura:</strong> ${open}<br>
-                    <strong>Fechamento:</strong> ${close}<br>
-                    <strong>Máxima:</strong> ${high}<br>
-                    <strong>Mínima:</strong> ${low}
-                `;
+                const cursorY = param.point.y;
+                const highY = candleSeries.priceToCoordinate(priceDataPoint.high);
+                const lowY = candleSeries.priceToCoordinate(priceDataPoint.low);
     
-                tooltip.style.visibility = "visible";
-                tooltip.style.left = `${param.point.x + 10}px`;
-                tooltip.style.top = `${param.point.y - 50}px`;
+                // Proteção extra contra valores null
+                if (highY == null || lowY == null || cursorY == null) {
+                    tooltip.style.visibility = "hidden";
+                    return;
+                }
+    
+                if (cursorY >= highY && cursorY <= lowY) {
+                    const { open, high, low, close } = priceDataPoint;
+    
+                    tooltip.innerHTML = `
+                        <strong>Open:</strong> ${open}<br>
+                        <strong>Close:</strong> ${close}<br>
+                        <strong>High:</strong> ${high}<br>
+                        <strong>Low:</strong> ${low}
+                    `;
+    
+                    tooltip.style.visibility = "visible";
+                    tooltip.style.left = `${param.point.x + 10}px`;
+                    tooltip.style.top = `${cursorY - 50}px`;
+                } else {
+                    tooltip.style.visibility = "hidden";
+                }
             } else {
                 tooltip.style.visibility = "hidden";
             }

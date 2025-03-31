@@ -1,5 +1,70 @@
 let chart;         // Gráfico criado apenas uma vez
 let candleSeries;  // Série de candles global
+let emaFastSeries, emaMediumSeries, emaSlowSeries;
+
+export function updateEMALines(symbol, fast, medium, slow) {
+    fetch(`/stock/${symbol}/crossover_draw/?fast=${fast}&medium=${medium}&slow=${slow}`)
+        .then(res => res.json())
+        .then(emaData => {
+            if (emaData.error) {
+                console.error("Erro ao buscar EMAs:", emaData.error);
+                return;
+            }
+
+            clearEmaSeries();
+
+            renderEMALines(emaData.ema_fast, "#b0570875", "EMA Fast");
+            renderEMALines(emaData.ema_medium, "#b0750875", "EMA Medium");
+            renderEMALines(emaData.ema_slow, "#b0990875", "EMA Slow");
+        })
+        .catch(err => console.error("Erro ao buscar EMAs:", err));
+}
+
+function renderEMALines(emaData, color, label) {
+    const lineSeries = chart.addLineSeries({
+        color: color,                 // Cor da linha principal
+        lineWidth: 1,                // Espessura da linha
+        lineStyle: 0,                // Estilo: 0=linha sólida, 1=tracejada, 2=pontilhada
+        lineType: 0,                 // Tipo: 0=simples, 1=com áreas de gaps
+        crossHairMarkerVisible: true,  // Mostra o ponto de intersecção no crosshair
+        crossHairMarkerRadius: 3,      // Tamanho do marcador do crosshair
+        lastValueVisible: true,        // Mostra o último valor da linha
+        priceLineVisible: false,        // Linha horizontal com o último valor
+        priceLineColor: color,         // Cor da linha de preço
+        priceLineStyle: 0,             // Estilo da linha de preço (0 = sólida)
+        priceLineWidth: 1,             // Espessura da linha de preço
+        title: label,                  // Título da série (pode aparecer em legendas)
+        visible: true,                 // Se a série está visível ou não
+        overlay: true,                 // Se sobrepõe o gráfico principal
+    });
+
+    lineSeries.setData(
+        emaData.map(point => ({
+            time: point.time,
+            value: point.value
+        }))
+    );
+
+    if (label.includes("Fast")) emaFastSeries = lineSeries;
+    if (label.includes("Medium")) emaMediumSeries = lineSeries;
+    if (label.includes("Slow")) emaSlowSeries = lineSeries;
+}
+
+function clearEmaSeries() {
+    if (emaFastSeries) {
+        chart.removeSeries(emaFastSeries);
+        emaFastSeries = null;
+    }
+    if (emaMediumSeries) {
+        chart.removeSeries(emaMediumSeries);
+        emaMediumSeries = null;
+    }
+    if (emaSlowSeries) {
+        chart.removeSeries(emaSlowSeries);
+        emaSlowSeries = null;
+    }
+}
+
 
 document.addEventListener("DOMContentLoaded", function () {
     function fetchAndRenderCandlestickChart(symbol, period, interval) {
@@ -107,15 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         addTooltip(chartContainer, chart, priceData);
         
-        // === Buscar e desenhar as EMAs ===
-        fetch(`/stock/${symbol}/crossover_draw/?fast=14&medium=25&slow=200`)
-        .then(res => res.json())
-        .then(emaData => {
-            renderEMALines(emaData.ema_fast, "#FFD700", "EMA Fast");     // amarelo
-            renderEMALines(emaData.ema_medium, "#00FFFF", "EMA Medium"); // azul claro
-            renderEMALines(emaData.ema_slow, "#FF69B4", "EMA Slow");     // rosa
-        })
-        .catch(err => console.error("Erro ao buscar EMAs:", err));
+        updateEMALines(symbol, 14, 25, 200);
 
     }
     
@@ -145,8 +202,15 @@ document.addEventListener("DOMContentLoaded", function () {
     
             // Exibir apenas se houver uma vela sob o cursor
             if (priceDataPoint) {
-                const { time, open, high, low, close } = priceDataPoint;
+                const y = chart.priceScale().priceToCoordinate(priceDataPoint.close);
+            const cursorY = param.point.y;
 
+            const highY = chart.priceScale().priceToCoordinate(priceDataPoint.high);
+            const lowY = chart.priceScale().priceToCoordinate(priceDataPoint.low);
+
+            // Só mostra a tooltip se o cursor estiver dentro do range da vela
+            if (cursorY >= highY && cursorY <= lowY) {
+                const { open, high, low, close } = priceDataPoint;
 
                 tooltip.innerHTML = `
                     <strong>Abertura:</strong> ${open}<br>
@@ -154,31 +218,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     <strong>Máxima:</strong> ${high}<br>
                     <strong>Mínima:</strong> ${low}
                 `;
-    
+
                 tooltip.style.visibility = "visible";
                 tooltip.style.left = `${param.point.x + 10}px`;
-                tooltip.style.top = `${param.point.y - 50}px`;
+                tooltip.style.top = `${cursorY - 50}px`;
             } else {
                 tooltip.style.visibility = "hidden";
             }
-        });
-    }
-    
-    function renderEMALines(emaData, color, label) {
-        const lineSeries = chart.addLineSeries({
-            color: color,
-            lineWidth: 2,
-            title: label
-        });
-    
-        lineSeries.setData(
-            emaData.map(point => ({
-                time: point.time,
-                value: point.value
-            }))
-        );
-    }
+        } else {
+            tooltip.style.visibility = "hidden";
+        }
+    });
+}
 
+    
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
 
