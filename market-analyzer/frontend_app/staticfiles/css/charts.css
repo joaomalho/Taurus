@@ -39,6 +39,16 @@
     position: absolute;
 }
 
+.customLegend {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #ccc;
+    font-size: 9px;
+    z-index: 1000;
+    pointer-events: none; 
+}
+
 /* ============================= */
 /* HORIZONTAL BAR CHARTS */
 /* ============================= */

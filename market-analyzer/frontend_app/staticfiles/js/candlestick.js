@@ -1,7 +1,12 @@
-let chart;         // Gráfico criado apenas uma vez
-let candleSeries;  // Série de candles global
+////////// VARIABLES //////////
+let chart;
+let candleSeries;  
 let emaFastSeries, emaMediumSeries, emaSlowSeries;
+let emaFastData = [];
+let emaMediumData = [];
+let emaSlowData = [];
 
+////////// DRAW CROSSOVER EMAS //////////
 export function updateEMALines(symbol, fast, medium, slow) {
     fetch(`/stock/${symbol}/crossover_draw/?fast=${fast}&medium=${medium}&slow=${slow}`)
         .then(res => res.json())
@@ -16,27 +21,29 @@ export function updateEMALines(symbol, fast, medium, slow) {
             renderEMALines(emaData.ema_fast, "#b0570875", "EMA Fast");
             renderEMALines(emaData.ema_medium, "#b0750875", "EMA Medium");
             renderEMALines(emaData.ema_slow, "#b0990875", "EMA Slow");
+            updateInitialLegend();
         })
         .catch(err => console.error("Erro ao buscar EMAs:", err));
 }
 
 function renderEMALines(emaData, color, label) {
+    
     const lineSeries = chart.addLineSeries({
-        color: color,                 // Cor da linha principal
-        lineWidth: 1,                // Espessura da linha
-        lineStyle: 0,                // Estilo: 0=linha sólida, 1=tracejada, 2=pontilhada
-        lineType: 0,                 // Tipo: 0=simples, 1=com áreas de gaps
-        crossHairMarkerVisible: true,  // Mostra o ponto de intersecção no crosshair
-        crossHairMarkerRadius: 3,      // Tamanho do marcador do crosshair
-        lastValueVisible: true,        // Mostra o último valor da linha
-        priceLineVisible: false,        // Linha horizontal com o último valor
-        priceLineColor: color,         // Cor da linha de preço
-        priceLineStyle: 0,             // Estilo da linha de preço (0 = sólida)
-        priceLineWidth: 1,             // Espessura da linha de preço
-        title: label,                  // Título da série (pode aparecer em legendas)
-        visible: true,                 // Se a série está visível ou não
-        overlay: true, 
-        priceScaleId: 'right'           // Sobrepõe o gráfico principal
+        color: color,
+        lineWidth: 1,
+        lineStyle: 0,
+        lineType: 0,
+        crossHairMarkerVisible: true,
+        crossHairMarkerRadius: 3,
+        lastValueVisible: false,
+        priceLineVisible: false,
+        priceLineColor: color,
+        priceLineStyle: 0,
+        priceLineWidth: 1,
+        // title: label,
+        visible: true,
+        overlay: false,
+        priceScaleId: 'right' 
     });
 
     lineSeries.setData(
@@ -46,9 +53,18 @@ function renderEMALines(emaData, color, label) {
         }))
     );
 
-    if (label.includes("Fast")) emaFastSeries = lineSeries;
-    if (label.includes("Medium")) emaMediumSeries = lineSeries;
-    if (label.includes("Slow")) emaSlowSeries = lineSeries;
+    if (label.includes("Fast")) {
+        emaFastSeries = lineSeries;
+        emaFastData = emaData;
+    }
+    if (label.includes("Medium")) {
+        emaMediumSeries = lineSeries;
+        emaMediumData = emaData;
+    }
+    if (label.includes("Slow")) {
+        emaSlowSeries = lineSeries;
+        emaSlowData = emaData;
+    }
 }
 
 function clearEmaSeries() {
@@ -66,7 +82,67 @@ function clearEmaSeries() {
     }
 }
 
+function setupDynamicLegend() {
+    const legendDiv = document.getElementById("customLegend");
 
+    chart.subscribeCrosshairMove((param) => {
+        if (!param.time || !param.seriesPrices) return;
+
+        const lines = [];
+
+        if (emaFastSeries) {
+            const value = param.seriesPrices.get(emaFastSeries);
+            if (value !== undefined) {
+                lines.push(`<span style="color:#b05708">EMA Fast: ${value.toFixed(2)}</span>`);
+            }
+        }
+
+        if (emaMediumSeries) {
+            const value = param.seriesPrices.get(emaMediumSeries);
+            if (value !== undefined) {
+                lines.push(`<span style="color:#b07508">EMA Medium: ${value.toFixed(2)}</span>`);
+            }
+        }
+
+        if (emaSlowSeries) {
+            const value = param.seriesPrices.get(emaSlowSeries);
+            if (value !== undefined) {
+                lines.push(`<span style="color:#b09908">EMA Slow: ${value.toFixed(2)}</span>`);
+            }
+        }
+
+        // Se houver valores, mostra; se não, mantém o último estado
+        if (lines.length > 0) {
+            legendDiv.innerHTML = lines.join(" | ");
+        }
+    });
+}
+
+function updateInitialLegend() {
+    const legendDiv = document.getElementById("customLegend");
+    const lines = [];
+
+    if (emaFastData.length > 0) {
+        const last = emaFastData[emaFastData.length - 1];
+        lines.push(`<span style="color:#b05708">EMA Fast: ${last.value.toFixed(2)}</span>`);
+    }
+
+    if (emaMediumData.length > 0) {
+        const last = emaMediumData[emaMediumData.length - 1];
+        lines.push(`<span style="color:#b07508">EMA Medium: ${last.value.toFixed(2)}</span>`);
+    }
+
+    if (emaSlowData.length > 0) {
+        const last = emaSlowData[emaSlowData.length - 1];
+        lines.push(`<span style="color:#b09908">EMA Slow: ${last.value.toFixed(2)}</span>`);
+    }
+
+    legendDiv.innerHTML = lines.join(" | ");
+}
+
+
+
+////////// MAIN DOCUMENT //////////
 document.addEventListener("DOMContentLoaded", function () {
     function fetchAndRenderCandlestickChart(symbol, period, interval) {
         fetch(`/stock/${symbol}/data_history/?period=${period}&interval=${interval}`)
@@ -107,6 +183,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function renderCandlestickChart(priceData) {
+
+        const sharedScaleId = 'right';
+
         const chartContainer = document.getElementById("candlestickChart");
     
         if (!chart) {
@@ -139,6 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 borderUpColor: '#26a69a',
                 wickDownColor: '#ef5350',
                 wickUpColor: '#26a69a',
+                priceScaleId: sharedScaleId
             });
         
             window.addEventListener('resize', () => {
@@ -174,6 +254,8 @@ document.addEventListener("DOMContentLoaded", function () {
         addTooltip(chartContainer, chart, priceData);
         
         updateEMALines(symbol, 14, 25, 200);
+
+        setupDynamicLegend();
 
     }
     

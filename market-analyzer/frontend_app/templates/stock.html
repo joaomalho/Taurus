@@ -85,7 +85,10 @@
             <h2>Histórico de Preços</h2>
             <div class="candlestick-chart-container">
                 <div id="candlestickChart">
-                    <div class="customLegend" id="customLegend"></div>
+                    <div class="customLegend" id="customLegendEmas"></div>
+                        <button id="toggleEmaBtn">
+                            <img src="{% static 'images/show_eye.png' %}" alt="toggle EMAs" id="toggleEmaIcon" />
+                        </button>
                 </div>
             </div>
         </section>
