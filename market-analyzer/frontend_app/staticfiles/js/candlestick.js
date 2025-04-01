@@ -5,6 +5,7 @@ let emaFastSeries, emaMediumSeries, emaSlowSeries;
 let emaFastData = [];
 let emaMediumData = [];
 let emaSlowData = [];
+let emasVisible = true;
 
 ////////// DRAW CROSSOVER EMAS //////////
 export function updateEMALines(symbol, fast, medium, slow) {
@@ -24,6 +25,25 @@ export function updateEMALines(symbol, fast, medium, slow) {
             updateInitialLegend();
         })
         .catch(err => console.error("Erro ao buscar EMAs:", err));
+}
+
+function setupToggleEmaButton() {
+    const toggleBtn = document.getElementById("toggleEmaBtn");
+    const icon = document.getElementById("toggleEmaIcon");
+
+    if (!toggleBtn || !icon) return;
+
+    toggleBtn.addEventListener("click", () => {
+        emasVisible = !emasVisible;
+
+        if (emaFastSeries) emaFastSeries.applyOptions({ visible: emasVisible });
+        if (emaMediumSeries) emaMediumSeries.applyOptions({ visible: emasVisible });
+        if (emaSlowSeries) emaSlowSeries.applyOptions({ visible: emasVisible });
+
+        icon.src = emasVisible
+            ? "/static/images/show_eye.png"
+            : "/static/images/hidden_eye.png";
+    });
 }
 
 function renderEMALines(emaData, color, label) {
@@ -83,7 +103,7 @@ function clearEmaSeries() {
 }
 
 function setupDynamicLegend() {
-    const legendDiv = document.getElementById("customLegend");
+    const legendDiv = document.getElementById("customLegendEmas");
 
     chart.subscribeCrosshairMove((param) => {
         if (!param.time || !param.seriesPrices) return;
@@ -119,7 +139,7 @@ function setupDynamicLegend() {
 }
 
 function updateInitialLegend() {
-    const legendDiv = document.getElementById("customLegend");
+    const legendDiv = document.getElementById("customLegendEmas");
     const lines = [];
 
     if (emaFastData.length > 0) {
@@ -253,9 +273,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         addTooltip(chartContainer, chart, priceData);
         
+        /// EMAS Crossover ///
         updateEMALines(symbol, 14, 25, 200);
-
         setupDynamicLegend();
+        setupToggleEmaButton();
 
     }
     

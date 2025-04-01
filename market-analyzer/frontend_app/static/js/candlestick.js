@@ -23,6 +23,11 @@ export function updateEMALines(symbol, fast, medium, slow) {
             renderEMALines(emaData.ema_medium, "#b0750875", "EMA Medium");
             renderEMALines(emaData.ema_slow, "#b0990875", "EMA Slow");
             updateInitialLegend();
+            const toggleBtn = document.getElementById("toggleEmaBtn");
+            if (toggleBtn) {
+                toggleBtn.style.display = "inline-block";
+                toggleBtn.classList.add("visible");
+            }
         })
         .catch(err => console.error("Erro ao buscar EMAs:", err));
 }
@@ -30,8 +35,9 @@ export function updateEMALines(symbol, fast, medium, slow) {
 function setupToggleEmaButton() {
     const toggleBtn = document.getElementById("toggleEmaBtn");
     const icon = document.getElementById("toggleEmaIcon");
+    const legendDiv = document.getElementById("customLegendEmas");
 
-    if (!toggleBtn || !icon) return;
+    if (!toggleBtn || !icon || !legendDiv) return;
 
     toggleBtn.addEventListener("click", () => {
         emasVisible = !emasVisible;
@@ -41,8 +47,20 @@ function setupToggleEmaButton() {
         if (emaSlowSeries) emaSlowSeries.applyOptions({ visible: emasVisible });
 
         icon.src = emasVisible
-            ? "/static/images/show_eye.png"
-            : "/static/images/hidden_eye.png";
+            ? "/static/images/open-eye-white.png"
+            : "/static/images/close-eye-white.png";
+
+        if (!emasVisible) {
+            // Quando as EMAs estão escondidas, mostrar apenas "-"
+            legendDiv.innerHTML = `
+                <span style="color:#b05708">EMA Fast: -</span> |
+                <span style="color:#b07508">EMA Medium: -</span> |
+                <span style="color:#b09908">EMA Slow: -</span>
+            `;
+        } else {
+            // Quando voltam a estar visíveis, atualiza os valores
+            updateInitialLegend();
+        }
     });
 }
 
@@ -205,9 +223,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderCandlestickChart(priceData) {
 
         const sharedScaleId = 'right';
-
         const chartContainer = document.getElementById("candlestickChart");
     
+        /// Candlestick Chart ///
         if (!chart) {
             chart = LightweightCharts.createChart(chartContainer, {
                 layout: {
@@ -215,8 +233,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     textColor: '#9198a1',
                 },
                 grid: {
-                    vertLines: { color: 'false' },
-                    horzLines: { color: 'false' },
+                    vertLines: { color: false, visible: false },
+                    horzLines: { color: false, visible: false },
                 },
                 priceScale: {
                     borderColor: '#3d444d',
@@ -257,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     
-        // Marcar a penúltima vela com um "ícone" usando Unicode
+        /// Candles Patterns - WIP - Fazer similar a EMAs///
         const highlightCandle = priceData[priceData.length - 2];
         const markers = [
             {

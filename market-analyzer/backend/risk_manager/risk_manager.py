@@ -334,7 +334,7 @@ class RiskManagerFundamental():
                 elif current_ratio <=200:
                     evaluated_metrics["CurrentRatio"] = "Good Debt Coverage"
                 else:
-                    evaluated_metrics["CurrentRatio"] = "Perfect Coverage (Duoble +)"
+                    evaluated_metrics["CurrentRatio"] = "Perfect Coverage (Double +)"
 
             # Current Ratio Growth
         if "CurrentRatioCAGR" in metrics.get('ratios', {}):

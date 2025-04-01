@@ -42,11 +42,35 @@
 .customLegend {
     position: absolute;
     top: 10px;
-    left: 10px;
+    left: 30px;
     color: #ccc;
-    font-size: 9px;
+    font-size: 12px;
     z-index: 1000;
     pointer-events: none; 
+}
+
+#toggleEmaBtn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white; /* remove fundo branco se não precisares */
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    padding: 0;
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* line-height: 0; */
+}
+
+#toggleEmaIcon {
+    width: 15px;
+    height: 15px;
+    display: block;
+    pointer-events: auto;
 }
 
 /* ============================= */

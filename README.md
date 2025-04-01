@@ -19,6 +19,7 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 - `Bollinger Bands`
 - `Relative Strength Index (RSI)`
 - `Candle Pattern Detection`
+- `Harmonic Patterns Detection`
 - `Pivots Points`
 
 ### Fundamental Analysis:
@@ -133,7 +134,7 @@ Before you begin, make sure you have the following:
 
 - **Python 3.8 or later, 11 recommended** installed
 - **pip** (Python package manager)
-- A **Git** client to clone the repository (optional if downloading manually)
+- **Git** client to clone the repository (optional if downloading manually)
 
 ### 1️⃣ Clone the Repository
 
@@ -277,8 +278,6 @@ Application only presents candles which stoploss was not acomplished.
 
 Taurus have an auto-calibration and optimization method designed to measure, test, and select the best parameters for technical analysis metrics. This method leverages a backtesting environment to evaluate metric performance over the past 365 days of the selected asset's market data.
 
-It can be triggered via the application's auto calibration button. Please note that this process will overwrite the preset parameter values.
-
 ---
 ---
 
@@ -319,7 +318,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **📊 Fundamental Analyst** → Evaluates financial statements & economic factors.
 - **🤖 Quantitative Analyst (Quant)** → Develops algorithmic trading models.
 - **⚠️ Risk Manager** → Manages portfolio risks & exposure.
-- **💸 Short-Term Trader** → Focuses on day & swing trading.
+- **💸 Short-Term Investor** → Focuses on day & swing trading.
 - **🏦 Long-Term Investor** → Buys & holds assets for long-term gains.
 - **🪙 Crypto Analyst** → Researches & analyzes cryptocurrency markets.
 - **🎯 Options Trader** → Trades derivatives like calls & puts.
@@ -342,16 +341,15 @@ We are also looking to grow our community with **key roles in market analysis**:
 ## **🛠️ Next steps**
 - Install tool (Upgrade & Uninstall Methods, and visual) - Install review due new dependencies
     - Add a visual window in screen - Next Version
-- Risk Manager
-    - Condition do decision making - WIP
 - FrontEnd firt version release
-    - Add metrics and drawn to candlestik graph.
-    - Select to appear and desapear. `ToDo: Medium`
+    - Add metrics and drawn to candlestik graph. 
+        - Harmonic Patterns `ToDo: Medium`
+        - Bollinger bands `ToDo: Medium`
+        - Candles Marks `ToDo: Medium`
 - Technical Analysis
-    - Pivots Point - `ToDo: Medium`
-    - Candles Patterns Metrics
-        - Include stoploss into chart tooltip plus icon for candles - `ToDo: High: WIP` 
+    - Pivots Point - `ToDo: Low`
 - Fundamental Analysis
+    - Review all Results and add numeric scale `ToDo: Medium`
     - Sentiment Analysis of Recent News - `ToDo: Low`
     - Economic Calendar Correlations - `ToDo`
     
@@ -365,7 +363,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
 - **GUI:** Implemented 3º version of GUI, Django.
     - Main, Stock and Screener finished
-        - Organization & Data visualizations
+        - Organization & Data Visualizations
             - Improvement with Lightweight-charts (Same usablity has Trading View)
         - Documentation about metrics - WIP
 - **Auto Optimization** WIP
