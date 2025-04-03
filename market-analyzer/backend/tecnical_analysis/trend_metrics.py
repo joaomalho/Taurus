@@ -78,7 +78,7 @@ class TrendMetrics():
         }
 
     ### Volatility ###
-    def get_sma_bands(self, symbol, close_prices, length, std_dev):
+    def get_bollinger_bands(self, symbol, close_prices, length, std_dev):
         """
         This function calculates Bollinger Bands and detects signals based on them.
         

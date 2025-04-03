@@ -85,10 +85,20 @@
             <h2>Histórico de Preços</h2>
             <div class="candlestick-chart-container">
                 <div id="candlestickChart">
-                    <div class="customLegend" id="customLegendEmas"></div>
-                        <button id="toggleEmaBtn">
-                            <img src="{% static 'images/open-eye-white.png' %}" alt="toggle EMAs" id="toggleEmaIcon" />
-                        </button>
+                    <div class="customLegend">
+                        <div class="individualLegend">
+                            <button id="toggleEmaBtn">
+                                <img src="{% static 'images/open-eye-white.png' %}" alt="toggle EMAs" id="toggleEmaIcon" />
+                            </button>
+                            <div id="customLegendEmas"></div>
+                        </div>
+                        <div class="individualLegend">
+                            <button id="toggleBollingerBtn">
+                                <img src="{% static 'images/open-eye-white.png' %}" alt="toggle Bollinger" id="toggleBollingerIcon"/>
+                            </button>
+                            <div id="customLegendBollinger"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

@@ -285,7 +285,7 @@ def get_adx_trend_metrics(request, symbol):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
-def get_sma_trend_metrics(request, symbol):
+def get_bollinger_bands_metrics(request, symbol):
     """
     View to calculate Bollinger Bands and return signals to frontend.
     """
@@ -335,13 +335,29 @@ def get_sma_trend_metrics(request, symbol):
             close_prices = df["Close"].to_numpy(dtype=np.float64) 
 
         tm = TrendMetrics()
-        sma_bands_result = tm.get_sma_bands(symbol, close_prices, length, std_dev)
+        sma_bands_result = tm.get_bollinger_bands(symbol, close_prices, length, std_dev)
 
         return JsonResponse(sma_bands_result)
     
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+def get_bollinger_bands_metrics_draw(request, symbol):
+    length = int(request.GET.get("length", 14))
+    std = int(request.GET.get("std", 2))
     
+    dh = DataHistoryYahoo()
+    df = dh.get_data_history(symbol=symbol, period="1y", interval="1d")
+
+    if df is None or df.empty:
+        return JsonResponse({"error": "Sem dados"}, status=404)
+
+    cd = CandlestickData()
+
+    result = cd.get_bollinger_bands_history(df, length, std)
+    result["symbol"] = symbol.upper()
+    return JsonResponse(result)
+
 def get_rsi_trend_metrics(request, symbol):
     """
     View to calculate RSI and return signals to frontend.
