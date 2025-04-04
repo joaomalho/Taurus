@@ -1,4 +1,4 @@
-import { updateEMALines, updateBollingerBands } from './candlestick.js';
+import { updateEMALines, updateBollingerBands, renderCandlestickFromData } from './candlestick.js';
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -389,13 +389,14 @@ function fetchStockData(symbol) {
                 return;
             }
 
-            updateTable(data); // Agora usa Grid.js
+            renderCandlestickFromData(symbol, data.data); // <- CHAVE
         })
         .catch(error => console.error("Erro ao buscar dados:", error));
 }
 
+
 function fetchBioData(symbol) {
-    fetch(`/stock/${symbol}/bio_info`)
+    fetch(`/stock/${symbol}/bio_info/`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -554,21 +555,6 @@ function fetchYahooStockMostActive() {
 
 
 /* ─────────────── FUNÇÕES DE MANIPULAÇÃO DE DADOS ─────────────── */
-
-function updateTable(data) {
-    new gridjs.Grid({
-        columns: ["Nome", "Preço", "Variação"],
-        data: [[data.name, data.price, data.change]],
-        search: true,
-        pagination: true,
-        sort: true, 
-        className: {
-            table: "gridjs-table",
-            container: "gridjs-container",
-        }
-    }).render(document.getElementById("tableStockData"));
-}
-
 function displayCrossoverResults(data) {
     // const emaShort = parseFloat(data.ema1_now).toFixed(2);
     // const emaMedium = parseFloat(data.ema2_now).toFixed(2);

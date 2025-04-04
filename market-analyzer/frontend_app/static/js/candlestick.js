@@ -377,192 +377,198 @@ function updateEMAInitialLegend() {
 
 
 ////////// MAIN DOCUMENT //////////
-document.addEventListener("DOMContentLoaded", function () {
-    function fetchAndRenderCandlestickChart(symbol, period, interval) {
-        fetch(`/stock/${symbol}/data_history/?period=${period}&interval=${interval}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error("Erro ao buscar dados:", data.error);
-                    const el = document.getElementById("candlestickChart");
-                    if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Erro: ${data.error}</h3>`;
-                    return;
-                }
-                processCandlestickData(data);
-            })
-            .catch(error => {
-                console.error("Erro ao buscar os dados:", error);
+function fetchAndRenderCandlestickChart(symbol, period, interval) {
+    fetch(`/stock/${symbol}/data_history/?period=${period}&interval=${interval}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Erro ao buscar dados:", data.error);
                 const el = document.getElementById("candlestickChart");
-                if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Erro ao buscar os dados.</h3>`;
-            });
+                if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Erro: ${data.error}</h3>`;
+                return;
+            }
+            processCandlestickData(data);
+        })
+        .catch(error => {
+            console.error("Erro ao buscar os dados:", error);
+            const el = document.getElementById("candlestickChart");
+            if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Erro ao buscar os dados.</h3>`;
+        });
+}
+
+function processCandlestickData(data) {
+    if (!data.data || data.data.length === 0) {
+        console.error("Nenhum dado encontrado no JSON:", data);
+        const el = document.getElementById("candlestickChart");
+        if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Nenhum dado disponível</h3>`;
+        return;
     }
 
-    function processCandlestickData(data) {
-        if (!data.data || data.data.length === 0) {
-            console.error("Nenhum dado encontrado no JSON:", data);
-            const el = document.getElementById("candlestickChart");
-            if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Nenhum dado disponível</h3>`;
+    const parsedData = data.data.map(entry => ({
+        time: entry.Date,
+        open: parseFloat(entry.Open).toFixed(5),
+        high: parseFloat(entry.High).toFixed(5),
+        low: parseFloat(entry.Low).toFixed(5),
+        close: parseFloat(entry.Close).toFixed(5)
+    }));
+
+    renderCandlestickChart(parsedData);
+}
+
+function renderCandlestickChart(priceData, symbol) {
+
+    const sharedScaleId = 'right';
+    const chartContainer = document.getElementById("candlestickChart");
+
+    /// Candlestick Chart ///
+    if (!chart) {
+        chart = LightweightCharts.createChart(chartContainer, {
+            layout: {
+                backgroundColor: 'transparent',
+                textColor: '#9198a1',
+            },
+            grid: {
+                vertLines: { color: false, visible: false },
+                horzLines: { color: false, visible: false },
+            },
+            priceScale: {
+                borderColor: '#3d444d',
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal
+            },
+            timeScale: {
+                borderColor: '#3d444d',
+                timeVisible: true,
+                secondsVisible: false,
+            },
+        });
+
+        candleSeries = chart.addCandlestickSeries({
+            upColor: '#26a69a',
+            downColor: '#ef5350',
+            borderDownColor: '#ef5350',
+            borderUpColor: '#26a69a',
+            wickDownColor: '#ef5350',
+            wickUpColor: '#26a69a',
+            priceScaleId: sharedScaleId
+        });
+    
+        window.addEventListener('resize', () => {
+            chart.applyOptions({
+                width: chartContainer.clientWidth,
+                height: chartContainer.clientHeight 
+            });
+        });
+    }
+
+    if (!candleSeries) {
+        candleSeries.setData(priceData);
+    } else {
+        priceData.forEach(dataPoint => {
+            candleSeries.update(dataPoint);
+        });
+    }
+
+    /// Candles Patterns - WIP - Fazer similar a EMAs///
+    const highlightCandle = priceData[priceData.length - 2];
+    const markers = [
+        {
+            time: highlightCandle.time,
+            position: 'aboveBar',
+            // color: 'yellow',
+            // shape: 'arrowDown',
+            text: '🚩'
+        }
+    ];
+
+    candleSeries.setMarkers(markers);
+
+    addTooltip(chartContainer, chart, priceData);
+    
+    /// EMAS Crossover ///
+    updateEMALines(symbol, 14, 25, 200);
+    setupEMADynamicLegend();
+    setupToggleEMAButton();
+    
+    /// Bollinger Bands ///
+    updateBollingerBands(symbol, 14, 2);
+    setupBollingerDynamicLegend();
+    setupToggleBollingerButton();
+
+}
+
+function addTooltip(chartContainer, chart, priceData) {
+    const tooltip = document.createElement("div");
+    tooltip.style.position = "absolute";
+    tooltip.style.background = "#0d1117";
+    tooltip.style.color = "#ddd";
+    tooltip.style.fontSize = "12px";
+    tooltip.style.padding = "8px 12px";
+    tooltip.style.borderRadius = "6px";
+    tooltip.style.pointerEvents = "none";
+    tooltip.style.visibility = "hidden";
+    tooltip.style.opacity = "0.8";
+    tooltip.style.zIndex = "999";
+
+    chartContainer.appendChild(tooltip);
+
+    chart.subscribeCrosshairMove((param) => {
+        if (!param.time || !param.seriesPrices || !param.point) {
+            tooltip.style.visibility = "hidden";
             return;
         }
 
-        const parsedData = data.data.map(entry => ({
-            time: entry.Date,
-            open: parseFloat(entry.Open).toFixed(5),
-            high: parseFloat(entry.High).toFixed(5),
-            low: parseFloat(entry.Low).toFixed(5),
-            close: parseFloat(entry.Close).toFixed(5)
-        }));
+        const priceDataPoint = priceData.find(c => c.time === param.time);
 
-        renderCandlestickChart(parsedData);
-    }
+        if (priceDataPoint) {
+            const cursorY = param.point.y;
+            const highY = candleSeries.priceToCoordinate(priceDataPoint.high);
+            const lowY = candleSeries.priceToCoordinate(priceDataPoint.low);
 
-    function renderCandlestickChart(priceData) {
-
-        const sharedScaleId = 'right';
-        const chartContainer = document.getElementById("candlestickChart");
-    
-        /// Candlestick Chart ///
-        if (!chart) {
-            chart = LightweightCharts.createChart(chartContainer, {
-                layout: {
-                    backgroundColor: 'transparent',
-                    textColor: '#9198a1',
-                },
-                grid: {
-                    vertLines: { color: false, visible: false },
-                    horzLines: { color: false, visible: false },
-                },
-                priceScale: {
-                    borderColor: '#3d444d',
-                },
-                crosshair: {
-                    mode: LightweightCharts.CrosshairMode.Normal
-                },
-                timeScale: {
-                    borderColor: '#3d444d',
-                    timeVisible: true,
-                    secondsVisible: false,
-                },
-            });
-    
-            candleSeries = chart.addCandlestickSeries({
-                upColor: '#26a69a',
-                downColor: '#ef5350',
-                borderDownColor: '#ef5350',
-                borderUpColor: '#26a69a',
-                wickDownColor: '#ef5350',
-                wickUpColor: '#26a69a',
-                priceScaleId: sharedScaleId
-            });
-        
-            window.addEventListener('resize', () => {
-                chart.applyOptions({
-                    width: chartContainer.clientWidth,
-                    height: chartContainer.clientHeight 
-                });
-            });
-        }
-    
-        if (!candleSeries) {
-            candleSeries.setData(priceData);
-        } else {
-            priceData.forEach(dataPoint => {
-                candleSeries.update(dataPoint);
-            });
-        }
-    
-        /// Candles Patterns - WIP - Fazer similar a EMAs///
-        const highlightCandle = priceData[priceData.length - 2];
-        const markers = [
-            {
-                time: highlightCandle.time,
-                position: 'aboveBar',
-                // color: 'yellow',
-                // shape: 'arrowDown',
-                text: '🚩'
-            }
-        ];
-    
-        candleSeries.setMarkers(markers);
-
-        addTooltip(chartContainer, chart, priceData);
-        
-        /// EMAS Crossover ///
-        updateEMALines(symbol, 14, 25, 200);
-        setupEMADynamicLegend();
-        setupToggleEMAButton();
-        
-        /// Bollinger Bands ///
-        updateBollingerBands(symbol, 14, 2);
-        setupBollingerDynamicLegend();
-        setupToggleBollingerButton();
-
-    }
-    
-    function addTooltip(chartContainer, chart, priceData) {
-        const tooltip = document.createElement("div");
-        tooltip.style.position = "absolute";
-        tooltip.style.background = "#0d1117";
-        tooltip.style.color = "#ddd";
-        tooltip.style.fontSize = "12px";
-        tooltip.style.padding = "8px 12px";
-        tooltip.style.borderRadius = "6px";
-        tooltip.style.pointerEvents = "none";
-        tooltip.style.visibility = "hidden";
-        tooltip.style.opacity = "0.8";
-        tooltip.style.zIndex = "999";
-    
-        chartContainer.appendChild(tooltip);
-    
-        chart.subscribeCrosshairMove((param) => {
-            if (!param.time || !param.seriesPrices || !param.point) {
+            // Proteção extra contra valores null
+            if (highY == null || lowY == null || cursorY == null) {
                 tooltip.style.visibility = "hidden";
                 return;
             }
-    
-            const priceDataPoint = priceData.find(c => c.time === param.time);
-    
-            if (priceDataPoint) {
-                const cursorY = param.point.y;
-                const highY = candleSeries.priceToCoordinate(priceDataPoint.high);
-                const lowY = candleSeries.priceToCoordinate(priceDataPoint.low);
-    
-                // Proteção extra contra valores null
-                if (highY == null || lowY == null || cursorY == null) {
-                    tooltip.style.visibility = "hidden";
-                    return;
-                }
-    
-                if (cursorY >= highY && cursorY <= lowY) {
-                    const { open, high, low, close } = priceDataPoint;
-    
-                    tooltip.innerHTML = `
-                        <strong>Open:</strong> ${open}<br>
-                        <strong>Close:</strong> ${close}<br>
-                        <strong>High:</strong> ${high}<br>
-                        <strong>Low:</strong> ${low}
-                    `;
-    
-                    tooltip.style.visibility = "visible";
-                    tooltip.style.left = `${param.point.x + 10}px`;
-                    tooltip.style.top = `${cursorY - 50}px`;
-                } else {
-                    tooltip.style.visibility = "hidden";
-                }
+
+            if (cursorY >= highY && cursorY <= lowY) {
+                const { open, high, low, close } = priceDataPoint;
+
+                tooltip.innerHTML = `
+                    <strong>Open:</strong> ${open}<br>
+                    <strong>Close:</strong> ${close}<br>
+                    <strong>High:</strong> ${high}<br>
+                    <strong>Low:</strong> ${low}
+                `;
+
+                tooltip.style.visibility = "visible";
+                tooltip.style.left = `${param.point.x + 10}px`;
+                tooltip.style.top = `${cursorY - 50}px`;
             } else {
                 tooltip.style.visibility = "hidden";
             }
-        });
+        } else {
+            tooltip.style.visibility = "hidden";
+        }
+    });
+}
+
+export function renderCandlestickFromData(symbol, priceDataRaw) {
+    if (!priceDataRaw || priceDataRaw.length === 0) {
+        console.error("Nenhum dado disponível para o gráfico.");
+        const el = document.getElementById("candlestickChart");
+        if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Nenhum dado disponível</h3>`;
+        return;
     }
-    
-    let pathParts = window.location.pathname.split("/");
-    let symbol = pathParts[2];
 
-    if (symbol) {
-        fetchAndRenderCandlestickChart(symbol, "1mo", "1d");
-    } else {
-        console.error("Nenhum símbolo encontrado na URL!");
-    }
+    const parsedData = priceDataRaw.map(entry => ({
+        time: entry.Date,
+        open: parseFloat(entry.Open).toFixed(5),
+        high: parseFloat(entry.High).toFixed(5),
+        low: parseFloat(entry.Low).toFixed(5),
+        close: parseFloat(entry.Close).toFixed(5)
+    }));
 
-
-});
+    renderCandlestickChart(parsedData, symbol);
+}

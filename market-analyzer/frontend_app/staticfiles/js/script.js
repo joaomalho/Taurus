@@ -1,4 +1,4 @@
-import { updateEMALines, updateBollingerBands } from './candlestick.js';
+import { updateEMALines, updateBollingerBands, renderCandlestickFromData } from './candlestick.js';
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -294,13 +294,16 @@ function setupScreenerButton() {
 
 /* ─────── FUNÇÃO PARA FORMATAR NÚMEROS GRANDES ─────── */
 function formatNumber(value) {
-    return value ? value.toLocaleString('en-EN') : "N/A"; 
+    return typeof value === "number" && isFinite(value)
+        ? value.toLocaleString("en-EN")
+        : "N/A";
 }
+
 
 /* ─────── FUNÇÃO PARA FORMATAR VALORES MONETÁRIOS ─────── */
 function formatCurrency(value) {
-    return value
-        ? value.toLocaleString('en-EN', { style: 'currency', currency: 'USD' })
+    return typeof value === "number" && isFinite(value)
+        ? value.toLocaleString("en-EN", { style: "currency", currency: "USD" })
         : "N/A";
 }
 
@@ -386,10 +389,11 @@ function fetchStockData(symbol) {
                 return;
             }
 
-            updateTable(data); // Agora usa Grid.js
+            renderCandlestickFromData(symbol, data.data); // <- CHAVE
         })
         .catch(error => console.error("Erro ao buscar dados:", error));
 }
+
 
 function fetchBioData(symbol) {
     fetch(`/stock/${symbol}/bio_info`)
@@ -551,21 +555,6 @@ function fetchYahooStockMostActive() {
 
 
 /* ─────────────── FUNÇÕES DE MANIPULAÇÃO DE DADOS ─────────────── */
-
-function updateTable(data) {
-    new gridjs.Grid({
-        columns: ["Nome", "Preço", "Variação"],
-        data: [[data.name, data.price, data.change]],
-        search: true,
-        pagination: true,
-        sort: true, 
-        className: {
-            table: "gridjs-table",
-            container: "gridjs-container",
-        }
-    }).render(document.getElementById("tableStockData"));
-}
-
 function displayCrossoverResults(data) {
     // const emaShort = parseFloat(data.ema1_now).toFixed(2);
     // const emaMedium = parseFloat(data.ema2_now).toFixed(2);
@@ -806,54 +795,57 @@ function displayFundamentalResults(data) {
 
     for (const [key, data] of Object.entries(elements)) {
         const valueElement = document.getElementById(key);
-
-        const value = data.value || "N/A";
+    
+        const value = data?.value ?? null;
 
         if (valueElement) {
-            valueElement.textContent = value !== "N/A" ? formatNumber(value) : "N/A";
+            valueElement.textContent =
+                typeof value === "number" && isFinite(value)
+                    ? formatNumber(value)
+                    : "N/A";
         }
+        
+
     }
 }
 
 function displayFundamentalResultsClassification(data) {
     const elements = {
-        trailingPE: data.evaluations.valuation?.trailingPE || "N/A",
-        PEGRatio: data.evaluations.valuation?.PEGRatio || "N/A",
-        divCoverageRate: data.evaluations.dividends?.divCoverageRate || "N/A",
-        CostOfRevenueCAGR: data.evaluations.profitability?.CostOfRevenueCAGR || "N/A",
-        TotalRevenueCAGR: data.evaluations.profitability?.TotalRevenueCAGR || "N/A",
-        NetWorth: data.evaluations.liquidity?.NetWorth || "N/A",
-        ShortTermDebtCoverage: data.evaluations.liquidity?.ShortTermDebtCoverage || "N/A",
-        LongTermDebtCoverage: data.evaluations.liquidity?.LongTermDebtCoverage || "N/A",
-        StockholdersEquityCAGR: data.evaluations.liquidity?.StockholdersEquityCAGR || "N/A",
-        TotalAssetsCAGR: data.evaluations.liquidity?.TotalAssetsCAGR || "N/A",
-        TotalLiabilitiesCAGR: data.evaluations.liquidity?.TotalLiabilitiesCAGR || "N/A",
-        FreeCashflowYield: data.evaluations.cashflow?.FreeCashflowYield || "N/A",
-        CurrentRatio: data.evaluations.ratios?.CurrentRatio || "N/A",
-        CurrentRatioCAGR: data.evaluations.ratios?.CurrentRatioCAGR || "N/A",
-        CashRatio: data.evaluations.ratios?.CashRatio || "N/A",
-        CashRatioCAGR: data.evaluations.ratios?.CashRatioCAGR || "N/A",
-        GrossMargin: data.evaluations.ratios?.GrossMargin || "N/A",
-        // GrossMarginCAGR: data.evaluations.ratios?.GrossMarginCAGR || "N/A",
-        OperatingMargin: data.evaluations.ratios?.OperatingMargin || "N/A",
-        OperatingMarginCAGR: data.evaluations.ratios?.OperatingMarginCAGR || "N/A",
-        ProfitMargin: data.evaluations.ratios?.ProfitMargin || "N/A",
-        ProfitMarginCAGR: data.evaluations.ratios?.ProfitMarginCAGR || "N/A",
-        ReturnOnEquity: data.evaluations.ratios?.ReturnOnEquity || "N/A",
-        ReturnOnEquityCAGR: data.evaluations.ratios?.ReturnOnEquityCAGR || "N/A",
+        trailingPE: data.evaluations.valuation?.trailingPE_evaluation ?? null,
+        PEGRatio: data.evaluations.valuation?.PEGRatio_evaluation ?? null,
+        divCoverageRate: data.evaluations.dividends?.divCoverageRate_evaluation ?? null,
+        CostOfRevenueCAGR: data.evaluations.profitability?.CostOfRevenueCAGR_evaluation ?? null,
+        TotalRevenueCAGR: data.evaluations.profitability?.TotalRevenueCAGR_evaluation ?? null,
+        NetWorth: data.evaluations.liquidity?.NetWorth_evaluation ?? null,
+        ShortTermDebtCoverage: data.evaluations.liquidity?.ShortTermDebtCoverage_evaluation ?? null,
+        LongTermDebtCoverage: data.evaluations.liquidity?.LongTermDebtCoverage_evaluation ?? null,
+        StockholdersEquityCAGR: data.evaluations.liquidity?.StockholdersEquityCAGR_evaluation ?? null,
+        TotalAssetsCAGR: data.evaluations.liquidity?.TotalAssetsCAGR_evaluation ?? null,
+        TotalLiabilitiesCAGR: data.evaluations.liquidity?.TotalLiabilitiesCAGR_evaluation ?? null,
+        FreeCashflowYield: data.evaluations.cashflow?.FreeCashflowYield_evaluation ?? null,
+        CurrentRatio: data.evaluations.ratios?.CurrentRatio_evaluation ?? null,
+        CurrentRatioCAGR: data.evaluations.ratios?.CurrentRatioCAGR_evaluation ?? null,
+        CashRatio: data.evaluations.ratios?.CashRatio_evaluation ?? null,
+        CashRatioCAGR: data.evaluations.ratios?.CashRatioCAGR_evaluation ?? null,
+        GrossMargin: data.evaluations.ratios?.GrossMargin_evaluation ?? null,
+        // GrossMarginCAGR: data.evaluations.ratios?.GrossMarginCAGR_evaluation || "N/A",
+        OperatingMargin: data.evaluations.ratios?.OperatingMargin_evaluation ?? null,
+        OperatingMarginCAGR: data.evaluations.ratios?.OperatingMarginCAGR_evaluation ?? null,
+        ProfitMargin: data.evaluations.ratios?.ProfitMargin_evaluation ?? null,
+        ProfitMarginCAGR: data.evaluations.ratios?.ProfitMarginCAGR_evaluation ?? null,
+        ReturnOnEquity: data.evaluations.ratios?.ReturnOnEquity_evaluation ?? null,
+        ReturnOnEquityCAGR: data.evaluations.ratios?.ReturnOnEquityCAGR_evaluation ?? null,
     }
     
     for (const [key, evaluation] of Object.entries(elements)) {
         const classificationElement = document.getElementById(`${key}Class`);
-
         if (classificationElement) {
-            classificationElement.textContent = evaluation;
+            classificationElement.textContent = evaluation ?? "N/A";
         }
-        
-        const classificationElementOverview = document.getElementById(`${key}ClassOverview`);
 
+        const classificationElementOverview = document.getElementById(`${key}ClassOverview`);
         if (classificationElementOverview) {
-            classificationElementOverview.textContent = evaluation;
+            classificationElementOverview.textContent = evaluation ?? "N/A";
         }
     }
 }
