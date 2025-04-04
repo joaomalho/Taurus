@@ -355,9 +355,6 @@ We are also looking to grow our community with **key roles in market analysis**:
     - Add Tags to Easly get info - `ToDo: Low`
     - Get Holder Last insider information 
 
-- Technical Backend Issues:
-    - Remove duplicaded info get from Script **bio_info** and **data_history** - `ToDo: High`
-
 - Additional Screens
     - Missing Catalog for penny, top of day, top of week.
 - Install scripts:
