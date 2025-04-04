@@ -1,11 +1,193 @@
 ////////// VARIABLES //////////
 let chart;
-let candleSeries;  
+let candleSeries;
+
+/// crossover ///
 let emaFastSeries, emaMediumSeries, emaSlowSeries;
-let emaFastData = [];
-let emaMediumData = [];
-let emaSlowData = [];
+let emaFastData = [], emaMediumData = [], emaSlowData = [];
 let emasVisible = true;
+
+/// bollinger ///
+let bbUpperSeries, bbMiddleSeries, bbLowerSeries;
+let bbUpperData = [], bbMiddleData = [], bbLowerData = [];
+let bollingerVisible = true, bbAreaSeries = null;
+
+////////// DRAW BOLLINGER BANDS //////////
+export function updateBollingerBands(symbol, length, std) {
+    fetch(`/stock/${symbol}/bollinger_draw/?length=${length}&std=${std}`)
+        .then(res => res.json())
+        .then(bollingerData => {
+            if (bollingerData.error) {
+                console.error("Erro ao buscar Bollinger Bands:", bollingerData.error);
+                return;
+            }
+
+            clearBollingerSeries();
+
+            renderBollingerBands(
+                bollingerData.bb_upper,
+                bollingerData.bb_middle,
+                bollingerData.bb_lower
+            );
+
+            updateBollingerInitialLegend();
+
+            const toggleBtn = document.getElementById("toggleBollingerBtn");
+            if (toggleBtn) {
+                toggleBtn.style.display = "inline-block";
+                toggleBtn.classList.add("visible");
+            }
+        })
+        .catch(err => console.error("Erro ao buscar Bollinger Bands:", err));
+}
+
+
+function setupToggleBollingerButton() {
+    const toggleBtn = document.getElementById("toggleBollingerBtn");
+    const icon = document.getElementById("toggleBollingerIcon");
+    const legendDiv = document.getElementById("customLegendBollinger");
+
+    if (!toggleBtn || !icon || !legendDiv) return;
+
+    toggleBtn.addEventListener("click", () => {
+        bollingerVisible = !bollingerVisible;
+
+        if (bbUpperSeries) bbUpperSeries.applyOptions({ visible: bollingerVisible });
+        if (bbMiddleSeries) bbMiddleSeries.applyOptions({ visible: bollingerVisible });
+        if (bbLowerSeries) bbLowerSeries.applyOptions({ visible: bollingerVisible });
+        if (bbAreaSeries) bbAreaSeries.applyOptions({ visible: bollingerVisible });
+
+
+        icon.src = bollingerVisible
+            ? "/static/images/open-eye-white.png"
+            : "/static/images/close-eye-white.png";
+
+        if (!bollingerVisible) {
+            legendDiv.innerHTML = `
+                <span style="color:#e53935">Upper: -</span> |
+                <span style="color:#1e88e5">Middle: -</span> |
+                <span style="color:#43a047">Lower: -</span>
+            `;
+        } else {
+            updateBollingerInitialLegend();
+        }
+    });
+}
+
+function renderBollingerBands(upperData, middleData, lowerData) {
+    // Remove área anterior, se existir
+    if (bbAreaSeries) {
+        chart.removeSeries(bbAreaSeries);
+        bbAreaSeries = null;
+    }
+
+    // // Renderiza a área entre Upper e Lower
+    // bbAreaSeries = chart.addAreaSeries({
+    //     topColor: 'rgba(33, 150, 243, 0.3)',
+    //     bottomColor: 'rgba(33, 150, 243, 0.05)',
+    //     lineColor: 'transparent',
+    //     lineWidth: 0,
+    //     priceScaleId: 'right',
+    // });
+
+    // const areaData = lowerData.map((point, i) => ({
+    //     time: point.time,
+    //     value: upperData[i].value,
+    // }));
+
+    // bbAreaSeries.setData(areaData);
+
+    // Função interna para criar uma linha
+    const createLine = (data, color) => {
+        const series = chart.addLineSeries({
+            color: color,
+            lineWidth: 1,
+            visible: true,
+            priceLineVisible: false,
+            priceScaleId: 'right',
+        });
+
+        series.setData(data.map(point => ({
+            time: point.time,
+            value: point.value,
+        })));
+
+        return series;
+    };
+
+    // Criar as 3 linhas
+    bbUpperSeries = createLine(upperData, '#4caf50');
+    bbMiddleSeries = createLine(middleData, '#ffa000');
+    bbLowerSeries = createLine(lowerData, '#f44336');
+
+    // Guardar os dados
+    bbUpperData = upperData;
+    bbMiddleData = middleData;
+    bbLowerData = lowerData;
+}
+
+function clearBollingerSeries() {
+    if (bbUpperSeries) {
+        chart.removeSeries(bbUpperSeries);
+        bbUpperSeries = null;
+    }
+    if (bbMiddleSeries) {
+        chart.removeSeries(bbMiddleSeries);
+        bbMiddleSeries = null;
+    }
+    if (bbLowerSeries) {
+        chart.removeSeries(bbLowerSeries);
+        bbLowerSeries = null;
+    }
+}
+
+function setupBollingerDynamicLegend() {
+    const legendDiv = document.getElementById("customLegendBollinger");
+
+    chart.subscribeCrosshairMove(param => {
+        if (!param.time || !param.seriesPrices) return;
+
+        const lines = [];
+
+        const val = (series, color, label) => {
+            const value = param.seriesPrices.get(series);
+            if (value !== undefined) {
+                lines.push(`<span style="color:${color}">${label}: ${value.toFixed(2)}</span>`);
+            }
+        };
+
+        val(bbUpperSeries, "#e53935", "Upper");
+        val(bbMiddleSeries, "#1e88e5", "Middle");
+        val(bbLowerSeries, "#43a047", "Lower");
+
+        if (lines.length > 0) {
+            legendDiv.innerHTML = lines.join(" | ");
+        }
+    });
+}
+
+function updateBollingerInitialLegend() {
+    const legendDiv = document.getElementById("customLegendBollinger");
+    const lines = [];
+
+    if (bbUpperData.length > 0) {
+        const last = bbUpperData[bbUpperData.length - 1];
+        lines.push(`<span style="color:#e53935">Upper: ${last.value.toFixed(2)}</span>`);
+    }
+
+    if (bbMiddleData.length > 0) {
+        const last = bbMiddleData[bbMiddleData.length - 1];
+        lines.push(`<span style="color:#1e88e5">Middle: ${last.value.toFixed(2)}</span>`);
+    }
+
+    if (bbLowerData.length > 0) {
+        const last = bbLowerData[bbLowerData.length - 1];
+        lines.push(`<span style="color:#43a047">Lower: ${last.value.toFixed(2)}</span>`);
+    }
+
+    legendDiv.innerHTML = lines.join(" | ");
+}
+
 
 ////////// DRAW CROSSOVER EMAS //////////
 export function updateEMALines(symbol, fast, medium, slow) {
@@ -17,12 +199,12 @@ export function updateEMALines(symbol, fast, medium, slow) {
                 return;
             }
 
-            clearEmaSeries();
+            clearEMASeries();
 
-            renderEMALines(emaData.ema_fast, "#b0570875", "EMA Fast");
-            renderEMALines(emaData.ema_medium, "#b0750875", "EMA Medium");
-            renderEMALines(emaData.ema_slow, "#b0990875", "EMA Slow");
-            updateInitialLegend();
+            renderEMALines(emaData.ema_fast, "#b0570880", "EMA Fast");
+            renderEMALines(emaData.ema_medium, "#b0750880", "EMA Medium");
+            renderEMALines(emaData.ema_slow, "#b0990880", "EMA Slow");
+            updateEMAInitialLegend();
             const toggleBtn = document.getElementById("toggleEmaBtn");
             if (toggleBtn) {
                 toggleBtn.style.display = "inline-block";
@@ -32,7 +214,7 @@ export function updateEMALines(symbol, fast, medium, slow) {
         .catch(err => console.error("Erro ao buscar EMAs:", err));
 }
 
-function setupToggleEmaButton() {
+function setupToggleEMAButton() {
     const toggleBtn = document.getElementById("toggleEmaBtn");
     const icon = document.getElementById("toggleEmaIcon");
     const legendDiv = document.getElementById("customLegendEmas");
@@ -59,13 +241,12 @@ function setupToggleEmaButton() {
             `;
         } else {
             // Quando voltam a estar visíveis, atualiza os valores
-            updateInitialLegend();
+            updateEMAInitialLegend();
         }
     });
 }
 
 function renderEMALines(emaData, color, label) {
-    
     const lineSeries = chart.addLineSeries({
         color: color,
         lineWidth: 1,
@@ -105,7 +286,7 @@ function renderEMALines(emaData, color, label) {
     }
 }
 
-function clearEmaSeries() {
+function clearEMASeries() {
     if (emaFastSeries) {
         chart.removeSeries(emaFastSeries);
         emaFastSeries = null;
@@ -120,7 +301,7 @@ function clearEmaSeries() {
     }
 }
 
-function setupDynamicLegend() {
+function setupEMADynamicLegend() {
     const legendDiv = document.getElementById("customLegendEmas");
 
     chart.subscribeCrosshairMove((param) => {
@@ -156,7 +337,7 @@ function setupDynamicLegend() {
     });
 }
 
-function updateInitialLegend() {
+function updateEMAInitialLegend() {
     const legendDiv = document.getElementById("customLegendEmas");
     const lines = [];
 
@@ -293,8 +474,13 @@ document.addEventListener("DOMContentLoaded", function () {
         
         /// EMAS Crossover ///
         updateEMALines(symbol, 14, 25, 200);
-        setupDynamicLegend();
-        setupToggleEmaButton();
+        setupEMADynamicLegend();
+        setupToggleEMAButton();
+        
+        /// Bollinger Bands ///
+        updateBollingerBands(symbol, 14, 2);
+        setupBollingerDynamicLegend();
+        setupToggleBollingerButton();
 
     }
     

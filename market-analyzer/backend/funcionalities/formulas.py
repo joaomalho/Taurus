@@ -69,3 +69,9 @@ class Formulas():
         current_pat = close_np[current_idx]
 
         return current_idx, current_pat, start, end, idx
+    
+    def safe_round(self, value):
+        try:
+            return round(float(value), 2)
+        except (ValueError, TypeError):
+            return None

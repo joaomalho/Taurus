@@ -344,15 +344,20 @@ We are also looking to grow our community with **key roles in market analysis**:
 - FrontEnd firt version release
     - Add metrics and drawn to candlestik graph. 
         - Harmonic Patterns `ToDo: Medium`
-        - Bollinger bands `ToDo: Medium`
+        - RSI `ToDo: Medium`
+        - ADX `ToDo: Medium`
         - Candles Marks `ToDo: Medium`
 - Technical Analysis
     - Pivots Point - `ToDo: Low`
 - Fundamental Analysis
-    - Review all Results and add numeric scale `ToDo: Medium`
     - Sentiment Analysis of Recent News - `ToDo: Low`
-    - Economic Calendar Correlations - `ToDo`
-    
+    - Economic Calendar Correlations - `ToDo: Low`
+    - Add Tags to Easly get info - `ToDo: Low`
+    - Get Holder Last insider information 
+
+- Technical Backend Issues:
+    - Remove duplicaded info get from Script **bio_info** and **data_history** - `ToDo: High`
+
 - Additional Screens
     - Missing Catalog for penny, top of day, top of week.
 - Install scripts:

@@ -105,6 +105,21 @@ function renderBollingerBands(upperData, middleData, lowerData) {
             visible: true,
             priceLineVisible: false,
             priceScaleId: 'right',
+
+            lineWidth: 1,
+            lineStyle: 0,
+            lineType: 0,
+            crossHairMarkerVisible: true,
+            crossHairMarkerRadius: 3,
+            lastValueVisible: false,
+            priceLineVisible: false,
+            priceLineColor: color,
+            priceLineStyle: 0,
+            priceLineWidth: 1,
+            // title: label,
+            visible: true,
+            overlay: false,
+
         });
 
         series.setData(data.map(point => ({

@@ -1,4 +1,4 @@
-import { updateEMALines } from './candlestick.js';
+import { updateEMALines, updateBollingerBands } from './candlestick.js';
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -181,6 +181,9 @@ function setupTechnicalAnalysisEvents(symbol) {
         }
     
         fetchBollingerData(symbol, bollingerLength, stdBol);
+
+        updateBollingerBands(symbol, bollingerLength, stdBol);
+
     });
 
     document.getElementById("RSIButton").addEventListener("click", function () {
@@ -438,8 +441,6 @@ function fetchCrossoverData(symbol, fastPeriod = 14, mediumPeriod = 25, slowPeri
             }
             displayCrossoverResults(data);
 
-            // Desenhar as EMAs no gráfico
-            // drawEMALines(chart, data.ema_fast, data.ema_medium, data.ema_slow);
         })
         .catch(error => console.error("Erro ao buscar os dados do crossover:", error));
 }

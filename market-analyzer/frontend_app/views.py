@@ -634,13 +634,10 @@ def get_fundamental_evaluations(request, symbol):
         for category, data in fundamental_info.items():
             evaluation_result = rmf.evaluate_metrics({category: data})
 
-            evaluations_data[category] = {}
-
-            for key, value in data.items():
-                if isinstance(evaluation_result, dict) and key in evaluation_result:
-                    evaluations_data[category][key] = evaluation_result[key]
-                else:
-                    evaluations_data[category][key] = value
+            if isinstance(evaluation_result, dict):
+                evaluations_data[category] = evaluation_result
+            else:
+                evaluations_data[category] = {}
 
         return JsonResponse({"evaluations": evaluations_data})
 
@@ -648,7 +645,6 @@ def get_fundamental_evaluations(request, symbol):
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
-
 
 
 def get_bio_info(request, symbol):
