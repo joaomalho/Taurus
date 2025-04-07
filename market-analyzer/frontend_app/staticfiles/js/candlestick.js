@@ -12,6 +12,8 @@ let bbUpperSeries, bbMiddleSeries, bbLowerSeries;
 let bbUpperData = [], bbMiddleData = [], bbLowerData = [];
 let bollingerVisible = true, bbAreaSeries = null;
 
+/// rsi ///
+
 ////////// DRAW BOLLINGER BANDS //////////
 export function updateBollingerBands(symbol, length, std) {
     fetch(`/stock/${symbol}/bollinger_draw/?length=${length}&std=${std}`)
@@ -131,9 +133,9 @@ function renderBollingerBands(upperData, middleData, lowerData) {
     };
 
     // Criar as 3 linhas
-    bbUpperSeries = createLine(upperData, '#4caf50');
-    bbMiddleSeries = createLine(middleData, '#ffa000');
-    bbLowerSeries = createLine(lowerData, '#f44336');
+    bbUpperSeries = createLine(upperData, '#e5393580');
+    bbMiddleSeries = createLine(middleData, '#1e88e580');
+    bbLowerSeries = createLine(lowerData, '#43a04780');
 
     // Guardar os dados
     bbUpperData = upperData;
@@ -377,43 +379,6 @@ function updateEMAInitialLegend() {
 
 
 ////////// MAIN DOCUMENT //////////
-function fetchAndRenderCandlestickChart(symbol, period, interval) {
-    fetch(`/stock/${symbol}/data_history/?period=${period}&interval=${interval}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error("Erro ao buscar dados:", data.error);
-                const el = document.getElementById("candlestickChart");
-                if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Erro: ${data.error}</h3>`;
-                return;
-            }
-            processCandlestickData(data);
-        })
-        .catch(error => {
-            console.error("Erro ao buscar os dados:", error);
-            const el = document.getElementById("candlestickChart");
-            if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Erro ao buscar os dados.</h3>`;
-        });
-}
-
-function processCandlestickData(data) {
-    if (!data.data || data.data.length === 0) {
-        console.error("Nenhum dado encontrado no JSON:", data);
-        const el = document.getElementById("candlestickChart");
-        if (el) el.innerHTML = `<h3 class="chart-label" style="color: red;">Nenhum dado disponível</h3>`;
-        return;
-    }
-
-    const parsedData = data.data.map(entry => ({
-        time: entry.Date,
-        open: parseFloat(entry.Open).toFixed(5),
-        high: parseFloat(entry.High).toFixed(5),
-        low: parseFloat(entry.Low).toFixed(5),
-        close: parseFloat(entry.Close).toFixed(5)
-    }));
-
-    renderCandlestickChart(parsedData);
-}
 
 function renderCandlestickChart(priceData, symbol) {
 
