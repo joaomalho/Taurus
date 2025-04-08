@@ -355,3 +355,23 @@ export function displayFundamentalResultsClassification(data) {
         }
     }
 }
+
+export function displayInsideTransactions(data) {
+    if (!Array.isArray(data) || data.length === 0) {
+        document.getElementById("tableInsideTransactions").innerHTML = "<p>No data to show.</p>";
+        return;
+    }
+
+    const tableData = data.map(entry => ({
+        "Shares": entry.Shares.toLocaleString(),
+        "Value": formatCurrency(entry.Value),
+        "Description": entry.Text,
+        "Insider": entry.Insider,
+        "Position": entry.Position,
+        "Date": entry.StartDate,
+        "Ownership": entry.Ownership
+    }));
+
+    createGridTable(tableData, ["Shares", "Value", "Description", "Insider", "Position", "Date", "Ownership"], "tableInsideTransactions");
+}
+

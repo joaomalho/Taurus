@@ -666,6 +666,14 @@ class DataHistoryYahoo():
         }
         return yahoo_symbol_fundamental_info
 
+    def get_symbol_inside_transactions(self, symbol : str):
+        '''
+        Return the list of inside transactions
+        '''
+        yahoo_symbol_insider_transactions = yf.Ticker(symbol).insider_transactions
+        yahoo_symbol_insider_transactions = yahoo_symbol_insider_transactions.rename(columns={'Start Date': 'StartDate'})
+        yahoo_symbol_insider_transactions.drop(columns=['URL','Transaction'], inplace=True)
+        return yahoo_symbol_insider_transactions
 
    ########### FOREX ###########   
     ##### NOT IN USE ##### 

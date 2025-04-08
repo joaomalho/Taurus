@@ -339,8 +339,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 ## **<p align="center"> 👨‍💻 Developments & Improvements </p>**
 
 ## **🛠️ Next steps**
-- Install tool (Upgrade & Uninstall Methods, and visual) - Install review due new dependencies
-    - Add a visual window in screen - Next Version
+
 - FrontEnd firt version release
     - Add metrics and drawn to candlestik graph. 
         - Harmonic Patterns `ToDo: Medium`
@@ -353,7 +352,6 @@ We are also looking to grow our community with **key roles in market analysis**:
     - Sentiment Analysis of Recent News - `ToDo: Low`
     - Economic Calendar Correlations - `ToDo: Low`
     - Add Tags to Easly get info - `ToDo: Low`
-    - Get Holder Last insider information 
 
 - Additional Screens
     - Missing Catalog for penny, top of day, top of week.

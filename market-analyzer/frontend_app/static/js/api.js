@@ -1,19 +1,13 @@
 // static/js/api.js
 
-export function fetchStockData(symbol) {
-    return fetch(`/stock/${symbol}/data_history/?period=1mo&interval=1d`).then(res => res.json());
-}
 
+//////////// ###### API: Data for Symbol ###### ////////////
 export function fetchBioData(symbol) {
     return fetch(`/stock/${symbol}/bio_info/`).then(res => res.json());
 }
 
-export function fetchFundamentalInfo(symbol) {
-    return fetch(`/stock/${symbol}/fundamental_info/`).then(res => res.json());
-}
-
-export function fetchFundamentalInfoClassification(symbol) {
-    return fetch(`/stock/${symbol}/fundamental_evaluations/`).then(res => res.json());
+export function fetchStockData(symbol) {
+    return fetch(`/stock/${symbol}/data_history/?period=1mo&interval=1d`).then(res => res.json());
 }
 
 export function fetchCrossoverData(symbol, fast = 14, medium = 25, slow = 200) {
@@ -39,6 +33,20 @@ export function fetchCandlePatternData(symbol) {
 export function fetchHarmonicPatternData(symbol) {
     return fetch(`/stock/${symbol}/harmonic_patterns/`).then(res => res.json());
 }
+
+export function fetchFundamentalInfo(symbol) {
+    return fetch(`/stock/${symbol}/fundamental_info/`).then(res => res.json());
+}
+
+export function fetchFundamentalInfoClassification(symbol) {
+    return fetch(`/stock/${symbol}/fundamental_evaluations/`).then(res => res.json());
+}
+
+export function fetchInsideTransactions(symbol) {
+    return fetch(`/stock/${symbol}/inside_transactions/`).then(res => res.json());
+}
+
+//////////// ##### API: Screener ###### ////////////
 
 export function fetchYahooStockGainers() {
     return fetch("/screener/stock_gainers/").then(res => res.json());

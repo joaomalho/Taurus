@@ -1,6 +1,10 @@
 import { updateEMALines, updateBollingerBands, renderCandlestickFromData } from './candlestick.js';
 
 import {
+    fetchYahooStockGainers,
+    fetchYahooStockTrending,
+    fetchYahooStockMostActive,
+    fetchBioData,
     fetchStockData,
     fetchCrossoverData,
     fetchADXData,
@@ -10,22 +14,20 @@ import {
     fetchHarmonicPatternData,
     fetchFundamentalInfo,
     fetchFundamentalInfoClassification,
-    fetchBioData,
-    fetchYahooStockGainers,
-    fetchYahooStockTrending,
-    fetchYahooStockMostActive
+    fetchInsideTransactions,
 } from './api.js';
 
 import {
     displayBioResults,
-    displayFundamentalResults,
-    displayFundamentalResultsClassification,
     displayCrossoverResults,
     displayADXResults,
     displayBollingerResults,
     displayRSIResults,
     displayCandleResults,
-    displayHarmonicResults
+    displayHarmonicResults,
+    displayFundamentalResults,
+    displayFundamentalResultsClassification,
+    displayInsideTransactions
 } from './display.js';
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -37,6 +39,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let symbol = pathParts[2];
     
     if (symbol) {
+        fetchBioData(symbol).then(data => {
+            if (!data.error) displayBioResults(data);
+        });
+
         fetchStockData(symbol).then(data => {
             if (!data.error) renderCandlestickFromData(symbol, data.data);
         });
@@ -72,10 +78,11 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchFundamentalInfoClassification(symbol).then(data => {
             if (!data.error) displayFundamentalResultsClassification(data);
         });
-    
-        fetchBioData(symbol).then(data => {
-            if (!data.error) displayBioResults(data);
+        
+        fetchInsideTransactions(symbol).then(data => {
+            if (!data.error) displayInsideTransactions(data);
         });
+
     }    
 
     fetchYahooStockGainers();
@@ -165,6 +172,12 @@ document.addEventListener("DOMContentLoaded", function () {
     setupToggle({
         toggleSelector: "#funOverview",
         contentSelector: ".overview-content",
+        iconSelector: ".toggle-icon"
+    });
+
+    setupToggle({
+        toggleSelector: "#tecInsiders",
+        contentSelector: ".insiders-content",
         iconSelector: ".toggle-icon"
     });
 

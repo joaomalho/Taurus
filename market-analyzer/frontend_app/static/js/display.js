@@ -8,8 +8,15 @@ function formatNumber(value) {
 /* ─────── FUNÇÃO PARA FORMATAR VALORES MONETÁRIOS ─────── */
 function formatCurrency(value) {
     return typeof value === "number" && isFinite(value)
-        ? value.toLocaleString("en-EN", { style: "currency", currency: "USD" })
-        : "N/A";
+    ? value.toLocaleString("en-EN", { style: "currency", currency: "USD" })
+    : "N/A";
+}
+
+/* ─────── FUNÇÃO PARA FORMATAR VALORES DATA ─────── */
+function formatDate(dateStr) {
+    if (!dateStr) return "N/A";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("pt-PT"); 
 }
 
 /* ─────────────── FUNÇÕES DE CRIAÇÃO DE TABELAS ─────────────── */
@@ -355,3 +362,31 @@ export function displayFundamentalResultsClassification(data) {
         }
     }
 }
+
+export function displayInsideTransactions(response) {
+    const data = response.data; // <- extrai o array corretamente
+
+    if (!Array.isArray(data) || data.length === 0) {
+        document.getElementById("tableInsideTransactions").innerHTML = "<p>No data to show.</p>";
+        return;
+    }
+
+    const tableData = data.map(entry => ({
+        "Shares": entry.Shares?.toLocaleString() || "-",
+        "Value": formatCurrency(entry.Value),
+        "Description": entry.Text,
+        "Insider": entry.Insider,
+        "Position": entry.Position,
+        "Date": formatDate(entry.StartDate),
+        "Ownership": entry.Ownership
+    }));
+
+    createGridTable(
+        tableData,
+        ["Shares", "Value", "Description", "Insider", "Position", "Date", "Ownership"],
+        "tableInsideTransactions"
+    );
+}
+
+
+
