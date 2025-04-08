@@ -404,6 +404,22 @@ def get_rsi_trend_metrics(request, symbol):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
  
+def get_rsi_trend_metrics_draw(request, symbol):
+    upper_level = int(request.GET.get("upper_level", 70))
+    lower_level = int(request.GET.get("lower_level", 30))
+    length = int(request.GET.get("length", 30))
+    
+    dh = DataHistoryYahoo()
+    df = dh.get_data_history(symbol=symbol, period="1y", interval="1d")
+
+    if df is None or df.empty:
+        return JsonResponse({"error": "Sem dados"}, status=404)
+
+    cd = CandlestickData()
+
+    result = cd.get_rsi_history(df, length, upper_level, lower_level)
+    result["symbol"] = symbol.upper()
+    return JsonResponse(result)
 
 def get_candle_detection(request, symbol):
     """

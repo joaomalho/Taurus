@@ -107,7 +107,6 @@ function renderBollingerBands(upperData, middleData, lowerData) {
             visible: true,
             priceLineVisible: false,
             priceScaleId: 'right',
-
             lineWidth: 1,
             lineStyle: 0,
             lineType: 0,

@@ -10,9 +10,139 @@ let emasVisible = true;
 /// bollinger ///
 let bbUpperSeries, bbMiddleSeries, bbLowerSeries;
 let bbUpperData = [], bbMiddleData = [], bbLowerData = [];
-let bollingerVisible = true, bbAreaSeries = null;
+let bollingerVisible = true 
+// let bbAreaSeries = null;
 
-/// rsi ///
+/// RSI ///
+let rsiSeries;
+let rsiData = [];
+let rsiVisible = true;
+
+////////// DRAW RSI //////////
+export function updateRsi(symbol, length, upper_level, lower_level) {
+    fetch(`/stock/${symbol}/rsi_draw/?length=${length}&upper=${upper_level}&lower=${lower_level}`)
+        .then(res => res.json())
+        .then(rsiData => {
+            if (rsiData.error) {
+                console.error("Erro ao buscar RSI:", rsiData.error);
+                return;
+            }
+
+            clearRsiSeries();
+
+            renderRsi(
+                rsiData.rsi,
+                rsiData.upper_level,
+                rsiData.lower_level
+            );
+
+            updateRsiInitialLegend();
+
+            const toggleBtn = document.getElementById("toggleRsiBtn");
+            if (toggleBtn) {
+                toggleBtn.style.display = "inline-block";
+                toggleBtn.classList.add("visible");
+            }
+        })
+        .catch(err => console.error("Erro ao buscar RSI:", err));
+}
+
+function setupToggleRsiButton() {
+    const toggleBtn = document.getElementById("toggleRsiBtn");
+    const icon = document.getElementById("toggleRsiIcon");
+    const legendDiv = document.getElementById("customLegendRsi");
+
+    if (!toggleBtn || !icon || !legendDiv) return;
+
+    toggleBtn.addEventListener("click", () => {
+        rsiVisible = !rsiVisible;
+
+        if (rsiSeries) rsiSeries.applyOptions({ visible: rsiVisible });
+
+        icon.src = rsiVisible
+            ? "/static/images/open-eye-white.png"
+            : "/static/images/close-eye-white.png";
+
+        legendDiv.innerHTML = rsiVisible
+            ? `<span style="color:#ffb300">Rsi: ${rsiData.length > 0 ? rsiData[rsiData.length - 1].value.toFixed(2) : '-'}</span>`
+            : `<span style="color:#ffb300">Rsi: -</span>`;
+    });
+}
+
+
+function renderRsi(data, upperLevel, lowerLevel) {
+    rsiSeries = chart.addLineSeries({
+        color: '#ffb300',
+        lineWidth: 2,
+        priceScaleId: 'rsi-scale',
+        pane: 1
+    });
+
+    rsiSeries.setData(data);
+
+    rsiData = data;
+
+    // Níveis overbought / oversold como linhas horizontais (opcional)
+    const rsiPane = chart.priceScale('rsi-scale');
+    if (rsiPane) {
+        rsiPane.applyOptions({
+            scaleMargins: { top: 0.2, bottom: 0.2 }
+        });
+
+        chart.addHorizontalLine({
+            price: upperLevel,
+            color: '#e53935',
+            lineWidth: 1,
+            lineStyle: LightweightCharts.LineStyle.Dashed,
+            axisLabelVisible: true,
+            title: 'Overbought',
+            priceScaleId: 'rsi-scale',
+            pane: 1
+        });
+
+        chart.addHorizontalLine({
+            price: lowerLevel,
+            color: '#43a047',
+            lineWidth: 1,
+            lineStyle: LightweightCharts.LineStyle.Dashed,
+            axisLabelVisible: true,
+            title: 'Oversold',
+            priceScaleId: 'rsi-scale',
+            pane: 1
+        });
+    }
+}
+
+function clearRsiSeries() {
+    if (rsiSeries) {
+        chart.removeSeries(rsiSeries);
+        rsiSeries = null;
+    }
+}
+
+function setupRsiDynamicLegend() {
+    const legendDiv = document.getElementById("customLegendRsi");
+
+    chart.subscribeCrosshairMove(param => {
+        if (!param.time || !param.seriesPrices) return;
+
+        const value = param.seriesPrices.get(rsiSeries);
+        if (value !== undefined) {
+            legendDiv.innerHTML = `<span style="color:#ffb300">Rsi: ${value.toFixed(2)}</span>`;
+        }
+    });
+}
+
+function updateRsiInitialLegend() {
+    const legendDiv = document.getElementById("customLegendRsi");
+
+    if (rsiData.length > 0) {
+        const last = rsiData[rsiData.length - 1];
+        legendDiv.innerHTML = `<span style="color:#ffb300">Rsi: ${last.value.toFixed(2)}</span>`;
+    }
+}
+
+
 
 ////////// DRAW BOLLINGER BANDS //////////
 export function updateBollingerBands(symbol, length, std) {
@@ -43,7 +173,6 @@ export function updateBollingerBands(symbol, length, std) {
         .catch(err => console.error("Erro ao buscar Bollinger Bands:", err));
 }
 
-
 function setupToggleBollingerButton() {
     const toggleBtn = document.getElementById("toggleBollingerBtn");
     const icon = document.getElementById("toggleBollingerIcon");
@@ -57,7 +186,7 @@ function setupToggleBollingerButton() {
         if (bbUpperSeries) bbUpperSeries.applyOptions({ visible: bollingerVisible });
         if (bbMiddleSeries) bbMiddleSeries.applyOptions({ visible: bollingerVisible });
         if (bbLowerSeries) bbLowerSeries.applyOptions({ visible: bollingerVisible });
-        if (bbAreaSeries) bbAreaSeries.applyOptions({ visible: bollingerVisible });
+        // if (bbAreaSeries) bbAreaSeries.applyOptions({ visible: bollingerVisible });
 
 
         icon.src = bollingerVisible
@@ -78,10 +207,10 @@ function setupToggleBollingerButton() {
 
 function renderBollingerBands(upperData, middleData, lowerData) {
     // Remove área anterior, se existir
-    if (bbAreaSeries) {
-        chart.removeSeries(bbAreaSeries);
-        bbAreaSeries = null;
-    }
+    // if (bbAreaSeries) {
+    //     chart.removeSeries(bbAreaSeries);
+    //     bbAreaSeries = null;
+    // }
 
     // // Renderiza a área entre Upper e Lower
     // bbAreaSeries = chart.addAreaSeries({
@@ -104,11 +233,6 @@ function renderBollingerBands(upperData, middleData, lowerData) {
         const series = chart.addLineSeries({
             color: color,
             lineWidth: 1,
-            visible: true,
-            priceLineVisible: false,
-            priceScaleId: 'right',
-
-            lineWidth: 1,
             lineStyle: 0,
             lineType: 0,
             crossHairMarkerVisible: true,
@@ -121,7 +245,12 @@ function renderBollingerBands(upperData, middleData, lowerData) {
             // title: label,
             visible: true,
             overlay: false,
+            priceScaleId: 'right',
 
+        });
+
+        series.applyOptions({
+            autoscaleInfoProvider: () => null
         });
 
         series.setData(data.map(point => ({
@@ -460,6 +589,11 @@ function renderCandlestickChart(priceData, symbol) {
     updateBollingerBands(symbol, 14, 2);
     setupBollingerDynamicLegend();
     setupToggleBollingerButton();
+    
+    /// RSI ///
+    updateRsi(symbol, 14, 70, 30);
+    setupRsiDynamicLegend();
+    setupToggleRsiButton();
 
 }
 

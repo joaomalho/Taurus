@@ -175,6 +175,12 @@ document.addEventListener("DOMContentLoaded", function () {
         iconSelector: ".toggle-icon"
     });
 
+    setupToggle({
+        toggleSelector: "#tecInsiders",
+        contentSelector: ".insiders-content",
+        iconSelector: ".toggle-icon"
+    });
+
 }); 
 
 /* ─────────────── FUNÇÕES DE EVENTOS PARA OS BOTÕES ─────────────── */

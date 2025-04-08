@@ -93,3 +93,38 @@ class CandlestickData():
             "bb_middle": bb_middle,
             "bb_lower": bb_lower
         }
+    
+   ### Oscilators ###
+    def get_rsi_history(self, data, length : int, overbought : int, oversold : int):
+        """
+        This function calculates the RSI and generates a signal based on overbought/oversold levels.
+        
+        Parameters:
+        - data: DataFrame containing the price data with a 'close' column.
+        - length: RSI period.
+        - overbought: RSI overbought threshold.
+        - oversold: RSI oversold threshold.
+        
+        Returns:
+        - Updates self.rsi_signal with 'Buy', 'Sell', or 'Flat'.
+        """
+
+        close_prices = data.Close
+        dates = pd.to_datetime(data.Date)
+
+        if close_prices.size < length:
+            return {"error": "Dados insuficientes para calcular RSI"}
+        
+        rsi = talib.RSI(close_prices, timeperiod=length)
+    
+        rsi = [
+            {"time": str(dates[i].date()), "value": float(rsi[i])}
+            for i in range(len(rsi)) if not np.isnan(rsi[i])
+        ]
+
+        return {
+            "symbol": data.get("Symbol", "N/A") if isinstance(data, dict) else "N/A",
+            "rsi": rsi,
+            "upper_level": overbought,
+            "lower_level": oversold
+        }
