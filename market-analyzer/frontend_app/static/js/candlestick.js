@@ -35,12 +35,12 @@ export function updateRsi(symbol, length, upper_level, lower_level) {
                 rsiData.upper_level,
                 rsiData.lower_level
             );
-
+            
             updateRsiInitialLegend();
 
             const toggleBtn = document.getElementById("toggleRsiBtn");
             if (toggleBtn) {
-                toggleBtn.style.display = "inline-block";
+                // toggleBtn.style.display = "inline-block";
                 toggleBtn.classList.add("visible");
             }
         })
@@ -63,54 +63,73 @@ function setupToggleRsiButton() {
             ? "/static/images/open-eye-white.png"
             : "/static/images/close-eye-white.png";
 
-        legendDiv.innerHTML = rsiVisible
+        if (!rsiVisible) {
+            legendDiv.innerHTML = rsiVisible
             ? `<span style="color:#ffb300">Rsi: ${rsiData.length > 0 ? rsiData[rsiData.length - 1].value.toFixed(2) : '-'}</span>`
             : `<span style="color:#ffb300">Rsi: -</span>`;
+
+        } else {
+            updateRsiInitialLegend();
+        }
+
     });
 }
-
 
 function renderRsi(data, upperLevel, lowerLevel) {
     rsiSeries = chart.addLineSeries({
         color: '#ffb300',
-        lineWidth: 2,
+        pane: 1,
+        lineWidth: 1,
+        lineStyle: 0,
+        lineType: 0,
+        crossHairMarkerVisible: true,
+        crossHairMarkerRadius: 3,
+        lastValueVisible: false,
+        priceLineVisible: false,
+        priceLineColor: '#ffb300',
+        priceLineStyle: 0,
+        priceLineWidth: 1,
+        // title: label,
+        visible: true,
+        overlay: false,
         priceScaleId: 'rsi-scale',
-        pane: 1
+        // priceScaleId: 'right',
     });
 
     rsiSeries.setData(data);
 
     rsiData = data;
 
-    // Níveis overbought / oversold como linhas horizontais (opcional)
-    const rsiPane = chart.priceScale('rsi-scale');
-    if (rsiPane) {
-        rsiPane.applyOptions({
-            scaleMargins: { top: 0.2, bottom: 0.2 }
-        });
+    // // Níveis overbought / oversold como linhas horizontais (opcional)
+    // const rsiPane = chart.priceScale('rsi-scale');
+    // if (rsiPane) {
+    //     rsiPane.applyOptions({
+    //         scaleMargins: { top: 0.2, bottom: 0.2 }
+    //     });
 
-        chart.addHorizontalLine({
-            price: upperLevel,
-            color: '#e53935',
-            lineWidth: 1,
-            lineStyle: LightweightCharts.LineStyle.Dashed,
-            axisLabelVisible: true,
-            title: 'Overbought',
-            priceScaleId: 'rsi-scale',
-            pane: 1
-        });
+    //     chart.addHorizontalLine({
+    //         price: upperLevel,
+    //         color: '#e53935',
+    //         lineWidth: 1,
+    //         lineStyle: LightweightCharts.LineStyle.Dashed,
+    //         axisLabelVisible: true,
+    //         title: 'Overbought',
+    //         priceScaleId: 'rsi-scale',
+    //         pane: 1
+    //     });
 
-        chart.addHorizontalLine({
-            price: lowerLevel,
-            color: '#43a047',
-            lineWidth: 1,
-            lineStyle: LightweightCharts.LineStyle.Dashed,
-            axisLabelVisible: true,
-            title: 'Oversold',
-            priceScaleId: 'rsi-scale',
-            pane: 1
-        });
-    }
+    //     chart.addHorizontalLine({
+    //         price: lowerLevel,
+    //         color: '#43a047',
+    //         lineWidth: 1,
+    //         lineStyle: LightweightCharts.LineStyle.Dashed,
+    //         axisLabelVisible: true,
+    //         title: 'Oversold',
+    //         priceScaleId: 'rsi-scale',
+    //         pane: 1
+    // //     });
+    // }
+    updateRsiInitialLegend();
 }
 
 function clearRsiSeries() {
@@ -138,9 +157,11 @@ function updateRsiInitialLegend() {
 
     if (rsiData.length > 0) {
         const last = rsiData[rsiData.length - 1];
+        console.log("Atualizando legenda RSI com:", last);
         legendDiv.innerHTML = `<span style="color:#ffb300">Rsi: ${last.value.toFixed(2)}</span>`;
     }
 }
+
 
 
 
@@ -166,7 +187,7 @@ export function updateBollingerBands(symbol, length, std) {
 
             const toggleBtn = document.getElementById("toggleBollingerBtn");
             if (toggleBtn) {
-                toggleBtn.style.display = "inline-block";
+                // toggleBtn.style.display = "inline-block";
                 toggleBtn.classList.add("visible");
             }
         })
@@ -353,7 +374,7 @@ export function updateEMALines(symbol, fast, medium, slow) {
             updateEMAInitialLegend();
             const toggleBtn = document.getElementById("toggleEmaBtn");
             if (toggleBtn) {
-                toggleBtn.style.display = "inline-block";
+                // toggleBtn.style.display = "inline-block";
                 toggleBtn.classList.add("visible");
             }
         })
