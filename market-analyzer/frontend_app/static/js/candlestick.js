@@ -18,6 +18,7 @@ let rsiSeries;
 let rsiData = [];
 let rsiVisible = true;
 
+
 ////////// DRAW RSI //////////
 export function updateRsi(symbol, length, upper_level, lower_level) {
     fetch(`/stock/${symbol}/rsi_draw/?length=${length}&upper=${upper_level}&lower=${lower_level}`)
@@ -64,10 +65,7 @@ function setupToggleRsiButton() {
             : "/static/images/close-eye-white.png";
 
         if (!rsiVisible) {
-            legendDiv.innerHTML = rsiVisible
-            ? `<span style="color:#ffb300">Rsi: ${rsiData.length > 0 ? rsiData[rsiData.length - 1].value.toFixed(2) : '-'}</span>`
-            : `<span style="color:#ffb300">Rsi: -</span>`;
-
+            legendDiv.innerHTML = `<span style="color:#ffb300">Rsi: -</span>`;
         } else {
             updateRsiInitialLegend();
         }
@@ -157,12 +155,9 @@ function updateRsiInitialLegend() {
 
     if (rsiData.length > 0) {
         const last = rsiData[rsiData.length - 1];
-        console.log("Atualizando legenda RSI com:", last);
         legendDiv.innerHTML = `<span style="color:#ffb300">Rsi: ${last.value.toFixed(2)}</span>`;
     }
 }
-
-
 
 
 ////////// DRAW BOLLINGER BANDS //////////
@@ -527,9 +522,7 @@ function updateEMAInitialLegend() {
 }
 
 
-
 ////////// MAIN DOCUMENT //////////
-
 function renderCandlestickChart(priceData, symbol) {
 
     const sharedScaleId = 'right';
@@ -615,7 +608,6 @@ function renderCandlestickChart(priceData, symbol) {
     updateRsi(symbol, 14, 70, 30);
     setupRsiDynamicLegend();
     setupToggleRsiButton();
-
 }
 
 function addTooltip(chartContainer, chart, priceData) {
