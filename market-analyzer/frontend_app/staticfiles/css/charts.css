@@ -62,6 +62,7 @@
 }
 
 #toggleEmaBtn,
+#toggleRsiBtn,
 #toggleBollingerBtn {
     background: transparent;
     border: none;
@@ -76,18 +77,19 @@
 }
 
 #toggleEmaBtn.visible,
+#toggleRsiBtn.visible,
 #toggleBollingerBtn.visible {
     display: inline-flex;
     opacity: 1;
 }
 
 #toggleEmaIcon,
+#toggleRsiIcon,
 #toggleBollingerIcon {
     width: 18px;
     height: 18px;
     display: block;
 }
-
 
 
 /* ============================= */
