@@ -14,6 +14,7 @@
     --gridjs-header-text-color: white;
     --table-custom-body-hover-bg: #ddd;
     --link-color: #9A8655;
+    --footer-text-color: #9A8655
 }
 
 html, body {
@@ -54,6 +55,17 @@ html, body {
     height: 96px;
     object-fit: cover;
     zoom: 1; 
+}
+
+/* ============================= */
+/* FOOTER */
+/* ============================= */
+.footer {
+    text-align: center;
+    /* margin-top: auto; */
+    width: 100%;
+    padding-top: 100px;
+    color: var(--footer-text-color);
 }
 
 /* ============================= */

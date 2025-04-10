@@ -1,5 +1,6 @@
 ////////// VARIABLES //////////
 let chart;
+let rsiChart;
 let candleSeries;
 
 /// crossover ///
@@ -74,7 +75,7 @@ function setupToggleRsiButton() {
 }
 
 function renderRsi(data, upperLevel, lowerLevel) {
-    rsiSeries = chart.addLineSeries({
+    rsiSeries = rsiChart.addLineSeries({
         color: '#ffb300',
         pane: 1,
         lineWidth: 1,
@@ -132,7 +133,7 @@ function renderRsi(data, upperLevel, lowerLevel) {
 
 function clearRsiSeries() {
     if (rsiSeries) {
-        chart.removeSeries(rsiSeries);
+        rsiChart.removeSeries(rsiSeries);
         rsiSeries = null;
     }
 }
@@ -140,8 +141,8 @@ function clearRsiSeries() {
 function setupRsiDynamicLegend() {
     const legendDiv = document.getElementById("customLegendRsi");
 
-    chart.subscribeCrosshairMove(param => {
-        if (!param.time || !param.seriesPrices) return;
+    rsiChart.subscribeCrosshairMove(param => {
+        if (!param.time || !param.seriesPrices || !rsiVisible) return;
 
         const value = param.seriesPrices.get(rsiSeries);
         if (value !== undefined) {
@@ -153,10 +154,13 @@ function setupRsiDynamicLegend() {
 function updateRsiInitialLegend() {
     const legendDiv = document.getElementById("customLegendRsi");
 
-    if (rsiData.length > 0) {
-        const last = rsiData[rsiData.length - 1];
-        legendDiv.innerHTML = `<span style="color:#ffb300">Rsi: ${last.value.toFixed(2)}</span>`;
+    if (!rsiVisible || rsiData.length === 0) {
+        legendDiv.innerHTML = `<span style="color:#ffb300">Rsi: -</span>`;
+        return;
     }
+
+    const last = rsiData[rsiData.length - 1];
+    legendDiv.innerHTML = `<span style="color:#ffb300">Rsi: ${last.value.toFixed(2)}</span>`;
 }
 
 
@@ -307,7 +311,7 @@ function setupBollingerDynamicLegend() {
     const legendDiv = document.getElementById("customLegendBollinger");
 
     chart.subscribeCrosshairMove(param => {
-        if (!param.time || !param.seriesPrices) return;
+        if (!param.time || !param.seriesPrices || !bollingerVisible) return;
 
         const lines = [];
 
@@ -467,7 +471,7 @@ function setupEMADynamicLegend() {
     const legendDiv = document.getElementById("customLegendEmas");
 
     chart.subscribeCrosshairMove((param) => {
-        if (!param.time || !param.seriesPrices) return;
+        if (!param.time || !param.seriesPrices || !emasVisible) return;
 
         const lines = [];
 
@@ -527,7 +531,8 @@ function renderCandlestickChart(priceData, symbol) {
 
     const sharedScaleId = 'right';
     const chartContainer = document.getElementById("candlestickChart");
-
+    const rsiContainer = document.getElementById("rsiChart");
+    
     /// Candlestick Chart ///
     if (!chart) {
         chart = LightweightCharts.createChart(chartContainer, {
@@ -570,30 +575,45 @@ function renderCandlestickChart(priceData, symbol) {
         });
     }
 
-    if (!candleSeries) {
-        candleSeries.setData(priceData);
-    } else {
-        priceData.forEach(dataPoint => {
-            candleSeries.update(dataPoint);
+    /// RSI Chart ///
+    if (!rsiChart) {
+        rsiChart = LightweightCharts.createChart(rsiContainer, {
+            layout: {
+                backgroundColor: 'transparent',
+                textColor: '#9198a1',
+            },
+            grid: {
+                vertLines: { color: false, visible: false },
+                horzLines: { color: false, visible: false },
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal,
+            },
+            timeScale: {
+                borderColor: '#3d444d',
+                timeVisible: true,
+                secondsVisible: false,
+            },
+        });
+
+        window.addEventListener('resize', () => {
+            rsiChart.applyOptions({
+                width: rsiContainer.clientWidth,
+                height: rsiContainer.clientHeight 
+            });
         });
     }
 
-    /// Candles Patterns - WIP - Fazer similar a EMAs///
-    const highlightCandle = priceData[priceData.length - 2];
-    const markers = [
-        {
-            time: highlightCandle.time,
-            position: 'aboveBar',
-            // color: 'yellow',
-            // shape: 'arrowDown',
-            text: '🚩'
-        }
-    ];
 
-    candleSeries.setMarkers(markers);
+    /// Candles Data     ///
+    candleSeries.setData(priceData);
+
+    /// Markers ///
+    // candleSeries.setMarkers(markers);
 
     addTooltip(chartContainer, chart, priceData);
     
+    /// Indicators ///
     /// EMAS Crossover ///
     updateEMALines(symbol, 14, 25, 200);
     setupEMADynamicLegend();

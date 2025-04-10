@@ -64,6 +64,7 @@
 
 #toggleEmaBtn,
 #toggleRsiBtn,
+#toggleHarmonicBtn,
 #toggleBollingerBtn {
     background: transparent;
     border: none;
@@ -79,6 +80,7 @@
 
 #toggleEmaBtn.visible,
 #toggleRsiBtn.visible,
+#toggleHarmonicBtn.visible,
 #toggleBollingerBtn.visible {
     display: inline-flex;
     opacity: 1;
@@ -86,6 +88,7 @@
 
 #toggleEmaIcon,
 #toggleRsiIcon,
+#toggleHarmonicIcon,
 #toggleBollingerIcon {
     width: 18px;
     height: 18px;

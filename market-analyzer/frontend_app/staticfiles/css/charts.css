@@ -24,8 +24,10 @@
 /* CANDLESTICK CHART */
 /* ============================= */
 .candlestick-chart-container {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    height: 500px;
+    height: 600px;
     /* max-height: 500px; */
     position: relative;
     overflow: visible;
@@ -41,7 +43,6 @@
 .customLegend {
     display: flex;
     flex-direction: column;
-    gap: 4px;
     position: absolute;
     top: 10px;
     left: 10px;
@@ -58,7 +59,7 @@
     border-radius: 5px;
     border-width: 1px;
     border-color: var(--border-light-color); */
-    padding: 4px;
+    padding: 1px;
 }
 
 #toggleEmaBtn,

@@ -6,7 +6,6 @@
     --button-zone-border-color: #3d444d;
     --button-zone-highlight-color: #9198a1;
     --button-zone-hover-bg: #212830;
-    --footer-text-color: #9A8655
 }
 
 
@@ -64,18 +63,6 @@
 }
 
 /* ============================= */
-/* FOOTER */
-/* ============================= */
-.footer {
-    text-align: center;
-    margin-top: auto;
-    width: 100%;
-    padding: 100px 0;
-    color: var(--footer-text-color);
-}
-
-
-/* ============================= */
 /* RESPONSIVIDADE */
 /* ============================= */
 @media screen and (max-width: 768px) {
@@ -92,9 +79,5 @@
     .search-container button {
         font-size: 14px;
         padding: 0px 0px;
-    }
-
-    .footer {
-        padding: 50px 0;
     }
 }

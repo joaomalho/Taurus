@@ -27,7 +27,8 @@ import {
     displayHarmonicResults,
     displayFundamentalResults,
     displayFundamentalResultsClassification,
-    displayInsideTransactions
+    displayInsideTransactions,
+    populateYahooStockTable
 } from './display.js';
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -85,9 +86,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }    
 
-    fetchYahooStockGainers();
-    fetchYahooStockTrending();
-    fetchYahooStockMostActive();
+    fetchYahooStockGainers().then(data => {
+        if (data && data.data) {
+            populateYahooStockTable("tableYahooGainers", data.data);
+        }
+    });
+    
+    fetchYahooStockTrending().then(data => {
+        if (data && data.data) {
+            populateYahooStockTable("tableYahooTrending", data.data);
+        }
+    });
+    
+    fetchYahooStockMostActive().then(data => {
+        if (data && data.data) {
+            populateYahooStockTable("tableYahooMostActive", data.data);
+        }
+    });
+    
 
     // ─────────────── EVENTOS DOS BOTÕES ───────────────
     setupTechnicalAnalysisEvents(symbol);
