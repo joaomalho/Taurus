@@ -342,7 +342,6 @@ We are also looking to grow our community with **key roles in market analysis**:
 
 - FrontEnd firt version release
     - Add metrics and drawn to candlestik graph. 
-        - Harmonic Patterns `ToDo: Medium`
         - RSI `ToDo: Medium`
         - ADX `ToDo: Medium`
         - Candles Marks `ToDo: Medium`
@@ -352,10 +351,11 @@ We are also looking to grow our community with **key roles in market analysis**:
     - Sentiment Analysis of Recent News - `ToDo: Low`
     - Economic Calendar Correlations - `ToDo: Low`
     - Add Tags to Easly get info - `ToDo: Low`
-
+    - Insider Information when not available must return empty. `ToDo: High`
 - Additional Screens
     - Missing Catalog for penny, top of day, top of week.
 - Install scripts:
+    - This is to pass to server not applicable in User Install. `ToDo: Low | Deprecated`
     - Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script.
 
 
