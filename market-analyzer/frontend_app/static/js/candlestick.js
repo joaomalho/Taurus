@@ -23,6 +23,7 @@ let rsiVisible = true;
 
 /// Harmonic Patterns //
 let harmonicSeries = [];
+let harmonicMarkers = [];
 let harmonicVisible = true;
 
 
@@ -68,42 +69,103 @@ function setupToggleHarmonicButton() {
     });
 }
 
-
-
 function renderHarmonicPatterns(patterns) {
     clearHarmonicPatterns();
 
+    const markers = [];
+
     for (let pattern of patterns) {
         const points = pattern.pattern_idx_prices.map((price, i) => ({
-            time: Math.floor(new Date(pattern.pattern_idx_dates[i]).getTime() / 1000), // Convertendo para timestamp
+            time: Math.floor(new Date(pattern.pattern_idx_dates[i]).getTime() / 1000),
             value: price
         }));
 
-        const color = pattern.direction === 1 ? '#26a69a' : '#ef5350'; // Verde para "Buy", Vermelho para "Sell"
+        const colorLine = pattern.direction === 1 ? '#26a699' : '#ef5350';
+        const colorPoint = '#7a41b5';
 
         const series = chart.addLineSeries({
-            color: color,
-            lineWidth: 2,
+            color: colorLine,
+            lineWidth: 3,
             priceLineVisible: false,
             crossHairMarkerVisible: true,
+            crossHairMarkerRadius: 3,
+            lastValueVisible: false,
             visible: harmonicVisible,
             priceScaleId: 'right',
         });
 
         series.setData(points);
         harmonicSeries.push(series);
+
+        // Targets & Stoploss
+        const dTime = points[4]?.time;
+        const extensionDays = 40 * 86400
+
+        const levels = [
+            { value: pattern.STOP, color: '#dedede', label: 'STOP' },
+            { value: pattern.TP1, color: '#ffd000', label: 'TP1' },
+            { value: pattern.TP2, color: '#ffd000', label: 'TP2' },
+            { value: pattern.TP3, color: '#ffd000', label: 'TP3' },
+        ];
+
+        levels.forEach(({ value, color, label }) => {
+            if (value) {
+                const line = chart.addLineSeries({
+                    color: color,
+                    lineWidth: 1,
+                    lineStyle: 1,
+                    priceLineVisible: false,
+                    lastValueVisible: false,
+                    crossHairMarkerVisible: false,
+                    priceScaleId: 'right',
+                    visible: harmonicVisible,
+                    text: levels[label] || '',
+                    
+                });
+
+                line.setData([
+                    { time: dTime, value: value },
+                    { time: dTime + extensionDays, value: value }
+                ]);
+
+                harmonicSeries.push(line);
+            }
+        });
+
+        // Markers //
+        const markerPosition = pattern.direction === 1 ? ['belowBar', 'aboveBar'] : ['aboveBar', 'belowBar'];
+        const shapeOptions = pattern.direction === 1 ? ['arrowUp', 'arrowDown'] : ['arrowDown', 'arrowUp'];
+        const labels = ['X', 'A', 'B', 'C', 'D'];
+
+        points.forEach((pt, idx) => {
+            markers.push({
+                time: pt.time,
+                position: idx % 2 === 0 ? markerPosition[0] : markerPosition[1],
+                color: colorPoint,
+                shape: shapeOptions[idx % 2],
+                text: labels[idx] || '',
+                value: pt.value 
+            });
+        });
     }
+
+    // Armazena e aplica os marcadores
+    harmonicMarkers = markers;
+    candleSeries.setMarkers(harmonicMarkers);
 
     updateHarmonicInitialLegend(patterns);
 }
 
 
 function clearHarmonicPatterns() {
-    // Certificando-se de que estamos usando 'harmonicSeries' corretamente.
-    for (let series of harmonicSeries) {
-        chart.removeSeries(series);
+    for (let line of harmonicSeries) {
+        chart.removeSeries(line);
     }
-    harmonicSeries = [];  // Limpando o array após remover todas as séries.
+    harmonicSeries = [];
+
+    // Limpa marcadores
+    harmonicMarkers = [];
+    candleSeries.setMarkers([]);
 }
 
 function updateHarmonicInitialLegend(patterns) {

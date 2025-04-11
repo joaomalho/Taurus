@@ -1,23 +1,123 @@
+import { fetchHarmonicPatternData } from './api.js';
+
 ////////// VARIABLES //////////
 let chart;
 let rsiChart;
 let candleSeries;
 
-/// crossover ///
+/// Crossover ///
 let emaFastSeries, emaMediumSeries, emaSlowSeries;
 let emaFastData = [], emaMediumData = [], emaSlowData = [];
 let emasVisible = true;
 
-/// bollinger ///
+/// Bollinger ///
 let bbUpperSeries, bbMiddleSeries, bbLowerSeries;
 let bbUpperData = [], bbMiddleData = [], bbLowerData = [];
 let bollingerVisible = true 
 // let bbAreaSeries = null;
 
-/// RSI ///
+/// Rsi ///
 let rsiSeries;
 let rsiData = [];
 let rsiVisible = true;
+
+/// Harmonic Patterns //
+let harmonicSeries = [];
+let harmonicVisible = true;
+
+
+////////// DRAW HARMONIC PATTERNS //////////
+
+export function updateHarmonicPatterns(symbol) {
+    fetch(`/stock/${symbol}/harmonic_patterns/`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error || !data.patterns_detected) {
+                console.error("Erro ao buscar padrões harmônicos:", data.error);
+                return;
+            }
+
+            renderHarmonicPatterns(data.patterns_detected);  // <- aqui é renderHarmonicPatterns, não drawHarmonicPattern
+
+            const toggleBtn = document.getElementById("toggleHarmonicBtn");
+            if (toggleBtn) {
+                toggleBtn.classList.add("visible");
+            }
+        })
+        .catch(err => console.error("Erro ao buscar padrões harmônicos:", err));
+}
+
+
+function setupToggleHarmonicButton() {
+    const toggleBtn = document.getElementById("toggleHarmonicBtn");
+    const icon = document.getElementById("toggleHarmonicIcon");
+
+    if (!toggleBtn || !icon) return;
+
+    toggleBtn.addEventListener("click", () => {
+        harmonicVisible = !harmonicVisible;  // Alternar a visibilidade
+
+        for (let line of harmonicSeries) {
+            line.applyOptions({ visible: harmonicVisible });
+        }
+
+        // Atualizando o ícone do botão de toggle
+        icon.src = harmonicVisible
+            ? "/static/images/open-eye-white.png"
+            : "/static/images/close-eye-white.png";
+    });
+}
+
+
+
+function renderHarmonicPatterns(patterns) {
+    clearHarmonicPatterns();
+
+    for (let pattern of patterns) {
+        const points = pattern.pattern_idx_prices.map((price, i) => ({
+            time: Math.floor(new Date(pattern.pattern_idx_dates[i]).getTime() / 1000), // Convertendo para timestamp
+            value: price
+        }));
+
+        const color = pattern.direction === 1 ? '#26a69a' : '#ef5350'; // Verde para "Buy", Vermelho para "Sell"
+
+        const series = chart.addLineSeries({
+            color: color,
+            lineWidth: 2,
+            priceLineVisible: false,
+            crossHairMarkerVisible: true,
+            visible: harmonicVisible,
+            priceScaleId: 'right',
+        });
+
+        series.setData(points);
+        harmonicSeries.push(series);
+    }
+
+    updateHarmonicInitialLegend(patterns);
+}
+
+
+function clearHarmonicPatterns() {
+    // Certificando-se de que estamos usando 'harmonicSeries' corretamente.
+    for (let series of harmonicSeries) {
+        chart.removeSeries(series);
+    }
+    harmonicSeries = [];  // Limpando o array após remover todas as séries.
+}
+
+function updateHarmonicInitialLegend(patterns) {
+    const legendDiv = document.getElementById("customLegendHarmonic");
+    if (!patterns || patterns.length === 0 || !legendDiv) return;
+
+    // Usando o último padrão para atualizar a legenda
+    const lastPattern = patterns[patterns.length - 1];
+    const type = lastPattern.pattern;
+    const dir = lastPattern.direction === 1 ? "Buy" : "Sell";
+
+    legendDiv.innerHTML = `<span style="color:${lastPattern.direction === 1 ? "#26a69a" : "#ef5350"}">${type} (${dir})</span>`;
+}
+
 
 
 ////////// DRAW RSI //////////
@@ -431,6 +531,10 @@ function renderEMALines(emaData, color, label) {
         priceScaleId: 'right' 
     });
 
+    lineSeries.applyOptions({
+        autoscaleInfoProvider: () => null
+    });
+
     lineSeries.setData(
         emaData.map(point => ({
             time: point.time,
@@ -624,10 +728,15 @@ function renderCandlestickChart(priceData, symbol) {
     setupBollingerDynamicLegend();
     setupToggleBollingerButton();
     
-    /// RSI ///
+    /// Rsi ///
     updateRsi(symbol, 14, 70, 30);
     setupRsiDynamicLegend();
     setupToggleRsiButton();
+
+    /// Harmonic patterns ///
+    updateHarmonicPatterns(symbol);
+    setupToggleHarmonicButton();
+    
 }
 
 function addTooltip(chartContainer, chart, priceData) {
