@@ -38,8 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
-    
-    if (symbol) {
+    // ─────────────── DADOS DA PÁGINA /stock/<symbol> ───────────────
+    if (window.location.pathname.startsWith("/stock/") && symbol) {
         fetchBioData(symbol).then(data => {
             if (!data.error) displayBioResults(data);
         });
@@ -84,120 +84,54 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!data.error) displayInsideTransactions(data);
         });
 
+        // ─────────────── EVENTOS DOS BOTÕES ───────────────
+        setupTechnicalAnalysisEvents(symbol);
+
+        // ─────────────── CONFIGURAÇÃO DOS TOGGLES ───────────────
+        const toggles = [
+            { toggleSelector: "#bioToggle", contentSelector: ".bio-content" },
+            { toggleSelector: "#tecTrend", contentSelector: ".trend-content" },
+            { toggleSelector: "#tecVolatility", contentSelector: ".volatility-content" },
+            { toggleSelector: "#tecOscilators", contentSelector: ".oscilators-content" },
+            { toggleSelector: "#tecCandles", contentSelector: ".candles-content" },
+            { toggleSelector: "#tecHarmonic", contentSelector: ".harmonic-content" },
+            { toggleSelector: "#funValuation", contentSelector: ".valuation-content" },
+            { toggleSelector: "#funDividends", contentSelector: ".dividends-content" },
+            { toggleSelector: "#funProfitability", contentSelector: ".profitability-content" },
+            { toggleSelector: "#funHealth", contentSelector: ".health-content" },
+            { toggleSelector: "#funCashflow", contentSelector: ".cashflow-content" },
+            { toggleSelector: "#funRatios", contentSelector: ".ratios-content" },
+            { toggleSelector: "#funRisk", contentSelector: ".risk-content" },
+            { toggleSelector: "#funOverview", contentSelector: ".overview-content" },
+            { toggleSelector: "#tecInsiders", contentSelector: ".insiders-content" },
+        ];
+
+        toggles.forEach(t => {
+            setupToggle({ ...t, iconSelector: ".toggle-icon" });
+        });
     }    
 
-    fetchYahooStockGainers().then(data => {
-        if (data && data.data) {
-            populateYahooStockTable("tableYahooGainers", data.data);
-        }
-    });
+    if (window.location.pathname.startsWith("/screener/")) {
+        fetchYahooStockGainers().then(data => {
+            if (data && data.data) {
+                populateYahooStockTable("tableYahooGainers", data.data);
+            }
+        });
     
-    fetchYahooStockTrending().then(data => {
-        if (data && data.data) {
-            populateYahooStockTable("tableYahooTrending", data.data);
-        }
-    });
+        fetchYahooStockTrending().then(data => {
+            if (data && data.data) {
+                populateYahooStockTable("tableYahooTrending", data.data);
+            }
+        });
     
-    fetchYahooStockMostActive().then(data => {
-        if (data && data.data) {
-            populateYahooStockTable("tableYahooMostActive", data.data);
-        }
-    });
+        fetchYahooStockMostActive().then(data => {
+            if (data && data.data) {
+                populateYahooStockTable("tableYahooMostActive", data.data);
+            }
+        });
+    }
     
-
-    // ─────────────── EVENTOS DOS BOTÕES ───────────────
-    setupTechnicalAnalysisEvents(symbol);
-
-    // ─────────────── CONFIGURAÇÃO DOS TOGGLES ───────────────
-    setupToggle({
-        toggleSelector: "#bioToggle",
-        contentSelector: ".bio-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#tecTrend",
-        contentSelector: ".trend-content",
-        iconSelector: ".toggle-icon"
-    });
-    setupToggle({
-        toggleSelector: "#tecVolatility",
-        contentSelector: ".volatility-content",
-        iconSelector: ".toggle-icon"
-    });
-    setupToggle({
-        toggleSelector: "#tecOscilators",
-        contentSelector: ".oscilators-content",
-        iconSelector: ".toggle-icon"
-    });
-    
-    setupToggle({
-        toggleSelector: "#tecCandles",
-        contentSelector: ".candles-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#tecHarmonic",
-        contentSelector: ".harmonic-content",
-        iconSelector: ".toggle-icon"
-    });
-    
-    setupToggle({
-        toggleSelector: "#funValuation",
-        contentSelector: ".valuation-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#funDividends",
-        contentSelector: ".dividends-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#funProfitability",
-        contentSelector: ".profitability-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#funHealth",
-        contentSelector: ".health-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#funCashflow",
-        contentSelector: ".cashflow-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#funRatios",
-        contentSelector: ".ratios-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#funRisk",
-        contentSelector: ".risk-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#funOverview",
-        contentSelector: ".overview-content",
-        iconSelector: ".toggle-icon"
-    });
-
-    setupToggle({
-        toggleSelector: "#tecInsiders",
-        contentSelector: ".insiders-content",
-        iconSelector: ".toggle-icon"
-    });
-
-}); 
+});
 
 /* ─────────────── FUNÇÕES DE EVENTOS PARA OS BOTÕES ─────────────── */
 function setupTechnicalAnalysisEvents(symbol) {
