@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     },
                     y: {
-                        title: { display: true, text: "Institutional Holders", color: "white" },
+                        title: { display: false, text: "Institutional Holders", color: "white" },
                         ticks: { color: "#bbbbbb" }
                     }
                 }

@@ -345,13 +345,15 @@ We are also looking to grow our community with **key roles in market analysis**:
         - RSI `ToDo: Medium`
         - ADX `ToDo: Medium`
         - Candles Marks `ToDo: Medium`
+        - Hamronics - Points dont desapear `ToDo: High`
 - Technical Analysis
     - Pivots Point - `ToDo: Low`
 - Fundamental Analysis
     - Sentiment Analysis of Recent News - `ToDo: Low`
     - Economic Calendar Correlations - `ToDo: Low`
     - Add Tags to Easly get info - `ToDo: Low`
-    - Insider Information when not available must return empty. `ToDo: High`
+    - Insider Information when not available must return empty. `ToDo: Medium`
+    - First lines of tables have a bug in values check screener `ToDo: High`
 - Additional Screens
     - Missing Catalog for penny, top of day, top of week.
 - Install scripts:
