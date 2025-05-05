@@ -2,9 +2,11 @@
 *.pyc
 __pycache__/
 *.pyo
+
+# Installer/Utility scripts
 setup.py
-uninstaller.py
 updater.py
+uninstaller.py
 
 # Node.js
 node_modules/

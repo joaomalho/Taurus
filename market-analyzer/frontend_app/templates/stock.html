@@ -105,12 +105,6 @@
                             <div id="customLegendBollinger"></div>
                         </div>
                         <div class="individualLegend">
-                            <button id="toggleRsiBtn">
-                                <img src="/static/images/close-eye-white.png" alt="toggle Rsi" id="toggleRsiIcon"/>
-                            </button>
-                            <div id="customLegendRsi"></div>
-                        </div>
-                        <div class="individualLegend">
                             <button id="toggleHarmonicBtn">
                                 <img src="/static/images/close-eye-white.png" alt="toggle Harmonic" id="toggleHarmonicIcon"  />
                             </button>
@@ -118,7 +112,18 @@
                         </div>
                     </div>
                 </div>
-                <div id="rsiChart" style="height: 30%; width: 100%; margin-top: 8px;"></div>
+            </div>
+            <div class="rsi-chart-container">
+                <div id="rsiChart">
+                    <div class="customLegend">
+                        <div class="individualLegend">
+                            <button id="toggleRsiBtn">
+                                <img src="/static/images/close-eye-white.png" alt="toggle Rsi" id="toggleRsiIcon"/>
+                            </button>
+                            <div id="customLegendRsi"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -126,6 +131,7 @@
         <section id="technicalStockZone">
             <h2>Technical Analysis</h2>
             
+            <!-- Trend -->
             <div class="technical-card">
                 <div class="technical-header" id="tecTrend">
                     <h2>Trend</h2>
@@ -164,14 +170,13 @@
                 </div>
             </div>
 
+            <!-- Volatility -->        
             <div class="technical-card">
                 <div class="technical-header" id="tecVolatility">
                     <h2>Volatility</h2>
                     <span class="toggle-icon">+</span>
                 </div>
-
                 <div class="volatility-content hidden">
-
                     <div class="tec-volatility">
                         <h3>Bollinger Bands</h3>
                         <button class=executeButtons id="BollingerButton">Calculate</button>
@@ -187,7 +192,8 @@
                     </div>
                 </div>
             </div>
-                
+            
+            <!-- Oscilators -->
             <div class="technical-card">
                 <div class="technical-header" id="tecOscilators">
                     <h2>Oscilators</h2>
@@ -216,6 +222,7 @@
                     </div>
                 </div>
             </div>
+            
         </section>
 
         <!-- Padrões de Candlestick -->

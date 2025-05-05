@@ -17,6 +17,10 @@ let bollingerVisible = false
 let rsiSeries;
 let rsiData = [];
 let rsiVisible = false;
+let rsiUpperLineSeries = null;
+let rsiLowerLineSeries = null;
+let rsiUpperData = [];
+let rsiLowerData = [];
 
 /// Harmonic Patterns //
 let harmonicSeries = [];
@@ -216,6 +220,8 @@ function setupToggleRsiButton() {
         rsiVisible = !rsiVisible;
 
         if (rsiSeries) rsiSeries.applyOptions({ visible: rsiVisible });
+        if (rsiUpperLineSeries) rsiUpperLineSeries.applyOptions({ visible: rsiVisible });
+        if (rsiLowerLineSeries) rsiLowerLineSeries.applyOptions({ visible: rsiVisible });
 
         icon.src = rsiVisible
             ? "/static/images/open-eye-white.png"
@@ -231,6 +237,7 @@ function setupToggleRsiButton() {
 }
 
 function renderRsi(data, upperLevel, lowerLevel) {
+
     rsiSeries = rsiChart.addLineSeries({
         color: '#ffb300',
         pane: 1,
@@ -247,13 +254,50 @@ function renderRsi(data, upperLevel, lowerLevel) {
         // title: label,
         visible: rsiVisible,
         overlay: false,
-        priceScaleId: 'rsi-scale',
-        // priceScaleId: 'right',
+        // priceScaleId: 'rsi-scale',
     });
 
     rsiSeries.setData(data);
     rsiData = data;
 
+    // Cria linhas horizontais como as EMAs
+    const fromTime = data[0].time;
+    const toTime = data[data.length - 1].time;
+
+    const upperPoints = [
+        { time: fromTime, value: upperLevel },
+        { time: toTime, value: upperLevel }
+    ];
+    const lowerPoints = [
+        { time: fromTime, value: lowerLevel },
+        { time: toTime, value: lowerLevel }
+    ];
+
+    rsiUpperLineSeries = rsiChart.addLineSeries({
+        color: '#e53935',
+        lineWidth: 1,
+        lineStyle: 1, // dashed
+        visible: rsiVisible,
+        crossHairMarkerVisible: false,
+        priceLineVisible: false,
+        overlay: false,
+    });
+    rsiUpperLineSeries.setData(upperPoints);
+    rsiUpperData = upperPoints;
+
+    rsiLowerLineSeries = rsiChart.addLineSeries({
+        color: '#43a047',
+        lineWidth: 1,
+        lineStyle: 1,
+        visible: rsiVisible,
+        crossHairMarkerVisible: false,
+        priceLineVisible: false,
+        overlay: false,
+    });
+    rsiLowerLineSeries.setData(lowerPoints);
+    rsiLowerData = lowerPoints;
+
+    rsiChart.timeScale().fitContent();
     updateRsiInitialLegend();
 }
 
@@ -261,6 +305,16 @@ function clearRsiSeries() {
     if (rsiSeries) {
         rsiChart.removeSeries(rsiSeries);
         rsiSeries = null;
+    }
+    if (rsiUpperLineSeries) {
+        rsiChart.removeSeries(rsiUpperLineSeries);
+        rsiUpperLineSeries = null;
+        rsiUpperData = [];
+    }
+    if (rsiLowerLineSeries) {
+        rsiChart.removeSeries(rsiLowerLineSeries);
+        rsiLowerLineSeries = null;
+        rsiLowerData = [];
     }
 }
 
@@ -382,7 +436,6 @@ function renderBollingerBands(upperData, middleData, lowerData) {
         return series;
     };
 
-    // Criar as 3 linhas
     bbUpperSeries = createLine(upperData, '#e5393580');
     bbMiddleSeries = createLine(middleData, '#1e88e580');
     bbLowerSeries = createLine(lowerData, '#43a04780');
@@ -727,7 +780,7 @@ function renderCandlestickChart(priceData, symbol) {
         });
     }
 
-    /// Candles Data     ///
+    /// Candles Data ///
     candleSeries.setData(priceData);
 
     /// Markers ///
