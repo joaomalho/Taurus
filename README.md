@@ -345,7 +345,7 @@ We are also looking to grow our community with **key roles in market analysis**:
         - RSI `ToDo: Medium`
         - ADX `ToDo: Medium`
         - Candles Marks `ToDo: Medium`
-        - Hamronics - Points dont desapear `ToDo: High`
+
 - Technical Analysis
     - Pivots Point - `ToDo: Low`
 - Fundamental Analysis

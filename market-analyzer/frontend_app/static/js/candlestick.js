@@ -6,26 +6,27 @@ let candleSeries;
 /// Crossover ///
 let emaFastSeries, emaMediumSeries, emaSlowSeries;
 let emaFastData = [], emaMediumData = [], emaSlowData = [];
-let emasVisible = true;
+let emasVisible = false;
 
 /// Bollinger ///
 let bbUpperSeries, bbMiddleSeries, bbLowerSeries;
 let bbUpperData = [], bbMiddleData = [], bbLowerData = [];
-let bollingerVisible = true 
+let bollingerVisible = false 
 
 /// Rsi ///
 let rsiSeries;
 let rsiData = [];
-let rsiVisible = true;
+let rsiVisible = false;
 
 /// Harmonic Patterns //
 let harmonicSeries = [];
 let harmonicMarkers = [];
-let harmonicVisible = true;
+let harmonicVisible = false;
+let harmonicRendered = false;
+let storedHarmonicPatterns = [];
 
 
 ////////// DRAW HARMONIC PATTERNS //////////
-
 export function updateHarmonicPatterns(symbol) {
     fetch(`/stock/${symbol}/harmonic_patterns/`)
         .then(res => res.json())
@@ -35,16 +36,18 @@ export function updateHarmonicPatterns(symbol) {
                 return;
             }
 
-            renderHarmonicPatterns(data.patterns_detected);  // <- aqui é renderHarmonicPatterns, não drawHarmonicPattern
+            storedHarmonicPatterns = data.patterns_detected;
 
             const toggleBtn = document.getElementById("toggleHarmonicBtn");
+            const legendDiv = document.getElementById("customLegendHarmonic");
+
             if (toggleBtn) {
                 toggleBtn.classList.add("visible");
             }
+            if (legendDiv) legendDiv.textContent = "Harmonic Patterns";
         })
         .catch(err => console.error("Erro ao buscar padrões harmônicos:", err));
 }
-
 
 function setupToggleHarmonicButton() {
     const toggleBtn = document.getElementById("toggleHarmonicBtn");
@@ -53,20 +56,23 @@ function setupToggleHarmonicButton() {
     if (!toggleBtn || !icon) return;
 
     toggleBtn.addEventListener("click", () => {
-        harmonicVisible = !harmonicVisible;  // Alternar a visibilidade
+        harmonicVisible = !harmonicVisible;
 
-        for (let line of harmonicSeries) {
-            line.applyOptions({ visible: harmonicVisible });
+        if (!harmonicRendered && harmonicVisible) {
+            renderHarmonicPatterns(storedHarmonicPatterns);
+            harmonicRendered = true;
+        } else {
+            for (let line of harmonicSeries) {
+                line.applyOptions({ visible: harmonicVisible });
+            }
+
+            if (harmonicVisible) {
+                candleSeries.setMarkers(harmonicMarkers);
+            } else {
+                candleSeries.setMarkers([]);
+            }
         }
 
-        // // Alternar visibilidade dos marcadores
-        // if (harmonicVisible) {
-        //     candleSeries.setMarkers(harmonicMarkers);
-        // } else {
-        //     candleSeries.setMarkers([]);
-        // }
-
-        // Atualizando o ícone do botão de toggle
         icon.src = harmonicVisible
             ? "/static/images/open-eye-white.png"
             : "/static/images/close-eye-white.png";
@@ -153,15 +159,11 @@ function renderHarmonicPatterns(patterns) {
         });
     }
 
-    // Armazena e aplica os marcadores
     harmonicMarkers = markers;
     if (harmonicVisible) {
         candleSeries.setMarkers(harmonicMarkers);
     }
-    
-    updateHarmonicInitialLegend(patterns);
 }
-
 
 function clearHarmonicPatterns() {
     for (let line of harmonicSeries) {
@@ -169,23 +171,9 @@ function clearHarmonicPatterns() {
     }
     harmonicSeries = [];
 
-    // Limpa marcadores
     harmonicMarkers = [];
     candleSeries.setMarkers([]);
 }
-
-function updateHarmonicInitialLegend(patterns) {
-    const legendDiv = document.getElementById("customLegendHarmonic");
-    if (!patterns || patterns.length === 0 || !legendDiv) return;
-
-    // Usando o último padrão para atualizar a legenda
-    const lastPattern = patterns[patterns.length - 1];
-    const type = lastPattern.pattern;
-    const dir = lastPattern.direction === 1 ? "Buy" : "Sell";
-
-    legendDiv.innerHTML = `<span style="color:${lastPattern.direction === 1 ? "#26a69a" : "#ef5350"}">${type} (${dir})</span>`;
-}
-
 
 
 ////////// DRAW RSI //////////
@@ -257,45 +245,15 @@ function renderRsi(data, upperLevel, lowerLevel) {
         priceLineStyle: 0,
         priceLineWidth: 1,
         // title: label,
-        visible: true,
+        visible: rsiVisible,
         overlay: false,
         priceScaleId: 'rsi-scale',
         // priceScaleId: 'right',
     });
 
     rsiSeries.setData(data);
-
     rsiData = data;
 
-    // // Níveis overbought / oversold como linhas horizontais (opcional)
-    // const rsiPane = chart.priceScale('rsi-scale');
-    // if (rsiPane) {
-    //     rsiPane.applyOptions({
-    //         scaleMargins: { top: 0.2, bottom: 0.2 }
-    //     });
-
-    //     chart.addHorizontalLine({
-    //         price: upperLevel,
-    //         color: '#e53935',
-    //         lineWidth: 1,
-    //         lineStyle: LightweightCharts.LineStyle.Dashed,
-    //         axisLabelVisible: true,
-    //         title: 'Overbought',
-    //         priceScaleId: 'rsi-scale',
-    //         pane: 1
-    //     });
-
-    //     chart.addHorizontalLine({
-    //         price: lowerLevel,
-    //         color: '#43a047',
-    //         lineWidth: 1,
-    //         lineStyle: LightweightCharts.LineStyle.Dashed,
-    //         axisLabelVisible: true,
-    //         title: 'Oversold',
-    //         priceScaleId: 'rsi-scale',
-    //         pane: 1
-    // //     });
-    // }
     updateRsiInitialLegend();
 }
 
@@ -374,8 +332,6 @@ function setupToggleBollingerButton() {
         if (bbUpperSeries) bbUpperSeries.applyOptions({ visible: bollingerVisible });
         if (bbMiddleSeries) bbMiddleSeries.applyOptions({ visible: bollingerVisible });
         if (bbLowerSeries) bbLowerSeries.applyOptions({ visible: bollingerVisible });
-        // if (bbAreaSeries) bbAreaSeries.applyOptions({ visible: bollingerVisible });
-
 
         icon.src = bollingerVisible
             ? "/static/images/open-eye-white.png"
@@ -394,29 +350,6 @@ function setupToggleBollingerButton() {
 }
 
 function renderBollingerBands(upperData, middleData, lowerData) {
-    // Remove área anterior, se existir
-    // if (bbAreaSeries) {
-    //     chart.removeSeries(bbAreaSeries);
-    //     bbAreaSeries = null;
-    // }
-
-    // // Renderiza a área entre Upper e Lower
-    // bbAreaSeries = chart.addAreaSeries({
-    //     topColor: 'rgba(33, 150, 243, 0.3)',
-    //     bottomColor: 'rgba(33, 150, 243, 0.05)',
-    //     lineColor: 'transparent',
-    //     lineWidth: 0,
-    //     priceScaleId: 'right',
-    // });
-
-    // const areaData = lowerData.map((point, i) => ({
-    //     time: point.time,
-    //     value: upperData[i].value,
-    // }));
-
-    // bbAreaSeries.setData(areaData);
-
-    // Função interna para criar uma linha
     const createLine = (data, color) => {
         const series = chart.addLineSeries({
             color: color,
@@ -431,7 +364,7 @@ function renderBollingerBands(upperData, middleData, lowerData) {
             priceLineStyle: 0,
             priceLineWidth: 1,
             // title: label,
-            visible: true,
+            visible: bollingerVisible,
             overlay: false,
             priceScaleId: 'right',
 
@@ -503,6 +436,15 @@ function setupBollingerDynamicLegend() {
 function updateBollingerInitialLegend() {
     const legendDiv = document.getElementById("customLegendBollinger");
     const lines = [];
+
+    if (!bollingerVisible || bbUpperData.length === 0) {
+        legendDiv.innerHTML = `
+            <span style="color:#e53935">Upper: -</span> |
+            <span style="color:#1e88e5">Middle: -</span> |
+            <span style="color:#43a047">Lower: -</span>
+        `;
+        return;
+    }
 
     if (bbUpperData.length > 0) {
         const last = bbUpperData[bbUpperData.length - 1];
@@ -594,7 +536,7 @@ function renderEMALines(emaData, color, label) {
         priceLineStyle: 0,
         priceLineWidth: 1,
         // title: label,
-        visible: true,
+        visible: emasVisible,
         overlay: false,
         priceScaleId: 'right' 
     });
@@ -678,6 +620,15 @@ function setupEMADynamicLegend() {
 function updateEMAInitialLegend() {
     const legendDiv = document.getElementById("customLegendEmas");
     const lines = [];
+    
+    if (!emasVisible || emaFastData.length === 0) {
+        legendDiv.innerHTML = `
+            <span style="color:#b05708">EMA Fast: -</span> |
+            <span style="color:#b07508">EMA Medium: -</span> |
+            <span style="color:#b09908">EMA Slow: -</span>
+        `;
+        return;
+    }
 
     if (emaFastData.length > 0) {
         const last = emaFastData[emaFastData.length - 1];
@@ -776,13 +727,10 @@ function renderCandlestickChart(priceData, symbol) {
         });
     }
 
-
     /// Candles Data     ///
     candleSeries.setData(priceData);
 
     /// Markers ///
-    // candleSeries.setMarkers(markers);
-
     addTooltip(chartContainer, chart, priceData);
     
     /// Indicators ///

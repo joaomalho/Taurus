@@ -678,21 +678,7 @@ class DataHistoryYahoo():
    ########### FOREX ###########   
     ##### NOT IN USE ##### 
     
-    def get_yahoo_symbol_dividends(self, symbol : str):
-        '''
-        Return dividents historics
-        '''
-        yahoo_symbol_dividends = yf.Ticker(symbol).dividends
-        return yahoo_symbol_dividends
-    
-    def get_yahoo_symbol_splits(self, symbol : str):
-        '''
-        Return actions splits historics
-        '''
-        yahoo_symbol_splits = yf.Ticker(symbol).splits
-        return yahoo_symbol_splits
- 
- 
+
     def get_yahoo_symbol_calendar(self, symbol : str):
         '''
         Return corporative calendar events about asset
@@ -700,12 +686,8 @@ class DataHistoryYahoo():
         yahoo_symbol_calendar = yf.Ticker(symbol).calendar
         return yahoo_symbol_calendar
 
-    def get_yahoo_symbol_major_holders(self, symbol : str):
-        '''
-        Return the list of major holders
-        '''
-        yahoo_symbol_major_holders = yf.Ticker(symbol).major_holders
-        return yahoo_symbol_major_holders
+
+   ########### Full Downloads ###########   
 
     def get_yahoo_symbol_balance_sheet(self, symbol : str):
         '''

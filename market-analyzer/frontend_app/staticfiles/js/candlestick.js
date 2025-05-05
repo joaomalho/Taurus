@@ -1,5 +1,3 @@
-import { fetchHarmonicPatternData } from './api.js';
-
 ////////// VARIABLES //////////
 let chart;
 let rsiChart;
@@ -14,7 +12,6 @@ let emasVisible = true;
 let bbUpperSeries, bbMiddleSeries, bbLowerSeries;
 let bbUpperData = [], bbMiddleData = [], bbLowerData = [];
 let bollingerVisible = true 
-// let bbAreaSeries = null;
 
 /// Rsi ///
 let rsiSeries;
@@ -38,7 +35,7 @@ export function updateHarmonicPatterns(symbol) {
                 return;
             }
 
-            renderHarmonicPatterns(data.patterns_detected);  // <- aqui é renderHarmonicPatterns, não drawHarmonicPattern
+            renderHarmonicPatterns(data.patterns_detected);
 
             const toggleBtn = document.getElementById("toggleHarmonicBtn");
             if (toggleBtn) {
@@ -61,6 +58,13 @@ function setupToggleHarmonicButton() {
         for (let line of harmonicSeries) {
             line.applyOptions({ visible: harmonicVisible });
         }
+
+        // // Alternar visibilidade dos marcadores
+        // if (harmonicVisible) {
+        //     candleSeries.setMarkers(harmonicMarkers);
+        // } else {
+        //     candleSeries.setMarkers([]);
+        // }
 
         // Atualizando o ícone do botão de toggle
         icon.src = harmonicVisible
@@ -144,15 +148,16 @@ function renderHarmonicPatterns(patterns) {
                 color: colorPoint,
                 shape: shapeOptions[idx % 2],
                 text: labels[idx] || '',
-                value: pt.value 
+                value: pt.value,
             });
         });
     }
 
-    // Armazena e aplica os marcadores
     harmonicMarkers = markers;
-    candleSeries.setMarkers(harmonicMarkers);
-
+    if (harmonicVisible) {
+        candleSeries.setMarkers(harmonicMarkers);
+    }
+    
     updateHarmonicInitialLegend(patterns);
 }
 
@@ -163,7 +168,6 @@ function clearHarmonicPatterns() {
     }
     harmonicSeries = [];
 
-    // Limpa marcadores
     harmonicMarkers = [];
     candleSeries.setMarkers([]);
 }
@@ -368,8 +372,6 @@ function setupToggleBollingerButton() {
         if (bbUpperSeries) bbUpperSeries.applyOptions({ visible: bollingerVisible });
         if (bbMiddleSeries) bbMiddleSeries.applyOptions({ visible: bollingerVisible });
         if (bbLowerSeries) bbLowerSeries.applyOptions({ visible: bollingerVisible });
-        // if (bbAreaSeries) bbAreaSeries.applyOptions({ visible: bollingerVisible });
-
 
         icon.src = bollingerVisible
             ? "/static/images/open-eye-white.png"

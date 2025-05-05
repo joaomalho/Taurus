@@ -2,6 +2,9 @@
 *.pyc
 __pycache__/
 *.pyo
+setup.py
+uninstaller.py
+updater.py
 
 # Node.js
 node_modules/
