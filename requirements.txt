@@ -1,20 +1,29 @@
-# Por favor, use `setup.py install` para instalar todas as dependências corretamente.
-fastapi
-uvicorn
-psycopg2
+# Bibliotecas científicas e de dados
 numpy
 pandas
-pandas_ta
-datetime
-time
-warnings
-MetaTrader5
 scipy
-tqdm
-itertools
-joblib
 yfinance
+tqdm
+joblib
+scikit-learn
+
+# Web scraping e rede
 requests
-PySide6
-QT-PyQt-PySide-Custom-Widgets
-# TA-Lib: Instalar via setup.py devido às dependências nativas
+beautifulsoup4
+
+# Gráficos técnicos e finanças
+# TA-Lib: precisa do pacote do sistema
+# sudo yay -S ta-lib && pip install ta-lib
+ta-lib
+# MetaTrader5
+
+# Backend (API)
+
+# Web e Django
+django
+
+# Interface gráfica
+PyQt6
+
+# (Extras possíveis — verificar existência real)
+# QT-PyQt-PySide-Custom-Widgets  # Parece um pacote personalizado ou inexistente

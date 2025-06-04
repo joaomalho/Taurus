@@ -3,7 +3,6 @@ import itertools
 import numpy as np
 from tqdm import tqdm
 from joblib import Parallel, delayed
-from datetime import datetime, timedelta
 
 # NOVOS E IMPLEMENTADOS
 import pandas as pd
