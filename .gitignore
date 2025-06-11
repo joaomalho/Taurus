@@ -15,6 +15,7 @@ npm-debug.log*
 # Ambiente virtual
 env/
 venv/
+taurus-env-311/
 
 # Arquivos do sistema
 .DS_Store
@@ -30,3 +31,4 @@ Thumbs.db
 # ignore front end notes
 note.txt
 notes_dev.txt
+
