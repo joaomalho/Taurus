@@ -15,7 +15,6 @@ npm-debug.log*
 # Ambiente virtual
 env/
 venv/
-taurus-env-311/
 
 # Arquivos do sistema
 .DS_Store
