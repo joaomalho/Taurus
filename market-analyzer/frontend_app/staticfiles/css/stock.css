@@ -230,9 +230,9 @@ canvas {
 
 .insiders-content, .trend-content, .volatility-content, .oscilators-content, .candles-content, .harmonic-content {
     display: flex;
-    flex-wrap: wrap;   /* Permite que os elementos quebrem conforme necessário */
+    flex-wrap: wrap;  
     align-items: center;
-    gap: 15px;         /* Espaço adequado entre os elementos */
+    gap: 15px;       
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
     line-height: 1.5;
@@ -259,7 +259,7 @@ canvas {
 .tec-insiders, .tec-trend-crossover, .tec-trend-adx, .tec-volatility, .tec-oscilators, .tec-candles, .tec-harmonic {
     display: flex;
     align-items: center;
-    gap: 15px;         /* Espaçamento ideal */
+    gap: 15px;
     flex-wrap: wrap;
 }
 

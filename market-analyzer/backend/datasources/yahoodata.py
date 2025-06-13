@@ -63,7 +63,7 @@ class DataHistoryYahoo():
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
-
+        
         try:
             response = requests.get("https://finance.yahoo.com/markets/stocks/gainers/?start=0&count=100", headers=headers)
             response.raise_for_status()
@@ -83,16 +83,20 @@ class DataHistoryYahoo():
                 if cols: 
                     rows.append(cols)
 
+            fm = Formulas()
+
             df = pd.DataFrame(rows, columns=headers if headers else None)
-            df["Price"] = df["Price"].str.extract(r"^([\d\.]+)")
-            df["Change"] = df["Change"].str.replace("+", "", regex=False)
-            df["Change %"] = df["Change %"].str.replace("%", "", regex=False)
-            df["Volume"] = df["Volume"].str.replace("-", "0", regex=False)
-            df["Avg Vol (3M)"] = df["Avg Vol (3M)"].str.replace("-", "0", regex=False)
-            df["Market Cap"] = df["Market Cap"].str.replace("-", "0", regex=False)
-            df["P/E Ratio (TTM)"] = df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False)
-            df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False)
+            df["Price"] = pd.to_numeric(df["Price"].str.extract(r"^([\d\.]+)")[0], errors="coerce").fillna(0).round(2)        
+            df["Change"] = pd.to_numeric(df["Change"].str.replace(r"^\+", "", regex=True), errors='coerce').fillna(0).round(2)
+            df["Change %"] = pd.to_numeric(df["Change %"].str.replace("%", "", regex=False), errors='coerce').fillna(0).round(2)
+            df["Volume"] = pd.to_numeric(df["Volume"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
+            df["Avg Vol (3M)"] = pd.to_numeric(df["Avg Vol (3M)"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
+            df["Market Cap"] = pd.to_numeric(df["Market Cap"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
+            df["P/E Ratio (TTM)"] = pd.to_numeric(df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False), errors='coerce').fillna(0).round(2)
+            df["52 Wk Change %"] = pd.to_numeric(df["52 Wk Change %"].str.replace("%", "", regex=False), errors='coerce').fillna(0).round(2)
             df.drop(columns=["52 Wk Range"], inplace=True)
+            df.drop(columns=[""], inplace=True)
+
             return df
         except requests.exceptions.RequestException as e:
             print(f"Error accessing URL: {e}")
@@ -133,13 +137,19 @@ class DataHistoryYahoo():
                 if cols: 
                     rows.append(cols)
 
+            fm = Formulas()
+
             df = pd.DataFrame(rows, columns=headers if headers else None)
-            df["Price"] = df["Price"].str.extract(r"^([\d\.]+)")
-            df["Change"] = df["Change"].str.replace("+", "", regex=False)
-            df["Change %"] = df["Change %"].str.replace("%", "", regex=False)
-            df["P/E Ratio (TTM)"] = df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False)
-            df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False)
+            df["Price"] = pd.to_numeric(df["Price"].str.extract(r"^([\d\.]+)")[0], errors="coerce").fillna(0).round(2)        
+            df["Change"] = pd.to_numeric(df["Change"].str.replace(r"^\+", "", regex=True), errors='coerce').fillna(0).round(2)
+            df["Change %"] = pd.to_numeric(df["Change %"].str.replace("%", "", regex=False), errors='coerce').fillna(0).round(2)
+            df["Volume"] = pd.to_numeric(df["Volume"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
+            df["Avg Vol (3M)"] = pd.to_numeric(df["Avg Vol (3M)"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
+            df["Market Cap"] = pd.to_numeric(df["Market Cap"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
+            df["P/E Ratio (TTM)"] = pd.to_numeric(df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False), errors='coerce').fillna(0).round(2)
+            df["52 Wk Change %"] = pd.to_numeric(df["52 Wk Change %"].str.replace("%", "", regex=False), errors='coerce').fillna(0).round(2)
             df.drop(columns=["52 Wk Range"], inplace=True)
+            df.drop(columns=[""], inplace=True)
             return df
 
         except requests.exceptions.RequestException as e:
@@ -181,15 +191,19 @@ class DataHistoryYahoo():
                 if cols: 
                     rows.append(cols)
 
+            fm = Formulas()
+
             df = pd.DataFrame(rows, columns=headers if headers else None)
-            df["Price"] = df["Price"].str.extract(r"^([\d\.]+)")
-            df["Change"] = df["Change"].str.replace("+", "", regex=False)
-            df["Change %"] = df["Change %"].str.replace("%", "", regex=False)
-            df["Avg Vol (3M)"] = df["Avg Vol (3M)"].str.replace("-", "0", regex=False)
-            df["Market Cap"] = df["Market Cap"].str.replace("-", "0", regex=False)
-            df["P/E Ratio (TTM)"] = df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False)
-            df["52 Wk Change %"] = df["52 Wk Change %"].str.replace("%", "", regex=False)
+            df["Price"] = pd.to_numeric(df["Price"].str.extract(r"^([\d\.]+)")[0], errors="coerce").fillna(0).round(2)        
+            df["Change"] = pd.to_numeric(df["Change"].str.replace(r"^\+", "", regex=True), errors='coerce').fillna(0).round(2)
+            df["Change %"] = pd.to_numeric(df["Change %"].str.replace("%", "", regex=False), errors='coerce').fillna(0).round(2)
+            df["Volume"] = pd.to_numeric(df["Volume"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
+            df["Avg Vol (3M)"] = pd.to_numeric(df["Avg Vol (3M)"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
+            df["Market Cap"] = pd.to_numeric(df["Market Cap"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
+            df["P/E Ratio (TTM)"] = pd.to_numeric(df["P/E Ratio (TTM)"].str.replace("-", "0", regex=False), errors='coerce').fillna(0).round(2)
+            df["52 Wk Change %"] = pd.to_numeric(df["52 Wk Change %"].str.replace("%", "", regex=False), errors='coerce').fillna(0).round(2)
             df.drop(columns=["52 Wk Range"], inplace=True)
+            df.drop(columns=[""], inplace=True)
             return df
         except requests.exceptions.RequestException as e:
             print(f"Error accessing URL: {e}")

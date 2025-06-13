@@ -35,6 +35,21 @@ function createGridTable(data, columns, containerId) {
     }).render(document.getElementById(containerId));
 }
 
+function renderStockTable(containerId, headers, tableData) {
+    new gridjs.Grid({
+        columns: headers,
+        data: tableData,
+        search: true,
+        pagination: true,
+        sort: true, 
+        className: {
+            table: "gridjs-table",
+            container: "gridjs-container",
+        }
+    }).render(document.getElementById(containerId));
+}
+
+
 /* ─────────────── FUNÇÕES DE CLASSIFICAÇÃO DE METRICAS + CHARTS─────────────── */
 function classifyMetricForGauge(metric, value) {
     if (value === "N/A") return { classification: "N/A", color: "#9E9E9E", intervals: [0, 100] };
@@ -169,30 +184,18 @@ export function populateYahooStockTable(containerId, data) {
         return;
     }
 
-    let headers = Object.keys(data[0]); // Pegar os títulos automaticamente
+    let headers = Object.keys(data[0]);
 
-    // Gerar dados com links para a coluna 'Symbol'
-    let tableData = data.map(row => 
+    const tableData = data.map(row =>
         headers.map(header => {
             if (header === "Symbol") {
-                // Cria um link na célula do símbolo
                 return gridjs.html(`<a href="/stock/${row[header]}/" class="stock-link">${row[header]}</a>`);
             }
-            return row[header] || "-";
+            return row[header] !== undefined && row[header] !== null ? row[header] : "-";
         })
     );
 
-    new gridjs.Grid({
-        columns: headers,
-        data: tableData,
-        search: true,
-        pagination: true,
-        sort: true, 
-        className: {
-            table: "gridjs-table",
-            container: "gridjs-container",
-        }
-    }).render(document.getElementById(containerId));
+    renderStockTable(containerId, headers, tableData);
 }
 
 export function displayBioResults(data) {

@@ -75,3 +75,22 @@ class Formulas():
             return round(float(value), 2)
         except (ValueError, TypeError):
             return None
+        
+
+    def convert_string_milions(self, value):
+        if pd.isna(value) or value == "-":
+            return 0
+        
+        value = str(value).strip().upper()
+        
+        try:
+            if value.endswith('M'):
+                return int(float(value[:-1]) * 1_000_000)
+            elif value.endswith('B'):
+                return int(float(value[:-1]) * 1_000_000_000)
+            elif value.endswith('K'):
+                return int(float(value[:-1]) * 1_000)
+            else:
+                return float(value.replace(",", ""))
+        except:
+            return 0

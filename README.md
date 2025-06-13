@@ -354,8 +354,6 @@ We are also looking to grow our community with **key roles in market analysis**:
     - Add Tags on Headers to Easly get info - `ToDo: Low`
     - Add Color by Results - `ToDo: Low`
     - Insider Information when not available must return empty. `ToDo: Medium`
-    - First lines of tables have a bug in values check screener `ToDo: High`
-    - Filter dont work well - `ToDo: High` 
 - Additional Screens
     - Missing Catalog for penny, top of day, top of week.
 - Install scripts:

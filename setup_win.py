@@ -14,16 +14,16 @@ def parse_requirements(filename):
 
 class CustomInstallCommand(install):
     def run(self):
-        self.install_requirements_to_libraries()
         install.run(self)
         self.install_yfinance()
         if os.name == "nt":
             self.install_ta_lib_windows()
 
     def install_yfinance(self):
-        """Instala o yfinance com os parâmetros específicos no diretório libraries"""
+        """Instala o yfinance com as opções específicas no diretório 'libraries'"""
         libraries_path = os.path.join(os.getcwd(), "libraries")
-        print(f"Instalando yfinance com as opções --upgrade --no-cache-dir em {libraries_path}...")
+        os.makedirs(libraries_path, exist_ok=True)
+        print(f"Instalando yfinance em {libraries_path}...")
         subprocess.check_call([
             sys.executable, "-m", "pip", "install", "yfinance", "--upgrade",
             "--no-cache-dir", "--target", libraries_path
@@ -33,43 +33,49 @@ class CustomInstallCommand(install):
         """Automatiza a instalação do TA-Lib no Windows."""
         print("Iniciando instalação do TA-Lib no Windows...")
 
-        # URL do arquivo .whl (atualize conforme necessário)
-        talib_url = "https://github.com/cgohlke/talib-build/releases/download/v0.5.1/TA_Lib-0.5.1-cp311-cp311-win_amd64.whl"
-        talib_whl = talib_url.split("/")[-1]  # Nome do arquivo
+        # URL atualizada do wheel
+        talib_url = "https://github.com/cgohlke/talib-build/releases/download/v0.6.3/ta_lib-0.6.3-cp311-cp311-win_amd64.whl"
+        talib_whl = os.path.basename(talib_url)
 
-        # Caminho local para salvar o arquivo .whl
-        local_path = os.path.join(os.getcwd(), "libraries")
+        # Caminho onde o arquivo será salvo
+        libraries_path = os.path.join(os.getcwd(), "libraries")
+        os.makedirs(libraries_path, exist_ok=True)
+        whl_path = os.path.join(libraries_path, talib_whl)
 
-        # Fazer o download do arquivo .whl
-        if not os.path.exists(local_path):
+        # Baixar o arquivo se ainda não existir
+        if not os.path.isfile(whl_path):
             print(f"Baixando {talib_whl} de {talib_url}...")
             response = requests.get(talib_url, stream=True)
             if response.status_code == 200:
-                with open(local_path, "wb") as f:
+                with open(whl_path, "wb") as f:
                     for chunk in response.iter_content(chunk_size=1024):
                         f.write(chunk)
-                print(f"Download concluído: {local_path}")
+                print(f"Download concluído: {whl_path}")
             else:
                 print(f"Erro ao baixar {talib_url}: {response.status_code}")
                 return False
         else:
             print(f"O arquivo {talib_whl} já existe. Pulando o download.")
 
-        # Instalar o arquivo .whl com pip
-        print(f"Instalando {talib_whl}...")
+        # Instalar o .whl
         try:
-            subprocess.check_call(["pip", "install", local_path])
+            print(f"Instalando {whl_path}...")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", whl_path])
             print("TA-Lib instalado com sucesso!")
         except subprocess.CalledProcessError as e:
-            print(f"Erro durante a instalação: {e}")
+            print(f"Erro durante a instalação do TA-Lib: {e}")
             return False
 
-        # Remover o arquivo .whl após a instalação (opcional)
-        if os.path.exists(local_path):
-            os.remove(local_path)
-            print(f"Arquivo {local_path} removido após a instalação.")
+        # Remover o .whl após a instalação (opcional)
+        try:
+            os.remove(whl_path)
+            print(f"Arquivo {whl_path} removido após a instalação.")
+        except Exception as e:
+            print(f"Erro ao remover o arquivo: {e}")
+
         return True
 
+# Configuração do setup
 requirements = parse_requirements("requirements.txt")
 
 setup(

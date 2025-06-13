@@ -40,6 +40,26 @@
     height: 100%;
 }
 
+/* ============================= */
+/* RSI CHART */
+/* ============================= */
+
+.rsi-chart-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #485c7b;
+    margin-bottom: 0;
+}
+
+#rsiChart {
+    height: 150px;
+    width: 100%;
+}
+
 .customLegend {
     display: flex;
     flex-direction: column;
@@ -55,10 +75,6 @@
     gap: 6px;
     color: #ccc;
     font-size: 12px;
-    /* border-style: solid;
-    border-radius: 5px;
-    border-width: 1px;
-    border-color: var(--border-light-color); */
     padding: 1px;
 }
 

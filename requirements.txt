@@ -14,7 +14,7 @@ beautifulsoup4
 # Gráficos técnicos e finanças
 # TA-Lib: precisa do pacote do sistema
 # sudo yay -S ta-lib && pip install ta-lib
-ta-lib
+# ta-lib
 # MetaTrader5
 
 # Backend (API)
