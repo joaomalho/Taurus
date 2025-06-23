@@ -34,3 +34,6 @@ Thumbs.db
 note.txt
 notes_dev.txt
 
+.env
+.docker-compose.yml
+.Dockerfile

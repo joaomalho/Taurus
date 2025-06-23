@@ -17,6 +17,7 @@ beautifulsoup4
 # ta-lib
 # MetaTrader5
 
+ta-lib
 # Backend (API)
 
 # Web e Django
