@@ -17,11 +17,13 @@ beautifulsoup4
 # ta-lib
 # MetaTrader5
 
-ta-lib
+# ta-lib
 # Backend (API)
 
 # Web e Django
 django
+celery
+psycopg2-binary>=2.9
 
 # Interface gráfica
 PyQt6

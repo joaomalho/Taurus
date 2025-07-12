@@ -3,7 +3,9 @@ version: '3.9'
 services:
   web:
     build: .
-    command: python market-analyzer/manage.py runserver 0.0.0.0:8000
+    container_name: taurus-web
+    command: python manage.py runserver 0.0.0.0:8000
+    working_dir: /code/market-analyzer
     volumes:
       - .:/code
     ports:
@@ -16,6 +18,7 @@ services:
 
   db:
     image: postgres:15
+    container_name: taurus-database
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -26,11 +29,14 @@ services:
 
   redis:
     image: redis:7
+    container_name: taurus-redis
     restart: always
 
   worker:
     build: .
+    container_name: taurus-worker
     command: celery -A webapp worker --loglevel=info
+    working_dir: /code/market-analyzer
     volumes:
       - .:/code
     depends_on:
