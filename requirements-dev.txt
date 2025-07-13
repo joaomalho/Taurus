@@ -1,0 +1,9 @@
+-r requirements.txt  # Garante que também tens as libs de produção
+
+# Ferramentas de desenvolvimento
+ipykernel
+jupyterlab  # Se usas notebooks
+pytest
+black
+flake8
+mypy

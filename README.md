@@ -350,6 +350,7 @@ We are also looking to grow our community with **key roles in market analysis**:
     - Pivots Point - `ToDo: Low`
 - Fundamental Analysis
     - Sentiment Analysis of Recent News - `ToDo: Low`
+        - Prompt news from API as example, done on test_news file - `ToDo: High`
     - Economic Calendar Correlations - `ToDo: Low`
     - Add Tags on Headers to Easly get info - `ToDo: Low`
     - Add Color by Results - `ToDo: Low`
@@ -358,7 +359,7 @@ We are also looking to grow our community with **key roles in market analysis**:
     - Missing Catalog for penny, top of day, top of week.
 - Install scripts:
     - This is to pass to server not applicable in User Install. `ToDo: Low | Deprecated`
-    - Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script.
+    - Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script. Inside container.
 
 
 ## **🚀 Latest Improvements**
