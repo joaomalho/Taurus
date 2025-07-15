@@ -6,6 +6,7 @@ yfinance
 tqdm
 joblib
 scikit-learn
+python-dotenv
 
 # Web scraping e rede
 requests

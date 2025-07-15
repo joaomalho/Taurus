@@ -1,0 +1,8 @@
+LICENSE
+README.md
+setup_win.py
+taurus.egg-info/PKG-INFO
+taurus.egg-info/SOURCES.txt
+taurus.egg-info/dependency_links.txt
+taurus.egg-info/requires.txt
+taurus.egg-info/top_level.txt

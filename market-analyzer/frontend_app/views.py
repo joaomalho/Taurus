@@ -39,8 +39,6 @@ def validate_symbol(symbol):
     except Exception:
         raise Http404("Invalid stock symbol.")
 
-import numpy as np
-
 def convert_numpy_types(obj):
     if isinstance(obj, (np.integer,)):
         return int(obj)

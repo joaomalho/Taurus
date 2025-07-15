@@ -226,7 +226,7 @@ class DataHistoryYahoo():
         prepost : bool
             Include Pre and Post market data in results? Default is False
         '''
-        yahoo_data_history = yf.Ticker(symbol).history(period=period, interval=interval, start=start, end=end, prepost=prepost)
+        yahoo_data_history = yf.Ticker(symbol).history(period=period, interval=interval, prepost=prepost)
         yahoo_data_history.reset_index(inplace=True)
 
         yahoo_data_history["Date"] = yahoo_data_history["Date"].dt.strftime("%Y-%m-%d %H:%M")

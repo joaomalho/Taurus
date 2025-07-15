@@ -7,7 +7,7 @@ export function fetchBioData(symbol) {
 }
 
 export function fetchStockData(symbol) {
-    return fetch(`/stock/${symbol}/data_history/?period=1mo&interval=1d`).then(res => res.json());
+    return fetch(`/stock/${symbol}/data_history/?period=1y&interval=1d`).then(res => res.json());
 }
 
 export function fetchCrossoverData(symbol, fast = 14, medium = 25, slow = 200) {
