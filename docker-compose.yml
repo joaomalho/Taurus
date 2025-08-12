@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: taurus-web
+    restart: always
     working_dir: /code/market-analyzer
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
@@ -23,6 +24,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: taurus-worker
+    restart: always
     working_dir: /code/market-analyzer
     command: celery -A webapp worker --loglevel=info
     volumes:

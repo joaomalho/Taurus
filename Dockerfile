@@ -15,24 +15,29 @@ RUN apt-get update && apt-get install -y \
     libreadline-dev \
     libsqlite3-dev \
     libssl-dev \
-    netcat \
+    netcat-openbsd \
     libcurl4-openssl-dev \
     libxml2-dev \
     libxslt-dev \
     && rm -rf /var/lib/apt/lists/*
 
+    
 # Instalar TA-Lib (C library)
 WORKDIR /tmp
-RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
-    && tar -xzf ta-lib-0.4.0-src.tar.gz \
-    && cd ta-lib && ./configure --prefix=/usr && make && make install \
-    && ldconfig \
-    && rm -rf /tmp/*
+RUN set -eux; \
+    wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz; \
+    tar -xzf ta-lib-0.4.0-src.tar.gz; \
+    cd ta-lib; \
+    ./configure --prefix=/usr; \ 
+    make; \
+    make install; \
+    ldconfig; \
+    rm -rf /tmp/*
 
-# Preparar a pasta do projeto
+# # Preparar a pasta do projeto
 WORKDIR /code
 
-# Instalar dependências Python
+# # Instalar dependências Python
 COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
@@ -41,3 +46,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 EXPOSE 8000
+

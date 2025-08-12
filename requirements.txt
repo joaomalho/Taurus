@@ -7,16 +7,13 @@ tqdm
 joblib
 scikit-learn
 python-dotenv
+redis
 
 # Web scraping e rede
 requests
 beautifulsoup4
 
 # Gráficos técnicos e finanças
-# TA-Lib: precisa do pacote do sistema
-# sudo yay -S ta-lib && pip install ta-lib
-# ta-lib
-# MetaTrader5
 
 ta-lib
 # Backend (API)

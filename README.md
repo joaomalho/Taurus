@@ -359,18 +359,11 @@ We are also looking to grow our community with **key roles in market analysis**:
     - Missing Catalog for penny, top of day, top of week.
 - Install scripts:
     - This is to pass to server not applicable in User Install. `ToDo: Low | Deprecated`
-    - Due some libraries like TA-Lib binary requirements to help users installation it was required to create a setup.py script. Inside container.
 
 
 ## **🚀 Latest Improvements**
-- **Trend Metrics:** Improvement on trend metrics results collection to use in other methods.
-- **GUI:** Implemented 3º version of GUI, Django.
-    - Main, Stock and Screener finished
-        - Organization & Data Visualizations
-            - Improvement with Lightweight-charts (Same usablity has Trading View)
-        - Documentation about metrics - WIP
-- **Auto Optimization** WIP
-- **Fundamental Analysis** Included all Necessary information for fundamental quantitative information.
+- **Docker configuration**
+- **Github CI/CD configuration**
 
 
 
