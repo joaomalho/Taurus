@@ -1,0 +1,68 @@
+name: Django Full CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: taurus_user
+          POSTGRES_PASSWORD: taurus_pass
+          POSTGRES_DB: taurus_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: |
+        docker build -t taurus-web .
+
+    - name: Run migrations and tests inside container
+      env:
+        DB_NAME: taurus_db
+        DB_USER: taurus_user
+        DB_PASSWORD: taurus_pass
+        DB_HOST: host.docker.internal
+        DB_PORT: 5432
+        REDIS_URL: redis://host.docker.internal:6379/0
+      run: |
+        docker run --rm \
+          --network host \
+          -e DB_NAME=$DB_NAME \
+          -e DB_USER=$DB_USER \
+          -e DB_PASSWORD=$DB_PASSWORD \
+          -e DB_HOST=$DB_HOST \
+          -e DB_PORT=$DB_PORT \
+          -e REDIS_URL=$REDIS_URL \
+          taurus-web \
+          sh -c "python manage.py migrate && python manage.py test"
+
+    - name: Lint code with flake8
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+        flake8 .
