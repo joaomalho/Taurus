@@ -3,6 +3,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from backend.risk_manager.risk_manager import RiskManagerTechnical
 
+
 class CandlesPatterns:
     """
     Detect all candlestick patterns using TA-Lib.
@@ -10,8 +11,7 @@ class CandlesPatterns:
 
     def __init__(self):
         self
-        
-        
+
     def detect_pattern(self, data, pattern_function, pattern_name: str, dates):
         """
         General method to detect a specific candlestick pattern.
@@ -27,7 +27,7 @@ class CandlesPatterns:
             date = dates[i]
 
             if datetime.strptime(date, "%Y-%m-%d %H:%M") < three_months_ago:
-                continue  
+                continue
 
             signal = int(detection[i])
 

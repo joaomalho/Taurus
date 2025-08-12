@@ -1,7 +1,6 @@
 import json
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.http import JsonResponse, Http404
 from django.core.validators import RegexValidator
@@ -13,21 +12,22 @@ from backend.tecnical_analysis.harmonic_patterns import HarmonicPatterns
 from backend.risk_manager.risk_manager import RiskManagerFundamental
 
 
-############################# Pages #############################
+# ------------------------- Pages -------------------------
 def home(request):
     return render(request, 'index.html')
 
-############################# Screener Page #############################
 
+# ------------------------- Screener Page -------------------------
 def screener_page(request):
     return render(request, 'screener.html')
 
-############################# Stock Pages #############################
 
+# ------------------------- Stock Pages -------------------------
 def stock_page(request, symbol):
     return render(request, 'stock.html', {"symbol": symbol})
 
-############################# Security Validations #############################
+
+# ------------------------- Security Validations -------------------------
 def validate_symbol(symbol):
     """
     Valida se o símbolo é uma string alfanumérica com no máximo 10 caracteres.
@@ -38,6 +38,7 @@ def validate_symbol(symbol):
         return symbol
     except Exception:
         raise Http404("Invalid stock symbol.")
+
 
 def convert_numpy_types(obj):
     if isinstance(obj, (np.integer,)):
@@ -50,53 +51,55 @@ def convert_numpy_types(obj):
         return obj.isoformat()
     return obj
 
+
 def get_data_history(request, symbol):
-        '''
-        Data collection from yahoo
+    '''
+    Data collection from yahoo
 
-        Parameters:
-        period : str
-            Valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max Either Use period parameter or use start and end
-        interval : str
-            Valid intervals: 1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo Intraday data cannot extend last 60 days
-        start: str
-            Download start date string (YYYY-MM-DD) or _datetime, inclusive. Default is 1900-01-01 E.g. for start="2020-01-01", the first data point will be on "2020-01-01"
-        end: str
-            Download end date string (YYYY-MM-DD) or _datetime, exclusive. Default is now E.g. for end="2023-01-01", the last data point will be on "2022-12-31"
-        prepost : bool
-            Include Pre and Post market data in results? Default is False
-        '''
+    Parameters:
+    period : str
+        Valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max Either Use period parameter or use start and end
+    interval : str
+        Valid intervals: 1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo Intraday data cannot extend last 60 days
+    start: str
+        Download start date string (YYYY-MM-DD) or _datetime, inclusive. Default is 1900-01-01 E.g. for start="2020-01-01", the first data point will be on "2020-01-01"
+    end: str
+        Download end date string (YYYY-MM-DD) or _datetime, exclusive. Default is now E.g. for end="2023-01-01", the last data point will be on "2022-12-31"
+    prepost : bool
+        Include Pre and Post market data in results? Default is False
+    '''
+    try:
+        symbol = symbol.strip().upper()
+
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        per = request.GET.get("period", "1mo")
+        interval_time = request.GET.get("interval", "1d")
+
         try:
-            symbol = symbol.strip().upper()
-            
-            if not symbol:
-                return JsonResponse({"error": "Symbol is missing"}, status=400)
+            data_history = DataHistoryYahoo()
+            df = data_history.get_data_history(symbol=symbol, period=per, interval=interval_time)
 
-            symbol = validate_symbol(symbol)
-        
-            per = request.GET.get("period", "1mo")
-            interval_time = request.GET.get("interval", "1d")
+            if df is None or df.empty:
+                return JsonResponse({"error": "No data found"}, status=404)
 
-            try:
-                data_history = DataHistoryYahoo()  
-                df = data_history.get_data_history(symbol=symbol, period=per, interval=interval_time)
-                
-                if df is None or df.empty:
-                    return JsonResponse({"error": "No data found"}, status=404)
+            return JsonResponse({"data": df.to_dict(orient="records")})
 
-                return JsonResponse({"data": df.to_dict(orient="records")})
-
-            except Exception as e:
-                return JsonResponse({"error": str(e)}, status=500)
         except Exception as e:
-            return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+            return JsonResponse({"error": str(e)}, status=500)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
 
 def get_stock_gainers(request):
     """
     View to pass Top 100 Gainers JSON.
     """
-    
-    data_history = DataHistoryYahoo() 
+
+    data_history = DataHistoryYahoo()
     df = data_history.get_stocks_gainers()
 
     if df is None or df.empty:
@@ -105,12 +108,13 @@ def get_stock_gainers(request):
     # Converte DataFrame para dicionário JSON
     return JsonResponse({"data": df.to_dict(orient="records")})
 
+
 def get_stock_trending(request):
     """
     View to pass Top 100 Trending JSON.
     """
     try:
-        data_history = DataHistoryYahoo() 
+        data_history = DataHistoryYahoo()
         df = data_history.get_stocks_trending()
 
         if df is None or df.empty:
@@ -125,12 +129,13 @@ def get_stock_trending(request):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
+
 def get_stock_most_active(request):
     """
     View to pass Top 100 Most Active JSON.
     """
     try:
-        data_history = DataHistoryYahoo() 
+        data_history = DataHistoryYahoo()
         df = data_history.get_stocks_most_active()
 
         if df is None or df.empty:
@@ -182,13 +187,13 @@ def get_crossover_trend_metrics(request, symbol):
                 # Validando se há dados suficientes para calcular cruzamento de médias
                 if len(data_list) < slowperiod:
                     return JsonResponse({"error": "Not enough data for moving average calculation."}, status=400)
-                
+
                 close_prices = np.array([entry.get("Close", np.nan) for entry in data_list], dtype=np.float64)
 
                 # Checando se há valores NaN nos dados
                 if np.isnan(close_prices).any():
                     return JsonResponse({"error": "Invalid data: missing Close prices."}, status=400)
-                
+
             except (json.JSONDecodeError, KeyError, TypeError) as e:
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
@@ -198,15 +203,16 @@ def get_crossover_trend_metrics(request, symbol):
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
 
-            close_prices = df["Close"].to_numpy(dtype=np.float64) 
+            close_prices = df["Close"].to_numpy(dtype=np.float64)
 
         tm = TrendMetrics()
         crossover_result = tm.get_crossover(close_prices, symbol, fastperiod, mediumperiod, slowperiod)
 
         return JsonResponse(crossover_result)
-    
+
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
 
 def get_crossover_trend_metrics_draw(request, symbol):
     fast = int(request.GET.get("fast", 14))
@@ -224,6 +230,7 @@ def get_crossover_trend_metrics_draw(request, symbol):
     result = cd.get_ema_history(df, fast, medium, slow)
     result["symbol"] = symbol.upper()
     return JsonResponse(result)
+
 
 def get_adx_trend_metrics(request, symbol):
     """
@@ -253,7 +260,7 @@ def get_adx_trend_metrics(request, symbol):
                 # Validando se há dados suficientes para calcular ADX
                 if len(data_list) < length:
                     return JsonResponse({"error": "Not enough data for ADX calculation."}, status=400)
-                
+
                 close_prices = np.array([entry["Close"] for entry in data_list if "Close" in entry], dtype=np.float64)
                 high_prices = np.array([entry["High"] for entry in data_list if "High" in entry], dtype=np.float64)
                 low_prices = np.array([entry["Low"] for entry in data_list if "Low" in entry], dtype=np.float64)
@@ -271,9 +278,9 @@ def get_adx_trend_metrics(request, symbol):
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
 
-            close_prices = df["Close"].to_numpy(dtype=np.float64) 
-            high_prices = df["High"].to_numpy(dtype=np.float64) 
-            low_prices = df["Low"].to_numpy(dtype=np.float64) 
+            close_prices = df["Close"].to_numpy(dtype=np.float64)
+            high_prices = df["High"].to_numpy(dtype=np.float64)
+            low_prices = df["Low"].to_numpy(dtype=np.float64)
 
         tm = TrendMetrics()
         adx_result = tm.get_adx(high_prices, low_prices, close_prices, symbol, length)
@@ -282,6 +289,7 @@ def get_adx_trend_metrics(request, symbol):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
 
 def get_bollinger_bands_metrics(request, symbol):
     """
@@ -304,7 +312,7 @@ def get_bollinger_bands_metrics(request, symbol):
 
         except ValueError:
             return JsonResponse({"error": "Length and std_dev must be integers."}, status=400)
-        
+
         raw_data = request.GET.get("data")
 
         if raw_data:
@@ -330,20 +338,21 @@ def get_bollinger_bands_metrics(request, symbol):
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
 
-            close_prices = df["Close"].to_numpy(dtype=np.float64) 
+            close_prices = df["Close"].to_numpy(dtype=np.float64)
 
         tm = TrendMetrics()
         sma_bands_result = tm.get_bollinger_bands(symbol, close_prices, length, std_dev)
 
         return JsonResponse(sma_bands_result)
-    
+
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
 
 def get_bollinger_bands_metrics_draw(request, symbol):
     length = int(request.GET.get("length", 14))
     std = int(request.GET.get("std", 2))
-    
+
     dh = DataHistoryYahoo()
     df = dh.get_data_history(symbol=symbol, period="1y", interval="1d")
 
@@ -355,6 +364,7 @@ def get_bollinger_bands_metrics_draw(request, symbol):
     result = cd.get_bollinger_bands_history(df, length, std)
     result["symbol"] = symbol.upper()
     return JsonResponse(result)
+
 
 def get_rsi_trend_metrics(request, symbol):
     """
@@ -373,7 +383,7 @@ def get_rsi_trend_metrics(request, symbol):
 
             if length <= 0 or upper_level <= lower_level:
                 return JsonResponse({"error": "Invalid parameter values."}, status=400)
-        
+
         except ValueError:
             return JsonResponse({"error": "Length, Upper Level and Lower Level must by integers."}, status=400)
 
@@ -392,7 +402,7 @@ def get_rsi_trend_metrics(request, symbol):
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
 
-            close_prices = df["Close"].to_numpy(dtype=np.float64) 
+            close_prices = df["Close"].to_numpy(dtype=np.float64)
 
         tm = TrendMetrics()
         rsi_result = tm.get_rsi(symbol, close_prices, length, upper_level, lower_level)
@@ -401,12 +411,13 @@ def get_rsi_trend_metrics(request, symbol):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
- 
+
+
 def get_rsi_trend_metrics_draw(request, symbol):
     upper_level = int(request.GET.get("upper_level", 70))
     lower_level = int(request.GET.get("lower_level", 30))
     length = int(request.GET.get("length", 30))
-    
+
     dh = DataHistoryYahoo()
     df = dh.get_data_history(symbol=symbol, period="1y", interval="1d")
 
@@ -418,6 +429,7 @@ def get_rsi_trend_metrics_draw(request, symbol):
     result = cd.get_rsi_history(df, length, upper_level, lower_level)
     result["symbol"] = symbol.upper()
     return JsonResponse(result)
+
 
 def get_candle_detection(request, symbol):
     """
@@ -459,12 +471,12 @@ def get_candle_detection(request, symbol):
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
 
-            close_prices = df["Close"].to_numpy(dtype=np.float64) 
-            low_prices = df["Low"].to_numpy(dtype=np.float64) 
-            high_prices = df["High"].to_numpy(dtype=np.float64) 
+            close_prices = df["Close"].to_numpy(dtype=np.float64)
+            low_prices = df["Low"].to_numpy(dtype=np.float64)
+            high_prices = df["High"].to_numpy(dtype=np.float64)
             open_prices = df["Open"].to_numpy(dtype=np.float64)
             dates = df["Date"].to_numpy()
-            
+
         cp = CandlesPatterns()
         detected_patterns = {}
 
@@ -475,12 +487,12 @@ def get_candle_detection(request, symbol):
             pattern_func = getattr(cp, method_name)
             if not callable(pattern_func):
                 continue
-            
+
             try:
                 detection_result = pattern_func({
-                    "Open": open_prices, 
-                    "High": high_prices, 
-                    "Low": low_prices, 
+                    "Open": open_prices,
+                    "High": high_prices,
+                    "Low": low_prices,
                     "Close": close_prices
                 }, dates)
 
@@ -496,6 +508,7 @@ def get_candle_detection(request, symbol):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
 
 def get_harmonic_patterns(request, symbol):
     """
@@ -517,7 +530,7 @@ def get_harmonic_patterns(request, symbol):
 
                 if len(data_list) < 5:
                     return JsonResponse({"error": "Not enough data for pattern detection."}, status=400)
-                
+
             except (json.JSONDecodeError, KeyError, TypeError) as e:
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
@@ -528,11 +541,11 @@ def get_harmonic_patterns(request, symbol):
                 return JsonResponse({"error": "No data found"}, status=404)
 
         hp = HarmonicPatterns()
-        
+
         result = hp.backtest_harmonic_patterns(data=df, err_allowed=0.02, order=5, stop_factor=0.1, future_window=20)
 
         return JsonResponse({"patterns_detected": result})
-    
+
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
@@ -549,9 +562,9 @@ def get_inst_holders(request, symbol):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()  
+        data_history = DataHistoryYahoo()
         df = data_history.get_symbol_institutional_holders(symbol)
-        
+
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
 
@@ -565,6 +578,7 @@ def get_inst_holders(request, symbol):
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
+
 def get_inside_transactions(request, symbol):
     """
     Return the list of inside transactions
@@ -577,9 +591,9 @@ def get_inside_transactions(request, symbol):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()  
+        data_history = DataHistoryYahoo()
         df = data_history.get_symbol_inside_transactions(symbol)
-        
+
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
 
@@ -606,9 +620,9 @@ def get_recommendations(request, symbol):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()  
+        data_history = DataHistoryYahoo()
         df = data_history.get_symbol_recommendations(symbol)
-        
+
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
 
@@ -621,6 +635,7 @@ def get_recommendations(request, symbol):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
 
 def get_fundamental_info(request, symbol):
     """
@@ -652,6 +667,7 @@ def get_fundamental_info(request, symbol):
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
 
 def get_fundamental_evaluations(request, symbol):
     """
@@ -690,7 +706,6 @@ def get_fundamental_evaluations(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-
 def get_bio_info(request, symbol):
     """
     Return company information about the company.
@@ -717,4 +732,3 @@ def get_bio_info(request, symbol):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
-
