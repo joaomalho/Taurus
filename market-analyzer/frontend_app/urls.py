@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (home, stock_page, screener_page, get_stock_gainers, get_stock_trending,
                     get_stock_most_active, get_data_history, get_crossover_trend_metrics, get_adx_trend_metrics,
                     get_bollinger_bands_metrics, get_rsi_trend_metrics, get_candle_detection, get_inst_holders,
-                    get_recommendations, get_fundamental_info, get_bio_info, get_fundamental_evaluations, 
+                    get_recommendations, get_fundamental_info, get_bio_info, get_fundamental_evaluations,
                     get_harmonic_patterns, get_crossover_trend_metrics_draw, get_bollinger_bands_metrics_draw,
                     get_inside_transactions, get_rsi_trend_metrics_draw
                     )
