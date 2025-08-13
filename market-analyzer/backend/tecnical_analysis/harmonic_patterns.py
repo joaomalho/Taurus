@@ -1,6 +1,7 @@
 import numpy as np
 from backend.funcionalities.formulas import Formulas
 
+
 class HarmonicPatterns:
     """
     Detect all candlestick patterns using TA-Lib.
@@ -27,11 +28,11 @@ class HarmonicPatterns:
             "STOP": None
         }
 
-        ## === Bullish Gartley === ##
+        # === Bullish Gartley === ##
         if XA > 0 and AB < 0 and BC > 0 and CD < 0:
-            if AB_range[0] < abs(AB) < AB_range[1] and \
-            BC_range[0] < abs(BC) < BC_range[1] and \
-            CD_range[0] < abs(CD) < CD_range[1]:
+            if (AB_range[0] < abs(AB) < AB_range[1] and
+                    BC_range[0] < abs(BC) < BC_range[1] and
+                    CD_range[0] < abs(CD) < CD_range[1]):
 
                 D = XA + AB + BC + CD
                 C = XA + AB + BC
@@ -54,11 +55,11 @@ class HarmonicPatterns:
 
                 return 1, targets  # Bullish
 
-        ## === Bearish Gartley === ##
+        # === Bearish Gartley === ##
         elif XA < 0 and AB > 0 and BC < 0 and CD > 0:
-            if AB_range[0] < abs(AB) < AB_range[1] and \
-            BC_range[0] < abs(BC) < BC_range[1] and \
-            CD_range[0] < abs(CD) < CD_range[1]:
+            if (AB_range[0] < abs(AB) < AB_range[1] and
+                    BC_range[0] < abs(BC) < BC_range[1] and
+                    CD_range[0] < abs(CD) < CD_range[1]):
 
                 D = XA + AB + BC + CD
                 C = XA + AB + BC
@@ -101,11 +102,11 @@ class HarmonicPatterns:
             "STOP": None
         }
 
-        ## === Bullish Bat === ##
+        # === Bullish Bat === ##
         if XA > 0 and AB < 0 and BC > 0 and CD < 0:
-            if AB_range[0] < abs(AB) < AB_range[1] and \
-            BC_range[0] < abs(BC) < BC_range[1] and \
-            CD_range[0] < abs(CD) < CD_range[1]:
+            if (AB_range[0] < abs(AB) < AB_range[1] and
+                    BC_range[0] < abs(BC) < BC_range[1] and
+                    CD_range[0] < abs(CD) < CD_range[1]):
 
                 D = XA + AB + BC + CD
                 C = XA + AB + BC
@@ -128,11 +129,11 @@ class HarmonicPatterns:
 
                 return 1, targets  # Bullish
 
-        ## === Bearish Bat === ##
+        # === Bearish Bat === ##
         elif XA < 0 and AB > 0 and BC < 0 and CD > 0:
-            if AB_range[0] < abs(AB) < AB_range[1] and \
-            BC_range[0] < abs(BC) < BC_range[1] and \
-            CD_range[0] < abs(CD) < CD_range[1]:
+            if (AB_range[0] < abs(AB) < AB_range[1] and
+                    BC_range[0] < abs(BC) < BC_range[1] and
+                    CD_range[0] < abs(CD) < CD_range[1]):
 
                 D = XA + AB + BC + CD
                 C = XA + AB + BC
@@ -156,7 +157,6 @@ class HarmonicPatterns:
                 return -1, targets  # Bearish
 
         return np.nan, targets
-    
 
     def get_butterfly_hp(self, moves, err_allowed, stop_factor, price_X):
         XA, AB, BC, CD = moves
@@ -176,11 +176,11 @@ class HarmonicPatterns:
             "STOP": None,
         }
 
-        ## === Bullish Butterfly === ##
+        # === Bullish Butterfly === ##
         if XA > 0 and AB < 0 and BC > 0 and CD < 0:
-            if AB_range[0] < abs(AB) < AB_range[1] and \
-            BC_range[0] < abs(BC) < BC_range[1] and \
-            CD_range[0] < abs(CD) < CD_range[1]:
+            if (AB_range[0] < abs(AB) < AB_range[1] and
+                    BC_range[0] < abs(BC) < BC_range[1] and
+                    CD_range[0] < abs(CD) < CD_range[1]):
 
                 D = XA + AB + BC + CD
                 C = XA + AB + BC
@@ -203,11 +203,11 @@ class HarmonicPatterns:
 
                 return 1, targets  # Bullish
 
-        ## === Bearish Butterfly === ##
+        # === Bearish Butterfly === ##
         elif XA < 0 and AB > 0 and BC < 0 and CD > 0:
-            if AB_range[0] < abs(AB) < AB_range[1] and \
-            BC_range[0] < abs(BC) < BC_range[1] and \
-            CD_range[0] < abs(CD) < CD_range[1]:
+            if (AB_range[0] < abs(AB) < AB_range[1] and
+                    BC_range[0] < abs(BC) < BC_range[1] and
+                    CD_range[0] < abs(CD) < CD_range[1]):
 
                 D = XA + AB + BC + CD
                 C = XA + AB + BC
@@ -232,10 +232,9 @@ class HarmonicPatterns:
 
         return np.nan, targets
 
-
     def get_crab_hp(self, moves, err_allowed, stop_factor, price_X):
         XA, AB, BC, CD = moves
-                    
+
         AB_range = np.array([.382 - err_allowed, .618 + err_allowed]) * abs(XA)
         BC_range = np.array([.382 - err_allowed, .886 + err_allowed]) * abs(AB)
         CD_range = np.array([2.24 - err_allowed, 3.618 + err_allowed]) * abs(XA)
@@ -251,9 +250,11 @@ class HarmonicPatterns:
             "STOP": None,
         }
 
-        ## === Bullish Crab === ##
+        # === Bullish Crab === ##
         if XA > 0 and AB < 0 and BC > 0 and CD < 0:
-            if AB_range[0] < abs(AB) < AB_range[1] and BC_range[0] < abs(BC) < BC_range[1] and CD_range[0] < abs(CD) < CD_range[1]:
+            if (AB_range[0] < abs(AB) < AB_range[1] and
+                    BC_range[0] < abs(BC) < BC_range[1] and
+                    CD_range[0] < abs(CD) < CD_range[1]):
 
                 D = XA + AB + BC + CD
                 C = XA + AB + BC
@@ -276,9 +277,11 @@ class HarmonicPatterns:
 
                 return 1, targets  # Bullish
 
-        ## === Bearish Crab === ##
+        # === Bearish Crab === ##
         elif XA < 0 and AB > 0 and BC < 0 and CD > 0:
-            if AB_range[0] < abs(AB) < AB_range[1] and BC_range[0] < abs(BC) < BC_range[1] and CD_range[0] < abs(CD) < CD_range[1]:
+            if (AB_range[0] < abs(AB) < AB_range[1] and
+                    BC_range[0] < abs(BC) < BC_range[1] and
+                    CD_range[0] < abs(CD) < CD_range[1]):
 
                 D = XA + AB + BC + CD
                 C = XA + AB + BC
@@ -303,9 +306,7 @@ class HarmonicPatterns:
 
         return np.nan, targets
 
-        
-
-    def backtest_harmonic_patterns(self, data, err_allowed : float, order : int, stop_factor : float, future_window : int):
+    def backtest_harmonic_patterns(self, data, err_allowed: float, order: int, stop_factor: float, future_window: int):
         close = data.Close.values
         results = []
 
@@ -389,7 +390,7 @@ class HarmonicPatterns:
                 weighted_return = reward
             elif stop_hit:
                 weighted_return = -risk
-            
+
             results.append({
                 "pattern": name,
                 "direction": int(direction),
@@ -413,7 +414,4 @@ class HarmonicPatterns:
                 "pattern_idx_prices": [float(p) for p in current_pat.tolist()]
             })
 
-
         return results
-    
-        

@@ -1,6 +1,7 @@
 import math
 from backend.funcionalities.formulas import Formulas
 
+
 class RiskManagerTechnical ():
 
     def __init__(self):
@@ -8,7 +9,7 @@ class RiskManagerTechnical ():
 
     def relevance_candle(self):
         '''
-        Determine whether the targets have already been reached following pattern detection, if not, consider them as active targets. 
+        Determine whether the targets have already been reached following pattern detection, if not, consider them as active targets.
         Additionally, evaluate which pattern should be prioritized if multiple patterns are detected.
         '''
 
@@ -19,27 +20,27 @@ class RiskManagerTechnical ():
         pass
 
     def signal_decision_rsi(self, rsi_now, upper_level, lower_level):
-        
+
         if rsi_now >= upper_level:
             rsi_signal = 'Sell'
         elif rsi_now <= lower_level:
             rsi_signal = 'Buy'
         else:
-            rsi_signal = 'Flat'        
+            rsi_signal = 'Flat'
         return rsi_signal
 
     def signal_decision_bbands(self, last_close, lower_band, upper_band):
-        
+
         if last_close <= lower_band:
             bbands_signal = 'Buy'
         elif last_close >= upper_band:
             bbands_signal = 'Sell'
         else:
-            bbands_signal = 'Flat'        
+            bbands_signal = 'Flat'
         return bbands_signal
 
     def signal_decision_adx(self, adx_now):
-        
+
         if adx_now < 20:
             adx_signal = 'Weak Trend'
         elif 20 <= adx_now < 50:
@@ -51,7 +52,7 @@ class RiskManagerTechnical ():
         return adx_signal
 
     def signal_decision_crossover(self, ema_low, ema_mid, ema_high):
-        
+
         if ema_low > ema_mid > ema_high:
             crossover_signal = 'Buy'
         elif ema_low < ema_mid < ema_high:
@@ -59,7 +60,7 @@ class RiskManagerTechnical ():
         else:
             crossover_signal = 'Flat'
         return crossover_signal
-    
+
     def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
         """
         Verify if stoploss were hitted in candle patterns
@@ -74,14 +75,14 @@ class RiskManagerTechnical ():
             return "Hit Stoploss (Below)" if any(close < stoploss for close in future_close_prices) else "No Hit"
 
         return "N/A"
-    
+
 
 class RiskManagerFundamental():
 
     def __init__(self):
         self.stoploss = None
         self.takeprofit = None
-        
+
     def evaluate_metrics(self, metrics):
         """
         Evaluate fundamental metrics.
@@ -94,8 +95,8 @@ class RiskManagerFundamental():
         # Valuation
         valuation = metrics.get('valuation', {})
         trailing_pe = fm.safe_round(valuation.get("trailingPE"))
-        sector_pe   = fm.safe_round(valuation.get("sectorTrailingPE"))
-        forward_pe  = fm.safe_round(valuation.get("forwardPE"))
+        sector_pe = fm.safe_round(valuation.get("sectorTrailingPE"))
+        forward_pe = fm.safe_round(valuation.get("forwardPE"))
 
         # Guardar os valores convertidos
         evaluated_metrics["trailingPE"] = trailing_pe if trailing_pe is not None else None
@@ -135,7 +136,6 @@ class RiskManagerFundamental():
             else:
                 evaluated_metrics["PEGRatio_evaluation"] = "Overvalued"
 
-        
         # Dividends - Dividend Coverage Ratio
         div_coverage_raw = fm.safe_round(metrics.get('dividends', {}).get("divCoverageRate"))
 
@@ -155,7 +155,6 @@ class RiskManagerFundamental():
             else:
                 evaluated_metrics["divCoverageRate_evaluation"] = "Very Good Coverage (Greedy)"
 
-        
         # Profitability - Cost of Revenue CAGR
         cost_revenue_cagr = fm.safe_round(metrics.get('profitability', {}).get("CostOfRevenueCAGR"))
 
@@ -170,7 +169,6 @@ class RiskManagerFundamental():
                 evaluated_metrics["CostOfRevenueCAGR_evaluation"] = "Good"
             else:
                 evaluated_metrics["CostOfRevenueCAGR_evaluation"] = "Not Good"
-
 
         total_revenue_cagr = fm.safe_round(metrics.get('profitability', {}).get("TotalRevenueCAGR"))
         evaluated_metrics["TotalRevenueCAGR"] = total_revenue_cagr if total_revenue_cagr is not None else None
@@ -189,8 +187,7 @@ class RiskManagerFundamental():
         else:
             evaluated_metrics["NetWorth_evaluation"] = "Good" if net_worth > 0 else "Not Good (In Debt)"
 
-
-            # Short Term Debt Coverage 
+        # Short Term Debt Coverage
         short_debt_cov = fm.safe_round(metrics.get('liquidity', {}).get("ShortTermDebtCoverage"))
         evaluated_metrics["ShortTermDebtCoverage"] = short_debt_cov if short_debt_cov is not None else None
 
@@ -199,8 +196,7 @@ class RiskManagerFundamental():
         else:
             evaluated_metrics["ShortTermDebtCoverage_evaluation"] = "Good" if short_debt_cov > 0 else "Not Good (In Debt)"
 
-    
-            # Long Term Debt Coverage 
+        # Long Term Debt Coverage
         long_debt_cov = fm.safe_round(metrics.get('liquidity', {}).get("LongTermDebtCoverage"))
         evaluated_metrics["LongTermDebtCoverage"] = long_debt_cov if long_debt_cov is not None else None
 
@@ -209,8 +205,7 @@ class RiskManagerFundamental():
         else:
             evaluated_metrics["LongTermDebtCoverage_evaluation"] = "Good" if long_debt_cov > 0 else "Not Good (In Debt)"
 
-
-            # Assets Growth
+        # Assets Growth
         total_assets_cagr = fm.safe_round(metrics.get('liquidity', {}).get("TotalAssetsCAGR"))
         evaluated_metrics["TotalAssetsCAGR"] = total_assets_cagr if total_assets_cagr is not None else None
 
@@ -219,8 +214,7 @@ class RiskManagerFundamental():
         else:
             evaluated_metrics["TotalAssetsCAGR_evaluation"] = "Good" if total_assets_cagr > 0 else "Not Good"
 
-
-            # Liabilities Growth
+        # Liabilities Growth
         total_liabilities_cagr = fm.safe_round(metrics.get('liquidity', {}).get("TotalLiabilitiesCAGR"))
         evaluated_metrics["TotalLiabilitiesCAGR"] = total_liabilities_cagr if total_liabilities_cagr is not None else None
 
@@ -229,8 +223,7 @@ class RiskManagerFundamental():
         else:
             evaluated_metrics["TotalLiabilitiesCAGR_evaluation"] = "Good" if total_liabilities_cagr <= 0 else "Not Good"
 
-
-            # Stockholders Equity
+        # Stockholders Equity
         stockholders_equity_cagr = fm.safe_round(metrics.get('liquidity', {}).get("StockholdersEquityCAGR"))
         evaluated_metrics["StockholdersEquityCAGR"] = stockholders_equity_cagr if stockholders_equity_cagr is not None else None
 
@@ -238,7 +231,6 @@ class RiskManagerFundamental():
             evaluated_metrics["StockholdersEquityCAGR_evaluation"] = "No Data"
         else:
             evaluated_metrics["StockholdersEquityCAGR_evaluation"] = "Good" if stockholders_equity_cagr > 0 else "Not Good"
-
 
         # Cash
             # Free Cashflow Yield
@@ -253,7 +245,6 @@ class RiskManagerFundamental():
             evaluated_metrics["FreeCashflowYield_evaluation"] = "Healthy / Consistent to Generates Cash"
         else:
             evaluated_metrics["FreeCashflowYield_evaluation"] = "Undervalued / Highly Profitable"
-
 
         # Ratios
             # Current Ratio
@@ -272,7 +263,6 @@ class RiskManagerFundamental():
             else:
                 evaluated_metrics["CurrentRatio_evaluation"] = "Perfect Coverage (Double +)"
 
-
             # Current Ratio Growth
         current_ratio_cagr = fm.safe_round(metrics.get('ratios', {}).get("CurrentRatioCAGR"))
         evaluated_metrics["CurrentRatioCAGR"] = current_ratio_cagr if current_ratio_cagr is not None else None
@@ -281,7 +271,6 @@ class RiskManagerFundamental():
             evaluated_metrics["CurrentRatioCAGR_evaluation"] = "No Data"
         else:
             evaluated_metrics["CurrentRatioCAGR_evaluation"] = "Good" if current_ratio_cagr > 0 else "Not Good"
-
 
             # Cash Ratio
         cash_ratio = fm.safe_round(metrics.get('ratios', {}).get("CashRatio"))
@@ -297,7 +286,6 @@ class RiskManagerFundamental():
             else:
                 evaluated_metrics["CashRatio_evaluation"] = "Good Debt Coverage (Too Conservative)"
 
-
             # Current Ratio Growth
         cash_ratio_cagr = fm.safe_round(metrics.get('ratios', {}).get("CashRatioCAGR"))
         evaluated_metrics["CashRatioCAGR"] = cash_ratio_cagr if cash_ratio_cagr is not None else None
@@ -309,7 +297,6 @@ class RiskManagerFundamental():
                 evaluated_metrics["CashRatioCAGR_evaluation"] = "Not Good"
             else:
                 evaluated_metrics["CashRatioCAGR_evaluation"] = "Good"
-
 
             # Gross Margin
         gross_margin = fm.safe_round(metrics.get('ratios', {}).get("GrossMargin"))
@@ -325,7 +312,6 @@ class RiskManagerFundamental():
             else:
                 evaluated_metrics["GrossMargin_evaluation"] = "Good - Efficient Costs Management"
 
-
             # Gross Margin Growth
         gross_margin_cagr = fm.safe_round(metrics.get('ratios', {}).get("GrossMarginCAGR"))
         evaluated_metrics["GrossMarginCAGR"] = gross_margin_cagr if gross_margin_cagr is not None else None
@@ -336,7 +322,6 @@ class RiskManagerFundamental():
             evaluated_metrics["GrossMarginCAGR_evaluation"] = (
                 "Good" if gross_margin_cagr > 0 else "Not Good"
             )
-
 
             # Operating Margin
         operating_margin = fm.safe_round(metrics.get('ratios', {}).get("OperatingMargin"))
@@ -352,7 +337,6 @@ class RiskManagerFundamental():
             else:
                 evaluated_metrics["OperatingMargin_evaluation"] = "Good - Efficient Cost Management"
 
-
             # Operational Margin Growth
         operating_margin_cagr = fm.safe_round(metrics.get('ratios', {}).get("OperatingMarginCAGR"))
         evaluated_metrics["OperatingMarginCAGR"] = operating_margin_cagr if operating_margin_cagr is not None else None
@@ -365,7 +349,6 @@ class RiskManagerFundamental():
             else:
                 evaluated_metrics["OperatingMarginCAGR_evaluation"] = "Good"
 
-            
             # Profit Margin
         profit_margin = fm.safe_round(metrics.get('ratios', {}).get("ProfitMargin"))
         evaluated_metrics["ProfitMargin"] = profit_margin if profit_margin is not None else None
@@ -382,7 +365,6 @@ class RiskManagerFundamental():
             else:
                 evaluated_metrics["ProfitMargin_evaluation"] = "Good - Highly Profitable and Eficient Profit Generate"
 
-
             # Profit Margin Growth
         profit_margin_cagr = fm.safe_round(metrics.get('ratios', {}).get("ProfitMarginCAGR"))
         evaluated_metrics["ProfitMarginCAGR"] = profit_margin_cagr if profit_margin_cagr is not None else None
@@ -395,7 +377,6 @@ class RiskManagerFundamental():
             else:
                 evaluated_metrics["ProfitMarginCAGR_evaluation"] = "Good - Growing Profitability Over Time"
 
-            
             # Return On Equity
         return_on_equity = fm.safe_round(metrics.get('ratios', {}).get("ReturnOnEquity"))
         evaluated_metrics["ReturnOnEquity"] = return_on_equity if return_on_equity is not None else None
@@ -423,6 +404,5 @@ class RiskManagerFundamental():
                 evaluated_metrics["ReturnOnEquityCAGR_evaluation"] = "Not Good - No Growth or Negative Trend"
             else:
                 evaluated_metrics["ReturnOnEquityCAGR_evaluation"] = "Good - Consistent Growth in Equity Returns"
-        
-        return evaluated_metrics if evaluated_metrics else "Indefinido"
 
+        return evaluated_metrics if evaluated_metrics else "Indefinido"

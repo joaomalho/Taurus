@@ -1,14 +1,12 @@
-import talib
-import itertools
 import numpy as np
 from tqdm import tqdm
-from joblib import Parallel, delayed
 
 # NOVOS E IMPLEMENTADOS
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from backend.funcionalities.formulas import Formulas
 from backend.tecnical_analysis.harmonic_patterns import HarmonicPatterns
+
 
 class ParamsOptimization():
     """
@@ -21,7 +19,7 @@ class ParamsOptimization():
     # NOVOS E FUNCIONAIS, PARA CIMA NÃO IMPLEMENTADO
 
     def backtest_harmonic_patterns(self, data, err_allowed=0.02, order=5, stop_factor=0.1, future_window=20):
-        
+
         hp = HarmonicPatterns()
         fm = Formulas()
 
@@ -124,11 +122,10 @@ class ParamsOptimization():
 
         return results
 
-
     def simulate_trading(self, results, initial_capital, risk_per_trade):
 
         df = pd.DataFrame(results)
-        df = df.dropna(subset=["risk"]) 
+        df = df.dropna(subset=["risk"])
 
         capital = initial_capital
         equity_curve = []
@@ -161,7 +158,6 @@ class ParamsOptimization():
         equity_df['capital'] = equity_curve
 
         return equity_df
-
 
     def normalize_decision_rank(self, resumo):
         # Cópia de trabalho
@@ -210,7 +206,7 @@ class ParamsOptimization():
     def run_full_backtest(self, data, future_window=20):
         """
         Testa várias combinações de (order, err_allowed, stop_factor) e avalia performance dos padrões harmônicos.
-        
+
         Return:
             summary_df: DataFrame com estatísticas de acerto e capital final por combinação
         """
@@ -224,14 +220,14 @@ class ParamsOptimization():
         err_values = [0.05, 0.06]
         stop_factors = [0.1, 0.2]
         capex = 10000
-        risk_per_trade=0.01
+        # risk_per_trade=0.01
 
         summary = []
 
         for order in orders:
             for err in err_values:
                 for stop in stop_factors:
-                    
+
                     # Roda o backtest
                     results = po.backtest_harmonic_patterns(
                         data,
@@ -293,9 +289,9 @@ class ParamsOptimization():
         po.normalize_decision_rank(summary_df)
 
         return summary_df
-    
 
-## POR IMPLEMENTAR
+
+# POR IMPLEMENTAR
 
 #     def optimize_crossover(self, data : pd.DataFrame, symbol : str):
 #         """
@@ -356,7 +352,7 @@ class ParamsOptimization():
 #             data, symbol, period, std) for period, std in tqdm(combinations, desc="Optimizing Bollinger Bands"))
 
 #         results_df = pd.DataFrame(results)
-       
+
 #         return results_df
 
 #     def simulate_bbands(self, data, symbol, period, std):

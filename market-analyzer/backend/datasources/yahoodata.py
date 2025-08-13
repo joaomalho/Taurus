@@ -10,20 +10,21 @@ from backend.funcionalities.formulas import Formulas
 
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
+
 class DataHistoryYahoo():
 
     def __init__(self) -> None:
         self
-    
-    ########### STOCKS TOPs ###########
-    def get_symbol_bio_info(self, symbol : str):
+
+    # ---------- STOCKS TOPs ----------
+    def get_symbol_bio_info(self, symbol: str):
         '''
         Return detailed company information.
         '''
-        
+
         try:
             yahoo_symbol_info = yf.Ticker(symbol).info
-        except:
+        except Exception:
             yahoo_symbol_info = {}
 
         yahoo_symbol_about_info = {
@@ -63,7 +64,7 @@ class DataHistoryYahoo():
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
-        
+
         try:
             response = requests.get("https://finance.yahoo.com/markets/stocks/gainers/?start=0&count=100", headers=headers)
             response.raise_for_status()
@@ -80,13 +81,13 @@ class DataHistoryYahoo():
             rows = []
             for row in tabela.find_all('tr')[1:]:
                 cols = [td.text.strip() for td in row.find_all('td')]
-                if cols: 
+                if cols:
                     rows.append(cols)
 
             fm = Formulas()
 
             df = pd.DataFrame(rows, columns=headers if headers else None)
-            df["Price"] = pd.to_numeric(df["Price"].str.extract(r"^([\d\.]+)")[0], errors="coerce").fillna(0).round(2)        
+            df["Price"] = pd.to_numeric(df["Price"].str.extract(r"^([\d\.]+)")[0], errors="coerce").fillna(0).round(2)
             df["Change"] = pd.to_numeric(df["Change"].str.replace(r"^\+", "", regex=True), errors='coerce').fillna(0).round(2)
             df["Change %"] = pd.to_numeric(df["Change %"].str.replace("%", "", regex=False), errors='coerce').fillna(0).round(2)
             df["Volume"] = pd.to_numeric(df["Volume"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
@@ -134,13 +135,13 @@ class DataHistoryYahoo():
             rows = []
             for row in tabela.find_all('tr')[1:]:
                 cols = [td.text.strip() for td in row.find_all('td')]
-                if cols: 
+                if cols:
                     rows.append(cols)
 
             fm = Formulas()
 
             df = pd.DataFrame(rows, columns=headers if headers else None)
-            df["Price"] = pd.to_numeric(df["Price"].str.extract(r"^([\d\.]+)")[0], errors="coerce").fillna(0).round(2)        
+            df["Price"] = pd.to_numeric(df["Price"].str.extract(r"^([\d\.]+)")[0], errors="coerce").fillna(0).round(2)
             df["Change"] = pd.to_numeric(df["Change"].str.replace(r"^\+", "", regex=True), errors='coerce').fillna(0).round(2)
             df["Change %"] = pd.to_numeric(df["Change %"].str.replace("%", "", regex=False), errors='coerce').fillna(0).round(2)
             df["Volume"] = pd.to_numeric(df["Volume"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
@@ -156,7 +157,7 @@ class DataHistoryYahoo():
             print(f"Error accessing URL: {e}")
         except Exception as e:
             print(f"Error processing data: {e}")
-    
+
     def get_stocks_trending(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo trending.
@@ -188,13 +189,13 @@ class DataHistoryYahoo():
             rows = []
             for row in tabela.find_all('tr')[1:]:
                 cols = [td.text.strip() for td in row.find_all('td')]
-                if cols: 
+                if cols:
                     rows.append(cols)
 
             fm = Formulas()
 
             df = pd.DataFrame(rows, columns=headers if headers else None)
-            df["Price"] = pd.to_numeric(df["Price"].str.extract(r"^([\d\.]+)")[0], errors="coerce").fillna(0).round(2)        
+            df["Price"] = pd.to_numeric(df["Price"].str.extract(r"^([\d\.]+)")[0], errors="coerce").fillna(0).round(2)
             df["Change"] = pd.to_numeric(df["Change"].str.replace(r"^\+", "", regex=True), errors='coerce').fillna(0).round(2)
             df["Change %"] = pd.to_numeric(df["Change %"].str.replace("%", "", regex=False), errors='coerce').fillna(0).round(2)
             df["Volume"] = pd.to_numeric(df["Volume"].str.replace("-", "0", regex=False).apply(fm.convert_string_milions), errors='coerce')
@@ -210,7 +211,7 @@ class DataHistoryYahoo():
         except Exception as e:
             print(f"Error processing data: {e}")
 
-    def get_data_history(self, symbol : str, period : str, interval : str, start = '1900-01-01', end = datetime.now(), prepost : bool = True):
+    def get_data_history(self, symbol: str, period: str, interval: str, start='1900-01-01', end=datetime.now(), prepost: bool = True):
         '''
         Data collection from yahoo
 
@@ -233,18 +234,18 @@ class DataHistoryYahoo():
 
         return yahoo_data_history
 
-    def get_symbol_institutional_holders(self, symbol : str):
+    def get_symbol_institutional_holders(self, symbol: str):
         '''
         Return the list of major institutional holders
         '''
         yahoo_symbol_institutional_holders = yf.Ticker(symbol).institutional_holders
-        yahoo_symbol_institutional_holders['Date Reported'] = yahoo_symbol_institutional_holders['Date Reported'].dt.strftime("%Y-%m-%d %H:%M") 
+        yahoo_symbol_institutional_holders['Date Reported'] = yahoo_symbol_institutional_holders['Date Reported'].dt.strftime("%Y-%m-%d %H:%M")
         yahoo_symbol_institutional_holders['pctHeld'] = yahoo_symbol_institutional_holders['pctHeld']*100
         yahoo_symbol_institutional_holders['pctChange'] = yahoo_symbol_institutional_holders['pctChange']*100
-        
+
         return yahoo_symbol_institutional_holders
 
-    def get_symbol_recommendations(self, symbol : str):
+    def get_symbol_recommendations(self, symbol: str):
         '''
         Return recommendations about asset
         '''
@@ -255,7 +256,7 @@ class DataHistoryYahoo():
         )
         return yahoo_symbol_recommendations
 
-    def get_sector_etf_info(self, sector : str, search_value : str = "info"):
+    def get_sector_etf_info(self, sector: str, search_value: str = "info"):
         """
         Return information about symbol ETF sector.
         """
@@ -283,28 +284,28 @@ class DataHistoryYahoo():
             return ticker.info
         else:
             return ticker.info.get(search_value, "N/A")
-   
-    def get_symbol_fundamental_info(self, symbol : str):
+
+    def get_symbol_fundamental_info(self, symbol: str):
         '''
         Return detailed fundamental information about asset
         '''
         try:
             yahoo_symbol_info = yf.Ticker(symbol).info
-        except:
+        except Exception:
             yahoo_symbol_info = {}
         try:
             yahoo_symbol_balancesheet = yf.Ticker(symbol).balance_sheet
-        except:
+        except Exception:
             yahoo_symbol_balancesheet = pd.DataFrame()
         try:
             yahoo_symbol_income = yf.Ticker(symbol).income_stmt
-        except:
+        except Exception:
             yahoo_symbol_income = pd.DataFrame()
         try:
             yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
-        except:
+        except Exception:
             yahoo_symbol_cashflow = pd.DataFrame()
-        
+
         # Valuation
         sector = yahoo_symbol_info.get("sector")
         dh = DataHistoryYahoo()
@@ -355,12 +356,8 @@ class DataHistoryYahoo():
             operating_expenses = yahoo_symbol_income.loc['Operating Expense']
             if pd.isna(operating_expenses).all():
                 operating_expenses = None
-                    
+
         fm = Formulas()
-        
-        yoy_cost_of_revenue = fm.get_yoy_metric(cost_of_revenue)
-        yoy_total_revenue = fm.get_yoy_metric(total_revenue)
-        yoy_operating_expenses = fm.get_yoy_metric(operating_expenses)
 
         cagr_cost_of_revenue = fm.get_cagr_metric(cost_of_revenue)
         if cagr_cost_of_revenue is not None and math.isnan(cagr_cost_of_revenue):
@@ -378,7 +375,7 @@ class DataHistoryYahoo():
             total_assets = yahoo_symbol_balancesheet.loc['Total Assets']
             if pd.isna(total_assets).all():
                 total_assets = None
-        
+
         # current_liabilities
         if 'Current Liabilities' in yahoo_symbol_balancesheet.index:
             current_liabilities = yahoo_symbol_balancesheet.loc['Current Liabilities']
@@ -415,7 +412,7 @@ class DataHistoryYahoo():
             non_current_assets = yahoo_symbol_balancesheet.loc['Total Non Current Assets']
             if pd.isna(non_current_assets).all():
                 non_current_assets = None
-        
+
         # short_term_debt_coverage
         if not current_assets.isna().all() and not current_liabilities.isna().all():
             short_term_debt_coverage = current_assets - current_liabilities
@@ -447,18 +444,18 @@ class DataHistoryYahoo():
             stockholders_equity = yahoo_symbol_balancesheet.loc['Stockholders Equity']
             if pd.isna(stockholders_equity).all():
                 stockholders_equity = None
-        
+
         cagr_stockholder_equity = fm.get_cagr_metric(stockholders_equity)
         if cagr_stockholder_equity is not None and math.isnan(cagr_stockholder_equity):
             cagr_stockholder_equity = None
-        
+
         # Cashflow
         # free_cashflow
         if 'Free Cash Flow' in yahoo_symbol_cashflow.index:
             free_cashflow = yahoo_symbol_cashflow.loc['Free Cash Flow']
             if pd.isna(free_cashflow).all():
                 free_cashflow = None
-        
+
         # operating_cashflow
         if 'Operating Cash Flow' in yahoo_symbol_cashflow.index:
             operating_cashflow = yahoo_symbol_cashflow.loc['Operating Cash Flow']
@@ -496,7 +493,6 @@ class DataHistoryYahoo():
         else:
             current_ratio = None
 
-        
         # cagr_current_ratio
         cagr_current_ratio = fm.get_cagr_metric(current_ratio)
         if cagr_current_ratio is not None and math.isnan(cagr_current_ratio):
@@ -515,7 +511,6 @@ class DataHistoryYahoo():
         else:
             cash_ratio = None
 
-        
         # cagr_cash_ratio
         cagr_cash_ratio = fm.get_cagr_metric(cash_ratio)
         if cagr_cash_ratio is not None and math.isnan(cagr_cash_ratio):
@@ -533,7 +528,6 @@ class DataHistoryYahoo():
                 gross_margin = gross_margin_series
         else:
             gross_margin = None
-
 
         # cagr_gross_margin
         # cagr_gross_margin = fm.get_cagr_metric(gross_margin)
@@ -557,12 +551,10 @@ class DataHistoryYahoo():
         else:
             operating_margin = None
 
-
         # cagr_operating_margin
         cagr_operating_margin = fm.get_cagr_metric(operating_margin)
         if cagr_operating_margin is not None and math.isnan(cagr_operating_margin):
             cagr_operating_margin = None
-
 
         # profit_margin
         if not net_income.isna().all() and not total_revenue.isna().all():
@@ -600,7 +592,6 @@ class DataHistoryYahoo():
         if cagr_return_on_equity is not None and math.isnan(cagr_return_on_equity):
             cagr_return_on_equity = None
 
-
         yahoo_symbol_fundamental_info = {
             "valuation": {
                 "trailingPE": yahoo_symbol_info.get("trailingPE", None),
@@ -622,8 +613,6 @@ class DataHistoryYahoo():
                 "CostOfRevenueCAGR": cagr_cost_of_revenue,
                 "TotalRevenueCAGR": cagr_total_revenue,
                 "OperatingExpensesCAGR": cagr_operating_expenses,
-                # "CostOfRevenueYOY": yoy_cost_of_revenue,
-                # "TotalRevenueYOY": yoy_total_revenue,
             },
             "liquidity": {
                 # Actual
@@ -632,11 +621,11 @@ class DataHistoryYahoo():
                 "NetWorth": net_worth,
                 "CashCashEquivalents": cash_cash_equivalents.iloc[0],
                 # Short Term 1y
-                "ShortTermDebtCoverage" : short_term_debt_coverage.iloc[0],
+                "ShortTermDebtCoverage": short_term_debt_coverage.iloc[0],
                 "CurrentAssets": current_assets.iloc[0],
                 "CurrentLiabilities": current_liabilities.iloc[0],
                 # Long Term
-                "LongTermDebtCoverage" : long_term_debt_coverage.iloc[0],
+                "LongTermDebtCoverage": long_term_debt_coverage.iloc[0],
                 "NonCurrentAssets": non_current_assets.iloc[0],
                 "NonCurrentLiabilities": non_current_liabilities.iloc[0],
                 # Growth
@@ -680,37 +669,35 @@ class DataHistoryYahoo():
         }
         return yahoo_symbol_fundamental_info
 
-    def get_symbol_inside_transactions(self, symbol : str):
+    def get_symbol_inside_transactions(self, symbol: str):
         '''
         Return the list of inside transactions
         '''
         yahoo_symbol_insider_transactions = yf.Ticker(symbol).insider_transactions
         yahoo_symbol_insider_transactions = yahoo_symbol_insider_transactions.rename(columns={'Start Date': 'StartDate'})
-        yahoo_symbol_insider_transactions.drop(columns=['URL','Transaction'], inplace=True)
+        yahoo_symbol_insider_transactions.drop(columns=['URL', 'Transaction'], inplace=True)
         return yahoo_symbol_insider_transactions
 
-   ########### FOREX ###########   
-    ##### NOT IN USE ##### 
-    
+    # ------------ FOREX ------------
+    # ------- NOT IN USE ------
 
-    def get_yahoo_symbol_calendar(self, symbol : str):
+    def get_yahoo_symbol_calendar(self, symbol: str):
         '''
         Return corporative calendar events about asset
         '''
         yahoo_symbol_calendar = yf.Ticker(symbol).calendar
         return yahoo_symbol_calendar
 
+    # ----------- Full Downloads -----------
 
-   ########### Full Downloads ###########   
-
-    def get_yahoo_symbol_balance_sheet(self, symbol : str):
+    def get_yahoo_symbol_balance_sheet(self, symbol: str):
         '''
         Return the patrimonial balance sheet
         '''
         yahoo_symbol_balance_sheet = yf.Ticker(symbol).balance_sheet
         return yahoo_symbol_balance_sheet
 
-    def get_yahoo_symbol_financials(self, symbol : str):
+    def get_yahoo_symbol_financials(self, symbol: str):
         '''
         !!! Not Working !!!
         Return the financials results (profits and expenses)
@@ -718,30 +705,29 @@ class DataHistoryYahoo():
         yahoo_symbol_financials = yf.Ticker(symbol).financials
         return yahoo_symbol_financials
 
-    def get_yahoo_symbol_cashflow(self, symbol : str):
+    def get_yahoo_symbol_cashflow(self, symbol: str):
         '''
         Return the cashflow results
         '''
         yahoo_symbol_cashflow = yf.Ticker(symbol).cashflow
         return yahoo_symbol_cashflow
 
-    def get_yahoo_symbol_sustainability(self, symbol : str):
+    def get_yahoo_symbol_sustainability(self, symbol: str):
         '''
-        
+
         Return the ESG metrics (enviormental, social and governamental)
         '''
         yahoo_symbol_sustainability = yf.Ticker(symbol).sustainability
         return yahoo_symbol_sustainability
 
-    def get_yahoo_symbol_news(self, symbol : str):
+    def get_yahoo_symbol_news(self, symbol: str):
         '''
         Return the latest news about asset
         '''
         yahoo_symbol_news = yf.Ticker(symbol).news
         return yahoo_symbol_news
 
-    
-    ########### WORLD INDICES ###########
+    # ------------- WORLD INDICES -------------
     def get_yahoo_indices(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo world indices.
@@ -782,15 +768,15 @@ class DataHistoryYahoo():
             df["Change %"] = df["Change %"].str.replace("%", "", regex=False).str.replace("+", "", regex=False)
             df["Volume"] = df["Volume"].str.replace("-", "0", regex=False)
             df.drop(columns=["52 Wk Range", "Day Range"], inplace=True)
-            
+
         except requests.exceptions.RequestException as e:
             print(f"Error accessing URL: {e}")
         except Exception as e:
             print(f"Error processing data: {e}")
-    
+
         return df
 
-    ########### CRYPTOS ###########
+    # ----------- CRYPTOS -----------
     def get_yahoo_crypto_top100_gainers(self, table_class: str = None) -> pd.DataFrame:
         """
         Extrat data from yahoo crypto top 100 gainers
@@ -822,7 +808,7 @@ class DataHistoryYahoo():
             rows = []
             for row in tabela.find_all('tr')[1:]:
                 cols = [td.text.strip() for td in row.find_all('td')]
-                if cols: 
+                if cols:
                     rows.append(cols)
 
             df = pd.DataFrame(rows, columns=headers if headers else None)
@@ -874,7 +860,7 @@ class DataHistoryYahoo():
             rows = []
             for row in tabela.find_all('tr')[1:]:
                 cols = [td.text.strip() for td in row.find_all('td')]
-                if cols: 
+                if cols:
                     rows.append(cols)
 
             df = pd.DataFrame(rows, columns=headers if headers else None)
@@ -926,7 +912,7 @@ class DataHistoryYahoo():
             rows = []
             for row in tabela.find_all('tr')[1:]:
                 cols = [td.text.strip() for td in row.find_all('td')]
-                if cols: 
+                if cols:
                     rows.append(cols)
 
             df = pd.DataFrame(rows, columns=headers if headers else None)
@@ -946,4 +932,3 @@ class DataHistoryYahoo():
             print(f"Error processing data: {e}")
 
         return df
-    

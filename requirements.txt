@@ -8,6 +8,7 @@ joblib
 scikit-learn
 python-dotenv
 redis
+flake8
 
 # Web scraping e rede
 requests

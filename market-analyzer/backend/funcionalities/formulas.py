@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.signal import argrelextrema
 
+
 class Formulas():
 
     def __init__(self) -> None:
@@ -40,11 +41,10 @@ class Formulas():
         cagr_percent = cagr * 100 if cagr != "N/A" else "N/A"
 
         return cagr_percent
-    
 
     def peak_detect(self, close, order):
         '''
-        This function find the peaks of a timeframe    
+        This function find the peaks of a timeframe
         '''
 
         if len(close) < 5:
@@ -69,20 +69,19 @@ class Formulas():
         current_pat = close_np[current_idx]
 
         return current_idx, current_pat, start, end, idx
-    
+
     def safe_round(self, value):
         try:
             return round(float(value), 2)
         except (ValueError, TypeError):
             return None
-        
 
     def convert_string_milions(self, value):
         if pd.isna(value) or value == "-":
             return 0
-        
+
         value = str(value).strip().upper()
-        
+
         try:
             if value.endswith('M'):
                 return int(float(value[:-1]) * 1_000_000)
@@ -92,5 +91,5 @@ class Formulas():
                 return int(float(value[:-1]) * 1_000)
             else:
                 return float(value.replace(",", ""))
-        except:
+        except Exception:
             return 0
