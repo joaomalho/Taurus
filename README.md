@@ -1,19 +1,19 @@
 # <p align="center"> **Taurus** </p>
 
-
 ![Logo](https://github.com/joaomalho/Taurus/blob/main/assets/taurus.png?raw=true)
 
 **<p align="center"> Empowering Investors with Real-Time Financial Insights </p>**
- 
+
 Taurus is a cutting-edge tool that analyzes financial markets in real-time, helping investors make smarter and more informed decisions.
 
 ---
----
 
+---
 
 ## **📈 Key Features**
 
 ### Advanced Technical Analysis:
+
 - `Moving Averages and Crossovers`
 - `Average Directional Index (ADX)`
 - `Bollinger Bands`
@@ -23,46 +23,50 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 - `Pivots Points`
 
 ### Fundamental Analysis:
-- 📊 Fundamental Analysis through complete Income Statements, Cash Flows, Balance Sheets and Insiders Decisions. 
+
+- 📊 Fundamental Analysis through complete Income Statements, Cash Flows, Balance Sheets and Insiders Decisions.
 - 💡 Analysts Opinion Metrics
 - 📰 Sentiment Analysis of Recent News
 - 📅 Economic Calendar Correlations
 
 ### Risk Management:
+
 - 📉 Max Drawdown and Expectancy
 - 🛡️ Essential Ratios Consideration (Financial, Liquidity, Growth, Profitability, ...)
 - 🎯 StopLoss detection
 
 ### Real-Time Data:
+
 - Track Stocks, ETFs, Currencies, and Cryptocurrencies with near-instant updates.
 
 ---
----
 
+---
 
 ## **⏳ Data Types and Expected Delays**
 
-| Data Type            | Source        | Delay           | Description                                        |
-|----------------------|---------------|-----------------|----------------------------------------------------|
-| **Intraday**         | Yahoo Finance | -1 minutes     | Near real-time data for short intervals.           |
-| **Daily or Long-Term**| Yahoo Finance | 1-2 minutes | Reliable data for historical analysis.        |
-| **Currencies (Forex)**| Yahoo Finance | 1 minutes   | Quick updates on currency markets.                |
-| **Stock** | Binance Finance | 1-2 minutes     | Regular updates. |
-| **Cryptocurrencies** | Binance Finance | -1 minute     | Real-Time updates, dedicated APIs from Binance. |
+| Data Type              | Source          | Delay       | Description                                     |
+| ---------------------- | --------------- | ----------- | ----------------------------------------------- |
+| **Intraday**           | Yahoo Finance   | -1 minutes  | Near real-time data for short intervals.        |
+| **Daily or Long-Term** | Yahoo Finance   | 1-2 minutes | Reliable data for historical analysis.          |
+| **Currencies (Forex)** | Yahoo Finance   | 1 minutes   | Quick updates on currency markets.              |
+| **Stock**              | Binance Finance | 1-2 minutes | Regular updates.                                |
+| **Cryptocurrencies**   | Binance Finance | -1 minute   | Real-Time updates, dedicated APIs from Binance. |
 
 ---
----
 
+---
 
 ## **🔧 Tech Stack**
 
 - **Backend:** Python, JS
-- **Frontend:** Django, HTML, CSS, Grid.js and Charts.js 
+- **Frontend:** Django, HTML, CSS, Grid.js and Charts.js
 - **Charts:** Charts.js, lightweight-charts
 - **Data Analysis:** Pandas, NumPy, TA-Lib, ...
 - **Machine Learning (Future):** TensorFlow, Scikit-learn ...
 
 ---
+
 ---
 
 ## **👨‍💻 Authors**
@@ -70,6 +74,7 @@ Taurus is a cutting-edge tool that analyzes financial markets in real-time, help
 Built with 💻 by [@joaomalho](https://github.com/joaomalho).
 
 ---
+
 ---
 
 ## **📜 License**
@@ -77,6 +82,7 @@ Built with 💻 by [@joaomalho](https://github.com/joaomalho).
 Distributed under the [MIT License](https://choosealicense.com/licenses/mit/).
 
 ---
+
 ---
 
 ## **⚠️ Disclaimers**
@@ -87,48 +93,56 @@ Distributed under the [MIT License](https://choosealicense.com/licenses/mit/).
 - We never ask or intend to collect data from users.
 
 ---
+
 ---
 
 ## **🎯 Vision and Future Impact**
 
 Taurus is continually evolving, with goals to:
+
 - Introduce AI-powered insights to predict market trends.
 - Expand support for premium data APIs, such as Alpha Vantage and Binance.
 - Enable fully customizable dashboards tailored to user preferences.
 
 ---
+
 ---
 
 ## **📌 Example Use Cases**
 
-**1. Setting New Profitable Stocks Positions Alerts**  
+**1. Setting New Profitable Stocks Positions Alerts**
+
 - Automatically receive alerts when favoral positions are detected.
 
-**2. Simulating Risk with Sharpe Ratio**  
+**2. Simulating Risk with Sharpe Ratio**
+
 - Assess the risk-return tradeoff of a portfolio before investing.
 
 **3. Easy Understanding of Market Behavior**
+
 - This tool provides a clear and comprehensive view of all asset information on a single screen.
 
 ---
+
 ---
 
 ## **🏆 Why Taurus?**
 
 Taurus bridges the gap between complex market analysis and actionable insights, empowering investors of all levels to make data-driven decisions.
 
-*Be the master of your investments with Taurus.*
+_Be the master of your investments with Taurus._
 
 ---
+
 ---
+
 ---
 
 ## **<p align="center"> 📘 Full Documentation</p>**
 
 Follow the Documentation (WIP) for setup, usage details, and FAQs.
 
-
-## **📝 Installation Prerequisites Guide - WIP** 
+## **📝 Installation Prerequisites Guide - WIP**
 
 Before you begin, make sure you have the following:
 
@@ -152,13 +166,15 @@ Alternatively, if you prefer not to use Git, you can download the repository as 
 **🖥️ For Windows:**
 
 Install the application as a Python package directly, you can use the setup.py file:
+
 ```bash
-python setup.py install 
+python setup.py install
 ```
 
 ### 3️⃣ Direct Uninstall
 
 Uninstall the application as a Python package directly, deleting isolated enviroments, variables and temporaty files:
+
 ```bash
 python uninstaller.py
 ```
@@ -166,14 +182,17 @@ python uninstaller.py
 ### 4️⃣ Direct Update
 
 Update the application as a Python package directly:
+
 ```bash
 python update.py
 ```
 
 ### **📌 Notes**
+
 ⚙️ **yfinance:** The yfinance library requires specific installation options (--upgrade --no-cache-dir). The installation scripts handle this automatically, so you don’t need to worry about it.
 
 🐍 Ensure that **Python 3.8 or later, 11 recommended** is installed on your machine. You can check your version by running:
+
 ```bash
 python --version
 ```
@@ -182,20 +201,21 @@ python --version
 
 📦 The installation scripts handle all dependencies listed in requirements.txt, including fastapi, psycopg2, pandas, numpy, yfinance, and others. It also try to Linux, although our DEV and QA environments are based on Windows we will further develop for Linux.
 
-
 ### **🛠️ Troubleshooting**
+
 If you encounter any issues during installation, here are some common solutions:
 
-❌ **Missing pip:** 
+❌ **Missing pip:**
 If you get an error saying pip is not found, install it by following these instructions.
 
-🔒 **Permission issues:** 
+🔒 **Permission issues:**
 On Linux/Mac, you may need to prepend sudo to some commands if you get permission errors.
 
-🧩 **Missing dependencies:** 
+🧩 **Missing dependencies:**
 If a dependency fails to install, ensure you have all system requirements for the libraries (e.g., development tools, headers, etc.) and try running the installation command again.
 
 ---
+
 ---
 
 ## **🪙 Type of Markets**
@@ -203,6 +223,7 @@ If a dependency fails to install, ensure you have all system requirements for th
 Taurus provides comprehensive, detailed and real-time access to the forex, stock, and cryptocurrency markets, collecting complete information on all available tickers across these market types. Our data providers include Yahoo for forex and stock information and Binance for cryptocurrency data.
 
 ---
+
 ---
 
 ## **📝 Caddle Patterns Detection Guide**
@@ -211,51 +232,51 @@ Our tool is capable of detecting X-candle patterns in the market.
 
 Each candle pattern has an associated stop-loss target and relevance level as outlined in the table below:
 
-| Pattern Name               | Classification   | Candles Range Detection    
-|:---------------------------|:-----------------|:--------------------------
-| **Doji**                   | Reversal         | 3                         
-| **Dragonfly Doji**         | Reversal         | 3                         
-| **Gravestone Doji**        | Reversal         | 3                         
-| **Engulfing**              | Reversal         | 3                         
-| **Morning Star**           | Reversal         | 5-7                       
-| **Evening Star**           | Reversal         | 5-7                       
-| **Morning Doji Star**      | Reversal         | 5-7                       
-| **Evening Doji Star**      | Reversal         | 5-7                       
-| **Hammer**                 | Reversal         | 3                         
-| **Inverted Hammer**        | Reversal         | 3                         
-| **Hanging Man**            | Reversal         | 3                         
-| **Shooting Star**          | Reversal         | 3                         
-| **Marubozu**               | Continuation     | 3                         
-| **Harami**                 | Reversal         | 3                         
-| **Harami Cross**           | Reversal         | 3                         
-| **Spinning Top**           | Continuation     | 3-5                       
-| **Kicking**                | Reversal         | 3                         
-| **Kicking by Length**      | Reversal         | 3                         
-| **Tasuki Gap**             | Continuation     | 3-5                       
-| **Gap Side By Side White** | Continuation     | 3-5                       
-| **Counterattack**          | Reversal         | 3                         
-| **Piercing**               | Reversal         | 3                         
-| **Dark Cloud Cover**       | Reversal         | 3                         
-| **Tri Star**               | Reversal         | 3                         
-| **On Neck**                | Continuation     | 3                         
-| **In Neck**                | Continuation     | 3                         
-| **Thrusting**              | Continuation     | 3                         
-| **Matching Low**           | Reversal         | 3                         
-| **Three Black Crows**      | Complex          | 5-7                       
-| **Three White Soldiers**   | Complex          | 5-7                       
-| **Three Inside**           | Complex          | 5-7                       
-| **Three Outside**          | Complex          | 5-7                       
-| **Three Stars in South**   | Complex          | 5-7                       
-| **Advance Block**          | Complex          | 5-7                       
-| **Stalled Pattern**        | Complex          | 5-7                       
-| **Abandoned Baby**         | Reversal         | 5-7                       
-| **Unique 3 River**         | Complex          | 5-7                       
-| **Belt Hold**              | Reversal         | 3                         
-| **Separating Lines**       | Continuation     | 3                         
-| **Upside Gap Two Crows**   | Complex          | 5-7                       
+| Pattern Name               | Classification | Candles Range Detection |
+| :------------------------- | :------------- | :---------------------- |
+| **Doji**                   | Reversal       | 3                       |
+| **Dragonfly Doji**         | Reversal       | 3                       |
+| **Gravestone Doji**        | Reversal       | 3                       |
+| **Engulfing**              | Reversal       | 3                       |
+| **Morning Star**           | Reversal       | 5-7                     |
+| **Evening Star**           | Reversal       | 5-7                     |
+| **Morning Doji Star**      | Reversal       | 5-7                     |
+| **Evening Doji Star**      | Reversal       | 5-7                     |
+| **Hammer**                 | Reversal       | 3                       |
+| **Inverted Hammer**        | Reversal       | 3                       |
+| **Hanging Man**            | Reversal       | 3                       |
+| **Shooting Star**          | Reversal       | 3                       |
+| **Marubozu**               | Continuation   | 3                       |
+| **Harami**                 | Reversal       | 3                       |
+| **Harami Cross**           | Reversal       | 3                       |
+| **Spinning Top**           | Continuation   | 3-5                     |
+| **Kicking**                | Reversal       | 3                       |
+| **Kicking by Length**      | Reversal       | 3                       |
+| **Tasuki Gap**             | Continuation   | 3-5                     |
+| **Gap Side By Side White** | Continuation   | 3-5                     |
+| **Counterattack**          | Reversal       | 3                       |
+| **Piercing**               | Reversal       | 3                       |
+| **Dark Cloud Cover**       | Reversal       | 3                       |
+| **Tri Star**               | Reversal       | 3                       |
+| **On Neck**                | Continuation   | 3                       |
+| **In Neck**                | Continuation   | 3                       |
+| **Thrusting**              | Continuation   | 3                       |
+| **Matching Low**           | Reversal       | 3                       |
+| **Three Black Crows**      | Complex        | 5-7                     |
+| **Three White Soldiers**   | Complex        | 5-7                     |
+| **Three Inside**           | Complex        | 5-7                     |
+| **Three Outside**          | Complex        | 5-7                     |
+| **Three Stars in South**   | Complex        | 5-7                     |
+| **Advance Block**          | Complex        | 5-7                     |
+| **Stalled Pattern**        | Complex        | 5-7                     |
+| **Abandoned Baby**         | Reversal       | 5-7                     |
+| **Unique 3 River**         | Complex        | 5-7                     |
+| **Belt Hold**              | Reversal       | 3                       |
+| **Separating Lines**       | Continuation   | 3                       |
+| **Upside Gap Two Crows**   | Complex        | 5-7                     |
 
-Application only presents candles which stoploss was not acomplished. 
----
+## Application only presents candles which stoploss was not acomplished.
+
 ---
 
 ### ⚖️ **Relevance:**
@@ -270,8 +291,8 @@ Application only presents candles which stoploss was not acomplished.
 
 **Position opening:** The detection of a pattern **is not** sufficient by itself to justify opening a position.
 
-
 ---
+
 ---
 
 ## **⚙️ Auto Calibration and Optimization**
@@ -279,6 +300,7 @@ Application only presents candles which stoploss was not acomplished.
 Taurus have an auto-calibration and optimization method designed to measure, test, and select the best parameters for technical analysis metrics. This method leverages a backtesting environment to evaluate metric performance over the past 365 days of the selected asset's market data.
 
 ---
+
 ---
 
 ## **🏢 Insider Information**
@@ -286,20 +308,23 @@ Taurus have an auto-calibration and optimization method designed to measure, tes
 Real-time insider trading information is available for all US stocks. This data is sourced from the SEC and provides insights into the buying and selling activities of company insiders.
 
 ---
----
-
-
 
 ---
----
+
 ---
 
-## 🎉 **Congratulations!** 
+---
+
+---
+
+## 🎉 **Congratulations!**
+
 You’re all set to use Taurus. If you have any issues, feel free to open an issue on the GitHub [ISSUES](https://github.com/joaomalho/Taurus/issues).
 
+---
 
 ---
----
+
 ---
 
 ## **<p align="center"> 🚀 Calling All Developers! 👨‍💻👩‍💻 </p>**
@@ -307,10 +332,10 @@ You’re all set to use Taurus. If you have any issues, feel free to open an iss
 We are looking for **passionate coders** to join our **open-source community** 🌍.
 
 🎯 **Roles Available:**
+
 - 🛠️ Maintainers
 - 🧪 Testers
 - 🎨 UI/UX Designers
-
 
 We are also looking to grow our community with **key roles in market analysis**:
 
@@ -328,43 +353,43 @@ We are also looking to grow our community with **key roles in market analysis**:
 📢 Join us today and contribute! 🤝
 
 🌍 Community:
+
 - 🗨️ **Discord** - 🔗 [Join Here](#https://discord.gg/TnjNUGxr)
 - 👽 **Reddit** - 🔗 [Join Here](#) - WIP
 
 ---
----
+
 ---
 
+---
 
 ## **<p align="center"> 👨‍💻 Developments & Improvements </p>**
 
 ## **🛠️ Next steps**
 
+- Up on VM `ToDo: Medium`
 - FrontEnd firt version release
-    - Add metrics and drawn to candlestik graph. 
-        - RSI `ToDo: Medium`
-        - ADX `ToDo: Medium`
-        - Candles Marks `ToDo: Medium`
+
+  - Add metrics and drawn to candlestik graph.
+    - RSI `ToDo: Medium`
+    - ADX `ToDo: Medium`
+    - Candles Marks `ToDo: Medium`
 
 - Technical Analysis
-    - Pivots Point - `ToDo: Low`
+  - Pivots Point - `ToDo: Low`
 - Fundamental Analysis
-    - Sentiment Analysis of Recent News - `ToDo: Low`
-        - Prompt news from API as example, done on test_news file - `ToDo: High`
-    - Economic Calendar Correlations - `ToDo: Low`
-    - Add Tags on Headers to Easly get info - `ToDo: Low`
-    - Add Color by Results - `ToDo: Low`
-    - Insider Information when not available must return empty. `ToDo: Medium`
+  - Sentiment Analysis of Recent News - `ToDo: Low`
+    - Prompt news from API as example, done on test_news file - `ToDo: High`
+  - Economic Calendar Correlations - `ToDo: Low`
+  - Add Tags on Headers to Easly get info - `ToDo: Low`
+  - Add Color by Results - `ToDo: Low`
+  - Insider Information when not available must return empty. `ToDo: Medium`
 - Additional Screens
-    - Missing Catalog for penny, top of day, top of week.
+  - Missing Catalog for penny, top of day, top of week.
 - Install scripts:
-    - This is to pass to server not applicable in User Install. `ToDo: Low | Deprecated`
-
+  - This is to pass to server not applicable in User Install. `ToDo: Low | Deprecated`
 
 ## **🚀 Latest Improvements**
+
 - **Docker configuration**
 - **Github CI/CD configuration**
-
-
-
-
