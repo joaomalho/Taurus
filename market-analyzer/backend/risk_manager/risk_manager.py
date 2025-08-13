@@ -83,6 +83,93 @@ class RiskManagerFundamental():
         self.stoploss = None
         self.takeprofit = None
 
+    @staticmethod
+    def evaluation_bucket(label: str) -> str:
+        """
+        Classify fundamental metrics evaluation in buckets:
+        * verygood
+        * good
+        * neutral
+        * bad
+        * nodata
+        """
+        if not label:
+            return "nodata"
+
+        s = str(label).strip().lower()
+
+        verygood = [
+            "very low undervalued",
+            "good",
+            "very good coverage (greedy)",
+            "Good - Efficient Costs Management",
+            "Good - Efficient Costs Management",
+            "Good - Highly Profitable and Eficient Profit Generate",
+            "Good - Highly Efficient in Generating Profits",
+            "Good - Consistent Growth in Equity Returns"
+        ]
+        good = [
+            "low undervalued",
+            "undervalued",
+            "good coverage",
+            "healthy",
+            "Healthy - Healthy Margins Good Management",
+            "Healthy - Healthy Operational Management",
+            "Healthy - Healthy and Solid Management",
+            "Good - Growing Profitability Over Time",
+            "Healthy - Efficient and Solid Management"
+        ]
+        neutral = [
+            "no data",
+            "Indefinido",
+            "neutral",
+            "neutral valued",
+            "Moderated - Potential but Need Improvements",
+            ]
+        bad = [
+            "overvalued",
+            "high overvalued",
+            "bad coverage (cut)",
+            "tight margin to debt",
+            "Not Good - Declining or No Growth"
+        ]
+        verybad = [
+            "very high overvalued",
+            "no coverage",
+            "not good",
+            "Not Good - Short Margins or High Costs",
+            "Not Good - High Operational Costs or Difficulties to Get Revenue",
+            "Not Good - High Operational Costs or Operational Problems",
+            "Not Good - Low Efficiency on Equity Use",
+            "Not Good - No Growth or Negative Trend"
+        ]
+
+        if any(k in s for k in verygood):
+            return "verygood"
+        if any(k in s for k in good):
+            return "good"
+        if any(k in s for k in neutral):
+            return "neutral"
+        if any(k in s for k in bad):
+            return "bad"
+        if any(k in s for k in verybad):
+            return "verybad"
+        return "neutral"
+
+    @staticmethod
+    def bucket_color(bucket: str) -> str:
+        """
+        Atributes a color to each classification bucket
+        """
+        return {
+            "verygood": "#1cf467",
+            "good": "#0f8a3b",
+            "neutral": "#6b7280",
+            "bad": "#9b3232",
+            "verybad": "#ff1414",
+            "nodata": "#9E9E9E",
+        }.get(bucket, "#6b7280")
+
     def evaluate_metrics(self, metrics):
         """
         Evaluate fundamental metrics.
@@ -110,7 +197,7 @@ class RiskManagerFundamental():
             score_pe += 1 if forward_pe < sector_pe else -1 if forward_pe > sector_pe else 0
             score_pe += 1 if trailing_pe > forward_pe else -1 if trailing_pe < forward_pe else 0
 
-            evaluated_metrics["trailingPE_evaluation"] = {
+            text_trailingPE = {
                 3:  "Very Low Undervalued",
                 2:  "Low Undervalued",
                 1:  "Undervalued",
@@ -119,7 +206,12 @@ class RiskManagerFundamental():
                 -2: "High Overvalued",
             }.get(score_pe, "Very High Overvalued")
         else:
-            evaluated_metrics["trailingPE_evaluation"] = "No Data"
+            text_trailingPE = "No Data"
+
+        evaluated_metrics["trailingPE_evaluation"] = text_trailingPE
+        bucket_trailingPE = self.evaluation_bucket(text_trailingPE)
+        evaluated_metrics["trailingPE_bucker"] = bucket_trailingPE
+        evaluated_metrics["trailingPE_color"] = self.bucket_color(bucket_trailingPE)
 
         # Valuation - PEG Ratio
         peg_raw = fm.safe_round(metrics.get('valuation', {}).get("PEGRatio"))
@@ -127,14 +219,19 @@ class RiskManagerFundamental():
         evaluated_metrics["PEGRatio"] = peg_raw if peg_raw is not None else None
 
         if peg_raw is None:
-            evaluated_metrics["PEGRatio_evaluation"] = "No Data"
+            text_PEGRatio = "No Data"
         else:
             if peg_raw < 1:
-                evaluated_metrics["PEGRatio_evaluation"] = "Undervalued"
+                text_PEGRatio = "Undervalued"
             elif peg_raw == 1:
-                evaluated_metrics["PEGRatio_evaluation"] = "Neutral Valued"
+                text_PEGRatio = "Neutral Valued"
             else:
-                evaluated_metrics["PEGRatio_evaluation"] = "Overvalued"
+                text_PEGRatio = "Overvalued"
+
+        evaluated_metrics["PEGRatio_evaluation"] = text_PEGRatio
+        bucket_PEGRatio = self.evaluation_bucket(text_PEGRatio)
+        evaluated_metrics["PEGRatio_bucker"] = bucket_PEGRatio
+        evaluated_metrics["PEGRatio_color"] = self.bucket_color(bucket_PEGRatio)
 
         # Dividends - Dividend Coverage Ratio
         div_coverage_raw = fm.safe_round(metrics.get('dividends', {}).get("divCoverageRate"))
@@ -144,16 +241,21 @@ class RiskManagerFundamental():
 
         # Avaliação
         if div_coverage_raw is None:
-            evaluated_metrics["divCoverageRate_evaluation"] = "No Data"
+            text_divCoverageRate = "No Data"
         else:
             if div_coverage_raw <= 1:
-                evaluated_metrics["divCoverageRate_evaluation"] = "No Coverage"
+                text_divCoverageRate = "No Coverage"
             elif div_coverage_raw <= 1.5:
-                evaluated_metrics["divCoverageRate_evaluation"] = "Bad Coverage (Cut)"
+                text_divCoverageRate = "Bad Coverage (Cut)"
             elif div_coverage_raw <= 3:
-                evaluated_metrics["divCoverageRate_evaluation"] = "Good Coverage"
+                text_divCoverageRate = "Good Coverage"
             else:
-                evaluated_metrics["divCoverageRate_evaluation"] = "Very Good Coverage (Greedy)"
+                text_divCoverageRate = "Very Good Coverage (Greedy)"
+
+        evaluated_metrics["divCoverageRate_evaluation"] = text_divCoverageRate
+        bucket_divCoverageRate = self.evaluation_bucket(text_divCoverageRate)
+        evaluated_metrics["divCoverageRate_bucker"] = bucket_divCoverageRate
+        evaluated_metrics["divCoverageRate_color"] = self.bucket_color(bucket_divCoverageRate)
 
         # Profitability - Cost of Revenue CAGR
         cost_revenue_cagr = fm.safe_round(metrics.get('profitability', {}).get("CostOfRevenueCAGR"))
@@ -163,47 +265,72 @@ class RiskManagerFundamental():
 
         # Avaliação
         if cost_revenue_cagr is None or math.isnan(cost_revenue_cagr):
-            evaluated_metrics["CostOfRevenueCAGR_evaluation"] = "No Data"
+            text_CostOfRevenueCAGR = "No Data"
         else:
             if cost_revenue_cagr <= 0:
-                evaluated_metrics["CostOfRevenueCAGR_evaluation"] = "Good"
+                text_CostOfRevenueCAGR = "Good"
             else:
-                evaluated_metrics["CostOfRevenueCAGR_evaluation"] = "Not Good"
+                text_CostOfRevenueCAGR = "Not Good"
+
+        evaluated_metrics["CostOfRevenueCAGR_evaluation"] = text_CostOfRevenueCAGR
+        bucket_CostOfRevenueCAGR = self.evaluation_bucket(text_CostOfRevenueCAGR)
+        evaluated_metrics["CostOfRevenueCAGR_bucker"] = bucket_CostOfRevenueCAGR
+        evaluated_metrics["CostOfRevenueCAGR_color"] = self.bucket_color(bucket_CostOfRevenueCAGR)
 
         total_revenue_cagr = fm.safe_round(metrics.get('profitability', {}).get("TotalRevenueCAGR"))
         evaluated_metrics["TotalRevenueCAGR"] = total_revenue_cagr if total_revenue_cagr is not None else None
 
         if total_revenue_cagr is None or math.isnan(total_revenue_cagr):
-            evaluated_metrics["TotalRevenueCAGR_evaluation"] = "No Data"
+            text_TotalRevenueCAGR = "No Data"
         else:
-            evaluated_metrics["TotalRevenueCAGR_evaluation"] = "Good" if total_revenue_cagr > 0 else "Not Good"
+            text_TotalRevenueCAGR = "Good" if total_revenue_cagr > 0 else "Not Good"
+
+        evaluated_metrics["TotalRevenueCAGR_evaluation"] = text_TotalRevenueCAGR
+        bucket_CostOfRevenueCAGR = self.evaluation_bucket(text_TotalRevenueCAGR)
+        evaluated_metrics["TotalRevenueCAGR_bucker"] = bucket_CostOfRevenueCAGR
+        evaluated_metrics["TotalRevenueCAGR_color"] = self.bucket_color(bucket_CostOfRevenueCAGR)
 
         # Debt
         net_worth = fm.safe_round(metrics.get('liquidity', {}).get("NetWorth"))
         evaluated_metrics["NetWorth"] = net_worth if net_worth is not None else None
 
         if net_worth is None:
-            evaluated_metrics["NetWorth_evaluation"] = "No Data"
+            text_NetWorth = "No Data"
         else:
-            evaluated_metrics["NetWorth_evaluation"] = "Good" if net_worth > 0 else "Not Good (In Debt)"
+            text_NetWorth = "Good" if net_worth > 0 else "Not Good (In Debt)"
+
+        evaluated_metrics["NetWorth_evaluation"] = text_NetWorth
+        bucket_NetWorth = self.evaluation_bucket(text_NetWorth)
+        evaluated_metrics["NetWorth_bucker"] = bucket_NetWorth
+        evaluated_metrics["NetWorth_color"] = self.bucket_color(bucket_NetWorth)
 
         # Short Term Debt Coverage
         short_debt_cov = fm.safe_round(metrics.get('liquidity', {}).get("ShortTermDebtCoverage"))
         evaluated_metrics["ShortTermDebtCoverage"] = short_debt_cov if short_debt_cov is not None else None
 
         if short_debt_cov is None:
-            evaluated_metrics["ShortTermDebtCoverage_evaluation"] = "No Data"
+            text_ShortTermDebtCoverage = "No Data"
         else:
-            evaluated_metrics["ShortTermDebtCoverage_evaluation"] = "Good" if short_debt_cov > 0 else "Not Good (In Debt)"
+            text_ShortTermDebtCoverage = "Good" if short_debt_cov > 0 else "Not Good (In Debt)"
+
+        evaluated_metrics["ShortTermDebtCoverage_evaluation"] = text_ShortTermDebtCoverage
+        bucket_ShortTermDebtCoverage = self.evaluation_bucket(text_ShortTermDebtCoverage)
+        evaluated_metrics["ShortTermDebtCoverage_bucker"] = bucket_ShortTermDebtCoverage
+        evaluated_metrics["ShortTermDebtCoverage_color"] = self.bucket_color(bucket_ShortTermDebtCoverage)
 
         # Long Term Debt Coverage
         long_debt_cov = fm.safe_round(metrics.get('liquidity', {}).get("LongTermDebtCoverage"))
         evaluated_metrics["LongTermDebtCoverage"] = long_debt_cov if long_debt_cov is not None else None
 
         if long_debt_cov is None:
-            evaluated_metrics["LongTermDebtCoverage_evaluation"] = "No Data"
+            text_LongTermDebtCoverage = "No Data"
         else:
-            evaluated_metrics["LongTermDebtCoverage_evaluation"] = "Good" if long_debt_cov > 0 else "Not Good (In Debt)"
+            text_LongTermDebtCoverage = "Good" if long_debt_cov > 0 else "Not Good (In Debt)"
+
+        evaluated_metrics["LongTermDebtCoverage_evaluation"] = text_LongTermDebtCoverage
+        bucket_LongTermDebtCoverage = self.evaluation_bucket(text_LongTermDebtCoverage)
+        evaluated_metrics["LongTermDebtCoverage_bucker"] = bucket_LongTermDebtCoverage
+        evaluated_metrics["LongTermDebtCoverage_color"] = self.bucket_color(bucket_LongTermDebtCoverage)
 
         # Assets Growth
         total_assets_cagr = fm.safe_round(metrics.get('liquidity', {}).get("TotalAssetsCAGR"))
@@ -335,7 +462,7 @@ class RiskManagerFundamental():
             elif operating_margin <= 20:
                 evaluated_metrics["OperatingMargin_evaluation"] = "Healthy - Healthy Operational Management"
             else:
-                evaluated_metrics["OperatingMargin_evaluation"] = "Good - Efficient Cost Management"
+                evaluated_metrics["OperatingMargin_evaluation"] = "Good - Efficient Costs Management"
 
             # Operational Margin Growth
         operating_margin_cagr = fm.safe_round(metrics.get('ratios', {}).get("OperatingMarginCAGR"))
@@ -387,7 +514,7 @@ class RiskManagerFundamental():
             if return_on_equity <= 10:
                 evaluated_metrics["ReturnOnEquity_evaluation"] = "Not Good - Low Efficiency on Equity Use"
             elif return_on_equity <= 15:
-                evaluated_metrics["ReturnOnEquity_evaluation"] = "Moderated - Potential but Needs Improvement"
+                evaluated_metrics["ReturnOnEquity_evaluation"] = "Moderated - Potential but Need Improvements"
             elif return_on_equity <= 20:
                 evaluated_metrics["ReturnOnEquity_evaluation"] = "Healthy - Efficient and Solid Management"
             else:
