@@ -52,7 +52,6 @@ jobs:
           REDIS_URL: redis://redis:6379/0 # hostname do serviço redis no docker network
         run: |
           docker run --rm \
-            --network host \
             -w /code \
             -e DB_NAME=$DB_NAME \
             -e DB_USER=$DB_USER \
