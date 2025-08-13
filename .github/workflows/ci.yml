@@ -47,7 +47,7 @@ jobs:
           DB_NAME: taurus_db
           DB_USER: taurus_user
           DB_PASSWORD: taurus_pass
-          DB_HOST: postgres # hostname do serviço postgres no docker network
+          DB_HOST: db # hostname do serviço postgres no docker network
           DB_PORT: 5432
           REDIS_URL: redis://redis:6379/0 # hostname do serviço redis no docker network
         run: |
