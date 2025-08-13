@@ -61,4 +61,4 @@ jobs:
             -e DB_PORT=$DB_PORT \
             -e REDIS_URL=$REDIS_URL \
             taurus-web \
-            sh -c "flake8 . && python manage.py migrate && python manage.py test"
+            sh -c "flake8 . && python market-analyzer/manage.py migrate && python market-analyzer/manage.py test"
