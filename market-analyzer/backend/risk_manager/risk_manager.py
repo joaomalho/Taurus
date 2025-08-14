@@ -110,7 +110,7 @@ class RiskManagerFundamental():
         ]
         if any(k.lower() in s for k in verybad):
             return "verybad"
-        
+
         bad = [
             "overvalued",
             "high overvalued",
