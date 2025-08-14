@@ -19,6 +19,25 @@ function formatDate(dateStr) {
     return date.toLocaleDateString("pt-PT"); 
 }
 
+/* ─────── HELPERS DE ESTILO POR BUCKET ─────── */
+function applyBadgeClass(el, bucket) {
+    if (!el) return;
+    const b = bucket || "neutral";
+    el.classList.remove(
+        "badge--verygood","badge--good","badge--neutral","badge--bad","badge--verybad","badge--nodata"
+    );
+    el.classList.add(`badge--${b}`);
+}
+
+function applyModalClass(el, bucket) {
+    if (!el) return;
+    const b = bucket || "neutral";
+    el.classList.remove(
+        "modal--verygood","modal--good","modal--neutral","modal--bad","modal--verybad","modal--nodata"
+    );
+    el.classList.add(`modal--${b}`);
+}
+
 /* ─────────────── FUNÇÕES DE CRIAÇÃO DE TABELAS ─────────────── */
 function createGridTable(data, columns, containerId) {
     
@@ -326,45 +345,107 @@ export function displayFundamentalResults(data) {
 }
 
 export function displayFundamentalResultsClassification(data) {
-    const elements = {
-        trailingPE: data.evaluations.valuation?.trailingPE_evaluation ?? null,
-        PEGRatio: data.evaluations.valuation?.PEGRatio_evaluation ?? null,
-        divCoverageRate: data.evaluations.dividends?.divCoverageRate_evaluation ?? null,
-        CostOfRevenueCAGR: data.evaluations.profitability?.CostOfRevenueCAGR_evaluation ?? null,
-        TotalRevenueCAGR: data.evaluations.profitability?.TotalRevenueCAGR_evaluation ?? null,
-        NetWorth: data.evaluations.liquidity?.NetWorth_evaluation ?? null,
-        ShortTermDebtCoverage: data.evaluations.liquidity?.ShortTermDebtCoverage_evaluation ?? null,
-        LongTermDebtCoverage: data.evaluations.liquidity?.LongTermDebtCoverage_evaluation ?? null,
-        StockholdersEquityCAGR: data.evaluations.liquidity?.StockholdersEquityCAGR_evaluation ?? null,
-        TotalAssetsCAGR: data.evaluations.liquidity?.TotalAssetsCAGR_evaluation ?? null,
-        TotalLiabilitiesCAGR: data.evaluations.liquidity?.TotalLiabilitiesCAGR_evaluation ?? null,
-        FreeCashflowYield: data.evaluations.cashflow?.FreeCashflowYield_evaluation ?? null,
-        CurrentRatio: data.evaluations.ratios?.CurrentRatio_evaluation ?? null,
-        CurrentRatioCAGR: data.evaluations.ratios?.CurrentRatioCAGR_evaluation ?? null,
-        CashRatio: data.evaluations.ratios?.CashRatio_evaluation ?? null,
-        CashRatioCAGR: data.evaluations.ratios?.CashRatioCAGR_evaluation ?? null,
-        GrossMargin: data.evaluations.ratios?.GrossMargin_evaluation ?? null,
-        // GrossMarginCAGR: data.evaluations.ratios?.GrossMarginCAGR_evaluation || "N/A",
-        OperatingMargin: data.evaluations.ratios?.OperatingMargin_evaluation ?? null,
-        OperatingMarginCAGR: data.evaluations.ratios?.OperatingMarginCAGR_evaluation ?? null,
-        ProfitMargin: data.evaluations.ratios?.ProfitMargin_evaluation ?? null,
-        ProfitMarginCAGR: data.evaluations.ratios?.ProfitMarginCAGR_evaluation ?? null,
-        ReturnOnEquity: data.evaluations.ratios?.ReturnOnEquity_evaluation ?? null,
-        ReturnOnEquityCAGR: data.evaluations.ratios?.ReturnOnEquityCAGR_evaluation ?? null,
-    }
-    
-    for (const [key, evaluation] of Object.entries(elements)) {
-        const classificationElement = document.getElementById(`${key}Class`);
-        if (classificationElement) {
-            classificationElement.textContent = evaluation ?? "N/A";
+    // mapa: [secção em data.evaluations, chave base]
+    const fields = [
+        ["valuation", "trailingPE"],
+        ["valuation", "PEGRatio"],
+        ["dividends", "divCoverageRate"],
+        ["profitability", "CostOfRevenueCAGR"],
+        ["profitability", "TotalRevenueCAGR"],
+        ["liquidity", "NetWorth"],
+        ["liquidity", "ShortTermDebtCoverage"],
+        ["liquidity", "LongTermDebtCoverage"],
+        ["liquidity", "StockholdersEquityCAGR"],
+        ["liquidity", "TotalAssetsCAGR"],
+        ["liquidity", "TotalLiabilitiesCAGR"],
+        ["cashflow", "FreeCashflowYield"],
+        ["ratios", "CurrentRatio"],
+        ["ratios", "CurrentRatioCAGR"],
+        ["ratios", "CashRatio"],
+        ["ratios", "CashRatioCAGR"],
+        ["ratios", "GrossMargin"],
+        ["ratios", "OperatingMargin"],
+        ["ratios", "OperatingMarginCAGR"],
+        ["ratios", "ProfitMargin"],
+        ["ratios", "ProfitMarginCAGR"],
+        ["ratios", "ReturnOnEquity"],
+        ["ratios", "ReturnOnEquityCAGR"],
+    ];
+
+    for (const [section, key] of fields) {
+        const evaluation =
+        data?.evaluations?.[section]?.[`${key}_evaluation`] ?? null;
+
+        const bucket =
+        data?.evaluations?.[section]?.[`${key}_bucket`] ??
+        (evaluation ? textToBucket(evaluation) : "nodata");
+
+        // escreve texto + aplica cor no chip principal
+        const el = document.getElementById(`${key}Class`);
+        if (el) {
+        el.textContent = evaluation ?? "N/A";
+        applyBadgeClass(el, bucket);
         }
 
-        const classificationElementOverview = document.getElementById(`${key}ClassOverview`);
-        if (classificationElementOverview) {
-            classificationElementOverview.textContent = evaluation ?? "N/A";
+        // escreve texto + aplica cor na versão “overview” (se existir)
+        const elOverview = document.getElementById(`${key}ClassOverview`);
+        if (elOverview) {
+        elOverview.textContent = evaluation ?? "N/A";
+        applyBadgeClass(elOverview, bucket);
         }
     }
+
+    // Pintar a MODAL de fundamentals com uma âncora (ex.: trailingPE)
+    const anchorEval = data?.evaluations?.valuation?.trailingPE_evaluation ?? null;
+    const anchorBucket =
+        data?.evaluations?.valuation?.trailingPE_bucket ??
+        (anchorEval ? textToBucket(anchorEval) : "neutral");
+
+    const fundamentalsModal = document.querySelector("#fundamentalsModal");
+    applyModalClass(fundamentalsModal, anchorBucket);
 }
+
+
+// export function displayFundamentalResultsClassification(data) {
+//     const elements = {
+//         trailingPE: data.evaluations.valuation?.trailingPE_evaluation ?? null,
+//         PEGRatio: data.evaluations.valuation?.PEGRatio_evaluation ?? null,
+//         divCoverageRate: data.evaluations.dividends?.divCoverageRate_evaluation ?? null,
+//         CostOfRevenueCAGR: data.evaluations.profitability?.CostOfRevenueCAGR_evaluation ?? null,
+//         TotalRevenueCAGR: data.evaluations.profitability?.TotalRevenueCAGR_evaluation ?? null,
+//         NetWorth: data.evaluations.liquidity?.NetWorth_evaluation ?? null,
+//         ShortTermDebtCoverage: data.evaluations.liquidity?.ShortTermDebtCoverage_evaluation ?? null,
+//         LongTermDebtCoverage: data.evaluations.liquidity?.LongTermDebtCoverage_evaluation ?? null,
+//         StockholdersEquityCAGR: data.evaluations.liquidity?.StockholdersEquityCAGR_evaluation ?? null,
+//         TotalAssetsCAGR: data.evaluations.liquidity?.TotalAssetsCAGR_evaluation ?? null,
+//         TotalLiabilitiesCAGR: data.evaluations.liquidity?.TotalLiabilitiesCAGR_evaluation ?? null,
+//         FreeCashflowYield: data.evaluations.cashflow?.FreeCashflowYield_evaluation ?? null,
+//         CurrentRatio: data.evaluations.ratios?.CurrentRatio_evaluation ?? null,
+//         CurrentRatioCAGR: data.evaluations.ratios?.CurrentRatioCAGR_evaluation ?? null,
+//         CashRatio: data.evaluations.ratios?.CashRatio_evaluation ?? null,
+//         CashRatioCAGR: data.evaluations.ratios?.CashRatioCAGR_evaluation ?? null,
+//         GrossMargin: data.evaluations.ratios?.GrossMargin_evaluation ?? null,
+//         // GrossMarginCAGR: data.evaluations.ratios?.GrossMarginCAGR_evaluation || "N/A",
+//         OperatingMargin: data.evaluations.ratios?.OperatingMargin_evaluation ?? null,
+//         OperatingMarginCAGR: data.evaluations.ratios?.OperatingMarginCAGR_evaluation ?? null,
+//         ProfitMargin: data.evaluations.ratios?.ProfitMargin_evaluation ?? null,
+//         ProfitMarginCAGR: data.evaluations.ratios?.ProfitMarginCAGR_evaluation ?? null,
+//         ReturnOnEquity: data.evaluations.ratios?.ReturnOnEquity_evaluation ?? null,
+//         ReturnOnEquityCAGR: data.evaluations.ratios?.ReturnOnEquityCAGR_evaluation ?? null,
+//     }
+    
+//     for (const [key, evaluation] of Object.entries(elements)) {
+//         const classificationElement = document.getElementById(`${key}Class`);
+//         if (classificationElement) {
+//             classificationElement.textContent = evaluation ?? "N/A";
+//         }
+
+//         const classificationElementOverview = document.getElementById(`${key}ClassOverview`);
+//         if (classificationElementOverview) {
+//             classificationElementOverview.textContent = evaluation ?? "N/A";
+//         }
+//     }
+// }
 
 export function displayInsideTransactions(response) {
     const data = response.data; // <- extrai o array corretamente

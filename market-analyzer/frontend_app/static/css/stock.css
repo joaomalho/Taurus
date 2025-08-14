@@ -517,6 +517,24 @@ canvas {
     margin-top: 15px;
 }
 
+
+/* ====== BADGES (cores por bucket) ====== */
+.badge--verygood { background:#e9f9f0; color:#0a7a36; border:1px solid #0a7a36; border-radius:6px; padding:2px 6px; }
+.badge--good     { background:#f0fbf3; color:#0f8a3b; border:1px solid #0f8a3b; border-radius:6px; padding:2px 6px; }
+.badge--neutral  { background:#f4f4f5; color:#555;   border:1px solid #bdbdbd; border-radius:6px; padding:2px 6px; }
+.badge--bad      { background:#fff4e5; color:#b45309; border:1px solid #b45309; border-radius:6px; padding:2px 6px; }
+.badge--verybad  { background:#fdecea; color:#c62828; border:1px solid #c62828; border-radius:6px; padding:2px 6px; }
+.badge--nodata   { background:#f5f5f5; color:#9E9E9E; border:1px solid #e0e0e0; border-radius:6px; padding:2px 6px; }
+
+/* ====== “MODAL”/CARD (cores por bucket) ====== */
+.modal--verygood { --accent:#0a7a36 }
+.modal--good     { --accent:#0f8a3b }
+.modal--neutral  { --accent:#6b7280 }
+.modal--bad      { --accent:#b45309 }
+.modal--verybad  { --accent:#c62828 }
+.modal--nodata   { --accent:#9E9E9E }
+
+
 /* ============================= */
 /* RESPONSIVIDADE */
 /* ============================= */
