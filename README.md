@@ -382,14 +382,15 @@ We are also looking to grow our community with **key roles in market analysis**:
     - Prompt news from API as example, done on test_news file - `ToDo: High`
   - Economic Calendar Correlations - `ToDo: Low`
   - Add Tags on Headers to Easly get info - `ToDo: Low`
-  - Add Color by Results - `ToDo: Low`
   - Insider Information when not available must return empty. `ToDo: Medium`
 - Additional Screens
   - Missing Catalog for penny, top of day, top of week.
-- Install scripts:
-  - This is to pass to server not applicable in User Install. `ToDo: Low | Deprecated`
+- FAQs page `ToDo: High`
+- Information Page `ToDo: High`
+- Information marker points `ToDo: High`
 
 ## **🚀 Latest Improvements**
 
 - **Docker configuration**
 - **Github CI/CD configuration**
+- **Classification by colors**

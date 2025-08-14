@@ -144,15 +144,15 @@ class RiskManagerFundamental():
             "Not Good - No Growth or Negative Trend"
         ]
 
-        if any(k in s for k in verygood):
+        if any(k.lower() in s for k in verygood):
             return "verygood"
-        if any(k in s for k in good):
+        if any(k.lower() in s for k in good):
             return "good"
-        if any(k in s for k in neutral):
+        if any(k.lower() in s for k in neutral):
             return "neutral"
-        if any(k in s for k in bad):
+        if any(k.lower() in s for k in bad):
             return "bad"
-        if any(k in s for k in verybad):
+        if any(k.lower() in s for k in verybad):
             return "verybad"
         return "neutral"
 
@@ -169,6 +169,16 @@ class RiskManagerFundamental():
             "verybad": "#ff1414",
             "nodata": "#9E9E9E",
         }.get(bucket, "#6b7280")
+
+    @staticmethod
+    def _is_number(x):
+        return isinstance(x, (int, float)) and not math.isnan(x)
+
+    def _set_eval(self, out: dict, key: str, text: str):
+        out[f"{key}_evaluation"] = text
+        bucket = self.evaluation_bucket(text)
+        out[f"{key}_bucket"] = bucket
+        out[f"{key}_color"] = self.bucket_color(bucket)
 
     def evaluate_metrics(self, metrics):
         """
@@ -208,10 +218,7 @@ class RiskManagerFundamental():
         else:
             text_trailingPE = "No Data"
 
-        evaluated_metrics["trailingPE_evaluation"] = text_trailingPE
-        bucket_trailingPE = self.evaluation_bucket(text_trailingPE)
-        evaluated_metrics["trailingPE_bucker"] = bucket_trailingPE
-        evaluated_metrics["trailingPE_color"] = self.bucket_color(bucket_trailingPE)
+        self._set_eval(evaluated_metrics, "trailingPE", text_trailingPE)
 
         # Valuation - PEG Ratio
         peg_raw = fm.safe_round(metrics.get('valuation', {}).get("PEGRatio"))
@@ -228,10 +235,7 @@ class RiskManagerFundamental():
             else:
                 text_PEGRatio = "Overvalued"
 
-        evaluated_metrics["PEGRatio_evaluation"] = text_PEGRatio
-        bucket_PEGRatio = self.evaluation_bucket(text_PEGRatio)
-        evaluated_metrics["PEGRatio_bucker"] = bucket_PEGRatio
-        evaluated_metrics["PEGRatio_color"] = self.bucket_color(bucket_PEGRatio)
+        self._set_eval(evaluated_metrics, "PEGRatio", text_PEGRatio)
 
         # Dividends - Dividend Coverage Ratio
         div_coverage_raw = fm.safe_round(metrics.get('dividends', {}).get("divCoverageRate"))
@@ -252,10 +256,7 @@ class RiskManagerFundamental():
             else:
                 text_divCoverageRate = "Very Good Coverage (Greedy)"
 
-        evaluated_metrics["divCoverageRate_evaluation"] = text_divCoverageRate
-        bucket_divCoverageRate = self.evaluation_bucket(text_divCoverageRate)
-        evaluated_metrics["divCoverageRate_bucker"] = bucket_divCoverageRate
-        evaluated_metrics["divCoverageRate_color"] = self.bucket_color(bucket_divCoverageRate)
+        self._set_eval(evaluated_metrics, "divCoverageRate", text_divCoverageRate)
 
         # Profitability - Cost of Revenue CAGR
         cost_revenue_cagr = fm.safe_round(metrics.get('profitability', {}).get("CostOfRevenueCAGR"))
@@ -272,10 +273,7 @@ class RiskManagerFundamental():
             else:
                 text_CostOfRevenueCAGR = "Not Good"
 
-        evaluated_metrics["CostOfRevenueCAGR_evaluation"] = text_CostOfRevenueCAGR
-        bucket_CostOfRevenueCAGR = self.evaluation_bucket(text_CostOfRevenueCAGR)
-        evaluated_metrics["CostOfRevenueCAGR_bucker"] = bucket_CostOfRevenueCAGR
-        evaluated_metrics["CostOfRevenueCAGR_color"] = self.bucket_color(bucket_CostOfRevenueCAGR)
+        self._set_eval(evaluated_metrics, "CostOfRevenueCAGR", text_CostOfRevenueCAGR)
 
         total_revenue_cagr = fm.safe_round(metrics.get('profitability', {}).get("TotalRevenueCAGR"))
         evaluated_metrics["TotalRevenueCAGR"] = total_revenue_cagr if total_revenue_cagr is not None else None
@@ -285,10 +283,7 @@ class RiskManagerFundamental():
         else:
             text_TotalRevenueCAGR = "Good" if total_revenue_cagr > 0 else "Not Good"
 
-        evaluated_metrics["TotalRevenueCAGR_evaluation"] = text_TotalRevenueCAGR
-        bucket_CostOfRevenueCAGR = self.evaluation_bucket(text_TotalRevenueCAGR)
-        evaluated_metrics["TotalRevenueCAGR_bucker"] = bucket_CostOfRevenueCAGR
-        evaluated_metrics["TotalRevenueCAGR_color"] = self.bucket_color(bucket_CostOfRevenueCAGR)
+        self._set_eval(evaluated_metrics, "TotalRevenueCAGR", text_TotalRevenueCAGR)
 
         # Debt
         net_worth = fm.safe_round(metrics.get('liquidity', {}).get("NetWorth"))
@@ -299,10 +294,7 @@ class RiskManagerFundamental():
         else:
             text_NetWorth = "Good" if net_worth > 0 else "Not Good (In Debt)"
 
-        evaluated_metrics["NetWorth_evaluation"] = text_NetWorth
-        bucket_NetWorth = self.evaluation_bucket(text_NetWorth)
-        evaluated_metrics["NetWorth_bucker"] = bucket_NetWorth
-        evaluated_metrics["NetWorth_color"] = self.bucket_color(bucket_NetWorth)
+        self._set_eval(evaluated_metrics, "NetWorth", text_NetWorth)
 
         # Short Term Debt Coverage
         short_debt_cov = fm.safe_round(metrics.get('liquidity', {}).get("ShortTermDebtCoverage"))
@@ -313,10 +305,7 @@ class RiskManagerFundamental():
         else:
             text_ShortTermDebtCoverage = "Good" if short_debt_cov > 0 else "Not Good (In Debt)"
 
-        evaluated_metrics["ShortTermDebtCoverage_evaluation"] = text_ShortTermDebtCoverage
-        bucket_ShortTermDebtCoverage = self.evaluation_bucket(text_ShortTermDebtCoverage)
-        evaluated_metrics["ShortTermDebtCoverage_bucker"] = bucket_ShortTermDebtCoverage
-        evaluated_metrics["ShortTermDebtCoverage_color"] = self.bucket_color(bucket_ShortTermDebtCoverage)
+        self._set_eval(evaluated_metrics, "ShortTermDebtCoverage", text_ShortTermDebtCoverage)
 
         # Long Term Debt Coverage
         long_debt_cov = fm.safe_round(metrics.get('liquidity', {}).get("LongTermDebtCoverage"))
@@ -327,10 +316,7 @@ class RiskManagerFundamental():
         else:
             text_LongTermDebtCoverage = "Good" if long_debt_cov > 0 else "Not Good (In Debt)"
 
-        evaluated_metrics["LongTermDebtCoverage_evaluation"] = text_LongTermDebtCoverage
-        bucket_LongTermDebtCoverage = self.evaluation_bucket(text_LongTermDebtCoverage)
-        evaluated_metrics["LongTermDebtCoverage_bucker"] = bucket_LongTermDebtCoverage
-        evaluated_metrics["LongTermDebtCoverage_color"] = self.bucket_color(bucket_LongTermDebtCoverage)
+        self._set_eval(evaluated_metrics, "LongTermDebtCoverage", text_LongTermDebtCoverage)
 
         # Assets Growth
         total_assets_cagr = fm.safe_round(metrics.get('liquidity', {}).get("TotalAssetsCAGR"))
@@ -341,10 +327,7 @@ class RiskManagerFundamental():
         else:
             text_TotalAssetsCAGR = "Good" if total_assets_cagr > 0 else "Not Good"
 
-        evaluated_metrics["TotalAssetsCAGR_evaluation"] = text_TotalAssetsCAGR
-        bucket_TotalAssetsCAGR = self.evaluation_bucket(text_TotalAssetsCAGR)
-        evaluated_metrics["LongTermDebtCoverage_bucker"] = bucket_TotalAssetsCAGR
-        evaluated_metrics["LongTermDebtCoverage_color"] = self.bucket_color(bucket_TotalAssetsCAGR)
+        self._set_eval(evaluated_metrics, "TotalAssetsCAGR", text_TotalAssetsCAGR)
 
         # Liabilities Growth
         total_liabilities_cagr = fm.safe_round(metrics.get('liquidity', {}).get("TotalLiabilitiesCAGR"))
@@ -355,10 +338,7 @@ class RiskManagerFundamental():
         else:
             text_TotalLiabilitiesCAGR = "Good" if total_liabilities_cagr <= 0 else "Not Good"
 
-        evaluated_metrics["TotalLiabilitiesCAGR_evaluation"] = text_TotalLiabilitiesCAGR
-        bucket_TotalLiabilitiesCAGR = self.evaluation_bucket(text_TotalAssetsCAGR)
-        evaluated_metrics["TotalLiabilitiesCAGR_bucker"] = bucket_TotalLiabilitiesCAGR
-        evaluated_metrics["TotalLiabilitiesCAGR_color"] = self.bucket_color(bucket_TotalLiabilitiesCAGR)
+        self._set_eval(evaluated_metrics, "TotalLiabilitiesCAGR", text_TotalLiabilitiesCAGR)
 
         # Stockholders Equity
         stockholders_equity_cagr = fm.safe_round(metrics.get('liquidity', {}).get("StockholdersEquityCAGR"))
@@ -369,10 +349,7 @@ class RiskManagerFundamental():
         else:
             text_StockholdersEquityCAGR = "Good" if stockholders_equity_cagr > 0 else "Not Good"
 
-        evaluated_metrics["StockholdersEquityCAGR_evaluation"] = text_StockholdersEquityCAGR
-        bucket_StockholdersEquityCAGR = self.evaluation_bucket(text_StockholdersEquityCAGR)
-        evaluated_metrics["StockholdersEquityCAGR_bucker"] = bucket_StockholdersEquityCAGR
-        evaluated_metrics["StockholdersEquityCAGR_color"] = self.bucket_color(bucket_StockholdersEquityCAGR)
+        self._set_eval(evaluated_metrics, "StockholdersEquityCAGR", text_StockholdersEquityCAGR)
 
         # Cash
         # Free Cashflow Yield
@@ -388,10 +365,7 @@ class RiskManagerFundamental():
         else:
             text_FreeCashflowYield = "Undervalued / Highly Profitable"
 
-        evaluated_metrics["FreeCashflowYield_evaluation"] = text_FreeCashflowYield
-        bucket_FreeCashflowYield = self.evaluation_bucket(text_FreeCashflowYield)
-        evaluated_metrics["FreeCashflowYield_bucker"] = bucket_FreeCashflowYield
-        evaluated_metrics["FreeCashflowYield_color"] = self.bucket_color(bucket_FreeCashflowYield)
+        self._set_eval(evaluated_metrics, "FreeCashflowYield", text_FreeCashflowYield)
 
         # Ratios
         # Current Ratio
@@ -399,7 +373,7 @@ class RiskManagerFundamental():
         evaluated_metrics["CurrentRatio"] = current_ratio if current_ratio is not None else None
 
         if current_ratio is None:
-            evaluated_metrics["CurrentRatio_evaluation"] = "No Data"
+            text_CurrentRatio = "No Data"
         else:
             if current_ratio <= 100:
                 text_CurrentRatio = "Not Good (In Debt)"
@@ -410,10 +384,7 @@ class RiskManagerFundamental():
             else:
                 text_CurrentRatio = "Perfect Coverage (Double +)"
 
-        evaluated_metrics["CurrentRatio_evaluation"] = text_CurrentRatio
-        bucket_CurrentRatio = self.evaluation_bucket(text_CurrentRatio)
-        evaluated_metrics["CurrentRatio_bucker"] = bucket_CurrentRatio
-        evaluated_metrics["CurrentRatio_color"] = self.bucket_color(bucket_CurrentRatio)
+        self._set_eval(evaluated_metrics, "CurrentRatio", text_CurrentRatio)
 
         # Current Ratio Growth
         current_ratio_cagr = fm.safe_round(metrics.get('ratios', {}).get("CurrentRatioCAGR"))
@@ -424,10 +395,7 @@ class RiskManagerFundamental():
         else:
             text_CurrentRatioCAGR = "Good" if current_ratio_cagr > 0 else "Not Good"
 
-        evaluated_metrics["CurrentRatioCAGR_evaluation"] = text_CurrentRatioCAGR
-        bucket_CurrentRatioCAGR = self.evaluation_bucket(text_CurrentRatioCAGR)
-        evaluated_metrics["CurrentRatioCAGR_bucker"] = bucket_CurrentRatioCAGR
-        evaluated_metrics["CurrentRatioCAGR_color"] = self.bucket_color(bucket_CurrentRatioCAGR)
+        self._set_eval(evaluated_metrics, "CurrentRatioCAGR", text_CurrentRatioCAGR)
 
         # Cash Ratio
         cash_ratio = fm.safe_round(metrics.get('ratios', {}).get("CashRatio"))
@@ -443,10 +411,7 @@ class RiskManagerFundamental():
             else:
                 text_CashRatio = "Good Debt Coverage (Too Conservative)"
 
-        evaluated_metrics["CashRatio_evaluation"] = text_CashRatio
-        bucket_CashRatio = self.evaluation_bucket(text_CashRatio)
-        evaluated_metrics["CashRatio_bucker"] = bucket_CashRatio
-        evaluated_metrics["CashRatio_color"] = self.bucket_color(bucket_CashRatio)
+        self._set_eval(evaluated_metrics, "CashRatio", text_CashRatio)
 
         # Current Ratio Growth
         cash_ratio_cagr = fm.safe_round(metrics.get('ratios', {}).get("CashRatioCAGR"))
@@ -460,10 +425,7 @@ class RiskManagerFundamental():
             else:
                 text_CashRatioCAGR = "Good"
 
-        evaluated_metrics["CashRatioCAGR_evaluation"] = text_CashRatioCAGR
-        bucket_CashRatioCAGR = self.evaluation_bucket(text_CashRatioCAGR)
-        evaluated_metrics["CashRatioCAGR_bucker"] = bucket_CashRatioCAGR
-        evaluated_metrics["CashRatioCAGR_color"] = self.bucket_color(bucket_CashRatioCAGR)
+        self._set_eval(evaluated_metrics, "CashRatioCAGR", text_CashRatioCAGR)
 
         # Gross Margin
         gross_margin = fm.safe_round(metrics.get('ratios', {}).get("GrossMargin"))
@@ -479,10 +441,7 @@ class RiskManagerFundamental():
             else:
                 text_GrossMargin = "Good - Efficient Costs Management"
 
-        evaluated_metrics["GrossMargin_evaluation"] = text_GrossMargin
-        bucket_GrossMargin = self.evaluation_bucket(text_GrossMargin)
-        evaluated_metrics["GrossMargin_bucker"] = bucket_GrossMargin
-        evaluated_metrics["GrossMargin_color"] = self.bucket_color(bucket_GrossMargin)
+        self._set_eval(evaluated_metrics, "GrossMargin", text_GrossMargin)
 
         # Gross Margin Growth
         gross_margin_cagr = fm.safe_round(metrics.get('ratios', {}).get("GrossMarginCAGR"))
@@ -495,26 +454,25 @@ class RiskManagerFundamental():
                 "Good" if gross_margin_cagr > 0 else "Not Good"
             )
 
-        evaluated_metrics["GrossMarginCAGR_evaluation"] = text_GrossMarginCAGR
-        bucket_GrossMarginCAGR = self.evaluation_bucket(text_GrossMarginCAGR)
-        evaluated_metrics["GrossMarginCAGR_bucker"] = bucket_GrossMarginCAGR
-        evaluated_metrics["GrossMarginCAGR_color"] = self.bucket_color(bucket_GrossMarginCAGR)
+        self._set_eval(evaluated_metrics, "GrossMarginCAGR", text_GrossMarginCAGR)
 
         # Operating Margin
         operating_margin = fm.safe_round(metrics.get('ratios', {}).get("OperatingMargin"))
         evaluated_metrics["OperatingMargin"] = operating_margin if operating_margin is not None else None
 
         if operating_margin is None:
-            evaluated_metrics["OperatingMargin_evaluation"] = "No Data"
+            text_OperatingMargin = "No Data"
         else:
             if operating_margin <= 10:
-                evaluated_metrics["OperatingMargin_evaluation"] = "Not Good - High Operational Costs or Difficulties to Get Revenue"
+                text_OperatingMargin = "Not Good - High Operational Costs or Difficulties to Get Revenue"
             elif operating_margin <= 20:
-                evaluated_metrics["OperatingMargin_evaluation"] = "Healthy - Healthy Operational Management"
+                text_OperatingMargin = "Healthy - Healthy Operational Management"
             else:
-                evaluated_metrics["OperatingMargin_evaluation"] = "Good - Efficient Costs Management"
+                text_OperatingMargin = "Good - Efficient Costs Management"
 
-            # Operational Margin Growth
+        self._set_eval(evaluated_metrics, "OperatingMargin", text_OperatingMargin)
+
+        # Operational Margin Growth
         operating_margin_cagr = fm.safe_round(metrics.get('ratios', {}).get("OperatingMarginCAGR"))
         evaluated_metrics["OperatingMarginCAGR"] = operating_margin_cagr if operating_margin_cagr is not None else None
 
@@ -526,10 +484,7 @@ class RiskManagerFundamental():
             else:
                 text_OperatingMarginCAGR = "Good"
 
-        evaluated_metrics["OperatingMarginCAGR_evaluation"] = text_OperatingMarginCAGR
-        bucket_OperatingMarginCAGR = self.evaluation_bucket(text_OperatingMarginCAGR)
-        evaluated_metrics["OperatingMarginCAGR_bucker"] = bucket_OperatingMarginCAGR
-        evaluated_metrics["OperatingMarginCAGR_color"] = self.bucket_color(bucket_OperatingMarginCAGR)
+        self._set_eval(evaluated_metrics, "OperatingMarginCAGR", text_OperatingMarginCAGR)
 
         # Profit Margin
         profit_margin = fm.safe_round(metrics.get('ratios', {}).get("ProfitMargin"))
@@ -547,10 +502,7 @@ class RiskManagerFundamental():
             else:
                 text_ProfitMargin = "Good - Highly Profitable and Eficient Profit Generate"
 
-        evaluated_metrics["ProfitMargin_evaluation"] = text_ProfitMargin
-        bucket_ProfitMargin = self.evaluation_bucket(text_ProfitMargin)
-        evaluated_metrics["ProfitMargin_bucker"] = bucket_ProfitMargin
-        evaluated_metrics["ProfitMargin_color"] = self.bucket_color(bucket_ProfitMargin)
+        self._set_eval(evaluated_metrics, "ProfitMargin", text_ProfitMargin)
 
         # Profit Margin Growth
         profit_margin_cagr = fm.safe_round(metrics.get('ratios', {}).get("ProfitMarginCAGR"))
@@ -564,10 +516,7 @@ class RiskManagerFundamental():
             else:
                 text_ProfitMarginCAGR = "Good - Growing Profitability Over Time"
 
-        evaluated_metrics["ProfitMarginCAGR_evaluation"] = text_ProfitMarginCAGR
-        bucket_ProfitMarginCAGR = self.evaluation_bucket(text_ProfitMarginCAGR)
-        evaluated_metrics["ProfitMarginCAGR_bucker"] = bucket_ProfitMarginCAGR
-        evaluated_metrics["ProfitMarginCAGR_color"] = self.bucket_color(bucket_ProfitMarginCAGR)
+        self._set_eval(evaluated_metrics, "ProfitMarginCAGR", text_ProfitMarginCAGR)
 
         # Return On Equity
         return_on_equity = fm.safe_round(metrics.get('ratios', {}).get("ReturnOnEquity"))
@@ -585,10 +534,7 @@ class RiskManagerFundamental():
             else:
                 text_ReturnOnEquity = "Good - Highly Efficient in Generating Profits"
 
-        evaluated_metrics["ReturnOnEquity_evaluation"] = text_ReturnOnEquity
-        bucket_ReturnOnEquity = self.evaluation_bucket(text_ReturnOnEquity)
-        evaluated_metrics["ReturnOnEquity_bucker"] = bucket_ReturnOnEquity
-        evaluated_metrics["ReturnOnEquity_color"] = self.bucket_color(bucket_ReturnOnEquity)
+        self._set_eval(evaluated_metrics, "ReturnOnEquity", text_ReturnOnEquity)
 
         # Return On Equity Growth
         return_on_equity_cagr = fm.safe_round(metrics.get('ratios', {}).get("ReturnOnEquityCAGR"))
@@ -602,9 +548,6 @@ class RiskManagerFundamental():
             else:
                 text_ReturnOnEquityCAGR = "Good - Consistent Growth in Equity Returns"
 
-        evaluated_metrics["ReturnOnEquityCAGR_evaluation"] = text_ReturnOnEquityCAGR
-        bucket_ReturnOnEquityCAGR = self.evaluation_bucket(text_ReturnOnEquityCAGR)
-        evaluated_metrics["ReturnOnEquityCAGR_bucker"] = bucket_ReturnOnEquityCAGR
-        evaluated_metrics["ReturnOnEquityCAGR_color"] = self.bucket_color(bucket_ReturnOnEquityCAGR)
+        self._set_eval(evaluated_metrics, "ReturnOnEquityCAGR", text_ReturnOnEquityCAGR)
 
         return evaluated_metrics if evaluated_metrics else "Indefinido"
