@@ -98,6 +98,29 @@ class RiskManagerFundamental():
 
         s = str(label).strip().lower()
 
+        verybad = [
+            "very high overvalued",
+            "no coverage",
+            "not good",
+            "Not Good - Short Margins or High Costs",
+            "Not Good - High Operational Costs or Difficulties to Get Revenue",
+            "Not Good - High Operational Costs or Operational Problems",
+            "Not Good - Low Efficiency on Equity Use",
+            "Not Good - No Growth or Negative Trend"
+        ]
+        if any(k.lower() in s for k in verybad):
+            return "verybad"
+        
+        bad = [
+            "overvalued",
+            "high overvalued",
+            "bad coverage (cut)",
+            "tight margin to debt",
+            "Not Good - Declining or No Growth"
+        ]
+        if any(k.lower() in s for k in bad):
+            return "bad"
+
         verygood = [
             "very low undervalued",
             "good",
@@ -108,6 +131,9 @@ class RiskManagerFundamental():
             "Good - Highly Efficient in Generating Profits",
             "Good - Consistent Growth in Equity Returns"
         ]
+        if any(k.lower() in s for k in verygood):
+            return "verygood"
+        
         good = [
             "low undervalued",
             "undervalued",
@@ -119,6 +145,9 @@ class RiskManagerFundamental():
             "Good - Growing Profitability Over Time",
             "Healthy - Efficient and Solid Management"
         ]
+        if any(k.lower() in s for k in good):
+            return "good"
+        
         neutral = [
             "no data",
             "Indefinido",
@@ -126,34 +155,8 @@ class RiskManagerFundamental():
             "neutral valued",
             "Moderated - Potential but Need Improvements",
             ]
-        bad = [
-            "overvalued",
-            "high overvalued",
-            "bad coverage (cut)",
-            "tight margin to debt",
-            "Not Good - Declining or No Growth"
-        ]
-        verybad = [
-            "very high overvalued",
-            "no coverage",
-            "not good",
-            "Not Good - Short Margins or High Costs",
-            "Not Good - High Operational Costs or Difficulties to Get Revenue",
-            "Not Good - High Operational Costs or Operational Problems",
-            "Not Good - Low Efficiency on Equity Use",
-            "Not Good - No Growth or Negative Trend"
-        ]
-
-        if any(k.lower() in s for k in verygood):
-            return "verygood"
-        if any(k.lower() in s for k in good):
-            return "good"
         if any(k.lower() in s for k in neutral):
             return "neutral"
-        if any(k.lower() in s for k in bad):
-            return "bad"
-        if any(k.lower() in s for k in verybad):
-            return "verybad"
         return "neutral"
 
     @staticmethod
