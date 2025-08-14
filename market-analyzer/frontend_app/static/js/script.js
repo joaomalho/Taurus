@@ -103,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
             { toggleSelector: "#funRatios", contentSelector: ".ratios-content" },
             { toggleSelector: "#funRisk", contentSelector: ".risk-content" },
             { toggleSelector: "#funOverview", contentSelector: ".overview-content" },
+            { toggleSelector: "#funDownload", contentSelector: ".download-content" },
             { toggleSelector: "#tecInsiders", contentSelector: ".insiders-content" },
         ];
 
