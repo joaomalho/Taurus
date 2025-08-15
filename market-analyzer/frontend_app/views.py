@@ -52,6 +52,34 @@ def convert_numpy_types(obj):
     return obj
 
 
+def _df_to_excel_response(df, base_filename: str):
+    import pandas as pd
+    from io import BytesIO
+    from django.http import HttpResponse
+    from django.utils.timezone import now
+
+    if df is None or df.empty:
+        return JsonResponse({"error": "No data found"}, status=404)
+
+    # Melhorar layout: índice como coluna
+    df_out = df.copy().T.reset_index().rename(columns={"index": "Period"})
+
+    timestamp = now().strftime("%Y%m%d-%H%M")
+    filename = f"{base_filename}_{timestamp}.xlsx"
+
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine="xlsxwriter") as writer:
+        df_out.to_excel(writer, index=False, sheet_name="Data")
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
+
+
 def get_data_history(request, symbol):
     '''
     Data collection from yahoo
@@ -699,6 +727,138 @@ def get_fundamental_evaluations(request, symbol):
                 evaluations_data[category] = {}
 
         return JsonResponse({"evaluations": evaluations_data})
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+def get_fundamental_income_download(request, symbol):
+    """
+    Return the income statment
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        income_stmt = data_history.get_yahoo_symbol_income(symbol)
+
+        return _df_to_excel_response(income_stmt, f"{symbol}_income_statement")
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+def get_fundamental_balance_sheet_download(request, symbol):
+    """
+    Return the balance sheet
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        balance_sheet = data_history.get_yahoo_symbol_balance_sheet(symbol)
+
+        return _df_to_excel_response(balance_sheet, f"{symbol}_balance_sheet")
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+def get_fundamental_cashflow_download(request, symbol):
+    """
+    Return the cashflow
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        cashflow = data_history.get_yahoo_symbol_cashflow(symbol)
+
+        return _df_to_excel_response(cashflow, f"{symbol}_cashflow")
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+def get_fundamental_income_quarterly_download(request, symbol):
+    """
+    Return the income statment in quarterly basis
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        income_stmt_quarterly = data_history.get_yahoo_symbol_income_quarterly(symbol)
+
+        return _df_to_excel_response(income_stmt_quarterly, f"{symbol}_income_stmt_quarterly")
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+def get_fundamental_balance_sheet_quarterly_download(request, symbol):
+    """
+    Return the balance sheet in quarterly basis
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        balance_sheet_quarterly = data_history.get_yahoo_symbol_balance_sheet_quarterly(symbol)
+
+        return _df_to_excel_response(balance_sheet_quarterly, f"{symbol}_balance_sheet_quarterly")
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+def get_fundamental_cashflow_quarterly_download(request, symbol):
+    """
+    Return the cashflow in quarterly basis
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        cashflow_quarterly = data_history.get_yahoo_symbol_cashflow_quarterly(symbol)
+
+        return _df_to_excel_response(cashflow_quarterly, f"{symbol}_cashflow_quarterly")
 
     except ConnectionError:
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)

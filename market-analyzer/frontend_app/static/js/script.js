@@ -40,6 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let symbol = pathParts[2];
     // ─────────────── DADOS DA PÁGINA /stock/<symbol> ───────────────
     if (window.location.pathname.startsWith("/stock/") && symbol) {
+
+        setupDownloadLinks(symbol);
+
         fetchBioData(symbol).then(data => {
             if (!data.error) displayBioResults(data);
         });
@@ -313,3 +316,25 @@ function setupScreenerButton() {
     }
 }
 
+/* ─────────────── FUNÇÕES DE DOWNLOADS ─────────────── */
+function setupDownloadLinks(symbol) {
+  const map = [
+    ["dl-income-annual",   `/stock/${symbol}/income_download/`],
+    ["dl-income-quarter",  `/stock/${symbol}/income_quarterly_download/`],
+    ["dl-cf-annual",       `/stock/${symbol}/cashflow_download/`],
+    ["dl-cf-quarter",      `/stock/${symbol}/cashflow_quarterly_download/`],
+    ["dl-bs-annual",       `/stock/${symbol}/balance_sheet_download/`],
+    ["dl-bs-quarter",      `/stock/${symbol}/balance_sheet_quarterly_download/`],
+  ];
+
+  for (const [id, href] of map) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.setAttribute("href", href);
+      el.setAttribute("download", ""); // opcional, deixa o nome vir do servidor
+      el.addEventListener("click", () => {
+        // aqui poderias ativar um spinner no botão, se quiseres
+      });
+    }
+  }
+}

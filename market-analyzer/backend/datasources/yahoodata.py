@@ -689,13 +689,47 @@ class DataHistoryYahoo():
         return yahoo_symbol_calendar
 
     # ----------- Full Downloads -----------
-
     def get_yahoo_symbol_balance_sheet(self, symbol: str):
         '''
         Return the patrimonial balance sheet
         '''
         yahoo_symbol_balance_sheet = yf.Ticker(symbol).balance_sheet
         return yahoo_symbol_balance_sheet
+
+    def get_yahoo_symbol_balance_sheet_quarterly(self, symbol: str):
+        '''
+        Return the patrimonial balance sheet in quarterly basis
+        '''
+        yahoo_symbol_balance_sheet_quarterly = yf.Ticker(symbol).quarterly_balance_sheet
+        return yahoo_symbol_balance_sheet_quarterly
+
+    def get_yahoo_symbol_cashflow(self, symbol: str):
+        '''
+        Return the cashflow results
+        '''
+        yahoo_symbol_cashflow = yf.Ticker(symbol).cashflow
+        return yahoo_symbol_cashflow
+    
+    def get_yahoo_symbol_cashflow_quarterly(self, symbol: str):
+        '''
+        Return the cashflow results in a quarterly basis
+        '''
+        yahoo_symbol_cashflow_quarterly = yf.Ticker(symbol).quarterly_cashflow
+        return yahoo_symbol_cashflow_quarterly
+
+    def get_yahoo_symbol_income(self, symbol: str):
+        '''
+        Return the income statment
+        '''
+        yahoo_symbol_income = yf.Ticker(symbol).income_stmt
+        return yahoo_symbol_income
+
+    def get_yahoo_symbol_income_quarterly(self, symbol: str):
+        '''
+        Return the income statment in a quarterly basis
+        '''
+        yahoo_symbol_income_quarterly = yf.Ticker(symbol).quarterly_income_stmt
+        return yahoo_symbol_income_quarterly
 
     def get_yahoo_symbol_financials(self, symbol: str):
         '''
@@ -705,21 +739,14 @@ class DataHistoryYahoo():
         yahoo_symbol_financials = yf.Ticker(symbol).financials
         return yahoo_symbol_financials
 
-    def get_yahoo_symbol_cashflow(self, symbol: str):
-        '''
-        Return the cashflow results
-        '''
-        yahoo_symbol_cashflow = yf.Ticker(symbol).cashflow
-        return yahoo_symbol_cashflow
-
     def get_yahoo_symbol_sustainability(self, symbol: str):
         '''
-
         Return the ESG metrics (enviormental, social and governamental)
         '''
         yahoo_symbol_sustainability = yf.Ticker(symbol).sustainability
         return yahoo_symbol_sustainability
 
+    # ------------- News -------------
     def get_yahoo_symbol_news(self, symbol: str):
         '''
         Return the latest news about asset

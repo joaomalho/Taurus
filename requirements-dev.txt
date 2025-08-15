@@ -2,8 +2,8 @@
 
 # Ferramentas de desenvolvimento
 ipykernel
-jupyterlab  # Se usas notebooks
-pytest
-black
-flake8
-mypy
+yfinance 
+pandas 
+numpy 
+datetime 
+requests

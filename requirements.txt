@@ -15,9 +15,10 @@ requests
 beautifulsoup4
 
 # Gráficos técnicos e finanças
-
 ta-lib
+
 # Backend (API)
+XlsxWriter
 
 # Web e Django
 django

@@ -367,30 +367,37 @@ We are also looking to grow our community with **key roles in market analysis**:
 
 ## **🛠️ Next steps**
 
-- Up on VM `ToDo: Medium`
-- FrontEnd firt version release
+- DevOps
 
+  - Up on VM `ToDo: Medium`
+
+- Technical Analysis
+
+  - Pivots Point - `ToDo: Low`
   - Add metrics and drawn to candlestik graph.
     - RSI `ToDo: Medium`
     - ADX `ToDo: Medium`
     - Candles Marks `ToDo: Medium`
 
-- Technical Analysis
-  - Pivots Point - `ToDo: Low`
 - Fundamental Analysis
+
   - Sentiment Analysis of Recent News - `ToDo: Low`
     - Prompt news from API as example, done on test_news file - `ToDo: High`
   - Economic Calendar Correlations - `ToDo: Low`
   - Add Tags on Headers to Easly get info - `ToDo: Low`
   - Insider Information when not available must return empty. `ToDo: Medium`
+  - Downloads remaining fundamental documents and full report. `ToDo: High`
+
 - Additional Screens
+
   - Missing Catalog for penny, top of day, top of week.
-- FAQs page `ToDo: High`
-- Information Page `ToDo: High`
-- Information marker points `ToDo: High`
+  - FAQs page `ToDo: High`
+  - Information Page `ToDo: High`
+  - Information marker points `ToDo: High`
 
 ## **🚀 Latest Improvements**
 
 - **Docker configuration**
 - **Github CI/CD configuration**
 - **Classification by colors**
+- **Download Documents**

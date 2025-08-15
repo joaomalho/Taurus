@@ -15,7 +15,8 @@ npm-debug.log*
 # Ambiente virtual
 env/
 venv/
-taurus-311/
+.venv/
+
 
 # Arquivos do sistema
 .DS_Store
@@ -35,3 +36,5 @@ notes_dev.txt
 .env
 .docker-compose.yml
 .Dockerfile
+
+requirements-dev.txt

@@ -573,36 +573,62 @@
     
         <!-- Download -->
         <section id="fundamentalAnalysis">
-            <h2>Download Documents</h2>
+            <h2>Support Documents</h2>
 
-            <!-- CashFlows  -->
+            <!-- Downloads  -->
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funDownload">
-                    <h2>CashFlows</h2>
+                    <h2>Downloads</h2>
                     <span class="toggle-icon">+</span>
                 </div>
 
                 <div class="download-content hidden">
-                    <div>
-                        <h3>Document</h3>
-                    </div>
                     <div class="fund-download">
                         <div>
-                            <h3>Price : Earnings</h3>
-                            <p><strong>P/E Classification:</strong> <span id="trailingPEClass"></span></p>
-                            <p><strong>Trailing P/E:</strong> <span id="trailingPE"></span></p>
-                            <p><strong>Sector P/E:</strong> <span id="sectorTrailingPE"></span></p>
-                            <p><strong>Forward P/E:</strong> <span id="forwardPE"></span></p>
+                            <h3>Cashflow</h3>
+                            <p><strong>Document</strong></p>
+                                <a id="dl-cf-annual"  class="btn-download" title="Cashflow (Anualy)">
+                                    <img src="{% static 'images/excel-file.png' %}" alt="">
+                                    <span class="label">Cashflow (Anualy)</span>
+                                    <span class="spinner hidden"></span>
+                                </a>
+                                <a id="dl-cf-quarter" class="btn-download" title="Cashflow (Quarterly)">
+                                    <img src="{% static 'images/excel-file.png' %}" alt="">
+                                    <span class="label">Cashflow (Quarterly)</span>
+                                    <span class="spinner hidden"></span>
+                                </a>
                         </div>
                         <div>
-                            <h3>PE : G Ratio</h3>
-                            <p><strong>PEG Classification:</strong> <span id="PEGRatioClass"></span></p>
-                            <p><strong>PEG Ratio:</strong> <span id="PEGRatio"></span></p>
+                            <h3>Balance Sheet</h3>
+                            <p><strong>Document</strong></p>
+                                <a id="dl-bs-annual"  class="btn-download" title="Balance Sheet (Anualy)">
+                                    <img src="{% static 'images/excel-file.png' %}" alt="">
+                                    <span class="label">Balance Sheet (Anualy)</span>
+                                    <span class="spinner hidden"></span>
+                                </a>
+                                <a id="dl-bs-quarter" class="btn-download" title="Balance Sheet (Quarterly)">
+                                    <img src="{% static 'images/excel-file.png' %}" alt="">
+                                    <span class="label">Balance Sheet (Quarterly)</span>
+                                    <span class="spinner hidden"></span>
+                                </a>
+                        </div>
+                        <div>
+                            <h3>Income Statement</h3>
+                            <p><strong>Document</strong></p>
+                                <a id="dl-income-annual"  class="btn-download" title="Income (Anualy)">
+                                    <img src="{% static 'images/excel-file.png' %}" alt="">
+                                    <span class="label">Income (Anualy)</span>
+                                    <span class="spinner hidden"></span>
+                                </a>
+                                <a id="dl-income-quarter" class="btn-download" title="Income (Quarterly)">
+                                    <img src="{% static 'images/excel-file.png' %}" alt="">
+                                    <span class="label">Income (Quarterly)</span>
+                                    <span class="spinner hidden"></span>
+                                </a>
                         </div>
                     </div>
                 </div>
             </div>
-
     </main>
 
     <!-- Rodapé -->

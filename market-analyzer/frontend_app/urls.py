@@ -4,7 +4,10 @@ from .views import (home, stock_page, screener_page, get_stock_gainers, get_stoc
                     get_bollinger_bands_metrics, get_rsi_trend_metrics, get_candle_detection, get_inst_holders,
                     get_recommendations, get_fundamental_info, get_bio_info, get_fundamental_evaluations,
                     get_harmonic_patterns, get_crossover_trend_metrics_draw, get_bollinger_bands_metrics_draw,
-                    get_inside_transactions, get_rsi_trend_metrics_draw
+                    get_inside_transactions, get_rsi_trend_metrics_draw, get_fundamental_income_download, 
+                    get_fundamental_cashflow_download, get_fundamental_balance_sheet_download,
+                    get_fundamental_income_quarterly_download, get_fundamental_cashflow_quarterly_download,
+                    get_fundamental_balance_sheet_quarterly_download
                     )
 
 urlpatterns = [
@@ -41,4 +44,12 @@ urlpatterns = [
     path('screener/stock_gainers/', get_stock_gainers, name='get_stock_gainers'),
     path('screener/stock_trending/', get_stock_trending, name='get_stock_trending'),
     path('screener/stock_most_active/', get_stock_most_active, name='get_stock_most_active'),
+
+    # ------ Downloads ------
+    path('stock/<str:symbol>/income_download/', get_fundamental_income_download, name='get_fundamental_income_download'),
+    path('stock/<str:symbol>/cashflow_download/', get_fundamental_cashflow_download, name='get_fundamental_cashflow_download'),
+    path('stock/<str:symbol>/balance_sheet_download/', get_fundamental_balance_sheet_download, name='get_fundamental_balance_sheet_download'),
+    path('stock/<str:symbol>/income_quarterly_download/', get_fundamental_income_quarterly_download, name='get_fundamental_income_quarterly_download'),
+    path('stock/<str:symbol>/cashflow_quarterly_download/', get_fundamental_cashflow_quarterly_download, name='get_fundamental_cashflow_quarterly_download'),
+    path('stock/<str:symbol>/balance_sheet_quarterly_download/', get_fundamental_balance_sheet_quarterly_download, name='get_fundamental_balance_sheet_quarterly_download'),
 ]
