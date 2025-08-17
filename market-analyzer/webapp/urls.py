@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('frontend_app.urls')),  # Conectando o frontend ao Django
+    path('', include('users.urls')),
 ]

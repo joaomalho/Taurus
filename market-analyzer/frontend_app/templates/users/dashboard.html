@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Área do Utilizador</h1>
+<p>Bem-vindo, {{ user.display_name|default:user.username }}!</p>
+{% endblock %}
