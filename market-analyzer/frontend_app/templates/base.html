@@ -10,23 +10,23 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.ico' %}">
 
-    <!-- Styles globais -->
+    <!-- Global Styles -->
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 
 <body>
-    <!-- Cabeçalho -->
+    <!-- Header -->
     <header class="main-header">
         <img class="logo-icon-homepage" alt="Company Logo" src="{% static 'images/logo.png' %}">
 
-        <!-- NAV de autenticação -->
+        <!-- Authentication NAV -->
         <nav class="auth-nav">
             {% if user.is_authenticated %}
                 <span class="hello">Olá, {{ user.username }}</span>
                 <a href="{% url 'dashboard' %}" class="btn-link">Área do utilizador</a>
 
-                <!-- Logout por POST -->
+                <!-- Logout -->
                 <form method="post" action="{% url 'logout' %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn-link">Sair</button>
@@ -38,7 +38,7 @@
         </nav>
     </header>
 
-    <!-- Mensagens do Django -->
+    <!-- Django Message -->
     {% if messages %}
       <ul class="messages">
         {% for message in messages %}
@@ -47,12 +47,12 @@
       </ul>
     {% endif %}
 
-    <!-- Corpo principal dinâmico -->
+    <!-- Body Content -->
     <main class="main-home">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Rodapé -->
+    <!-- Footer -->
     <footer class="footer">
         <nav>
             <a href="/">Back to Home Page</a>
@@ -60,7 +60,7 @@
         <p>&copy; 2025 Stock Data. All Rights Reserved.</p>
     </footer>
 
-    <!-- Scripts globais -->
+    <!-- Global Scripts -->
     <script type="module" src="{% static 'js/script.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>

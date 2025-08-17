@@ -1,84 +1,30 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{% static 'images/logo.ico' %}">
+{% block title %}Home Page{% endblock %}
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
-</head>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
 
-<body>
-    <!-- Cabeçalho -->
-    <header class="main-header">
-        <img class="logo-icon-homepage" alt="Company Logo" src="{% static 'images/logo.png' %}">
-
-        <!-- NAV de autenticação -->
-        <nav class="auth-nav">
-            {% if user.is_authenticated %}
-                <span class="hello">Olá, {{ user.username }}</span>
-                <a href="{% url 'dashboard' %}" class="btn-link">Área do utilizador</a>
-
-                <!-- Logout por POST (boa prática) -->
-                <form method="post" action="{% url 'logout' %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-link">Sair</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn-link">Entrar</a>
-                <a href="{% url 'signup' %}" class="btn-link">Criar conta</a>
-            {% endif %}
-        </nav>
-    </header>
-
-    <!-- Mensagens do Django (sucesso/erro/info) -->
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li class="{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
+{% block content %}
+  <section class="button-zone">
+    {% if user.is_authenticated %}
+      <button id="screenerButton">Screener</button>
+    {% else %}
+      <a href="{% url 'login' %}" class="button-like">Entrar para usar o Screener</a>
     {% endif %}
+  </section>
 
-    <!-- Corpo principal -->
-    <main class="main-home">
-        <!-- Botão para acessar o Screener -->
-        <section class="button-zone">
-            {% if user.is_authenticated %}
-                <button id="screenerButton">Screener</button>
-            {% else %}
-                <!-- Se não estiver autenticado, mostra CTA p/ login -->
-                <a href="{% url 'login' %}" class="button-like">Entrar para usar o Screener</a>
-            {% endif %}
-        </section>
+  <section class="search-container">
+    <div class="search-container">
+      <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
+      <button id="searchButton">Search</button>
+      <p class="search-indication">Enter a stock symbol and press "Search" to fetch data.</p>
+    </div>
+  </section>
+{% endblock %}
 
-        <!-- Seção de busca de ações -->
-        <section class="search-container">
-            <div class="search-container">
-                <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
-                <button id="searchButton">Search</button>
-                <p class="search-indication">Enter a stock symbol and press "Search" to fetch data.</p>
-            </div>
-        </section>
-    </main>
+{% block extra_js %}
 
-    <!-- Rodapé -->
-    <footer class="footer">
-        <nav>
-            <a href="/">Back to Home Page</a>
-        </nav>
-        <p>&copy; 2024 Stock Data. All Rights Reserved.</p>
-    </footer>
-
-    <!-- Importando o script externo -->
-    <script type="module" src="{% static 'js/script.js' %}"></script>
-
-</body>
-</html>
+{% endblock %}

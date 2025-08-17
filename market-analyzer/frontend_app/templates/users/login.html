@@ -1,5 +1,12 @@
 {% extends "base.html" %}
+
+{% load static %}
+
 {% block title %}Entrar{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
+
 {% block content %}
 <h1>Entrar</h1>
 <form method="post" novalidate>
