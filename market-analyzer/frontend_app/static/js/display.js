@@ -1,14 +1,39 @@
-/* ─────── FUNÇÃO PARA FORMATAR NÚMEROS GRANDES ─────── */
-function formatNumber(value) {
-    return typeof value === "number" && isFinite(value)
-        ? value.toLocaleString("en-EN")
-        : "N/A";
+/* ─────── FORMATADORES DE VALORES ─────── */
+function formatPercent(value, min = 2, max = 2) {
+  return typeof value === "number" && isFinite(value)
+    ? value.toLocaleString("pt-PT", { minimumFractionDigits: min, maximumFractionDigits: max }) + "%"
+    : "N/A";
 }
 
-/* ─────── FUNÇÃO PARA FORMATAR VALORES MONETÁRIOS ─────── */
-function formatCurrency(value) {
-    return typeof value === "number" && isFinite(value)
-    ? value.toLocaleString("en-EN", { style: "currency", currency: "USD" })
+function formatPercentFromFraction(value, min = 2, max = 2) {
+  // 0.0131 -> "1,31%"
+  return typeof value === "number" && isFinite(value)
+    ? (value * 100).toLocaleString("pt-PT", { minimumFractionDigits: min, maximumFractionDigits: max }) + "%"
+    : "N/A";
+}
+
+function formatMultiple(value, min = 2, max = 2) {
+  return typeof value === "number" && isFinite(value)
+    ? value.toLocaleString("pt-PT", { minimumFractionDigits: min, maximumFractionDigits: max }) + "x"
+    : "N/A";
+}
+
+function formatCurrency(value, currency = "USD") {
+  return typeof value === "number" && isFinite(value)
+    ? value.toLocaleString("pt-PT", { style: "currency", currency })
+    : "N/A";
+}
+
+function formatCurrencyCompact(value, currency = "USD") {
+  return typeof value === "number" && isFinite(value)
+    ? value.toLocaleString("pt-PT", { style: "currency", currency, notation: "compact", maximumFractionDigits: 2 })
+    : "N/A";
+}
+
+/* ─────── NÚMEROS "LIVRES" ─────── */
+function formatNumber(value, min = 2, max = 2) {
+  return typeof value === "number" && isFinite(value)
+    ? value.toLocaleString("pt-PT", { minimumFractionDigits: min, maximumFractionDigits: max })
     : "N/A";
 }
 
@@ -254,6 +279,92 @@ export function displayBioResults(data) {
     }
 }
 
+
+/* ─────── QUAL FORMATADOR USAR POR CHAVE ─────── */
+const METRIC_STYLE = {
+  // valuation
+  trailingPE: "multiple",
+  sectorTrailingPE: "multiple",
+  forwardPE: "multiple",
+  PEGRatio: "multiple",
+
+  // dividends
+  divCoverageRate: "multiple",
+  dividendYield: "percent",
+  fiveYearAvgDividendYield: "percent",
+
+  // profitability (%)
+  GrossMargin: "percent",
+  OperatingMargin: "percent",
+  ProfitMargin: "percent",
+  ReturnOnEquity: "percent",
+
+  // growth/CAGR (%)
+  CostOfRevenueCAGR: "percent",
+  TotalRevenueCAGR: "percent",
+  OperatingExpensesCAGR: "percent",
+  TotalAssetsCAGR: "percent",
+  TotalLiabilitiesCAGR: "percent",
+  StockholdersEquityCAGR: "percent",
+  CurrentRatioCAGR: "percent",
+  CashRatioCAGR: "percent",
+  OperatingMarginCAGR: "percent",
+  ProfitMarginCAGR: "percent",
+  ReturnOnEquityCAGR: "percent",
+
+  // rácios adimensionais
+  CurrentRatio: "multiple",
+  CashRatio: "multiple",
+
+  // montantes (moeda)
+  NetIncome: "currency",
+  TotalRevenue: "currency",
+  CostOfRevenue: "currency",
+  GrossProfit: "currency",
+  OperatingExpenses: "currency",
+  TotalAssets: "currency",
+  TotalLiabilities: "currency",
+  NetWorth: "currency",
+  CashCashEquivalents: "currency",
+  CurrentAssets: "currency",
+  CurrentLiabilities: "currency",
+  LongTermDebtCoverage: "currency",
+  NonCurrentAssets: "currency",
+  NonCurrentLiabilities: "currency",
+  StockholdersEquity: "currency",
+
+  // cashflow & mercado
+  FreeCashflow: "currency",
+  OperatingCashflow: "currency",
+  CapitalExpenditure: "currency",
+  MarketCap: "currencyCompact",
+  FreeCashflowYield: "percent",
+
+  // risco/sentimento
+  beta: "number",
+  auditRisk: "number",
+  boardRisk: "number",
+  recommendationMean: "number",
+  targetMeanPrice: "currency",
+
+  // ATENÇÃO: esta costuma vir EM FRAÇÃO (0.0131 -> 1.31%)
+  sharesPercentSharesOut: "percentFraction",
+};
+
+/* ─────── FORMATADOR CENTRAL ─────── */
+function formatByKey(key, value, currency = "USD") {
+  const style = METRIC_STYLE[key] || "number";
+  switch (style) {
+    case "percent":         return formatPercent(value);
+    case "percentFraction": return formatPercentFromFraction(value);
+    case "multiple":        return formatMultiple(value);
+    case "currency":        return formatCurrency(value, currency);
+    case "currencyCompact": return formatCurrencyCompact(value, currency);
+    default:                return formatNumber(value);
+  }
+}
+
+
 /* ─────────────── FUNÇÃO PARA PREENCHER FUNDAMENTALS ─────────────── */
 export function displayFundamentalResults(data) {
     const valuationData = data.valuation;
@@ -328,19 +439,14 @@ export function displayFundamentalResults(data) {
         targetMeanPrice: marketRiskData.targetMeanPrice || {}
     }
 
-    for (const [key, data] of Object.entries(elements)) {
-        const valueElement = document.getElementById(key);
-    
-        const value = data?.value ?? null;
+    for (const [key, d] of Object.entries(elements)) {
+        const el = document.getElementById(key);
+        if (!el) continue;
 
-        if (valueElement) {
-            valueElement.textContent =
-                typeof value === "number" && isFinite(value)
-                    ? formatNumber(value)
-                    : "N/A";
-        }
-        
+        const raw = d?.value;
+        const numeric = (typeof raw === "number" && isFinite(raw)) ? raw : null;
 
+        el.textContent = formatByKey(key, numeric, "USD");
     }
 }
 

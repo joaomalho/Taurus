@@ -93,3 +93,4 @@ class Formulas():
                 return float(value.replace(",", ""))
         except Exception:
             return 0
+
