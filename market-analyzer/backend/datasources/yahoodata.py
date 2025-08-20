@@ -959,3 +959,5 @@ class DataHistoryYahoo():
             print(f"Error processing data: {e}")
 
         return df
+    
+    

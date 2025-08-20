@@ -46,16 +46,16 @@ export function fetchInsideTransactions(symbol) {
     return fetch(`/stock/${symbol}/inside_transactions/`).then(res => res.json());
 }
 
-//////////// ##### API: Screener ###### ////////////
+//////////// ##### API: Stockbytop ###### ////////////
 
 export function fetchYahooStockGainers() {
-    return fetch("/screener/stock_gainers/").then(res => res.json());
+    return fetch("/stockbytop/stock_gainers/").then(res => res.json());
 }
 
 export function fetchYahooStockTrending() {
-    return fetch("/screener/stock_trending/").then(res => res.json());
+    return fetch("/stockbytop/stock_trending/").then(res => res.json());
 }
 
 export function fetchYahooStockMostActive() {
-    return fetch("/screener/stock_most_active/").then(res => res.json());
+    return fetch("/stockbytop/stock_most_active/").then(res => res.json());
 }

@@ -10,9 +10,9 @@
 {% block content %}
   <section class="button-zone">
     {% if user.is_authenticated %}
-      <button id="screenerButton">Screener</button>
+      <button id="stockbytopButton">Stock by Top</button>
     {% else %}
-      <a href="{% url 'login' %}" class="button-like">Entrar para usar o Screener</a>
+      <a href="{% url 'login' %}" class="button-like">Entrar para aceder ao Stock by Top</a>
     {% endif %}
   </section>
 

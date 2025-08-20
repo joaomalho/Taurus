@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (home, stock_page, screener_page, get_stock_gainers, get_stock_trending,
+from .views import (home, stock_page, stockbytop_page, get_stock_gainers, get_stock_trending,
                     get_stock_most_active, get_data_history, get_crossover_trend_metrics, get_adx_trend_metrics,
                     get_bollinger_bands_metrics, get_rsi_trend_metrics, get_candle_detection, get_inst_holders,
                     get_recommendations, get_fundamental_info, get_bio_info, get_fundamental_evaluations,
@@ -7,7 +7,7 @@ from .views import (home, stock_page, screener_page, get_stock_gainers, get_stoc
                     get_inside_transactions, get_rsi_trend_metrics_draw, get_fundamental_income_download, 
                     get_fundamental_cashflow_download, get_fundamental_balance_sheet_download,
                     get_fundamental_income_quarterly_download, get_fundamental_cashflow_quarterly_download,
-                    get_fundamental_balance_sheet_quarterly_download
+                    get_fundamental_balance_sheet_quarterly_download, get_symbol_fundamental_news
                     )
 
 urlpatterns = [
@@ -31,19 +31,20 @@ urlpatterns = [
     path('stock/<str:symbol>/institutional_holders/', get_inst_holders, name='get_inst_holders'),
     path('stock/<str:symbol>/inside_transactions/', get_inside_transactions, name='get_inside_transactions'),
     path('stock/<str:symbol>/recommendations/', get_recommendations, name='get_recommendations'),
+    path('stock/<str:symbol>/news/', get_symbol_fundamental_news, name='get_symbol_fundamental_news'),
 
     # ------ Candlestick Chart Draw ------
     path("stock/<str:symbol>/crossover_draw/", get_crossover_trend_metrics_draw, name='get_crossover_trend_metrics_draw'),
     path("stock/<str:symbol>/bollinger_draw/", get_bollinger_bands_metrics_draw, name='get_bollinger_bands_metrics_draw'),
     path("stock/<str:symbol>/rsi_draw/", get_rsi_trend_metrics_draw, name='get_rsi_trend_metrics_draw'),
 
-    # ------ PAGE SCREENER ------
-    path('screener/', screener_page, name='screener_page'),
+    # ------ PAGE stockbytop ------
+    path('stockbytop/', stockbytop_page, name='stockbytop_page'),
 
-    # ------ API: Screener ------
-    path('screener/stock_gainers/', get_stock_gainers, name='get_stock_gainers'),
-    path('screener/stock_trending/', get_stock_trending, name='get_stock_trending'),
-    path('screener/stock_most_active/', get_stock_most_active, name='get_stock_most_active'),
+    # ------ API: stockbytop ------
+    path('stockbytop/stock_gainers/', get_stock_gainers, name='get_stock_gainers'),
+    path('stockbytop/stock_trending/', get_stock_trending, name='get_stock_trending'),
+    path('stockbytop/stock_most_active/', get_stock_most_active, name='get_stock_most_active'),
 
     # ------ Downloads ------
     path('stock/<str:symbol>/income_download/', get_fundamental_income_download, name='get_fundamental_income_download'),

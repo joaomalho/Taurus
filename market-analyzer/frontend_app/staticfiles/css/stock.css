@@ -503,7 +503,32 @@ canvas {
     color: var(--button-hover-bg);
 }
 
-.fund-cashflow, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-ratios, .fund-risk {
+/* DOWNLOAS */
+
+.download-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    line-height: 1.5;
+}
+
+.download-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--secondary-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.download-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.download-content a:hover {
+    color: var(--button-hover-bg);
+}
+
+.fund-cashflow, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-ratios, .fund-risk, .fund-download {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 10px;
@@ -516,6 +541,57 @@ canvas {
     gap: 10px;
     margin-top: 15px;
 }
+
+.btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-download img {
+  max-width: 20px;
+  height: auto;
+}
+
+.btn-download .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top-color: #333;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ====== BADGES (cores por bucket) ====== */
+.badge--verygood { background:#e9f9f0; color:#26a69a; border:1px solid #26a69a; border-radius:6px; padding:2px 6px; }
+.badge--good     { background:#f0fbf3; color:#27847a; border:1px solid #27847a; border-radius:6px; padding:2px 6px; }
+.badge--neutral  { background:#f4f4f5; color:#555;   border:1px solid #bdbdbd; border-radius:6px; padding:2px 6px; }
+.badge--bad      { background:#fff4e5; color:#7d1615; border:1px solid #7d1615; border-radius:6px; padding:2px 6px; }
+.badge--verybad  { background:#fdecea; color:#ef5350; border:1px solid #ef5350; border-radius:6px; padding:2px 6px; }
+.badge--nodata   { background:#f5f5f5; color:#9E9E9E; border:1px solid #e0e0e0; border-radius:6px; padding:2px 6px; }
+
+/* ====== “MODAL”/CARD (cores por bucket) ====== */
+.modal--verygood { --accent:#26a69a }
+.modal--good     { --accent:#27847a }
+.modal--neutral  { --accent:#555 }
+.modal--bad      { --accent:#7d1615 }
+.modal--verybad  { --accent:#ef5350 }
+.modal--nodata   { --accent:#9E9E9E }
+
 
 /* ============================= */
 /* RESPONSIVIDADE */

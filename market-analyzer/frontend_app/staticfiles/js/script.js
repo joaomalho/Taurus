@@ -1,4 +1,6 @@
-import { updateEMALines, updateBollingerBands, renderCandlestickFromData } from './candlestick.js';
+import "./display.js";
+import { renderCandlestickFromData } from "./candlestick.js";
+import "./chartsandgraphs.js";
 
 import {
     fetchYahooStockGainers,
@@ -34,12 +36,15 @@ import {
 document.addEventListener("DOMContentLoaded", function () {
 
     setupSearchButton();
-    setupScreenerButton();
+    setupStockbytopButton();
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
     // ─────────────── DADOS DA PÁGINA /stock/<symbol> ───────────────
     if (window.location.pathname.startsWith("/stock/") && symbol) {
+
+        setupDownloadLinks(symbol);
+
         fetchBioData(symbol).then(data => {
             if (!data.error) displayBioResults(data);
         });
@@ -103,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
             { toggleSelector: "#funRatios", contentSelector: ".ratios-content" },
             { toggleSelector: "#funRisk", contentSelector: ".risk-content" },
             { toggleSelector: "#funOverview", contentSelector: ".overview-content" },
+            { toggleSelector: "#funDownload", contentSelector: ".download-content" },
             { toggleSelector: "#tecInsiders", contentSelector: ".insiders-content" },
         ];
 
@@ -111,25 +117,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }    
 
-    if (window.location.pathname.startsWith("/screener/")) {
-        fetchYahooStockGainers().then(data => {
-            if (data && data.data) {
-                populateYahooStockTable("tableYahooGainers", data.data);
-            }
+    if (window.location.pathname.startsWith("/stockbytop/")) {
+        fetchYahooStockGainers().then(payload => {
+            const rows = Array.isArray(payload) ? payload : payload?.data;
+            if (rows?.length) populateYahooStockTable("tableYahooGainers", rows);
         });
-    
-        fetchYahooStockTrending().then(data => {
-            if (data && data.data) {
-                populateYahooStockTable("tableYahooTrending", data.data);
-            }
+
+        fetchYahooStockTrending().then(payload => {
+            const rows = Array.isArray(payload) ? payload : payload?.data;
+            if (rows?.length) populateYahooStockTable("tableYahooTrending", rows);
         });
-    
-        fetchYahooStockMostActive().then(data => {
-            if (data && data.data) {
-                populateYahooStockTable("tableYahooMostActive", data.data);
-            }
+
+        fetchYahooStockMostActive().then(payload => {
+            const rows = Array.isArray(payload) ? payload : payload?.data;
+            if (rows?.length) populateYahooStockTable("tableYahooMostActive", rows);
         });
-    }
+        }
     
 });
 
@@ -303,12 +306,45 @@ function setupSearchButton() {
     }
 }
 
-function setupScreenerButton() {
-    let screenerButton = document.getElementById("screenerButton");
-    if (screenerButton) {
-        screenerButton.addEventListener("click", function () {
-            window.location.href = "/screener/";
+function setupStockbytopButton() {
+    let stockbytopButton = document.getElementById("stockbytopButton");
+    if (stockbytopButton) {
+        stockbytopButton.addEventListener("click", function () {
+            window.location.href = "/stockbytop/";
         });
     }
 }
 
+/* ─────────────── FUNÇÕES DE DOWNLOADS ─────────────── */
+function setupDownloadLinks(symbol) {
+  const map = [
+    ["dl-income-annual",   `/stock/${symbol}/income_download/`],
+    ["dl-income-quarter",  `/stock/${symbol}/income_quarterly_download/`],
+    ["dl-cf-annual",       `/stock/${symbol}/cashflow_download/`],
+    ["dl-cf-quarter",      `/stock/${symbol}/cashflow_quarterly_download/`],
+    ["dl-bs-annual",       `/stock/${symbol}/balance_sheet_download/`],
+    ["dl-bs-quarter",      `/stock/${symbol}/balance_sheet_quarterly_download/`],
+  ];
+
+  for (const [id, href] of map) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.setAttribute("href", href);
+      el.setAttribute("download", ""); // opcional, deixa o nome vir do servidor
+      el.addEventListener("click", () => {
+        // aqui poderias ativar um spinner no botão, se quiseres
+      });
+    }
+  }
+}
+
+export function formatStockbytopRow(row) {
+  return [
+    row.symbol || "N/A",
+    row.name || "N/A",
+    formatCurrency(row.price, "USD"),      // preço formatado
+    formatPercent(row.changePercent),      // variação em %
+    formatNumber(row.volume, 0, 0),        // volume sem casas decimais
+    formatCurrency(row.marketCap, "USD"),  // market cap formatado
+  ];
+}

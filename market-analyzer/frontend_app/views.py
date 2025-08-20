@@ -17,13 +17,13 @@ def home(request):
     return render(request, 'index.html')
 
 
-# ------------------------- Screener Page -------------------------
-def screener_page(request):
-    return render(request, 'screener.html')
+# ------------------------- stockbytop Page -------------------------
+def stockbytop_page(request):
+    return render(request, 'stockbytop.html')
 
 
 # ------------------------- Stock Pages -------------------------
-def stock_page(request, symbol):
+def stock_page(request, symbol: str):
     return render(request, 'stock.html', {"symbol": symbol})
 
 
@@ -80,7 +80,7 @@ def _df_to_excel_response(df, base_filename: str):
     return response
 
 
-def get_data_history(request, symbol):
+def get_data_history(request, symbol: str):
     '''
     Data collection from yahoo
 
@@ -179,7 +179,7 @@ def get_stock_most_active(request):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_crossover_trend_metrics(request, symbol):
+def get_crossover_trend_metrics(request, symbol: str):
     """
     View to calculate crossover of 3 EMAs and return signals to frontend.
     """
@@ -242,7 +242,7 @@ def get_crossover_trend_metrics(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_crossover_trend_metrics_draw(request, symbol):
+def get_crossover_trend_metrics_draw(request, symbol: str):
     fast = int(request.GET.get("fast", 14))
     medium = int(request.GET.get("medium", 25))
     slow = int(request.GET.get("slow", 200))
@@ -260,7 +260,7 @@ def get_crossover_trend_metrics_draw(request, symbol):
     return JsonResponse(result)
 
 
-def get_adx_trend_metrics(request, symbol):
+def get_adx_trend_metrics(request, symbol: str):
     """
     View to calculate ADX and return signals to frontend.
     """
@@ -319,7 +319,7 @@ def get_adx_trend_metrics(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_bollinger_bands_metrics(request, symbol):
+def get_bollinger_bands_metrics(request, symbol: str):
     """
     View to calculate Bollinger Bands and return signals to frontend.
     """
@@ -377,7 +377,7 @@ def get_bollinger_bands_metrics(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_bollinger_bands_metrics_draw(request, symbol):
+def get_bollinger_bands_metrics_draw(request, symbol: str):
     length = int(request.GET.get("length", 14))
     std = int(request.GET.get("std", 2))
 
@@ -394,7 +394,7 @@ def get_bollinger_bands_metrics_draw(request, symbol):
     return JsonResponse(result)
 
 
-def get_rsi_trend_metrics(request, symbol):
+def get_rsi_trend_metrics(request, symbol: str):
     """
     View to calculate RSI and return signals to frontend.
     """
@@ -441,7 +441,7 @@ def get_rsi_trend_metrics(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_rsi_trend_metrics_draw(request, symbol):
+def get_rsi_trend_metrics_draw(request, symbol: str):
     upper_level = int(request.GET.get("upper_level", 70))
     lower_level = int(request.GET.get("lower_level", 30))
     length = int(request.GET.get("length", 30))
@@ -459,7 +459,7 @@ def get_rsi_trend_metrics_draw(request, symbol):
     return JsonResponse(result)
 
 
-def get_candle_detection(request, symbol):
+def get_candle_detection(request, symbol: str):
     """
     View to detect candle pattern and return signals to frontend.
     """
@@ -538,7 +538,7 @@ def get_candle_detection(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_harmonic_patterns(request, symbol):
+def get_harmonic_patterns(request, symbol: str):
     """
     View to detect harmonic pattern and return signals to frontend.
     """
@@ -578,7 +578,7 @@ def get_harmonic_patterns(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_inst_holders(request, symbol):
+def get_inst_holders(request, symbol: str):
     """
     Return the list of major institutional holders
     """
@@ -607,7 +607,7 @@ def get_inst_holders(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_inside_transactions(request, symbol):
+def get_inside_transactions(request, symbol: str):
     """
     Return the list of inside transactions
     """
@@ -636,7 +636,7 @@ def get_inside_transactions(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_recommendations(request, symbol):
+def get_recommendations(request, symbol: str):
     """
     Return recommendations about asset
     """
@@ -665,7 +665,7 @@ def get_recommendations(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_info(request, symbol):
+def get_fundamental_info(request, symbol: str):
     """
     Return fundamnetal information valuation qualitative.
     """
@@ -697,7 +697,7 @@ def get_fundamental_info(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_evaluations(request, symbol):
+def get_fundamental_evaluations(request, symbol: str):
     """
     Return only the fundamental evaluation (qualitative data) without nested JSON.
     """
@@ -734,7 +734,7 @@ def get_fundamental_evaluations(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_income_download(request, symbol):
+def get_fundamental_income_download(request, symbol: str):
     """
     Return the income statment
     """
@@ -756,7 +756,7 @@ def get_fundamental_income_download(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_balance_sheet_download(request, symbol):
+def get_fundamental_balance_sheet_download(request, symbol: str):
     """
     Return the balance sheet
     """
@@ -778,7 +778,7 @@ def get_fundamental_balance_sheet_download(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_cashflow_download(request, symbol):
+def get_fundamental_cashflow_download(request, symbol: str):
     """
     Return the cashflow
     """
@@ -800,7 +800,7 @@ def get_fundamental_cashflow_download(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_income_quarterly_download(request, symbol):
+def get_fundamental_income_quarterly_download(request, symbol: str):
     """
     Return the income statment in quarterly basis
     """
@@ -822,7 +822,7 @@ def get_fundamental_income_quarterly_download(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_balance_sheet_quarterly_download(request, symbol):
+def get_fundamental_balance_sheet_quarterly_download(request, symbol: str):
     """
     Return the balance sheet in quarterly basis
     """
@@ -844,7 +844,7 @@ def get_fundamental_balance_sheet_quarterly_download(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_cashflow_quarterly_download(request, symbol):
+def get_fundamental_cashflow_quarterly_download(request, symbol: str):
     """
     Return the cashflow in quarterly basis
     """
@@ -866,7 +866,7 @@ def get_fundamental_cashflow_quarterly_download(request, symbol):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_bio_info(request, symbol):
+def get_bio_info(request, symbol: str):
     """
     Return company information about the company.
     """
@@ -887,6 +887,32 @@ def get_bio_info(request, symbol):
 
         return JsonResponse({"data": bio_info})
 
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+def get_symbol_fundamental_news(request, symbol: str):
+    '''
+    Return last news from symbol.
+    '''
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        news = data_history.get_yahoo_symbol_news(symbol)
+
+        if not news:
+            return JsonResponse({"error": "No data found"}, status=404)
+
+        return JsonResponse({"data": news})
+    
     except ConnectionError:
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
 

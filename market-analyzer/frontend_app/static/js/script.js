@@ -36,7 +36,7 @@ import {
 document.addEventListener("DOMContentLoaded", function () {
 
     setupSearchButton();
-    setupScreenerButton();
+    setupStockbytopButton();
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }    
 
-    if (window.location.pathname.startsWith("/screener/")) {
+    if (window.location.pathname.startsWith("/stockbytop/")) {
         fetchYahooStockGainers().then(payload => {
             const rows = Array.isArray(payload) ? payload : payload?.data;
             if (rows?.length) populateYahooStockTable("tableYahooGainers", rows);
@@ -306,11 +306,11 @@ function setupSearchButton() {
     }
 }
 
-function setupScreenerButton() {
-    let screenerButton = document.getElementById("screenerButton");
-    if (screenerButton) {
-        screenerButton.addEventListener("click", function () {
-            window.location.href = "/screener/";
+function setupStockbytopButton() {
+    let stockbytopButton = document.getElementById("stockbytopButton");
+    if (stockbytopButton) {
+        stockbytopButton.addEventListener("click", function () {
+            window.location.href = "/stockbytop/";
         });
     }
 }
@@ -338,7 +338,7 @@ function setupDownloadLinks(symbol) {
   }
 }
 
-export function formatScreenerRow(row) {
+export function formatStockbytopRow(row) {
   return [
     row.symbol || "N/A",
     row.name || "N/A",
