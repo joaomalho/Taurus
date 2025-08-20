@@ -39,7 +39,9 @@
     <main class="screener-info">
         <section id="yahooStockGainersContainer">
             <h2>Top Gainers</h2>
-            <div id="tableYahooGainers"></div>
+            <div class="table-container">
+                <div id="tableYahooGainers"></div>
+            </div>
         </section>
 
         <section id="yahooStockTrendingContainer">
@@ -64,8 +66,6 @@
         <p>&copy; 2024 Stock Data. All Rights Reserved.</p>
     </footer>
 
-    <!-- Grid.js -->
-    <script src="{% static 'js/gridjs.umd.js' %}"></script>   
     <script type="module" src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

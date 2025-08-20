@@ -1,4 +1,6 @@
-import { updateEMALines, updateBollingerBands, renderCandlestickFromData } from './candlestick.js';
+import "./display.js";
+import { renderCandlestickFromData } from "./candlestick.js";
+import "./chartsandgraphs.js";
 
 import {
     fetchYahooStockGainers,
@@ -116,24 +118,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }    
 
     if (window.location.pathname.startsWith("/screener/")) {
-        fetchYahooStockGainers().then(data => {
-            if (data && data.data) {
-                populateYahooStockTable("tableYahooGainers", data.data);
-            }
+        fetchYahooStockGainers().then(payload => {
+            const rows = Array.isArray(payload) ? payload : payload?.data;
+            if (rows?.length) populateYahooStockTable("tableYahooGainers", rows);
         });
-    
-        fetchYahooStockTrending().then(data => {
-            if (data && data.data) {
-                populateYahooStockTable("tableYahooTrending", data.data);
-            }
+
+        fetchYahooStockTrending().then(payload => {
+            const rows = Array.isArray(payload) ? payload : payload?.data;
+            if (rows?.length) populateYahooStockTable("tableYahooTrending", rows);
         });
-    
-        fetchYahooStockMostActive().then(data => {
-            if (data && data.data) {
-                populateYahooStockTable("tableYahooMostActive", data.data);
-            }
+
+        fetchYahooStockMostActive().then(payload => {
+            const rows = Array.isArray(payload) ? payload : payload?.data;
+            if (rows?.length) populateYahooStockTable("tableYahooMostActive", rows);
         });
-    }
+        }
     
 });
 
@@ -337,4 +336,15 @@ function setupDownloadLinks(symbol) {
       });
     }
   }
+}
+
+export function formatScreenerRow(row) {
+  return [
+    row.symbol || "N/A",
+    row.name || "N/A",
+    formatCurrency(row.price, "USD"),      // preço formatado
+    formatPercent(row.changePercent),      // variação em %
+    formatNumber(row.volume, 0, 0),        // volume sem casas decimais
+    formatCurrency(row.marketCap, "USD"),  // market cap formatado
+  ];
 }

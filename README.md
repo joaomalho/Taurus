@@ -398,17 +398,8 @@ We are also looking to grow our community with **key roles in market analysis**:
   - Macro overview
   - Micro overview by sector
 
-- Generic Improvements
-  - Centralize data presentation formats
-    - Dates
-    - Numbers
-    - Integers
-    - Strings
-
 ## **🚀 Latest Improvements**
 
-- **Docker configuration**
-- **Github CI/CD configuration**
-- **Classification by colors**
 - **Download Documents**
 - **User Log**
+- **Centralize data presentation formats**
