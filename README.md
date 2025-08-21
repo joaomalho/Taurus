@@ -405,3 +405,4 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **Centralize data presentation formats**
 - **News**
 - **Background Designe**
+- **Rectification od Nones in CAGR**

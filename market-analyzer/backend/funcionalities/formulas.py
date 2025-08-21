@@ -32,13 +32,13 @@ class Formulas():
                 if start_value != 0:
                     cagr = ((end_value / start_value) ** (1 / num_years)) - 1
                 else:
-                    cagr = "N/A"
+                    cagr = None
             else:
-                cagr = "N/A"
+                cagr = None
         else:
-            cagr = "N/A"
+            cagr = None
 
-        cagr_percent = cagr * 100 if cagr != "N/A" else "N/A"
+        cagr_percent = cagr * 100 if cagr is not None else None
 
         return cagr_percent
 
