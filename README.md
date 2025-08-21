@@ -396,6 +396,8 @@ We are also looking to grow our community with **key roles in market analysis**:
   - Macro overview
   - Micro overview by sector
 
+  - Bilião é diferente para USA e EUROPEU (add on do hover)
+
 ## **🚀 Latest Improvements**
 
 - **Download Documents**

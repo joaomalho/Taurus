@@ -35,7 +35,7 @@ export function formatCurrency(value, currency = "USD", min = 2, max = 2) {
     currency,
     minimumFractionDigits: min,
     maximumFractionDigits: max,
-    notation: "compact",
+    // notation: "compact",
     currencyDisplay: "narrowSymbol", // "symbol" | "code" | "name" | "narrowSymbol"
   });
 }
@@ -50,7 +50,7 @@ export function formatNumber(value, min = 2, max = 2) {
     ? value.toLocaleString("pt-PT", {
         minimumFractionDigits: min,
         maximumFractionDigits: max,
-        notation: "compact",
+        // notation: "compact",
       })
     : "N/A";
 }
