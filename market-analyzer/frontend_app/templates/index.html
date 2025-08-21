@@ -8,6 +8,27 @@
 {% endblock %}
 
 {% block content %}
+  <!-- Header -->
+  <header class="main-header">
+      <img class="logo-icon-homepage" alt="Company Logo" src="{% static 'images/logo.png' %}">
+
+      <!-- Authentication NAV -->
+      <nav class="auth-nav">
+          {% if user.is_authenticated %}
+              <span class="hello">Olá, {{ user.username }}</span>
+              <a href="{% url 'dashboard' %}" class="btn-link">Área do utilizador</a>
+
+              <!-- Logout -->
+              <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-link">Sair</button>
+              </form>
+          {% else %}
+              <a href="{% url 'login' %}" class="btn-link">Entrar</a>
+              <a href="{% url 'signup' %}" class="btn-link">Criar conta</a>
+          {% endif %}
+      </nav>
+  </header>
   <section class="button-zone">
     {% if user.is_authenticated %}
       <button id="stockbytopButton">Stock by Top</button>

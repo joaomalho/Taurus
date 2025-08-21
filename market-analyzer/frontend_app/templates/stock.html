@@ -1,25 +1,17 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Data</title>
+{% block title %}Stock Data{% endblock %}
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{% static 'images/logo.ico' %}">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+{% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/stock.css' %}">
     <link rel="stylesheet" href="{% static 'css/charts.css' %}">
     <link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/news.css' %}">
-</head>
+{% endblock %}
 
-<body>
-    <header class="main-header">
+{% block content %}
+  <header class="main-header">
         <div class="header">
             <a href="/">
                 <img class="header-logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
@@ -90,7 +82,7 @@
         <!-- Histórico de Preços -->
         <section id="priceHistory">
             <h2>Historic Price</h2>
-            <div class="candlestick-chart-container">
+            <div class="candlestick-chart-container">+
                 <div id="candlestickChart">
                     <div class="customLegend">
                         <div class="individualLegend">
@@ -635,23 +627,13 @@
             <h2>Latest News</h2>
             <div id="symbolNews"></div>
         </section>
+{% endblock %}
 
-    </main>
-
-    <!-- Rodapé -->
-    <footer class="footer">
-        <nav>
-            <a href="/" class="link">Back to Home Page</a>
-        </nav>
-        <p>&copy; 2024 Stock Data. All Rights Reserved.</p>
-    </footer>
-
+{% block extra_js %}
     <!-- Candlestick.js -->
     <script src="{% static 'js/lightweight-charts.standalone.production.js' %}"></script>
     <!-- Chart.js -->
     <script src="{% static 'js/chart.js' %}"></script>
-    <script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script>     
-    <!-- Scripts Customizados -->
-    <script type="module" src="{% static 'js/script.js' %}"></script>
-</body>
-</html>
+    <script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script> 
+{% endblock %}
+

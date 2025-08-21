@@ -32,19 +32,57 @@ function applyModalClass(el, bucket) {
 }
 
 /* ─────────────── FUNÇÕES DE CRIAÇÃO DE TABELAS ─────────────── */
-function createGridTable(data, columns, containerId) {
+function createGridTable(rows, columns, containerId = {}) {
+  const gridColumns = columns.map(c =>
+    typeof c === "string"
+      ? c
+      : { name: c.name, formatter: c.formatter, sort: c.sort ?? true }
+  );
+
+  const data = rows.map(row =>
+    columns.map(c => row[ typeof c === "string" ? c : (c.key || c.name) ] ?? null)
+  );
+
   new Grid({
-    columns: columns,
-    data: data.map((row) => columns.map((col) => row[col] || "N/A")),
-    search: true,
+    columns: gridColumns,
+    data,
     pagination: { limit: 5 },
     sort: true,
-    className: {
-      table: "gridjs-table",
-      container: "gridjs-container",
-    },
+    className: { table: "gridjs-table", container: "gridjs-container" },
   }).render(document.getElementById(containerId));
 }
+
+const cellValue = (v) => (v && typeof v === "object" && "data" in v ? v.data : v);
+
+const toNum = (v) => {
+  v = cellValue(v); // <— NOVO
+  if (v == null || v === "") return null;
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  // limpa símbolos e converte vírgula decimal -> ponto
+  const s = String(v).replace(/[^\d.,-]/g, "").replace(/\./g, "").replace(",", ".");
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+};
+
+const numCompare = (a, b) => {
+  const na = toNum(a); // já faz cellValue por dentro
+  const nb = toNum(b);
+  if (na == null && nb == null) return 0;
+  if (na == null) return 1;
+  if (nb == null) return -1;
+  return na - nb;
+};
+
+const dateCompare = (a, b) => {
+  const va = cellValue(a); // <— NOVO
+  const vb = cellValue(b); // <— NOVO
+  const pa = va ? Date.parse(va) : NaN;
+  const pb = vb ? Date.parse(vb) : NaN;
+  if (Number.isNaN(pa) && Number.isNaN(pb)) return 0;
+  if (Number.isNaN(pa)) return 1;   // inválidas no fim
+  if (Number.isNaN(pb)) return -1;
+  return pa - pb;
+};
 
 function renderStockTable(containerId, headers, tableData) {
   new Grid({
@@ -166,29 +204,43 @@ export function displayRSIResults(data) {
   const rsi = parseFloat(data.rsi).toFixed(2);
   const signal = data.signal;
   document.getElementById("Rsi").textContent = rsi;
-  document.getElementById("RsiSignal").
-  textContent = signal;
+  document.getElementById("RsiSignal").textContent = signal;
 }
 
 export function displayCandleResults(data) {
-  let tableData = [];
-  for (let pattern in data.patterns_detected) {
-    data.patterns_detected[pattern].forEach((entry) => {
+  const tableData = [];
+
+  for (const pattern in data.patterns_detected) {
+    data.patterns_detected[pattern].forEach(entry => {
       tableData.push({
-        Padrão: pattern,
-        Stoploss: entry.Stoploss ? formatCurrency(entry.Stoploss) : "N/A",
-        Sinal: entry.Signal || "N/A",
-        Data: formatDate(entry.Date) || "N/A",
-        Resultado: entry.Result || "N/A",
+        "Padrão": pattern,
+        "Stoploss": entry.Stoploss ?? null,     // number cru
+        "Sinal": entry.Signal || "N/A",
+        "DateISO": entry.Date || null,          // <- ISO cru
+        "Resultado": entry.Result || "N/A",
       });
     });
   }
+
   createGridTable(
     tableData,
-    ["Padrão", "Stoploss", "Sinal", "Data", "Resultado"],
+    [
+      "Padrão",
+      { name: "Stoploss", key: "Stoploss",
+        // sem formatter
+        sort: { compare: numCompare },
+      },
+      "Sinal",
+      { name: "Data", key: "DateISO",
+        // sem formatter
+        sort: { compare: dateCompare },
+      },
+      "Resultado",
+    ],
     "tableCandlePatterns"
   );
 }
+
 
 export function displayHarmonicResults(data) {
   let tableDataHarmonic = [];
@@ -523,7 +575,7 @@ export function displayFundamentalResultsClassification(data) {
 }
 
 export function displayInsideTransactions(response) {
-  const data = response.data; // <- extrai o array corretamente
+  const data = response.data;
 
   if (!Array.isArray(data) || data.length === 0) {
     document.getElementById("tableInsideTransactions").innerHTML =
@@ -531,25 +583,31 @@ export function displayInsideTransactions(response) {
     return;
   }
 
-  const tableData = data.map((entry) => ({
-    Shares: entry.Shares?.toLocaleString() || "-",
-    Value: formatCurrency(entry.Value),
-    Description: entry.Text,
-    Insider: entry.Insider,
-    Position: entry.Position,
-    Date: formatDate(entry.StartDate),
-    Ownership: entry.Ownership,
+  const tableData = data.map(e => ({
+    Shares: e.Shares ?? null,                  // number cru
+    Value: e.Value ?? null,                    // number cru (para ordenar)
+    Description: e.Text ?? "—",
+    Insider: e.Insider ?? "—",
+    Position: e.Position ?? "—",
+    DateISO: e.StartDate ?? null,              // <- ISO cru p/ ordenar
+    Ownership: e.Ownership ?? "—",
   }));
 
   createGridTable(
     tableData,
     [
       "Shares",
-      "Value",
+      { name: "Value", key: "Value",
+        // sem formatter
+        sort: { compare: numCompare },
+      },
       "Description",
       "Insider",
       "Position",
-      "Date",
+      { name: "Date", key: "DateISO",
+        // sem formatter
+        sort: { compare: dateCompare },
+      },
       "Ownership",
     ],
     "tableInsideTransactions"
@@ -562,53 +620,36 @@ export function populateYahooStockTable(containerId, data) {
 
     new Grid({
         columns: [
-         {
-            name: "Symbol",
-            formatter: (cell) =>
-                html(`<a href="/stock/${cell}/" class="stock-link">${cell}</a>`),
-        },
-        "Name",
-        {
-            name: "Price",
-            formatter: (cell) => (cell != null ? formatCurrency(cell) : "N/A"),
-            sort: {
-            compare: (a, b) => (a || 0) - (b || 0),
-            },
-        },
-        {
-            name: "Change %",
-            formatter: (cell) => (cell != null ? formatPercent(cell) : "N/A"),
-            sort: {
-            compare: (a, b) => (a || 0) - (b || 0),
-            },
-        },
-        {
-            name: "Volume",
-            formatter: (cell) => (cell != null ? formatNumber(cell) : "N/A"),
-            sort: {
-            compare: (a, b) => (a || 0) - (b || 0),
-            },
-        },
-        {
-            name: "Market Cap",
-            formatter: (cell) => (cell != null ? formatCurrency(cell) : "N/A"),
-            sort: {
-            compare: (a, b) => (a || 0) - (b || 0),
-            },
-        },
+          { name: "Symbol", formatter: cell => html(`<a href="/stock/${cell}/" class="stock-link">${cell}</a>`) },
+          "Name",
+          { name: "Price",      sort: { compare: numCompare } },
+          { name: "Change %",   sort: { compare: numCompare } },
+          { name: "Volume",     sort: { compare: numCompare } },
+          { name: "Market Cap", sort: { compare: numCompare } },
         ],
-        data: data.map((row) => [
-        row["Symbol"] ?? "N/A",
-        row["Name"] ?? "N/A",
-        row["Price"] ?? null,       // valor cru (number)
-        row["Change %"] ?? null,    // valor cru (number)
-        row["Volume"] ?? null,      // valor cru (number)
-        row["Market Cap"] ?? null,  // valor cru (number)
+        data: data.map(row => [
+          row["Symbol"] ?? "N/A",
+          row["Name"] ?? "N/A",
+          toNum(row["Price"]),       // ← número cru
+          toNum(row["Change %"]),    // ← número cru
+          toNum(row["Volume"]),      // ← número cru
+          toNum(row["Market Cap"]),  // ← número cru
         ]),
-        search: true,
+        search: {
+          selector: (cell) => {
+            if (cell == null) return "";
+            if (typeof cell === "number" && isFinite(cell)) {
+              const s = String(cell); return `${s} ${s.replace(".", ",")}`;
+            }
+            if (typeof cell === "string" && !Number.isNaN(Date.parse(cell))) {
+              const t = Date.parse(cell); return `${cell} ${t}`;
+            }
+            return String(cell);
+          },
+        },
         sort: true,
         pagination: { limit: 25 }
-    }).render(container);
+      }).render(container);
     }
 
 export function displayNewsList(payload, {

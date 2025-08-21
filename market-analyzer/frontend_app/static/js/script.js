@@ -1,4 +1,3 @@
-import "./display.js";
 import { renderCandlestickFromData } from "./candlestick.js";
 import "./chartsandgraphs.js";
 
@@ -349,14 +348,4 @@ function setupDownloadLinks(symbol) {
   }
 }
 
-export function formatStockbytopRow(row) {
-  return [
-    row.symbol || "N/A",
-    row.name || "N/A",
-    formatCurrency(row.price, "USD"),      // preço formatado
-    formatPercent(row.changePercent),      // variação em %
-    formatNumber(row.volume, 0, 0),        // volume sem casas decimais
-    formatCurrency(row.marketCap, "USD"),  // market cap formatado
-  ];
-}
 

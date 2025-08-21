@@ -165,3 +165,4 @@ function mountSkeleton(container, n=6){
 function showError(container, msg){
   container.innerHTML = `<div class="news-error">${escapeHTML(msg)}</div>`;
 }
+

@@ -709,7 +709,7 @@ class DataHistoryYahoo():
         '''
         yahoo_symbol_cashflow = yf.Ticker(symbol).cashflow
         return yahoo_symbol_cashflow
-    
+
     def get_yahoo_symbol_cashflow_quarterly(self, symbol: str):
         '''
         Return the cashflow results in a quarterly basis
@@ -959,5 +959,3 @@ class DataHistoryYahoo():
             print(f"Error processing data: {e}")
 
         return df
-    
-    

@@ -1,23 +1,15 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Data</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{% static 'images/logo.ico' %}">
+{% block title %}Stock Data{% endblock %}
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-    <link rel="stylesheet" href="{% static 'css/stockbytop.css' %}">
-    <link rel="stylesheet" href="{% static 'css/charts.css' %}">
-    <link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}">
-</head>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/stockbytop.css' %}">
+<link rel="stylesheet" href="{% static 'css/charts.css' %}">
+<link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}">
+{% endblock %}
 
-<body>
+{% block content %}
     <header class="main-header">
         <div class="header">
             <a href="/">
@@ -58,14 +50,8 @@
             </div>
         </section>
     </main>
-    
-    <footer class="footer">
-        <nav>
-            <a href="/" class="link">Back to Home Page</a>
-        </nav>
-        <p>&copy; 2024 Stock Data. All Rights Reserved.</p>
-    </footer>
+{% endblock %}
 
-    <script type="module" src="{% static 'js/script.js' %}"></script>
-</body>
-</html>
+{% block extra_js %}
+
+{% endblock %}

@@ -625,6 +625,12 @@ def get_inside_transactions(request, symbol: str):
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
 
+        df["StartDate"] = (
+            pd.to_datetime(df["StartDate"], utc=True)
+            .dt.strftime("%Y-%m-%dT%H:%M:%SZ")  # ISO com 'Z' (UTC)
+        )
+        df["Shares"] = pd.to_numeric(df["Shares"], errors="coerce")
+        df["Value"] = pd.to_numeric(df["Value"],  errors="coerce")
         df = df.replace({np.nan: None})
 
         return JsonResponse({"data": df.to_dict(orient="records")})
@@ -912,7 +918,7 @@ def get_symbol_fundamental_news(request, symbol: str):
             return JsonResponse({"error": "No data found"}, status=404)
 
         return JsonResponse({"data": news})
-    
+
     except ConnectionError:
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
 
