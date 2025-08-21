@@ -17,6 +17,7 @@ import {
     fetchFundamentalInfo,
     fetchFundamentalInfoClassification,
     fetchInsideTransactions,
+    fetchSymbolNews
 } from './api.js';
 
 import {
@@ -30,8 +31,10 @@ import {
     displayFundamentalResults,
     displayFundamentalResultsClassification,
     displayInsideTransactions,
-    populateYahooStockTable
+    populateYahooStockTable,
+    displayNewsList
 } from './display.js';
+
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -44,6 +47,14 @@ document.addEventListener("DOMContentLoaded", function () {
     if (window.location.pathname.startsWith("/stock/") && symbol) {
 
         setupDownloadLinks(symbol);
+
+        // ─────────────── NOTÍCIAS DO SÍMBOLO ───────────────
+        fetchSymbolNews(symbol)
+            .then(payload => displayNewsList(payload, { containerId: "symbolNews" }))
+            .catch(err => {
+                const c = document.getElementById("symbolNews");
+                if (c) c.innerHTML = `<div class="news-error">${(err?.message)||"Falha ao obter notícias."}</div>`;
+        });
 
         fetchBioData(symbol).then(data => {
             if (!data.error) displayBioResults(data);
@@ -348,3 +359,4 @@ export function formatStockbytopRow(row) {
     formatCurrency(row.marketCap, "USD"),  // market cap formatado
   ];
 }
+

@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{% static 'css/stock.css' %}">
     <link rel="stylesheet" href="{% static 'css/charts.css' %}">
     <link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/news.css' %}">
 </head>
 
 <body>
@@ -88,7 +89,7 @@
         
         <!-- Histórico de Preços -->
         <section id="priceHistory">
-            <h2>Histórico de Preços</h2>
+            <h2>Historic Price</h2>
             <div class="candlestick-chart-container">
                 <div id="candlestickChart">
                     <div class="customLegend">
@@ -629,12 +630,18 @@
                     </div>
                 </div>
             </div>
+        </section>
+        <section class="card">
+            <h2>Latest News</h2>
+            <div id="symbolNews"></div>
+        </section>
+
     </main>
 
     <!-- Rodapé -->
     <footer class="footer">
         <nav>
-            <a href="/">Back to Home Page</a>
+            <a href="/" class="link">Back to Home Page</a>
         </nav>
         <p>&copy; 2024 Stock Data. All Rights Reserved.</p>
     </footer>

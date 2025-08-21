@@ -610,3 +610,31 @@ export function populateYahooStockTable(containerId, data) {
         pagination: { limit: 25 }
     }).render(container);
     }
+
+export function displayNewsList(payload, {
+  containerId = "symbolNews",
+  locale = "pt-PT",
+  timeZone = "Europe/Lisbon",
+  limit = 30
+} = {}) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const raw = Array.isArray(payload) ? payload : (payload?.data || []);
+  const items = dedupeByUrl(sortByDateDesc(raw.map(normalizeNewsItem))).slice(0, limit);
+
+  container.classList.add("news-grid");
+  container.innerHTML = items.length
+    ? items.map(i => renderCard(i, { locale, timeZone })).join("")
+    : `<p class="news-empty">Sem notícias.</p>`;
+}
+
+/* --- helpers locais (cola estes no fim do display.js ou onde manteres helpers) --- */
+function pickBestImage(t){ if(!t) return null; const res=Array.isArray(t.resolutions)?t.resolutions.filter(r=>r?.url):[]; const best=res.sort((a,b)=>(b.width??0)-(a.width??0))[0]; return best?.url||t.originalUrl||null; }
+function normalizeNewsItem(raw){ const c=raw?.content||{}; return { id:raw?.id||c?.id, title:c?.title||"", summary:c?.summary||"", provider:c?.provider?.displayName||"Fonte", url:c?.clickThroughUrl?.url||c?.canonicalUrl?.url||c?.previewUrl||"#", publishedAt:c?.displayTime||c?.pubDate||new Date().toISOString(), isEditorsPick:!!c?.metadata?.editorsPick, isPremium:!!c?.finance?.premiumFinance?.isPremiumNews, imageUrl:pickBestImage(c?.thumbnail), contentType:c?.contentType||"STORY", related:(c?.storyline?.storylineItems||[]).map(it=>it?.content).filter(Boolean).map(cc=>({id:cc.id,title:cc.title,url:cc.clickThroughUrl?.url||cc.canonicalUrl?.url||cc.previewUrl||"#",type:cc.contentType,image:pickBestImage(cc.thumbnail)})), }; }
+function sortByDateDesc(a){ return [...a].sort((x,y)=>new Date(y.publishedAt)-new Date(x.publishedAt)); }
+function dedupeByUrl(a){ const seen=new Set(); return a.filter(i=>{ const k=i.url||`id:${i.id}`; if(seen.has(k)) return false; seen.add(k); return true; }); }
+function escapeHTML(s=""){ return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+function timeAgo(iso,now=new Date()){ const d=(now-new Date(iso))/1000; if(d<60) return "agora"; if(d<3600) return `${Math.floor(d/60)} min`; if(d<86400) return `${Math.floor(d/3600)} h`; return `${Math.floor(d/86400)} d`; }
+function formatDateISO(iso, locale, timeZone){ try{ return new Intl.DateTimeFormat(locale,{dateStyle:"medium",timeStyle:"short",timeZone}).format(new Date(iso)); } catch{ return iso||""; } }
+function renderCard(item, opts){ const title=escapeHTML(item.title); const provider=escapeHTML(item.provider); const published=formatDateISO(item.publishedAt, opts.locale, opts.timeZone); const ago=timeAgo(item.publishedAt); const badges=[ item.isEditorsPick?`<span class="news-badge badge-editors">Editor’s pick</span>`:"", item.isPremium?`<span class="news-badge badge-premium">Premium</span>`:"", item.contentType==="VIDEO"?`<span class="news-badge badge-video">Vídeo</span>`:"" ].join(""); const img=item.imageUrl?`<div class="news-thumb" style="aspect-ratio:16/9"><img src="${item.imageUrl}" alt="${title}" loading="lazy"></div>`:`<div class="news-thumb placeholder" style="aspect-ratio:16/9"></div>`; const summary=item.summary?`<p class="news-summary">${escapeHTML(item.summary)}</p>`:""; const related=item.related?.length?`<div class="news-related">${item.related.slice(0,4).map(r=>`<a class="news-related-chip" href="${r.url}" target="_blank" rel="noopener noreferrer">${r.type==="VIDEO"?"▶︎ ":""}${escapeHTML(r.title)}</a>`).join("")}</div>`:""; return `<article class="news-card"><a class="news-link" href="${item.url}" target="_blank" rel="noopener noreferrer" aria-label="${title}">${img}<header class="news-header"><div class="news-badges">${badges}</div><span class="news-timeago">${ago}</span></header><h3 class="news-title">${title}</h3>${summary}<footer class="news-footer"><span class="news-provider">${provider}</span><time datetime="${item.publishedAt}">${published}</time></footer></a>${related}</article>`; }

@@ -12,10 +12,13 @@
 
     <!-- Global Styles -->
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/background.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 
 <body>
+    <div id="particles-js" aria-hidden="true"></div>
+    
     <!-- Header -->
     <header class="main-header">
         <img class="logo-icon-homepage" alt="Company Logo" src="{% static 'images/logo.png' %}">
@@ -55,13 +58,16 @@
     <!-- Footer -->
     <footer class="footer">
         <nav>
-            <a href="/">Back to Home Page</a>
+            <a href="/" class="link">Back to Home Page</a>
         </nav>
         <p>&copy; 2025 Stock Data. All Rights Reserved.</p>
     </footer>
 
     <!-- Global Scripts -->
     <script type="module" src="{% static 'js/script.js' %}"></script>
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="{% static 'js/background.js' %}"></script> 
     {% block extra_js %}{% endblock %}
 </body>
 </html>

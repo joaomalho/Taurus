@@ -382,10 +382,8 @@ We are also looking to grow our community with **key roles in market analysis**:
 - Fundamental Analysis
 
   - Sentiment Analysis of Recent News - `ToDo: Low`
-    - Prompt news from API as example, done on test_news file - `ToDo: High`
   - Economic Calendar Correlations - `ToDo: Low`
   - Add Tags on Headers to Easly get info - `ToDo: Low`
-  - Insider Information when not available must return empty. `ToDo: Medium`
   - Downloads remaining fundamental documents and full report. `ToDo: High`
 
 - Additional Screens
@@ -403,3 +401,5 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **Download Documents**
 - **User Log**
 - **Centralize data presentation formats**
+- **News**
+- **Background Designe**

@@ -1,0 +1,21 @@
+/* fundo de partículas */
+#particles-js{
+  position: fixed;
+  inset: 0;                /* top/right/bottom/left: 0 */
+  z-index: -1;              /* fica por trás do conteúdo */
+  pointer-events: none;    /* não bloqueia cliques no conteúdo */
+  background: var(--primary-bg); /* usa a tua cor do tema */
+}
+
+
+
+/* põe o conteúdo acima do canvas */
+.main-header, main, .footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* acessibilidade: se o user pede menos movimento, esconde */
+@media (prefers-reduced-motion: reduce) {
+  #particles-js { display: none !important; }
+}

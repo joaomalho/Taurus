@@ -22,7 +22,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background: var(--  -bg);
+    background: transparent;
     font-family: "Segoe UI", sans-serif;
     display: flex;
     flex-direction: column;
@@ -66,6 +66,13 @@ html, body {
     width: 100%;
     padding-top: 100px;
     color: var(--footer-text-color);
+}
+
+.footer p {
+    color: var(--p-text-color);
+    font-size: 12px;
+    font-style: italic;
+    padding-bottom: 5px;
 }
 
 /* ============================= */
@@ -127,9 +134,17 @@ html, body {
 .reach-us {
     font-weight: 800;
     cursor: pointer;
+    text-decoration: none;
     color: var(--link-color);
 }
-
+.link {
+    text-decoration: none;
+    color: var(--link-color);
+}
+.link:hover {
+  text-decoration: underline;
+  color: var(--link-color);
+}
 /* ============================= */
 /* RESPONSIVIDADE */
 /* ============================= */
