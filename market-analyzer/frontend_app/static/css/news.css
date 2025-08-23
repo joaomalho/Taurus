@@ -1,9 +1,10 @@
 /* static/css/news.css */
 .news-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px,1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
     gap: 16px;
 }
+
 .news-card {
     display: flex;
     flex-direction: column;
@@ -14,9 +15,13 @@
 }
 .news-thumb img { 
     width: 100%; 
-    height: auto; 
-    display: block; 
+    height: 100%; 
+    display: block;
+    object-fit: cover; 
 }
+
+.news-thumb { aspect-ratio: 4 / 3; }
+
 .news-header {
     display: flex; 
     justify-content: space-between; 
@@ -93,14 +98,25 @@
   color: var(--link-color);
 }
 
-/* Chips "related" também sem roxo após clique */
-.news-related-chip,
+.news-related-chip {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-decoration: none;
+    min-height: 0;
+    margin: 8px 12px; 
+    color: var(--text-color); 
+    font-size: 0.7rem; 
+}
+
 .news-related-chip:visited {
   color: var(--link-color);
   text-decoration: none;
 }
+
 .news-related-chip:hover {
   text-decoration: underline;
+  color: var(--link-color);
 }
 
 /* Acessibilidade: foco visível ao navegar por teclado */

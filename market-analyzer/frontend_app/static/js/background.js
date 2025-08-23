@@ -15,11 +15,11 @@
 
   particlesJS('particles-js', {
     particles: {
-      number: { value: 40, density: { enable: true, value_area: 1000 } },
+      number: { value: 60, density: { enable: true, value_area: 1000 } },
       color: { value: particleColor },
       shape: { type: 'circle' },
       opacity: { value: 0.18 },
-      size: { value: 2, random: true },   // 👈 > 0 para serem visíveis
+      size: { value: 2, random: true },
       line_linked: {
         enable: true, distance: 150,
         color: particleColor, opacity: 0.15, width: 1

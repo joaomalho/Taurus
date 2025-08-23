@@ -11,12 +11,6 @@ export function initSymbolNews({
     const container = document.getElementById(containerId);
     if (!container || !symbol) return;
 
-    const raw = Array.isArray(payload) ? payload : (payload?.data || []);
-    const items = dedupeByUrl(sortByDateDesc(raw.map(normalizeNewsItem))).slice(0, limit);
-    container.classList.add("news-grid");
-    container.innerHTML = items.length ? items.map(i => renderCard(i, { locale, timeZone })).join("")
-                                        : `<p class="news-empty">Sem notícias.</p>`;
-
   mountSkeleton(container);
 
   fetchSymbolNews(symbol)
@@ -44,14 +38,14 @@ export function initSymbolNews({
 
 /* ---------- helpers ---------- */
 
-function pickBestImage(t) {
+export function pickBestImage(t) {
   if (!t) return null;
   const res = Array.isArray(t.resolutions) ? t.resolutions.filter(r => r?.url) : [];
   const best = res.sort((a,b) => (b.width ?? 0) - (a.width ?? 0))[0];
   return best?.url || t.originalUrl || null;
 }
 
-function normalizeNewsItem(raw) {
+export function normalizeNewsItem(raw) {
   const c = raw?.content || {};
   return {
     id: raw?.id || c?.id,
@@ -77,7 +71,7 @@ function normalizeNewsItem(raw) {
   };
 }
 
-function sortByDateDesc(arr){ return [...arr].sort((a,b)=> new Date(b.publishedAt) - new Date(a.publishedAt)); }
+export function sortByDateDesc(arr){ return [...arr].sort((a,b)=> new Date(b.publishedAt) - new Date(a.publishedAt)); }
 
 function dedupe(arr){
   // usa URL como chave principal; se faltar, usa id
@@ -105,7 +99,7 @@ function formatDateISO(iso, locale, timeZone){
 
 /* ---------- UI ---------- */
 
-function renderCard(item, opts){
+export function renderCard(item, opts){
   const title = escapeHTML(item.title);
   const provider = escapeHTML(item.provider);
   const published = formatDateISO(item.publishedAt, opts.locale, opts.timeZone);
@@ -116,13 +110,13 @@ function renderCard(item, opts){
     item.contentType === "VIDEO" ? `<span class="news-badge badge-video">Vídeo</span>` : ""
   ].join("");
   const img = item.imageUrl
-    ? `<div class="news-thumb" style="aspect-ratio:16/9"><img src="${item.imageUrl}" alt="${title}" loading="lazy"></div>`
-    : `<div class="news-thumb placeholder" style="aspect-ratio:16/9"></div>`;
+    ? `<div class="news-thumb"><img src="${item.imageUrl}" alt="${title}" loading="lazy"></div>`
+    : `<div class="news-thumb placeholder"></div>`;
   const summary = item.summary ? `<p class="news-summary">${escapeHTML(item.summary)}</p>` : "";
   const related = item.related?.length
     ? `<div class="news-related">
          ${item.related.slice(0,4).map(r =>
-           `<a class="news-related-chip" href="${r.url}" target="_blank" rel="noopener noreferrer">${r.type==="VIDEO"?"▶︎ ":""}${escapeHTML(r.title)}</a>`
+           `<a class="news-related-chip" href="${r.url}" target="_blank" rel="noopener noreferrer">${r.type==="VIDEO"?"+ ":""}${escapeHTML(r.title)}</a>`
          ).join("")}
        </div>` : "";
 
@@ -155,7 +149,7 @@ function mountSkeleton(container, n=6){
   container.classList.add("news-grid");
   container.innerHTML = Array.from({length:n}).map(()=>`
     <div class="news-card skeleton">
-      <div class="news-thumb" style="aspect-ratio:16/9"></div>
+      <div class="news-thumb"></div>
       <div class="s-line w-90"></div>
       <div class="s-line w-70"></div>
       <div class="s-line w-50"></div>
@@ -166,3 +160,12 @@ function showError(container, msg){
   container.innerHTML = `<div class="news-error">${escapeHTML(msg)}</div>`;
 }
 
+export function dedupeByUrl(a) {
+  const seen = new Set();
+  return a.filter((i) => {
+    const k = i.url || `id:${i.id}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+}
