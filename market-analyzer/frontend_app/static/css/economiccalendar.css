@@ -1,10 +1,6 @@
 /* ============================= */
 /* CONFIGURAÇÃO GLOBAL E VARIÁVEIS */
 /* ============================= */
-:root {
-    --text-color: #ddd;
-    --border-color: #3d444d;
-}
 
 .calendar-info {
     display: flex;
@@ -21,4 +17,34 @@
     text-align: center;
     width: 100%;
     margin: 20px auto;
+}
+
+
+/* ============================= */
+/* BUTTONS */
+/* ============================= */
+
+.button-zone {
+    display: flex;
+    flex-wrap: wrap;          /* opcional: quebra linha se não couberem */
+    justify-content: center;  /* centra na horizontal */
+    align-items: center;      /* alinha verticalmente na linha */
+    gap: 8px;                 /* espaço entre botões */
+    padding: 10px;
+    width: 100%;
+}
+
+.button-zone button {
+    padding: 6px 20px;
+    font-size: 12px;
+    background-color: var(--button-zone-bg-index);
+    border: 1px solid var(--button-zone-border-color-index);
+    color: var(--text-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.button-zone button:hover {
+    background-color: var(--button-zone-hover-bg-index);   
 }

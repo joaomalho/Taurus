@@ -1,13 +1,3 @@
-/* ============================= */
-/* CONFIGURAÇÃO GLOBAL E VARIÁVEIS */
-/* ============================= */
-:root {
-    --button-zone-bg: #010409;
-    --button-zone-border-color: #3d444d;
-    --button-zone-highlight-color: #9198a1;
-    --button-zone-hover-bg: #212830;
-}
-
 
 /* ============================= */
 /* HEADER */
@@ -50,16 +40,16 @@
 .button-zone button {
     padding: 6px 20px;
     font-size: 12px;
-    background-color: var(--button-zone-bg);
-    border: 1px solid var(--button-zone-border-color);
-    color: var(--button-zone-highlight-color);
+    background-color: var(--button-zone-bg-index);
+    border: 1px solid var(--button-zone-border-color-index);
+    color: var(--button-zone-highlight-color-index);
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
 
 .button-zone button:hover {
-    background-color: var(--button-zone-hover-bg);   
+    background-color: var(--button-zone-hover-bg-index);   
 }
 
 /* ============================= */

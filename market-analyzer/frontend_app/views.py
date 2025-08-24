@@ -158,7 +158,7 @@ def get_stock_gainers(request):
     return JsonResponse({"data": df.to_dict(orient="records")})
 
 
-def get_stock_trending():
+def get_stock_trending(request):
     """
     View to pass Top 100 Trending JSON.
     """
@@ -179,7 +179,7 @@ def get_stock_trending():
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_stock_most_active():
+def get_stock_most_active(request):
     """
     View to pass Top 100 Most Active JSON.
     """
@@ -599,7 +599,7 @@ def get_harmonic_patterns(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_inst_holders(symbol: str):
+def get_inst_holders(request, symbol: str):
     """
     Return the list of major institutional holders
     """
@@ -628,7 +628,7 @@ def get_inst_holders(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_inside_transactions(symbol: str):
+def get_inside_transactions(request, symbol: str):
     """
     Return the list of inside transactions
     """
@@ -663,7 +663,7 @@ def get_inside_transactions(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_recommendations(symbol: str):
+def get_recommendations(request, symbol: str):
     """
     Return recommendations about asset
     """
@@ -692,7 +692,7 @@ def get_recommendations(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_info(symbol: str):
+def get_fundamental_info(request, symbol: str):
     """
     Return fundamnetal information valuation qualitative.
     """
@@ -724,7 +724,7 @@ def get_fundamental_info(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_evaluations(symbol: str):
+def get_fundamental_evaluations(request, symbol: str):
     """
     Return only the fundamental evaluation (qualitative data) without nested JSON.
     """
@@ -761,7 +761,7 @@ def get_fundamental_evaluations(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_income_download(symbol: str):
+def get_fundamental_income_download(request, symbol: str):
     """
     Return the income statment
     """
@@ -783,7 +783,7 @@ def get_fundamental_income_download(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_balance_sheet_download(symbol: str):
+def get_fundamental_balance_sheet_download(request, symbol: str):
     """
     Return the balance sheet
     """
@@ -805,7 +805,7 @@ def get_fundamental_balance_sheet_download(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_cashflow_download(symbol: str):
+def get_fundamental_cashflow_download(request, symbol: str):
     """
     Return the cashflow
     """
@@ -827,7 +827,7 @@ def get_fundamental_cashflow_download(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_income_quarterly_download(symbol: str):
+def get_fundamental_income_quarterly_download(request, symbol: str):
     """
     Return the income statment in quarterly basis
     """
@@ -849,7 +849,7 @@ def get_fundamental_income_quarterly_download(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_balance_sheet_quarterly_download(symbol: str):
+def get_fundamental_balance_sheet_quarterly_download(request, symbol: str):
     """
     Return the balance sheet in quarterly basis
     """
@@ -871,7 +871,7 @@ def get_fundamental_balance_sheet_quarterly_download(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_cashflow_quarterly_download(symbol: str):
+def get_fundamental_cashflow_quarterly_download(request, symbol: str):
     """
     Return the cashflow in quarterly basis
     """
@@ -893,7 +893,7 @@ def get_fundamental_cashflow_quarterly_download(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_bio_info(symbol: str):
+def get_bio_info(request, symbol: str):
     """
     Return company information about the company.
     """
@@ -921,7 +921,7 @@ def get_bio_info(symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_symbol_fundamental_news(symbol: str):
+def get_symbol_fundamental_news(request, symbol: str):
     '''
     Return last news from symbol.
     '''

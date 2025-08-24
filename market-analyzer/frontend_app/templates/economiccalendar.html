@@ -5,6 +5,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/economiccalendar.css' %}">
+<link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -27,6 +28,7 @@
     <hr class="line1">
 
     <section class="button-zone">
+        
         <button id="EcoCalendarTodayButton">Yesterday</button>
         <button id="EcoCalendarTodayButton">Today</button>
         <button id="EcoCalendarTodayButton">Tomorrow</button>
@@ -34,7 +36,7 @@
         <button id="EcoCalendarTodayButton">Next Week</button>
     </section>
     <div class="table-container">
-        <div id="economicCalendar" data-timeframe="today"></div>
+        <div id="economicCalendar" data-timeframe="Today"></div>
     </div>
 {% endblock %}
 
