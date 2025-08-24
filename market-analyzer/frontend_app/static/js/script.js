@@ -33,7 +33,7 @@ import {
     displayInsideTransactions,
     populateYahooStockTable,
     displayNewsList,
-    displayEconomicCalendar
+    displayEconomicCalendarTable 
 } from './display.js';
 
 
@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setupSearchButton();
     setupStockbytopButton();
+    setupEcoCalendarButton();
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
@@ -178,7 +179,6 @@ function setupTechnicalAnalysisEvents(symbol) {
 
         // Atualizar EMAs no gráfico
         updateEMALines(symbol, fastPeriod, mediumPeriod, slowPeriod);
-
     });
 
     document.getElementById("AdxButton").addEventListener("click", function () {
@@ -332,6 +332,15 @@ function setupStockbytopButton() {
     }
 }
 
+function setupEcoCalendarButton() {
+    let setupEcoCalendarButton = document.getElementById("setupEcoCalendarButton");
+    if (setupEcoCalendarButton) {
+        setupEcoCalendarButton.addEventListener("click", function () {
+            window.location.href = "/economiccalendar/";
+        });
+    }
+}
+
 /* ─────────────── FUNÇÕES DE DOWNLOADS ─────────────── */
 function setupDownloadLinks(symbol) {
   const map = [
@@ -376,8 +385,8 @@ function loadEconomicCalendar({
 
   fetchEconomicCalendar({ timeframe, d1, d2 })
     .then(payload => {
-      if (payload && payload.error) throw new Error(payload.error);
-      displayEconomicCalendar(payload, { containerId });
+        if (payload && payload.error) throw new Error(payload.error);
+        displayEconomicCalendarTable(payload.data, { containerId });
     })
     .catch(err => {
       el.innerHTML = `<div class="news-error">${err?.message || "Falha ao obter calendário."}</div>`;

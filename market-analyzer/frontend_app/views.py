@@ -30,7 +30,7 @@ def stock_page(request, symbol: str):
 
 
 # ------------------------- Economic Calendar Pages -------------------------
-def economic_calendar_page(request, symbol: str):
+def economic_calendar_page(request):
     return render(request, 'economiccalendar.html')
 
 

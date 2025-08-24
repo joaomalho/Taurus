@@ -1,9 +1,24 @@
 /* ============================= */
 /* CONFIGURAÇÃO GLOBAL E VARIÁVEIS */
 /* ============================= */
+:root {
+    --text-color: #ddd;
+    --border-color: #3d444d;
+}
 
-.econ-list { list-style: none; padding: 0; margin: 0; }
-.econ-item { display: grid; grid-template-columns: 180px 120px 1fr auto auto auto; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
-.econ-item time { color: var(--p-text-color); }
-.econ-country { font-weight: 600; }
-.econ-actual, .econ-forecast, .econ-previous { color: var(--p-text-color); font-size: .9rem; }
+.calendar-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* ============================= */
+/* TÍTULOS */
+/* ============================= */
+.calendar-info h2 {
+    color: var(--text-color);
+    text-align: center;
+    width: 100%;
+    margin: 20px auto;
+}

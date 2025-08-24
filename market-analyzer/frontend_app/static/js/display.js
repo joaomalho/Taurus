@@ -670,34 +670,68 @@ export function displayNewsList(payload, {
     : `<p class="news-empty">Sem notícias.</p>`;
 }
 
-export function displayEconomicCalendar(payload, {
+// ——— tabela do calendário económico seguindo o mesmo critério das restantes
+export function displayEconomicCalendarTable(payload, {
   containerId = "economicCalendar",
   locale = "pt-PT",
   timeZone = "Europe/Lisbon"
 } = {}) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
+  const raw = Array.isArray(payload) ? payload : (payload?.data || []);
+  const container = document.getElementById(containerId);
+  if (!container) return;
 
-  const rows = Array.isArray(payload) ? payload : (payload?.data || []);
-  if (!rows.length) { el.innerHTML = `<p>Sem eventos.</p>`; return; }
+  if (!raw.length) {
+    container.innerHTML = `<p>Sem eventos.</p>`;
+    return;
+  }
 
-  const fmt = (iso) => {
-    try { return new Intl.DateTimeFormat(locale, { dateStyle:"medium", timeStyle:"short", timeZone }).format(new Date(iso)); }
-    catch { return iso || ""; }
-  };
-  const esc = (s="") => s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  container.innerHTML = "";
 
-  el.innerHTML = `
-    <ul class="econ-list">
-      ${rows.map(ev => `
-        <li class="econ-item">
-          <time datetime="${ev.Date||""}">${ev.Date ? fmt(ev.Date) : ""}</time>
-          <span class="econ-country">${esc(ev.Country||"")}</span>
-          <span class="econ-event">${esc(ev.Event || ev.Title || "")}</span>
-          ${ev.Actual ? `<span class="econ-actual">Atual: ${esc(ev.Actual)}</span>` : ""}
-          ${ev.Forecast ? `<span class="econ-forecast">Prev: ${esc(ev.Forecast)}</span>` : ""}
-          ${ev.Previous ? `<span class="econ-previous">Ant: ${esc(ev.Previous)}</span>` : ""}
-        </li>
-      `).join("")}
-    </ul>`;
+  // normaliza alguns nomes de campos que a TradingEconomics pode variar
+  const getDate = (ev) => ev.Date || ev.DateUTC || ev.CalendarDate || ev.date || ev.DateISO || null;
+  const getEvent = (ev) => ev.Event || ev.Title || ev.Category || "—";
+
+  const rows = raw.map(ev => ({
+    DateISO: getDate(ev),                // ISO cru → para ordenar
+    Country: ev.Country ?? "—",
+    Event:   getEvent(ev),
+    Actual:   ev.Actual   ?? null,       // strings tipo "3.1%" ou números
+    Forecast: ev.Forecast ?? null,
+    Previous: ev.Previous ?? null,
+  }));
+
+  createGridTable(
+    rows,
+    [
+      {
+        name: "Data", key: "DateISO",
+        formatter: (iso) => {
+          const v = cellValue(iso);
+          if (!v) return "—";
+          try {
+            return formatDate(v, { locale, timeZone, dateStyle: "medium", timeStyle: "short" });
+          } catch {
+            return v;
+          }
+        },
+        sort: { compare: dateCompare },
+      },
+      { name: "País",  key: "Country" },
+      { name: "Evento", key: "Event" },
+      {
+        name: "Atual", key: "Actual",
+        // mostramos como veio; ordenamos numericamente mesmo que tenha %/k etc.
+        sort: { compare: numCompare },
+      },
+      {
+        name: "Previsto", key: "Forecast",
+        sort: { compare: numCompare },
+      },
+      {
+        name: "Anterior", key: "Previous",
+        sort: { compare: numCompare },
+      },
+    ],
+    containerId
+  );
 }

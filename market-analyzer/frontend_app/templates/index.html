@@ -16,7 +16,7 @@
       <nav class="auth-nav">
           {% if user.is_authenticated %}
               <span class="hello">Olá, {{ user.username }}</span>
-              <a href="{% url 'dashboard' %}" class="btn-link">Área do utilizador</a>
+              <a href="{% url 'dashboard' %}" class="btn-link">User profile</a>
 
               <!-- Logout -->
               <form method="post" action="{% url 'logout' %}" style="display:inline;">
@@ -24,16 +24,17 @@
                   <button type="submit" class="btn-link">Sair</button>
               </form>
           {% else %}
-              <a href="{% url 'login' %}" class="btn-link">Entrar</a>
-              <a href="{% url 'signup' %}" class="btn-link">Criar conta</a>
+              <a href="{% url 'login' %}" class="btn-link">Log in</a>
+              <a href="{% url 'signup' %}" class="btn-link">Sign in</a>
           {% endif %}
       </nav>
   </header>
   <section class="button-zone">
     {% if user.is_authenticated %}
       <button id="stockbytopButton">Stock by Top</button>
+      <button id="setupEcoCalendarButton">Economic Calendar</button>
     {% else %}
-      <a href="{% url 'login' %}" class="button-like">Entrar para aceder ao Stock by Top</a>
+      <a href="{% url 'login' %}" class="button-like">Log in to access all features</a>
     {% endif %}
   </section>
 

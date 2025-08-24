@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Stock Data{% endblock %}
+{% block title %}Economic Calendar{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/economiccalendar.css' %}">
@@ -26,7 +26,16 @@
         
     <hr class="line1">
 
-    <div id="economicCalendar" data-timeframe="today"></div>
+    <section class="button-zone">
+        <button id="EcoCalendarTodayButton">Yesterday</button>
+        <button id="EcoCalendarTodayButton">Today</button>
+        <button id="EcoCalendarTodayButton">Tomorrow</button>
+        <button id="EcoCalendarTodayButton">This Week</button>
+        <button id="EcoCalendarTodayButton">Next Week</button>
+    </section>
+    <div class="table-container">
+        <div id="economicCalendar" data-timeframe="today"></div>
+    </div>
 {% endblock %}
 
 {% block extra_js %}

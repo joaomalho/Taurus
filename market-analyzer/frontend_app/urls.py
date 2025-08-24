@@ -57,5 +57,5 @@ urlpatterns = [
 
     # ------ Page Economic Calendar ------
     path('economiccalendar/', economic_calendar_page, name='economic_calendar_page'),
-    path('economiccalendar/calendar/', get_economic_calendar, name='get_economic_calendar'),
+    path('economiccalendar/today/', get_economic_calendar, name='get_economic_calendar'),
 ]
