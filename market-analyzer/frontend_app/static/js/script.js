@@ -16,7 +16,8 @@ import {
     fetchFundamentalInfo,
     fetchFundamentalInfoClassification,
     fetchInsideTransactions,
-    fetchSymbolNews
+    fetchSymbolNews,
+    fetchEconomicCalendar 
 } from './api.js';
 
 import {
@@ -31,7 +32,8 @@ import {
     displayFundamentalResultsClassification,
     displayInsideTransactions,
     populateYahooStockTable,
-    displayNewsList
+    displayNewsList,
+    displayEconomicCalendar
 } from './display.js';
 
 
@@ -142,8 +144,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const rows = Array.isArray(payload) ? payload : payload?.data;
             if (rows?.length) populateYahooStockTable("tableYahooMostActive", rows);
         });
-        }
+    }
     
+    const econEl = document.getElementById("economicCalendar");
+    if (econEl) {
+        const tf = econEl.dataset?.timeframe || "this week";
+        loadEconomicCalendar({ containerId: "economicCalendar", timeframe: tf });
+    }
 });
 
 /* ─────────────── FUNÇÕES DE EVENTOS PARA OS BOTÕES ─────────────── */
@@ -348,4 +355,32 @@ function setupDownloadLinks(symbol) {
   }
 }
 
+
+/* ─────────────── FUNÇÕES DE CALENDARIO ─────────────── */
+function loadEconomicCalendar({
+  containerId = "economicCalendar",
+  timeframe  = "today",    // "today" | "yesterday" | "tomorrow" | "this week" | "next week"
+  d1 = null,
+  d2 = null
+} = {}) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  el.innerHTML = `
+    <div class="news-card skeleton" style="padding:12px;border:1px solid var(--border-color);border-radius:8px;">
+      <div class="s-line w-90"></div>
+      <div class="s-line w-70"></div>
+      <div class="s-line w-50"></div>
+    </div>
+  `;
+
+  fetchEconomicCalendar({ timeframe, d1, d2 })
+    .then(payload => {
+      if (payload && payload.error) throw new Error(payload.error);
+      displayEconomicCalendar(payload, { containerId });
+    })
+    .catch(err => {
+      el.innerHTML = `<div class="news-error">${err?.message || "Falha ao obter calendário."}</div>`;
+    });
+}
 

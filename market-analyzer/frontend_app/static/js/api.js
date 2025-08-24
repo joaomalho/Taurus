@@ -62,3 +62,15 @@ export function fetchYahooStockMostActive() {
     return fetch("/stockbytop/stock_most_active/").then(res => res.json());
 }
 
+//////////// ##### API: Economic Calendar ###### ////////////
+export async function fetchEconomicCalendar({ timeframe, d1, d2 } = {}) {
+  const qs = new URLSearchParams();
+  if (timeframe) qs.set("timeframe", timeframe);   // ex: "today" | "this week" | ...
+  if (d1) qs.set("d1", d1);                         // "YYYY-MM-DD"
+  if (d2) qs.set("d2", d2);                         // "YYYY-MM-DD"
+
+  const url = `/economiccalendar/calendar/${qs.toString() ? `?${qs}` : ""}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status} ao obter calendário`);
+  return res.json(); // espera { data: [...] }
+}

@@ -669,3 +669,35 @@ export function displayNewsList(payload, {
     ? items.map(i => renderCard(i, { locale, timeZone })).join("")
     : `<p class="news-empty">Sem notícias.</p>`;
 }
+
+export function displayEconomicCalendar(payload, {
+  containerId = "economicCalendar",
+  locale = "pt-PT",
+  timeZone = "Europe/Lisbon"
+} = {}) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const rows = Array.isArray(payload) ? payload : (payload?.data || []);
+  if (!rows.length) { el.innerHTML = `<p>Sem eventos.</p>`; return; }
+
+  const fmt = (iso) => {
+    try { return new Intl.DateTimeFormat(locale, { dateStyle:"medium", timeStyle:"short", timeZone }).format(new Date(iso)); }
+    catch { return iso || ""; }
+  };
+  const esc = (s="") => s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+
+  el.innerHTML = `
+    <ul class="econ-list">
+      ${rows.map(ev => `
+        <li class="econ-item">
+          <time datetime="${ev.Date||""}">${ev.Date ? fmt(ev.Date) : ""}</time>
+          <span class="econ-country">${esc(ev.Country||"")}</span>
+          <span class="econ-event">${esc(ev.Event || ev.Title || "")}</span>
+          ${ev.Actual ? `<span class="econ-actual">Atual: ${esc(ev.Actual)}</span>` : ""}
+          ${ev.Forecast ? `<span class="econ-forecast">Prev: ${esc(ev.Forecast)}</span>` : ""}
+          ${ev.Previous ? `<span class="econ-previous">Ant: ${esc(ev.Previous)}</span>` : ""}
+        </li>
+      `).join("")}
+    </ul>`;
+}

@@ -1,6 +1,7 @@
 import json
 import numpy as np
 import pandas as pd
+from datetime import datetime
 from django.shortcuts import render
 from django.http import JsonResponse, Http404
 from django.core.validators import RegexValidator
@@ -10,6 +11,7 @@ from backend.tecnical_analysis.candlestick_chart_data import CandlestickData
 from backend.tecnical_analysis.candles_patterns import CandlesPatterns
 from backend.tecnical_analysis.harmonic_patterns import HarmonicPatterns
 from backend.risk_manager.risk_manager import RiskManagerFundamental
+from backend.datasources.ecocalendar import EcoCalendar
 
 
 # ------------------------- Pages -------------------------
@@ -25,6 +27,11 @@ def stockbytop_page(request):
 # ------------------------- Stock Pages -------------------------
 def stock_page(request, symbol: str):
     return render(request, 'stock.html', {"symbol": symbol})
+
+
+# ------------------------- Economic Calendar Pages -------------------------
+def economic_calendar_page(request, symbol: str):
+    return render(request, 'economiccalendar.html')
 
 
 # ------------------------- Security Validations -------------------------
@@ -50,6 +57,20 @@ def convert_numpy_types(obj):
     elif isinstance(obj, (pd.Timestamp,)):
         return obj.isoformat()
     return obj
+
+
+def _parse_iso_date(s: str):
+    if not s:
+        return None
+    for fmt in ("%Y-%m-%d",):
+        try:
+            return datetime.strptime(s, fmt).date()
+        except ValueError:
+            pass
+    try:
+        return datetime.fromisoformat(s).date()
+    except ValueError:
+        return None
 
 
 def _df_to_excel_response(df, base_filename: str):
@@ -137,7 +158,7 @@ def get_stock_gainers(request):
     return JsonResponse({"data": df.to_dict(orient="records")})
 
 
-def get_stock_trending(request):
+def get_stock_trending():
     """
     View to pass Top 100 Trending JSON.
     """
@@ -158,7 +179,7 @@ def get_stock_trending(request):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_stock_most_active(request):
+def get_stock_most_active():
     """
     View to pass Top 100 Most Active JSON.
     """
@@ -578,7 +599,7 @@ def get_harmonic_patterns(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_inst_holders(request, symbol: str):
+def get_inst_holders(symbol: str):
     """
     Return the list of major institutional holders
     """
@@ -607,7 +628,7 @@ def get_inst_holders(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_inside_transactions(request, symbol: str):
+def get_inside_transactions(symbol: str):
     """
     Return the list of inside transactions
     """
@@ -642,7 +663,7 @@ def get_inside_transactions(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_recommendations(request, symbol: str):
+def get_recommendations(symbol: str):
     """
     Return recommendations about asset
     """
@@ -671,7 +692,7 @@ def get_recommendations(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_info(request, symbol: str):
+def get_fundamental_info(symbol: str):
     """
     Return fundamnetal information valuation qualitative.
     """
@@ -703,7 +724,7 @@ def get_fundamental_info(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_evaluations(request, symbol: str):
+def get_fundamental_evaluations(symbol: str):
     """
     Return only the fundamental evaluation (qualitative data) without nested JSON.
     """
@@ -740,7 +761,7 @@ def get_fundamental_evaluations(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_income_download(request, symbol: str):
+def get_fundamental_income_download(symbol: str):
     """
     Return the income statment
     """
@@ -762,7 +783,7 @@ def get_fundamental_income_download(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_balance_sheet_download(request, symbol: str):
+def get_fundamental_balance_sheet_download(symbol: str):
     """
     Return the balance sheet
     """
@@ -784,7 +805,7 @@ def get_fundamental_balance_sheet_download(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_cashflow_download(request, symbol: str):
+def get_fundamental_cashflow_download(symbol: str):
     """
     Return the cashflow
     """
@@ -806,7 +827,7 @@ def get_fundamental_cashflow_download(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_income_quarterly_download(request, symbol: str):
+def get_fundamental_income_quarterly_download(symbol: str):
     """
     Return the income statment in quarterly basis
     """
@@ -828,7 +849,7 @@ def get_fundamental_income_quarterly_download(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_balance_sheet_quarterly_download(request, symbol: str):
+def get_fundamental_balance_sheet_quarterly_download(symbol: str):
     """
     Return the balance sheet in quarterly basis
     """
@@ -850,7 +871,7 @@ def get_fundamental_balance_sheet_quarterly_download(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_fundamental_cashflow_quarterly_download(request, symbol: str):
+def get_fundamental_cashflow_quarterly_download(symbol: str):
     """
     Return the cashflow in quarterly basis
     """
@@ -872,7 +893,7 @@ def get_fundamental_cashflow_quarterly_download(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_bio_info(request, symbol: str):
+def get_bio_info(symbol: str):
     """
     Return company information about the company.
     """
@@ -900,7 +921,7 @@ def get_bio_info(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_symbol_fundamental_news(request, symbol: str):
+def get_symbol_fundamental_news(symbol: str):
     '''
     Return last news from symbol.
     '''
@@ -924,3 +945,34 @@ def get_symbol_fundamental_news(request, symbol: str):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+def get_economic_calendar(request, d1=None, d2=None, timeframe=None):
+    '''
+    Return economic calendar.
+    '''
+    timeframe = (request.GET.get("timeframe") or "").strip() or None
+    d1_raw = (request.GET.get("d1") or "").strip() or None
+    d2_raw = (request.GET.get("d2") or "").strip() or None
+
+    # 2) parse datas só se não vier timeframe
+    d1 = d2 = None
+    if not timeframe:
+        d1 = _parse_iso_date(d1_raw)
+        d2 = _parse_iso_date(d2_raw)
+
+    # 3) validação: é preciso OU timeframe, OU (d1 e d2 válidas)
+    if not timeframe and not (d1 and d2):
+        return JsonResponse(
+            {"error": "Provide either 'timeframe' or both 'd1' and 'd2' (YYYY-MM-DD)."},
+            status=400
+        )
+
+    try:
+        ec = EcoCalendar()
+        data = ec.get_economic_calendar(d1=d1, d2=d2, timeframe=timeframe)
+        if not data:
+            return JsonResponse({"error": "No data found"}, status=404)
+        return JsonResponse({"data": data})
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {e}"}, status=500)

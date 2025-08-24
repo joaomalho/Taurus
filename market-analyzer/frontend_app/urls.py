@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (home, stock_page, stockbytop_page, get_stock_gainers, get_stock_trending,
+from .views import (home, stock_page, stockbytop_page, economic_calendar_page, get_stock_gainers, get_stock_trending,
                     get_stock_most_active, get_data_history, get_crossover_trend_metrics, get_adx_trend_metrics,
                     get_bollinger_bands_metrics, get_rsi_trend_metrics, get_candle_detection, get_inst_holders,
                     get_recommendations, get_fundamental_info, get_bio_info, get_fundamental_evaluations,
@@ -7,7 +7,8 @@ from .views import (home, stock_page, stockbytop_page, get_stock_gainers, get_st
                     get_inside_transactions, get_rsi_trend_metrics_draw, get_fundamental_income_download, 
                     get_fundamental_cashflow_download, get_fundamental_balance_sheet_download,
                     get_fundamental_income_quarterly_download, get_fundamental_cashflow_quarterly_download,
-                    get_fundamental_balance_sheet_quarterly_download, get_symbol_fundamental_news
+                    get_fundamental_balance_sheet_quarterly_download, get_symbol_fundamental_news,
+                    get_economic_calendar
                     )
 
 urlpatterns = [
@@ -53,4 +54,8 @@ urlpatterns = [
     path('stock/<str:symbol>/income_quarterly_download/', get_fundamental_income_quarterly_download, name='get_fundamental_income_quarterly_download'),
     path('stock/<str:symbol>/cashflow_quarterly_download/', get_fundamental_cashflow_quarterly_download, name='get_fundamental_cashflow_quarterly_download'),
     path('stock/<str:symbol>/balance_sheet_quarterly_download/', get_fundamental_balance_sheet_quarterly_download, name='get_fundamental_balance_sheet_quarterly_download'),
+
+    # ------ Page Economic Calendar ------
+    path('economiccalendar/', economic_calendar_page, name='economic_calendar_page'),
+    path('economiccalendar/calendar/', get_economic_calendar, name='get_economic_calendar'),
 ]

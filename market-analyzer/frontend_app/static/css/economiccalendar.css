@@ -1,0 +1,9 @@
+/* ============================= */
+/* CONFIGURAÇÃO GLOBAL E VARIÁVEIS */
+/* ============================= */
+
+.econ-list { list-style: none; padding: 0; margin: 0; }
+.econ-item { display: grid; grid-template-columns: 180px 120px 1fr auto auto auto; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+.econ-item time { color: var(--p-text-color); }
+.econ-country { font-weight: 600; }
+.econ-actual, .econ-forecast, .econ-previous { color: var(--p-text-color); font-size: .9rem; }

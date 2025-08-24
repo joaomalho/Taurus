@@ -392,7 +392,7 @@ We are also looking to grow our community with **key roles in market analysis**:
   - FAQs page `ToDo: High`
   - Information Page `ToDo: High`
   - Information marker points `ToDo: High`
-  - Economic Calendar
+  - Economic Calendar - WIP
   - Macro overview
   - Micro overview by sector
 
