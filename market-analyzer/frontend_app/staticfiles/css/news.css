@@ -1,0 +1,126 @@
+/* static/css/news.css */
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+    gap: 16px;
+}
+
+.news-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.news-thumb img { 
+    width: 100%; 
+    height: 100%; 
+    display: block;
+    object-fit: cover; 
+}
+
+.news-thumb { aspect-ratio: 4 / 3; }
+
+.news-header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 8px 12px;
+}
+.news-title { 
+    margin: 8px 12px; 
+    color: var(--text-color); 
+    font-size: 1rem; 
+}
+.news-summary { 
+    margin: 0 12px 12px; 
+    color: var(--p-text-color); 
+}
+.news-timeago { 
+    padding:2px 6px; 
+    border-radius:999px; 
+    font-size:.75rem; 
+    color: var(--p-text-color); 
+}
+.news-footer {
+    display:flex; 
+    justify-content: space-between; 
+    padding: 8px 12px;
+    font-size:.85rem;
+    color: var(--p-text-color);
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+.news-badge { 
+    padding:2px 6px; 
+    border-radius:999px; 
+    font-size:.75rem; 
+    border:1px solid var(--border-color); 
+}
+.badge-video { 
+    border-color:#6aa9ff; 
+    color: var(--p-text-color);
+}
+.badge-premium { 
+    border-color:#d2a85f; 
+    color: var(--p-text-color);
+}
+.badge-editors { 
+    border-color:#9ad27a; 
+    color: var(--p-text-color);
+}
+
+.skeleton { background: var(--secondary-bg); border:1px solid var(--border-color); border-radius:8px; padding:12px; }
+.s-line { height: 10px; background: #1b2230; border-radius: 6px; margin: 8px 0; }
+.w-90{ width:90%; } .w-70{ width:70%; } .w-50{ width:50%; }
+
+.news-error { color: #ff8080; padding: 12px; border:1px solid #803232; border-radius:8px; background:#2a1212; }
+.news-empty { color: var(--p-text-color); }
+
+/* Remove roxo dos links das news */
+.news-link {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-decoration: none;
+    min-height: 0; /* ajuda em Safari/Firefox a não “estourar” */
+}
+.news-link:visited {
+  color: inherit;            /* herda a cor definida dentro do card */
+  text-decoration: none;     /* sem sublinhado no wrapper */
+  display: block;
+}
+
+/* Feedback no hover: sublinha só o título e usa a tua var de link */
+.news-link:hover .news-title {
+  text-decoration: underline;
+  color: var(--link-color);
+}
+
+.news-related-chip {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-decoration: none;
+    min-height: 0;
+    margin: 8px 12px; 
+    color: var(--text-color); 
+    font-size: 0.7rem; 
+}
+
+.news-related-chip:visited {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.news-related-chip:hover {
+  text-decoration: underline;
+  color: var(--link-color);
+}
+
+/* Acessibilidade: foco visível ao navegar por teclado */
+.news-link:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 2px;
+}

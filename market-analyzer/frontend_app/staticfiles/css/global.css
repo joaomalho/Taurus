@@ -6,6 +6,7 @@
     --border-color: #3d444d;
     --secondary-bg: #0d1117;
     --text-color: #ddd;
+    --text-color-black: #0d1117;
     --p-text-color: #9198a1;
     --button-bg: #010409;
     --highlight-color: #9198a1;
@@ -14,7 +15,12 @@
     --gridjs-header-text-color: white;
     --table-custom-body-hover-bg: #ddd;
     --link-color: #9A8655;
-    --footer-text-color: #9A8655
+    --footer-text-color: #9A8655;
+    --border-light-color: #7e8185;
+    --button-zone-bg-index: #010409;
+    --button-zone-border-color-index: #3d444d;
+    --button-zone-highlight-color-index: #9198a1;
+    --button-zone-hover-bg-index: #212830;
 }
 
 html, body {
@@ -22,7 +28,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background: var(--primary-bg);
+    background: transparent;
     font-family: "Segoe UI", sans-serif;
     display: flex;
     flex-direction: column;
@@ -66,6 +72,13 @@ html, body {
     width: 100%;
     padding-top: 100px;
     color: var(--footer-text-color);
+}
+
+.footer p {
+    color: var(--p-text-color);
+    font-size: 12px;
+    font-style: italic;
+    padding-bottom: 5px;
 }
 
 /* ============================= */
@@ -127,14 +140,35 @@ html, body {
 .reach-us {
     font-weight: 800;
     cursor: pointer;
+    text-decoration: none;
     color: var(--link-color);
+}
+.link {
+    text-decoration: none;
+    color: var(--link-color);
+}
+.link:hover {
+  text-decoration: underline;
+  color: var(--link-color);
+}
+
+/* ============================= */
+/* TABELAS GERAIS */
+/* ============================= */
+
+
+.table-container {
+  background: var(--primary-bg);
+  border-radius: 8px;
 }
 
 /* ============================= */
 /* RESPONSIVIDADE */
 /* ============================= */
 
+/* 🔹 Ajuste para telas menores */
 @media screen and (max-width: 768px) {
+
     .table-custom th, .table-custom td {
         padding: 8px;
         font-size: 14px;

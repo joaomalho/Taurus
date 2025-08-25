@@ -32,7 +32,6 @@
   <section class="button-zone">
     {% if user.is_authenticated %}
       <button id="stockbytopButton">Stock by Top</button>
-      <button id="setupEcoCalendarButton">Economic Calendar</button>
     {% else %}
       <a href="{% url 'login' %}" class="button-like">Log in to access all features</a>
     {% endif %}

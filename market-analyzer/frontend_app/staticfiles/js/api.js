@@ -1,6 +1,4 @@
 // static/js/api.js
-
-
 //////////// ###### API: Data for Symbol ###### ////////////
 export function fetchBioData(symbol) {
     return fetch(`/stock/${symbol}/bio_info/`).then(res => res.json());
@@ -46,8 +44,12 @@ export function fetchInsideTransactions(symbol) {
     return fetch(`/stock/${symbol}/inside_transactions/`).then(res => res.json());
 }
 
-//////////// ##### API: Stockbytop ###### ////////////
+//////////// ##### API: News ###### ////////////
+export function fetchSymbolNews(symbol) {
+  return fetch(`/stock/${symbol}/news/`).then(res => res.json());
+}
 
+//////////// ##### API: Stockbytop ###### ////////////
 export function fetchYahooStockGainers() {
     return fetch("/stockbytop/stock_gainers/").then(res => res.json());
 }
@@ -58,4 +60,14 @@ export function fetchYahooStockTrending() {
 
 export function fetchYahooStockMostActive() {
     return fetch("/stockbytop/stock_most_active/").then(res => res.json());
+}
+
+//////////// ##### API: Economic Calendar ###### ////////////
+export function fetchEconomicCalendar({ timeframe, d1, d2 } = {}) {
+    const qs = new URLSearchParams();
+    if (timeframe) qs.set("timeframe", timeframe);
+    if (d1) qs.set("d1", d1);
+    if (d2) qs.set("d2", d2);
+    const url = `/economiccalendar/today/${qs.toString() ? `?${qs.toString()}` : ""}`;
+    return fetch(url).then(res => res.json());
 }

@@ -2,7 +2,7 @@
 #particles-js{
   position: fixed;
   inset: 0;                /* top/right/bottom/left: 0 */
-  z-index: 0;              /* fica por trás do conteúdo */
+  z-index: -1;              /* fica por trás do conteúdo */
   pointer-events: none;    /* não bloqueia cliques no conteúdo */
   background: var(--primary-bg); /* usa a tua cor do tema */
 }

@@ -16,8 +16,7 @@ import {
     fetchFundamentalInfo,
     fetchFundamentalInfoClassification,
     fetchInsideTransactions,
-    fetchSymbolNews,
-    fetchEconomicCalendar 
+    fetchSymbolNews
 } from './api.js';
 
 import {
@@ -32,8 +31,7 @@ import {
     displayFundamentalResultsClassification,
     displayInsideTransactions,
     populateYahooStockTable,
-    displayNewsList,
-    displayEconomicCalendarTable 
+    displayNewsList
 } from './display.js';
 
 
@@ -41,7 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setupSearchButton();
     setupStockbytopButton();
-    setupEcoCalendarButton();
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
@@ -145,12 +142,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const rows = Array.isArray(payload) ? payload : payload?.data;
             if (rows?.length) populateYahooStockTable("tableYahooMostActive", rows);
         });
-    }
-    
-    const econEl = document.getElementById("economicCalendar");
-    if (econEl) {
-        const tf = econEl.dataset?.timeframe || "this week";
-        loadEconomicCalendar({ containerId: "economicCalendar", timeframe: tf });
     }
 });
 
@@ -332,15 +323,6 @@ function setupStockbytopButton() {
     }
 }
 
-function setupEcoCalendarButton() {
-    let setupEcoCalendarButton = document.getElementById("setupEcoCalendarButton");
-    if (setupEcoCalendarButton) {
-        setupEcoCalendarButton.addEventListener("click", function () {
-            window.location.href = "/economiccalendar/";
-        });
-    }
-}
-
 /* ─────────────── FUNÇÕES DE DOWNLOADS ─────────────── */
 function setupDownloadLinks(symbol) {
   const map = [
@@ -365,31 +347,4 @@ function setupDownloadLinks(symbol) {
 }
 
 
-/* ─────────────── FUNÇÕES DE CALENDARIO ─────────────── */
-function loadEconomicCalendar({
-  containerId = "economicCalendar",
-  timeframe  = "today",    // "today" | "yesterday" | "tomorrow" | "this week" | "next week"
-  d1 = null,
-  d2 = null
-} = {}) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-
-  el.innerHTML = `
-    <div class="news-card skeleton" style="padding:12px;border:1px solid var(--border-color);border-radius:8px;">
-      <div class="s-line w-90"></div>
-      <div class="s-line w-70"></div>
-      <div class="s-line w-50"></div>
-    </div>
-  `;
-
-  fetchEconomicCalendar({ timeframe, d1, d2 })
-    .then(payload => {
-        if (payload && payload.error) throw new Error(payload.error);
-        displayEconomicCalendarTable(payload.data, { containerId });
-    })
-    .catch(err => {
-      el.innerHTML = `<div class="news-error">${err?.message || "Falha ao obter calendário."}</div>`;
-    });
-}
 
