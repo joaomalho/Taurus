@@ -308,8 +308,7 @@ class DataHistoryYahoo():
 
         # Valuation
         sector = yahoo_symbol_info.get("sector")
-        dh = DataHistoryYahoo()
-        sector_pe = dh.get_sector_etf_info(sector, "trailingPE")
+        sector_pe = self.get_sector_etf_info(sector, "trailingPE")
 
         # Dividends & BuyBacks
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
@@ -652,7 +651,7 @@ class DataHistoryYahoo():
                 "recommendationMean": yahoo_symbol_info.get("recommendationMean", None),
                 "targetMeanPrice": yahoo_symbol_info.get("targetMeanPrice", None)
             },
-            "earnings": {
+            "earnings_quality": {
                 
             }
         }
