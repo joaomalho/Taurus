@@ -1,14 +1,7 @@
-
 /* ============================= */
 /* HEADER */
 /* ============================= */
-.main-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding-top: 100px;
-}
+
 
 .logo-icon-homepage {
     width: 80px;

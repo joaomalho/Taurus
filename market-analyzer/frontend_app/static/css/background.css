@@ -7,8 +7,6 @@
   background: var(--primary-bg); /* usa a tua cor do tema */
 }
 
-
-
 /* põe o conteúdo acima do canvas */
 .main-header, main, .footer {
   position: relative;

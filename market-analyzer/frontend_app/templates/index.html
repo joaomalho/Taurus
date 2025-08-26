@@ -15,7 +15,7 @@
       <!-- Authentication NAV -->
       <nav class="auth-nav">
           {% if user.is_authenticated %}
-              <span class="hello">Olá, {{ user.username }}</span>
+              <span class="hello">{{ user.username }}</span>
               <a href="{% url 'dashboard' %}" class="btn-link">User profile</a>
 
               <!-- Logout -->
