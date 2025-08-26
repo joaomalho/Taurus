@@ -18,11 +18,11 @@
       number: { value: 60, density: { enable: true, value_area: 1000 } },
       color: { value: particleColor },
       shape: { type: 'circle' },
-      opacity: { value: 0.18 },
+      opacity: { value: 0.50 },
       size: { value: 2, random: true },
       line_linked: {
         enable: true, distance: 150,
-        color: particleColor, opacity: 0.15, width: 1
+        color: particleColor, opacity: 0.50, width: 1
       },
       move: { enable: true, speed: 0.6, out_mode: 'out' }
     },

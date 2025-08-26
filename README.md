@@ -375,14 +375,12 @@ We are also looking to grow our community with **key roles in market analysis**:
 
   - Pivots Point - `ToDo: Low`
   - Add metrics and drawn to candlestik graph.
-    - RSI `ToDo: Medium`
     - ADX `ToDo: Medium`
     - Candles Marks `ToDo: Medium`
 
 - Fundamental Analysis
 
   - Sentiment Analysis of Recent News - `ToDo: Low`
-  - Economic Calendar Correlations - `ToDo: Low`
   - Add Tags on Headers to Easly get info - `ToDo: Low`
   - Downloads remaining fundamental documents and full report. `ToDo: High`
 
@@ -392,17 +390,17 @@ We are also looking to grow our community with **key roles in market analysis**:
   - FAQs page `ToDo: High`
   - Information Page `ToDo: High`
   - Information marker points `ToDo: High`
-  - Economic Calendar - WIP
   - Macro overview
   - Micro overview by sector
 
-  - Bilião é diferente para USA e EUROPEU (add on do hover)
+- Nice to Have
+
+  - Economic Calendar Correlations - WIP - Pay to use - Standby Nice to Have
+  - Economic Calendar - WIP - Pay to use - Standby Nice to Have
 
 ## **🚀 Latest Improvements**
 
 - **Download Documents**
 - **User Log**
 - **Centralize data presentation formats**
-- **News**
-- **Background Designe**
-- **Rectification od Nones in CAGR**
+- **Information about metrics**

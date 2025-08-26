@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/charts.css' %}">
     <link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/news.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tooltips.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -633,7 +634,6 @@
     <!-- Candlestick.js -->
     <script src="{% static 'js/lightweight-charts.standalone.production.js' %}"></script>
     <!-- Chart.js -->
-    <script type="module" src="{% static 'js/display.js' %}"></script>
     <script src="{% static 'js/chart.js' %}"></script>
     <script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script> 
 {% endblock %}

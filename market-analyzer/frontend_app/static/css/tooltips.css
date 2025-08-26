@@ -1,0 +1,57 @@
+/* ============================= */
+/* Fundamental Tooltips */
+/* ============================= */
+
+/* Ícone “i” com tooltip */
+.fund-metric-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--highlight-color);
+  background: var(--button-bg);
+  cursor: help;
+  position: relative;
+  vertical-align: middle;
+}
+
+/* o “i” dentro do círculo */
+.fund-metric-help::before {
+  content: "i";
+  font-weight: 700;
+}
+
+/* balão do tooltip */
+.fund-metric-help::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: 125%;
+  transform: translateX(-50%);
+  min-width: 220px;
+  max-width: 320px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-color);
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease-in-out;
+  white-space: normal;
+  z-index: 10;
+}
+
+/* mostrar no hover e no focus (acessível no teclado) */
+.fund-metric-help:hover::after,
+.fund-metric-help:focus-visible::after {
+  opacity: 1;
+}
