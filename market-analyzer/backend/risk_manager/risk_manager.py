@@ -389,17 +389,6 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "CurrentRatio", text_CurrentRatio)
 
-        # Current Ratio Growth
-        current_ratio_cagr = fm.safe_round(metrics.get('ratios', {}).get("CurrentRatioCAGR"))
-        evaluated_metrics["CurrentRatioCAGR"] = current_ratio_cagr if current_ratio_cagr is not None else None
-
-        if current_ratio_cagr is None or math.isnan(current_ratio_cagr):
-            text_CurrentRatioCAGR = "No Data"
-        else:
-            text_CurrentRatioCAGR = "Good" if current_ratio_cagr > 0 else "Not Good"
-
-        self._set_eval(evaluated_metrics, "CurrentRatioCAGR", text_CurrentRatioCAGR)
-
         # Cash Ratio
         cash_ratio = fm.safe_round(metrics.get('ratios', {}).get("CashRatio"))
         evaluated_metrics["CashRatio"] = cash_ratio if cash_ratio is not None else None
@@ -415,20 +404,6 @@ class RiskManagerFundamental():
                 text_CashRatio = "Good Debt Coverage (Too Conservative)"
 
         self._set_eval(evaluated_metrics, "CashRatio", text_CashRatio)
-
-        # Current Ratio Growth
-        cash_ratio_cagr = fm.safe_round(metrics.get('ratios', {}).get("CashRatioCAGR"))
-        evaluated_metrics["CashRatioCAGR"] = cash_ratio_cagr if cash_ratio_cagr is not None else None
-
-        if cash_ratio_cagr is None or math.isnan(cash_ratio_cagr):
-            text_CashRatioCAGR = "No Data"
-        else:
-            if cash_ratio_cagr <= 0:
-                text_CashRatioCAGR = "Not Good"
-            else:
-                text_CashRatioCAGR = "Good"
-
-        self._set_eval(evaluated_metrics, "CashRatioCAGR", text_CashRatioCAGR)
 
         # Gross Margin
         gross_margin = fm.safe_round(metrics.get('ratios', {}).get("GrossMargin"))

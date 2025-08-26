@@ -364,8 +364,6 @@ const METRIC_STYLE = {
   TotalAssetsCAGR: "percent",
   TotalLiabilitiesCAGR: "percent",
   StockholdersEquityCAGR: "percent",
-  CurrentRatioCAGR: "percent",
-  CashRatioCAGR: "percent",
   OperatingMarginCAGR: "percent",
   ProfitMarginCAGR: "percent",
   ReturnOnEquityCAGR: "percent",
@@ -401,8 +399,6 @@ const METRIC_STYLE = {
 
   // risco/sentimento
   beta: "number",
-  auditRisk: "number",
-  boardRisk: "number",
   recommendationMean: "number",
   targetMeanPrice: "currency",
 
@@ -481,9 +477,7 @@ export function displayFundamentalResults(data) {
     FreeCashflowYield: cashflowData.FreeCashflowYield || {},
     // Ratios
     CurrentRatio: ratiosData.CurrentRatio || {},
-    CurrentRatioCAGR: ratiosData.CurrentRatioCAGR || {},
     CashRatio: ratiosData.CashRatio || {},
-    CashRatioCAGR: ratiosData.CashRatioCAGR || {},
     GrossMargin: ratiosData.GrossMargin || {},
     // GrossMarginCAGR: ratiosData.GrossMarginCAGR || {},
     OperatingMargin: ratiosData.OperatingMargin || {},
@@ -494,8 +488,6 @@ export function displayFundamentalResults(data) {
     ReturnOnEquityCAGR: ratiosData.ReturnOnEquityCAGR || {},
     // Market Risk Sentiment
     beta: marketRiskData.beta || {},
-    auditRisk: marketRiskData.auditRisk || {},
-    boardRisk: marketRiskData.boardRisk || {},
     sharesPercentSharesOut: marketRiskData.sharesPercentSharesOut || {},
     recommendationMean: marketRiskData.recommendationMean || {},
     targetMeanPrice: marketRiskData.targetMeanPrice || {},
@@ -528,9 +520,7 @@ export function displayFundamentalResultsClassification(data) {
     ["liquidity", "TotalLiabilitiesCAGR"],
     ["cashflow", "FreeCashflowYield"],
     ["ratios", "CurrentRatio"],
-    ["ratios", "CurrentRatioCAGR"],
     ["ratios", "CashRatio"],
-    ["ratios", "CashRatioCAGR"],
     ["ratios", "GrossMargin"],
     ["ratios", "OperatingMargin"],
     ["ratios", "OperatingMarginCAGR"],

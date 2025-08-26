@@ -493,11 +493,6 @@ class DataHistoryYahoo():
         else:
             current_ratio = None
 
-        # cagr_current_ratio
-        cagr_current_ratio = fm.get_cagr_metric(current_ratio)
-        if cagr_current_ratio is not None and math.isnan(cagr_current_ratio):
-            cagr_current_ratio = None
-
         # cash_ratio
         if not cash_cash_equivalents.isna().all() and not current_liabilities.isna().all():
             current_liabilities = current_liabilities.replace(0, np.nan)
@@ -510,11 +505,6 @@ class DataHistoryYahoo():
                 cash_ratio = cash_ratio_series
         else:
             cash_ratio = None
-
-        # cagr_cash_ratio
-        cagr_cash_ratio = fm.get_cagr_metric(cash_ratio)
-        if cagr_cash_ratio is not None and math.isnan(cagr_cash_ratio):
-            cagr_cash_ratio = None
 
         # gross_margin
         if not gross_profit.isna().all() and not total_revenue.isna().all():
@@ -645,9 +635,7 @@ class DataHistoryYahoo():
             "ratios": {
                 # Health & Debt
                 "CurrentRatio": current_ratio.iloc[0],
-                "CurrentRatioCAGR": cagr_current_ratio,
                 "CashRatio": cash_ratio.iloc[0],
-                "CashRatioCAGR": cagr_cash_ratio,
                 # Margins
                 "GrossMargin": gross_margin.iloc[0],
                 # "GrossMarginCAGR": cagr_gross_margin,
@@ -660,11 +648,12 @@ class DataHistoryYahoo():
             },
             "market_risk_and_sentiment": {
                 "beta": yahoo_symbol_info.get("beta", None),
-                "auditRisk": yahoo_symbol_info.get("auditRisk", None),
-                "boardRisk": yahoo_symbol_info.get("boardRisk", None),
                 "sharesPercentSharesOut": yahoo_symbol_info.get("sharesPercentSharesOut", None),
                 "recommendationMean": yahoo_symbol_info.get("recommendationMean", None),
                 "targetMeanPrice": yahoo_symbol_info.get("targetMeanPrice", None)
+            },
+            "earnings": {
+                
             }
         }
         return yahoo_symbol_fundamental_info
