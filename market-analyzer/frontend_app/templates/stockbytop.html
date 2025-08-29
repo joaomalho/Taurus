@@ -1,57 +1,57 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "base.html" %} {% load static %} {% block title %}Stock Data{%
+endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/stockbytop.css' %}" />
+<link rel="stylesheet" href="{% static 'css/charts.css' %}" />
+<link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}" />
+{% endblock %} {% block content %}
+<header class="main-header">
+  <div class="header">
+    <a href="/">
+      <img
+        class="header-logo-icon"
+        alt="Logo"
+        src="{% static 'images/logo.png' %}"
+      />
+    </a>
+    <div class="search-container">
+      <input
+        type="text"
+        id="stockSymbol"
+        placeholder="Enter stock symbol (e.g., AAPL)"
+      />
+      <button id="searchButton">Search</button>
+      <p class="search-indication">
+        Enter a stock symbol and press "Search" to fetch data.
+      </p>
+    </div>
+    <nav class="headermenu">
+      <a href="/contact" class="reach-us">Reach Us</a>
+    </nav>
+  </div>
+</header>
 
-{% block title %}Stock Data{% endblock %}
+<hr class="line1" />
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/stockbytop.css' %}">
-<link rel="stylesheet" href="{% static 'css/charts.css' %}">
-<link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}">
-{% endblock %}
+<main class="stockbytop-info">
+  <section id="yahooStockGainersContainer">
+    <h2>Top Gainers</h2>
+    <div class="table-container">
+      <div id="tableYahooGainers"></div>
+    </div>
+  </section>
 
-{% block content %}
-    <header class="main-header">
-        <div class="header">
-            <a href="/">
-                <img class="header-logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
-            </a>
-            <div class="search-container">
-                <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)">
-                <button id="searchButton">Search</button>
-                <p class="search-indication">Enter a stock symbol and press "Search" to fetch data.</p>
-            </div>
-            <nav class="headermenu">
-                <a href="/contact" class="reach-us">Reach Us</a>
-            </nav>
-        </div>
-    </header>
-        
-    <hr class="line1">
+  <section id="yahooStockTrendingContainer">
+    <h2>Top Trending</h2>
+    <div class="table-container">
+      <div id="tableYahooTrending"></div>
+    </div>
+  </section>
 
-    <main class="stockbytop-info">
-        <section id="yahooStockGainersContainer">
-            <h2>Top Gainers</h2>
-            <div class="table-container">
-                <div id="tableYahooGainers"></div>
-            </div>
-        </section>
-
-        <section id="yahooStockTrendingContainer">
-            <h2>Top Trending</h2>
-            <div class="table-container">
-                <div id="tableYahooTrending"></div>
-            </div>
-        </section>
-        
-        <section id="yahooStockMostActiveContainer">
-            <h2>Top Most Active</h2>
-            <div class="table-container">
-                <div id="tableYahooMostActive"></div>
-            </div>
-        </section>
-    </main>
-{% endblock %}
-
-{% block extra_js %}
-
-{% endblock %}
+  <section id="yahooStockMostActiveContainer">
+    <h2>Top Most Active</h2>
+    <div class="table-container">
+      <div id="tableYahooMostActive"></div>
+    </div>
+  </section>
+</main>
+{% endblock %} {% block extra_js %} {% endblock %}
