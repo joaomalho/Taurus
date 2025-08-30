@@ -210,14 +210,15 @@
 .chart-container {
     position: relative;
     width: 100%;
-    max-width: 1000px;     /* opcional */
+    max-width: 100%;     /* opcional */
     height: 360px;         /* controla a altura aqui, no container */
     margin-bottom: 20px;
+    border: 1px solid #485c7b;
 }
 .chart-container canvas {
-  display: block;
+  display: block;   
   width: 100% !important;
-  height: 100% !important;  /* canvas = mesmo tamanho do container */
+  height: 95% !important;
 }
 
 

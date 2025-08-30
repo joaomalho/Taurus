@@ -191,34 +191,37 @@ function renderEarningsChart(rows) {
       labels,
       datasets: [
         {
-          label: "EPS Estimate",
+          label: "Estimated EPS",
           data: estimate,
           yAxisID: "yEPS",
           borderWidth: 2,
-          pointRadius: 3,
-          tension: 0.2,
+          pointRadius: 4,
+          pointStyle:"circle",
+          tension: 0,
           fill: false,
-          borderColor: "rgba(255, 99, 132, 0.9)" // cor vermelha, só exemplo
+          borderColor: "#ef5350"
         },
         {
-          label: "Reported EPS",
+          label: "Actual EPS",
           data: reported,
           yAxisID: "yEPS",
           borderWidth: 2,
-          pointRadius: 3,
-          tension: 0.2,
+          pointRadius: 4,
+          pointStyle:"circle",
+          tension: 0,
           fill: false,
-          borderColor: "rgba(54, 162, 235, 0.9)" // azul
+          borderColor: "#26a699"
         },
         {
-          label: "Surpresa (%)",
+          label: "Surprise (%)",
           data: surprise,
           yAxisID: "ySurprise",
           borderWidth: 2,
-          pointRadius: 3,
-          tension: 0.2,
+          pointRadius: 4,
+          pointStyle:"circle",
+          tension: 0,
           fill: false,
-          borderColor: "rgba(255, 206, 86, 0.9)" // amarelo
+          borderColor: "#ffd000"
         }
       ]
     },
@@ -227,12 +230,18 @@ function renderEarningsChart(rows) {
       maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
       plugins: {
-        legend: { display: true },
+        legend: { 
+          display: true,
+          labels: {
+            usePointStyle: true
+          }
+        },
         tooltip: {
+          usePointStyle: true,
           callbacks: {
             label: (ctx) => {
               if (ctx.dataset.yAxisID === "ySurprise") {
-                return `Surpresa: ${Number(ctx.parsed.y).toFixed(2)}%`;
+                return `Surprise: ${Number(ctx.parsed.y).toFixed(2)}%`;
               }
               const name = ctx.dataset.label || "";
               return `${name}: ${Number(ctx.parsed.y).toFixed(2)}`;
@@ -253,7 +262,7 @@ function renderEarningsChart(rows) {
         ySurprise: {
           type: "linear",
           position: "right",
-          title: { display: true, text: "Surpresa (%)" },
+          title: { display: true, text: "Surprise (%)" },
           grid: { drawOnChartArea: false },
           ticks: { callback: v => `${Number(v).toFixed(0)}%` }
         },
