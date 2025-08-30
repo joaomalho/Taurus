@@ -206,6 +206,21 @@
     border-radius: 3px;
 }
 
+/* theme.css */
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;     /* opcional */
+    height: 360px;         /* controla a altura aqui, no container */
+    margin-bottom: 20px;
+}
+.chart-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;  /* canvas = mesmo tamanho do container */
+}
+
+
 /* Melhorando responsividade */
 @media screen and (max-width: 1024px) {
     .stack-bar-recommendation-chart-container {

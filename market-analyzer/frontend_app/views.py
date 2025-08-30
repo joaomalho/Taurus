@@ -11,7 +11,6 @@ from backend.tecnical_analysis.candlestick_chart_data import CandlestickData
 from backend.tecnical_analysis.candles_patterns import CandlesPatterns
 from backend.tecnical_analysis.harmonic_patterns import HarmonicPatterns
 from backend.risk_manager.risk_manager import RiskManagerFundamental
-from backend.datasources.ecocalendar import EcoCalendar
 
 
 # ------------------------- Pages -------------------------
@@ -947,32 +946,52 @@ def get_symbol_fundamental_news(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
-def get_economic_calendar(request, d1=None, d2=None, timeframe=None):
+def get_yahoo_symbol_earnings_dates(request, symbol: str):
     '''
-    Return economic calendar.
+    Return the earnings of a symbol over time
     '''
-    timeframe = (request.GET.get("timeframe") or "").strip() or None
-    d1_raw = (request.GET.get("d1") or "").strip() or None
-    d2_raw = (request.GET.get("d2") or "").strip() or None
-
-    # 2) parse datas só se não vier timeframe
-    d1 = d2 = None
-    if not timeframe:
-        d1 = _parse_iso_date(d1_raw)
-        d2 = _parse_iso_date(d2_raw)
-
-    # 3) validação: é preciso OU timeframe, OU (d1 e d2 válidas)
-    if not timeframe and not (d1 and d2):
-        return JsonResponse(
-            {"error": "Provide either 'timeframe' or both 'd1' and 'd2' (YYYY-MM-DD)."},
-            status=400
-        )
-
     try:
-        ec = EcoCalendar()
-        data = ec.get_economic_calendar(d1=d1, d2=d2, timeframe=timeframe)
-        if not data:
-            return JsonResponse({"error": "No data found"}, status=404)
-        return JsonResponse({"data": data})
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        df = data_history.get_yahoo_symbol_earnings_dates(symbol)
+
+        # sanity check
+        if df is None or not isinstance(df, pd.DataFrame) or df.empty:
+            return JsonResponse({"data": []}, status=200)
+
+        # ordena por data
+        df = df.sort_index()
+
+        # filtra apenas Earnings
+        if "Event Type" in df.columns:
+            df = df[df["Event Type"] == "Earnings"]
+
+        if df.empty:
+            return JsonResponse({"data": []}, status=200)
+
+        # monta lista de dicts
+        rows = []
+        for idx, row in df.iterrows():
+            dt = pd.to_datetime(idx, utc=True, errors="coerce")
+            if pd.isna(dt):
+                continue
+
+            rows.append({
+                "datetime": dt.isoformat(),
+                "eps_estimate": float(row["EPS Estimate"]) if pd.notna(row["EPS Estimate"]) else None,
+                "reported_eps": float(row["Reported EPS"]) if pd.notna(row["Reported EPS"]) else None,
+                "surprise_pct": float(row["Surprise(%)"]) if pd.notna(row["Surprise(%)"]) else None,
+                "event_type": str(row["Event Type"]) if pd.notna(row["Event Type"]) else None,
+            })
+
+        return JsonResponse({"data": rows}, status=200)
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {e}"}, status=500)

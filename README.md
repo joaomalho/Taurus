@@ -381,6 +381,7 @@ We are also looking to grow our community with **key roles in market analysis**:
 - Fundamental Analysis
 
   - Add P/E over time chart `ToDo: High`
+    - Implemented, need adicitional adjustments.
   - Add Holders last report date to know when info was updated `ToDo: High`
 
   - Sentiment Analysis of Recent News - `ToDo: Low`

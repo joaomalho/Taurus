@@ -947,3 +947,10 @@ class DataHistoryYahoo():
             print(f"Error processing data: {e}")
 
         return df
+
+    def get_yahoo_symbol_earnings_dates(self, symbol: str):
+        '''
+        Return the earnings of a symbol over time
+        '''
+        yahoo_data_earnings_dates = yf.Ticker(symbol).earnings_dates
+        return yahoo_data_earnings_dates

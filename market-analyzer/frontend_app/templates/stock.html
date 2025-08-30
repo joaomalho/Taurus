@@ -79,7 +79,6 @@
             </div>
         </section>
 
-        
         <!-- Histórico de Preços -->
         <section id="priceHistory">
             <h2>Historic Price</h2>
@@ -285,6 +284,9 @@
                             <p><strong>PEG Classification:</strong> <span id="PEGRatioClass"></span></p>
                             <p><strong>PEG Ratio:</strong> <span id="PEGRatio"></span></p>
                         </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="earningsChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -627,6 +629,8 @@
     <script src="{% static 'js/lightweight-charts.standalone.production.js' %}"></script>
     <!-- Chart.js -->
     <script src="{% static 'js/chart.js' %}"></script>
-    <script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script> 
+    <script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
+    <script type="module" src="{% static 'js/chartsandgraphs.js' %}"></script>
 {% endblock %}
 
