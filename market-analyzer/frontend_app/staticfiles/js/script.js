@@ -1,6 +1,6 @@
 import { renderCandlestickFromData } from "./candlestick.js";
 import "./chartsandgraphs.js";
-
+import { initMetricTooltips, initAttributeTooltips } from "./tooltips.js";
 import {
     fetchYahooStockGainers,
     fetchYahooStockTrending,
@@ -39,6 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setupSearchButton();
     setupStockbytopButton();
+    initMetricTooltips({ scope: '#fundamentalAnalysis' });
+    initAttributeTooltips({ scope: '#fundamentalAnalysis' });
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];

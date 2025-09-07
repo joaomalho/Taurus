@@ -32,7 +32,7 @@
   position: absolute;
   left: 50%; bottom: 125%;
   transform: translateX(-50%);
-  min-width: 420px; max-width: 420px;
+  min-width: 220px; max-width: 320px;
   padding: 8px 10px;
   border-radius: 6px;
   font-size: 12px; line-height: 1.35;
@@ -41,7 +41,7 @@
   border: 1px solid var(--border-color);
   box-shadow: 0 6px 20px rgba(0,0,0,.35);
   white-space: normal; z-index: 10;
-  overflow-wrap: anywhere;
+
   opacity: 0; visibility: hidden; pointer-events: none;
   transition: opacity .15s ease-in-out;
 }

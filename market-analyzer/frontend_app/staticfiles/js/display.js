@@ -319,10 +319,8 @@ export function displayBioResults(data) {
     CurrentPrice: bioData.CurrentPrice
       ? formatCurrency(bioData.CurrentPrice)
       : "N/A",
-    PreviousClose: bioData.PreviousClose
-      ? formatCurrency(bioData.PreviousClose)
-      : "N/A",
-    OpenPrice: bioData.OpenPrice ? formatCurrency(bioData.OpenPrice) : "N/A",
+    Beta: bioData.Beta || "N/A",
+    ShareTurnover: bioData.ShareTurnover ? formatPercentFromFraction((bioData.ShareTurnover)) : "N/A",
   };
 
   for (const [key, value] of Object.entries(elements)) {
@@ -341,11 +339,16 @@ export function displayBioResults(data) {
 /* ─────── QUAL FORMATADOR USAR POR CHAVE ─────── */
 const METRIC_STYLE = {
   // valuation
-  trailingPE: "multiple",
   sectorTrailingPE: "multiple",
+  trailingPE: "multiple",
   forwardPE: "multiple",
-  PEGRatio: "multiple",
-
+  MarketCap: "currency",
+  EV_enterprise_value: "currency",
+  ebitdaTTM: "currency",
+  evEbitda: "multiple",
+  PriceToSale: "multiple",
+  EquityFCFYield: "multiple",
+  EnterpriseFCFYield: "multiple",
   // dividends
   divCoverageRate: "multiple",
   dividendYield: "percent",
@@ -364,8 +367,6 @@ const METRIC_STYLE = {
   TotalAssetsCAGR: "percent",
   TotalLiabilitiesCAGR: "percent",
   StockholdersEquityCAGR: "percent",
-  CurrentRatioCAGR: "percent",
-  CashRatioCAGR: "percent",
   OperatingMarginCAGR: "percent",
   ProfitMarginCAGR: "percent",
   ReturnOnEquityCAGR: "percent",
@@ -396,13 +397,10 @@ const METRIC_STYLE = {
   FreeCashflow: "currency",
   OperatingCashflow: "currency",
   CapitalExpenditure: "currency",
-  MarketCap: "currency",
   FreeCashflowYield: "percent",
 
   // risco/sentimento
   beta: "number",
-  auditRisk: "number",
-  boardRisk: "number",
   recommendationMean: "number",
   targetMeanPrice: "currency",
 
@@ -439,10 +437,16 @@ export function displayFundamentalResults(data) {
 
   const elements = {
     // Valuation
-    trailingPE: valuationData.trailingPE || {},
     sectorTrailingPE: valuationData.sectorTrailingPE || {},
+    trailingPE: valuationData.trailingPE || {},
     forwardPE: valuationData.forwardPE || {},
-    PEGRatio: valuationData.PEGRatio || {},
+    MarketCap: valuationData.MarketCap || {},
+    EVenterpriseValue: valuationData.EVenterpriseValue || {},
+    ebitdaTTM: valuationData.ebitdaTTM || {},
+    evEbitda: valuationData.evEbitda || {},
+    PriceToSale: valuationData.PriceToSale || {},
+    EquityFCFYield: valuationData.EquityFCFYield || {},
+    EnterpriseFCFYield: valuationData.EnterpriseFCFYield || {},
     // Dividends
     divCoverageRate: dividendsData.divCoverageRate || {},
     dividendYield: dividendsData.dividendYield || {},
@@ -456,8 +460,6 @@ export function displayFundamentalResults(data) {
     CostOfRevenueCAGR: profitabilityData.CostOfRevenueCAGR || {},
     TotalRevenueCAGR: profitabilityData.TotalRevenueCAGR || {},
     OperatingExpensesCAGR: profitabilityData.OperatingExpensesCAGR || {},
-    // CostOfRevenueYOY: profitabilityData.CostOfRevenueYOY || {},
-    // TotalRevenueYOY: profitabilityData.TotalRevenueYOY || {},
     // Debt
     TotalAssets: liquidityData.TotalAssets || {},
     TotalLiabilities: liquidityData.TotalLiabilities || {},
@@ -477,13 +479,10 @@ export function displayFundamentalResults(data) {
     FreeCashflow: cashflowData.FreeCashflow || {},
     OperatingCashflow: cashflowData.OperatingCashflow || {},
     CapitalExpenditure: cashflowData.CapitalExpenditure || {},
-    MarketCap: cashflowData.MarketCap || {},
     FreeCashflowYield: cashflowData.FreeCashflowYield || {},
     // Ratios
     CurrentRatio: ratiosData.CurrentRatio || {},
-    CurrentRatioCAGR: ratiosData.CurrentRatioCAGR || {},
     CashRatio: ratiosData.CashRatio || {},
-    CashRatioCAGR: ratiosData.CashRatioCAGR || {},
     GrossMargin: ratiosData.GrossMargin || {},
     // GrossMarginCAGR: ratiosData.GrossMarginCAGR || {},
     OperatingMargin: ratiosData.OperatingMargin || {},
@@ -494,8 +493,6 @@ export function displayFundamentalResults(data) {
     ReturnOnEquityCAGR: ratiosData.ReturnOnEquityCAGR || {},
     // Market Risk Sentiment
     beta: marketRiskData.beta || {},
-    auditRisk: marketRiskData.auditRisk || {},
-    boardRisk: marketRiskData.boardRisk || {},
     sharesPercentSharesOut: marketRiskData.sharesPercentSharesOut || {},
     recommendationMean: marketRiskData.recommendationMean || {},
     targetMeanPrice: marketRiskData.targetMeanPrice || {},
@@ -516,7 +513,10 @@ export function displayFundamentalResultsClassification(data) {
   // mapa: [secção em data.evaluations, chave base]
   const fields = [
     ["valuation", "trailingPE"],
-    ["valuation", "PEGRatio"],
+    ["valuation", "evEbitda"],
+    ["valuation", "PriceToSale"],
+    ["valuation", "EquityFCFYield"],
+    ["valuation", "EnterpriseFCFYield"],
     ["dividends", "divCoverageRate"],
     ["profitability", "CostOfRevenueCAGR"],
     ["profitability", "TotalRevenueCAGR"],
@@ -528,9 +528,7 @@ export function displayFundamentalResultsClassification(data) {
     ["liquidity", "TotalLiabilitiesCAGR"],
     ["cashflow", "FreeCashflowYield"],
     ["ratios", "CurrentRatio"],
-    ["ratios", "CurrentRatioCAGR"],
     ["ratios", "CashRatio"],
-    ["ratios", "CashRatioCAGR"],
     ["ratios", "GrossMargin"],
     ["ratios", "OperatingMargin"],
     ["ratios", "OperatingMarginCAGR"],

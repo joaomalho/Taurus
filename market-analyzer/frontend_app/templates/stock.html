@@ -277,6 +277,13 @@
                             <p><strong>Enterprise FCF Yield:</strong> <span id="EnterpriseFCFYield"></span></p>
                         </div>
                         <div>
+                            <h3>KPIs</h3>
+                            <p><strong>EV/EBITDA Classification:</strong> <span id="evEbitdaClass"></span></p>
+                            <p><strong>Price To Sale (P/S) Classification:</strong> <span id="PriceToSaleClass"></span></p>
+                            <p><strong>Equity FCF Yield Classification:</strong> <span id="EquityFCFYieldClass"></span></p>
+                            <p><strong>Enterprise FCF Yield Classification:</strong> <span id="EnterpriseFCFYieldClass"></span></p>
+                        </div>
+                        <div>
                             <h3>Price : Earnings</h3>
                             <p><strong>P/E Classification:</strong> <span id="trailingPEClass"></span></p>
                             <p><strong>Trailing P/E:</strong> <span id="trailingPE"></span></p>
@@ -292,6 +299,62 @@
                     </div>
                     <div class="chart-container">
                         <canvas id="earningsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finantial Health -->
+            <div class="fundamental-card">
+                
+                <div class="fundamental-header" id="funHealth">
+                    <h2>Finantial Health</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+
+                <div class="health-content hidden">
+                    <div class="fund-health">
+                        <div>
+                            <h3>KPIs</h3>
+                            <p><strong>Net Debt / EBITDA:</strong> <span id="NetDebtEbitda"></span></p>
+                            <p><strong>Net Debt / EBITDA Classification:</strong> <span id="NetDebtEbitdaClass"></span></p>
+                            <p><strong>Interest Coverage (EBIT):</strong> <span id="InterestCoverageEbit"></span></p>
+                            <p><strong>Interest Coverage (EBIT) Classification:</strong> <span id="InterestCoverageEbitClass"></span></p>
+                        </div>
+                        <div>
+                            <h3>Actual</h3>
+                            <p><strong>Net Worth Classification:</strong> <span id="NetWorthClass"></span></p>
+                            <p><strong>Net Worth:</strong> <span id="NetWorth"></span></p>
+                            <p><strong>Total Assets:</strong> <span id="TotalAssets"></span></p>
+                            <p><strong>Total Liabilities:</strong> <span id="TotalLiabilities"></span></p>
+                            <p><strong>Cash & Cash Equivalents:</strong> <span id="CashCashEquivalents"></span></p>
+                        </div>
+                        <div>
+                            <h3>Short Term</h3>
+                            <p><strong>Short Debt Coverage Classification:</strong> <span id="ShortTermDebtCoverageClass"></span></p>
+                            <p><strong>Short Debt Coverage:</strong> <span id="ShortTermDebtCoverage"></span></p>
+                            <p><strong>Current Assets:</strong> <span id="CurrentAssets"></span></p>
+                            <p><strong>Current Liabilities:</strong> <span id="CurrentLiabilities"></span></p>
+                        </div>
+                        <div>
+                            <h3>Long Term</h3>
+                            <p><strong>Long Debt Coverage Classification:</strong> <span id="LongTermDebtCoverageClass"></span></p>
+                            <p><strong>Long Debt Coverage:</strong> <span id="LongTermDebtCoverage"></span></p>
+                            <p><strong>Non Current Assets:</strong> <span id="NonCurrentAssets"></span></p>
+                            <p><strong>Non Current Liabilities:</strong> <span id="NonCurrentLiabilities"></span></p>
+                        </div>
+                        <div>
+                            <h3>Stockholders Equity</h3>
+                            <p><strong>Stockholders Equity CAGR Classification:</strong> <span id="StockholdersEquityCAGRClass"></span></p>
+                            <p><strong>Stockholders Equity CAGR:</strong> <span id="StockholdersEquityCAGR"></span></p>
+                            <p><strong>Stockholders Equity:</strong> <span id="StockholdersEquity"></span></p>
+                        </div>
+                        <div>
+                            <h3>Growth</h3>
+                            <p><strong>Assets Growth CAGR Classification:</strong> <span id="TotalAssetsCAGRClass"></span></p>
+                            <p><strong>Assets Growth CAGR:</strong> <span id="TotalAssetsCAGR"></span></p>
+                            <p><strong>Liabilities Growth CAGR Classification:</strong> <span id="TotalLiabilitiesCAGRClass"></span></p>
+                            <p><strong>Liabilities Growth CAGR:</strong> <span id="TotalLiabilitiesCAGR"></span></p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -348,58 +411,6 @@
                         <div>
                             <p><strong>Cost Of Revenue CAGR Classification:</strong> <span id="CostOfRevenueCAGRClass"></span></p>
                             <p><strong>Total Of Revenue CAGR Classification:</strong> <span id="TotalRevenueCAGRClass"></span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Debt-->
-            <div class="fundamental-card">
-                
-                <div class="fundamental-header" id="funHealth">
-                    <h2>Health & Debt</h2>
-                    <span class="toggle-icon">+</span>
-                </div>
-
-                <div class="health-content hidden">
-                    <div >
-                        <h3>Assets & Liabilities</h3>
-                    </div>
-                    <div class="fund-health">
-                        <div>
-                            <h3>Actual</h3>
-                            <p><strong>Net Worth Classification:</strong> <span id="NetWorthClass"></span></p>
-                            <p><strong>Net Worth:</strong> <span id="NetWorth"></span></p>
-                            <p><strong>Total Assets:</strong> <span id="TotalAssets"></span></p>
-                            <p><strong>Total Liabilities:</strong> <span id="TotalLiabilities"></span></p>
-                            <p><strong>Cash & Cash Equivalents:</strong> <span id="CashCashEquivalents"></span></p>
-                        </div>
-                        <div>
-                            <h3>Short Term</h3>
-                            <p><strong>Short Debt Coverage Classification:</strong> <span id="ShortTermDebtCoverageClass"></span></p>
-                            <p><strong>Short Debt Coverage:</strong> <span id="ShortTermDebtCoverage"></span></p>
-                            <p><strong>Current Assets:</strong> <span id="CurrentAssets"></span></p>
-                            <p><strong>Current Liabilities:</strong> <span id="CurrentLiabilities"></span></p>
-                        </div>
-                        <div>
-                            <h3>Long Term</h3>
-                            <p><strong>Long Debt Coverage Classification:</strong> <span id="LongTermDebtCoverageClass"></span></p>
-                            <p><strong>Long Debt Coverage:</strong> <span id="LongTermDebtCoverage"></span></p>
-                            <p><strong>Non Current Assets:</strong> <span id="NonCurrentAssets"></span></p>
-                            <p><strong>Non Current Liabilities:</strong> <span id="NonCurrentLiabilities"></span></p>
-                        </div>
-                        <div>
-                            <h3>Stockholders Equity</h3>
-                            <p><strong>Stockholders Equity CAGR Classification:</strong> <span id="StockholdersEquityCAGRClass"></span></p>
-                            <p><strong>Stockholders Equity CAGR:</strong> <span id="StockholdersEquityCAGR"></span></p>
-                            <p><strong>Stockholders Equity:</strong> <span id="StockholdersEquity"></span></p>
-                        </div>
-                        <div>
-                            <h3>Growth</h3>
-                            <p><strong>Assets Growth CAGR Classification:</strong> <span id="TotalAssetsCAGRClass"></span></p>
-                            <p><strong>Assets Growth CAGR:</strong> <span id="TotalAssetsCAGR"></span></p>
-                            <p><strong>Liabilities Growth CAGR Classification:</strong> <span id="TotalLiabilitiesCAGRClass"></span></p>
-                            <p><strong>Liabilities Growth CAGR:</strong> <span id="TotalLiabilitiesCAGR"></span></p>
                         </div>
                     </div>
                 </div>

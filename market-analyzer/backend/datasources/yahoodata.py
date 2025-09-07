@@ -380,10 +380,30 @@ class DataHistoryYahoo():
         fcf_yield_equity = free_cashflow_now / market_cap if free_cashflow_now is not None and market_cap and market_cap > 0 else None
         fcf_yield_enterp = free_cashflow_now / enterprise_value if free_cashflow_now is not None and enterprise_value and enterprise_value > 0 else None
 
+        # ------ Finantial Health ------ #
+        # - Net Debt / EBITDA
+        net_debt = total_debt - cash_sti
+
+        net_debt_ebitda = net_debt / ebitda_ttm if net_debt is not None and ebitda_ttm and ebitda_ttm > 0 else None
+
+        # - Interest Coverage (EBIT)
+        ebit_ttm = sum(yahoo_symbol_income_quarter.loc["EBIT"])
+
+        interest_expense_now = yahoo_symbol_income.loc["Interest Expense"].iloc[0]
+
+        interest_expense = interest_expense_now if interest_expense_now is not None else yahoo_symbol_income.loc["Interest Expense"].iloc[1]
+
+        interest_coverage_ebit = ebit_ttm / interest_expense if ebit_ttm is not None and interest_expense and interest_expense > 0 else None
+
         # Dividends & BuyBacks
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
         dividend_rate = yahoo_symbol_info.get("dividendRate")
 
+        # operating_income
+        if 'Operating Income' in yahoo_symbol_income.index:
+            operating_income = yahoo_symbol_income.loc['Operating Income']
+            if pd.isna(operating_income).all():
+                operating_income = None
         if (
             eps_ann is not None and
             dividend_rate is not None and
@@ -513,7 +533,6 @@ class DataHistoryYahoo():
             cagr_stockholder_equity = None
 
         # Cashflow
-
         # operating_cashflow
         if 'Operating Cash Flow' in yahoo_symbol_cashflow.index:
             operating_cashflow = yahoo_symbol_cashflow.loc['Operating Cash Flow']
@@ -571,15 +590,6 @@ class DataHistoryYahoo():
                 gross_margin = gross_margin_series
         else:
             gross_margin = None
-
-        # cagr_gross_margin
-        # cagr_gross_margin = fm.get_cagr_metric(gross_margin)
-
-        # operating_income
-        if 'Operating Income' in yahoo_symbol_income.index:
-            operating_income = yahoo_symbol_income.loc['Operating Income']
-            if pd.isna(operating_income).all():
-                operating_income = None
 
         # operation_margin
         if not operating_income.isna().all() and not total_revenue.isna().all():
@@ -648,22 +658,9 @@ class DataHistoryYahoo():
                 "EquityFCFYield": fcf_yield_equity,
                 "EnterpriseFCFYield": fcf_yield_enterp,
             },
-            "dividends": {
-                "divCoverageRate": div_coverage_rate,
-                "dividendYield": yahoo_symbol_info.get("dividendYield", None),
-                "fiveYearAvgDividendYield": yahoo_symbol_info.get("fiveYearAvgDividendYield", None),
-            },
-            "profitability": {
-                "NetIncome": net_income.iloc[0],
-                "TotalRevenue": total_revenue.iloc[0],
-                "CostOfRevenue": cost_of_revenue.iloc[0],
-                "GrossProfit": gross_profit.iloc[0],
-                "OperatingExpenses": operating_expenses.iloc[0],
-                "CostOfRevenueCAGR": cagr_cost_of_revenue,
-                "TotalRevenueCAGR": cagr_total_revenue,
-                "OperatingExpensesCAGR": cagr_operating_expenses,
-            },
-            "liquidity": {
+            "finantial_health": {
+                "NetDebtEbitda": net_debt_ebitda,
+                "InterestCoverageEbit": interest_coverage_ebit,
                 # Actual
                 "TotalAssets": total_assets.iloc[0],
                 "TotalLiabilities": total_liabilities.iloc[0],
@@ -683,6 +680,21 @@ class DataHistoryYahoo():
                 # Stockholders Equity
                 "StockholdersEquityCAGR": cagr_stockholder_equity,
                 "StockholdersEquity": stockholders_equity.iloc[0],
+            },
+            "dividends": {
+                "divCoverageRate": div_coverage_rate,
+                "dividendYield": yahoo_symbol_info.get("dividendYield", None),
+                "fiveYearAvgDividendYield": yahoo_symbol_info.get("fiveYearAvgDividendYield", None),
+            },
+            "profitability": {
+                "NetIncome": net_income.iloc[0],
+                "TotalRevenue": total_revenue.iloc[0],
+                "CostOfRevenue": cost_of_revenue.iloc[0],
+                "GrossProfit": gross_profit.iloc[0],
+                "OperatingExpenses": operating_expenses.iloc[0],
+                "CostOfRevenueCAGR": cagr_cost_of_revenue,
+                "TotalRevenueCAGR": cagr_total_revenue,
+                "OperatingExpensesCAGR": cagr_operating_expenses,
             },
             "cashflow": {
                 "FreeCashflow": free_cashflow_now,

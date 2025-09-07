@@ -349,6 +349,9 @@ const METRIC_STYLE = {
   PriceToSale: "multiple",
   EquityFCFYield: "multiple",
   EnterpriseFCFYield: "multiple",
+  // finantial health
+  NetDebtEbitda: "multiple",
+  InterestCoverageEbit: "multiple",
   // dividends
   divCoverageRate: "multiple",
   dividendYield: "percent",
@@ -430,7 +433,7 @@ export function displayFundamentalResults(data) {
   const valuationData = data.valuation;
   const dividendsData = data.dividends;
   const profitabilityData = data.profitability;
-  const liquidityData = data.liquidity;
+  const finantial_healthData = data.finantial_health;
   const cashflowData = data.cashflow;
   const ratiosData = data.ratios;
   const marketRiskData = data.market_risk_and_sentiment;
@@ -447,6 +450,23 @@ export function displayFundamentalResults(data) {
     PriceToSale: valuationData.PriceToSale || {},
     EquityFCFYield: valuationData.EquityFCFYield || {},
     EnterpriseFCFYield: valuationData.EnterpriseFCFYield || {},
+    // Finantial Health
+    NetDebtEbitda: finantial_healthData.NetDebtEbitda || {},
+    InterestCoverageEbit: finantial_healthData.InterestCoverageEbit || {},
+    TotalAssets: finantial_healthData.TotalAssets || {},
+    TotalLiabilities: finantial_healthData.TotalLiabilities || {},
+    NetWorth: finantial_healthData.NetWorth || {},
+    CashCashEquivalents: finantial_healthData.CashCashEquivalents || {},
+    ShortTermDebtCoverage: finantial_healthData.ShortTermDebtCoverage || {},
+    CurrentAssets: finantial_healthData.CurrentAssets || {},
+    CurrentLiabilities: finantial_healthData.CurrentLiabilities || {},
+    LongTermDebtCoverage: finantial_healthData.LongTermDebtCoverage || {},
+    NonCurrentAssets: finantial_healthData.NonCurrentAssets || {},
+    NonCurrentLiabilities: finantial_healthData.NonCurrentLiabilities || {},
+    TotalAssetsCAGR: finantial_healthData.TotalAssetsCAGR || {},
+    TotalLiabilitiesCAGR: finantial_healthData.TotalLiabilitiesCAGR || {},
+    StockholdersEquityCAGR: finantial_healthData.StockholdersEquityCAGR || {},
+    StockholdersEquity: finantial_healthData.StockholdersEquity || {},
     // Dividends
     divCoverageRate: dividendsData.divCoverageRate || {},
     dividendYield: dividendsData.dividendYield || {},
@@ -460,21 +480,6 @@ export function displayFundamentalResults(data) {
     CostOfRevenueCAGR: profitabilityData.CostOfRevenueCAGR || {},
     TotalRevenueCAGR: profitabilityData.TotalRevenueCAGR || {},
     OperatingExpensesCAGR: profitabilityData.OperatingExpensesCAGR || {},
-    // Debt
-    TotalAssets: liquidityData.TotalAssets || {},
-    TotalLiabilities: liquidityData.TotalLiabilities || {},
-    NetWorth: liquidityData.NetWorth || {},
-    CashCashEquivalents: liquidityData.CashCashEquivalents || {},
-    ShortTermDebtCoverage: liquidityData.ShortTermDebtCoverage || {},
-    CurrentAssets: liquidityData.CurrentAssets || {},
-    CurrentLiabilities: liquidityData.CurrentLiabilities || {},
-    LongTermDebtCoverage: liquidityData.LongTermDebtCoverage || {},
-    NonCurrentAssets: liquidityData.NonCurrentAssets || {},
-    NonCurrentLiabilities: liquidityData.NonCurrentLiabilities || {},
-    TotalAssetsCAGR: liquidityData.TotalAssetsCAGR || {},
-    TotalLiabilitiesCAGR: liquidityData.TotalLiabilitiesCAGR || {},
-    StockholdersEquityCAGR: liquidityData.StockholdersEquityCAGR || {},
-    StockholdersEquity: liquidityData.StockholdersEquity || {},
     // Cashflow
     FreeCashflow: cashflowData.FreeCashflow || {},
     OperatingCashflow: cashflowData.OperatingCashflow || {},
@@ -513,15 +518,19 @@ export function displayFundamentalResultsClassification(data) {
   // mapa: [secção em data.evaluations, chave base]
   const fields = [
     ["valuation", "trailingPE"],
+    ["valuation", "evEbitda"],
+    ["valuation", "PriceToSale"],
+    ["valuation", "EquityFCFYield"],
+    ["valuation", "EnterpriseFCFYield"],
     ["dividends", "divCoverageRate"],
     ["profitability", "CostOfRevenueCAGR"],
     ["profitability", "TotalRevenueCAGR"],
-    ["liquidity", "NetWorth"],
-    ["liquidity", "ShortTermDebtCoverage"],
-    ["liquidity", "LongTermDebtCoverage"],
-    ["liquidity", "StockholdersEquityCAGR"],
-    ["liquidity", "TotalAssetsCAGR"],
-    ["liquidity", "TotalLiabilitiesCAGR"],
+    ["finantial_health", "NetWorth"],
+    ["finantial_health", "ShortTermDebtCoverage"],
+    ["finantial_health", "LongTermDebtCoverage"],
+    ["finantial_health", "StockholdersEquityCAGR"],
+    ["finantial_health", "TotalAssetsCAGR"],
+    ["finantial_health", "TotalLiabilitiesCAGR"],
     ["cashflow", "FreeCashflowYield"],
     ["ratios", "CurrentRatio"],
     ["ratios", "CashRatio"],

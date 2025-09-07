@@ -396,7 +396,6 @@ We are also looking to grow our community with **key roles in market analysis**:
   - Information marker points `ToDo: High`
   - Macro overview
   - Micro overview by sector
-    f
 
 - Nice to Have
 

@@ -106,7 +106,8 @@ class RiskManagerFundamental():
             "Not Good - High Operational Costs or Difficulties to Get Revenue",
             "Not Good - High Operational Costs or Operational Problems",
             "Not Good - Low Efficiency on Equity Use",
-            "Not Good - No Growth or Negative Trend"
+            "Not Good - No Growth or Negative Trend",
+            "Weak"
         ]
         if any(k.lower() in s for k in verybad):
             return "verybad"
@@ -116,7 +117,8 @@ class RiskManagerFundamental():
             "high overvalued",
             "bad coverage (cut)",
             "tight margin to debt",
-            "Not Good - Declining or No Growth"
+            "Not Good - Declining or No Growth",
+            "Expensive"
         ]
         if any(k.lower() in s for k in bad):
             return "bad"
@@ -129,11 +131,13 @@ class RiskManagerFundamental():
             "Good - Efficient Costs Management",
             "Good - Highly Profitable and Eficient Profit Generate",
             "Good - Highly Efficient in Generating Profits",
-            "Good - Consistent Growth in Equity Returns"
+            "Good - Consistent Growth in Equity Returns",
+            "Cheap",
+            "Very Strong"
         ]
         if any(k.lower() in s for k in verygood):
             return "verygood"
-        
+
         good = [
             "low undervalued",
             "undervalued",
@@ -143,11 +147,13 @@ class RiskManagerFundamental():
             "Healthy - Healthy Operational Management",
             "Healthy - Healthy and Solid Management",
             "Good - Growing Profitability Over Time",
-            "Healthy - Efficient and Solid Management"
+            "Healthy - Efficient and Solid Management",
+            "Fair",
+            "Strong"
         ]
         if any(k.lower() in s for k in good):
             return "good"
-        
+
         neutral = [
             "no data",
             "Indefinido",
@@ -192,7 +198,7 @@ class RiskManagerFundamental():
 
         evaluated_metrics = {}
 
-        # Valuation
+        # ----- Valuation ----- #
         valuation = metrics.get('valuation', {})
         trailing_pe = fm.safe_round(valuation.get("trailingPE"))
         sector_pe = fm.safe_round(valuation.get("sectorTrailingPE"))
@@ -230,11 +236,11 @@ class RiskManagerFundamental():
             text_equity_fcf_yield = "No Data"
         else:
             if equity_fcf_yield <= 3:
-                text_equity_fcf_yield = "Caro"
+                text_equity_fcf_yield = "Expensive"
             elif equity_fcf_yield <= 5:
-                text_equity_fcf_yield = "Justo"
+                text_equity_fcf_yield = "Fair"
             else:
-                text_equity_fcf_yield = "Barato"
+                text_equity_fcf_yield = "Cheap"
 
         self._set_eval(evaluated_metrics, "EquityFCFYield", text_equity_fcf_yield)
 
@@ -245,11 +251,11 @@ class RiskManagerFundamental():
             text_enterprise_fcf_yield = "No Data"
         else:
             if enterprise_fcf_yield <= 2.5:
-                text_enterprise_fcf_yield = "Caro"
+                text_enterprise_fcf_yield = "Expensive"
             elif enterprise_fcf_yield <= 4:
-                text_enterprise_fcf_yield = "Justo"
+                text_enterprise_fcf_yield = "Fair"
             else:
-                text_enterprise_fcf_yield = "Barato"
+                text_enterprise_fcf_yield = "Cheap"
 
         self._set_eval(evaluated_metrics, "EnterpriseFCFYield", text_enterprise_fcf_yield)
 
@@ -259,12 +265,12 @@ class RiskManagerFundamental():
         if price_to_sale is None:
             text_price_to_sale = "No Data"
         else:
-            if price_to_sale <= 3:
-                text_price_to_sale = "Caro"
-            elif price_to_sale <= 5:
-                text_price_to_sale = "Justo"
+            if price_to_sale <= 2:
+                text_price_to_sale = "Cheap"
+            elif price_to_sale <= 6:
+                text_price_to_sale = "Fair"
             else:
-                text_price_to_sale = "Barato"
+                text_price_to_sale = "Expensive"
 
         self._set_eval(evaluated_metrics, "PriceToSale", text_price_to_sale)
 
@@ -274,14 +280,115 @@ class RiskManagerFundamental():
         if ev_ebitda is None:
             text_ev_ebitda = "No Data"
         else:
-            if ev_ebitda <=3:
-                text_ev_ebitda = "Caro"
-            elif ev_ebitda <=5:
-                text_ev_ebitda = "Justo"
+            if ev_ebitda <= 8:
+                text_ev_ebitda = "Cheap"
+            elif ev_ebitda <= 12:
+                text_ev_ebitda = "Fair"
             else:
-                text_ev_ebitda = "Barato"
+                text_ev_ebitda = "Expensive"
 
         self._set_eval(evaluated_metrics, "evEbitda", text_ev_ebitda)
+
+        # ----- Finantial Health ----- #
+        # Net Debt Ebitda
+        net_debt_ebitda = fm.safe_round(metrics.get('finantial_health', {}).get("NetDebtEbitda"))
+        evaluated_metrics["NetDebtEbitda"] = net_debt_ebitda if net_debt_ebitda is not None else None
+
+        if net_debt_ebitda is None:
+            text_net_debt_ebitda = "No Data"
+        else:
+            if net_debt_ebitda <= 0:
+                text_net_debt_ebitda = "Very Strong"
+            elif net_debt_ebitda <= 1:
+                text_net_debt_ebitda = "Strong"
+            elif net_debt_ebitda <= 3:
+                text_net_debt_ebitda = "Neutral"
+            else:
+                text_net_debt_ebitda = "Weak"
+
+        self._set_eval(evaluated_metrics, "NetDebtEbitda", text_net_debt_ebitda)
+
+        # Interest Coverage EBIT
+        interest_coverage_ebit = fm.safe_round(metrics.get('finantial_health', {}).get("InterestCoverageEbit"))
+        evaluated_metrics["InterestCoverageEbit"] = interest_coverage_ebit if interest_coverage_ebit is not None else None
+
+        if interest_coverage_ebit is None:
+            text_interest_coverage_ebit = "No Data"
+        else:
+            if interest_coverage_ebit <= 3:
+                text_interest_coverage_ebit = "Weak"
+            elif interest_coverage_ebit <= 8:
+                text_interest_coverage_ebit = "Neutral"
+            else:
+                text_interest_coverage_ebit = "Strong"
+
+        self._set_eval(evaluated_metrics, "InterestCoverageEbit", text_interest_coverage_ebit)
+
+        # Net Worth
+        net_worth = fm.safe_round(metrics.get('finantial_health', {}).get("NetWorth"))
+        evaluated_metrics["NetWorth"] = net_worth if net_worth is not None else None
+
+        if net_worth is None:
+            text_NetWorth = "No Data"
+        else:
+            text_NetWorth = "Good" if net_worth > 0 else "Not Good (In Debt)"
+
+        self._set_eval(evaluated_metrics, "NetWorth", text_NetWorth)
+
+        # Short Term Debt Coverage
+        short_debt_cov = fm.safe_round(metrics.get('finantial_health', {}).get("ShortTermDebtCoverage"))
+        evaluated_metrics["ShortTermDebtCoverage"] = short_debt_cov if short_debt_cov is not None else None
+
+        if short_debt_cov is None:
+            text_ShortTermDebtCoverage = "No Data"
+        else:
+            text_ShortTermDebtCoverage = "Good" if short_debt_cov > 0 else "Not Good (In Debt)"
+
+        self._set_eval(evaluated_metrics, "ShortTermDebtCoverage", text_ShortTermDebtCoverage)
+
+        # Long Term Debt Coverage
+        long_debt_cov = fm.safe_round(metrics.get('finantial_health', {}).get("LongTermDebtCoverage"))
+        evaluated_metrics["LongTermDebtCoverage"] = long_debt_cov if long_debt_cov is not None else None
+
+        if long_debt_cov is None:
+            text_LongTermDebtCoverage = "No Data"
+        else:
+            text_LongTermDebtCoverage = "Good" if long_debt_cov > 0 else "Not Good (In Debt)"
+
+        self._set_eval(evaluated_metrics, "LongTermDebtCoverage", text_LongTermDebtCoverage)
+
+        # Assets Growth
+        total_assets_cagr = fm.safe_round(metrics.get('finantial_health', {}).get("TotalAssetsCAGR"))
+        evaluated_metrics["TotalAssetsCAGR"] = total_assets_cagr if total_assets_cagr is not None else None
+
+        if total_assets_cagr is None or math.isnan(total_assets_cagr):
+            text_TotalAssetsCAGR = "No Data"
+        else:
+            text_TotalAssetsCAGR = "Good" if total_assets_cagr > 0 else "Not Good"
+
+        self._set_eval(evaluated_metrics, "TotalAssetsCAGR", text_TotalAssetsCAGR)
+
+        # Liabilities Growth
+        total_liabilities_cagr = fm.safe_round(metrics.get('finantial_health', {}).get("TotalLiabilitiesCAGR"))
+        evaluated_metrics["TotalLiabilitiesCAGR"] = total_liabilities_cagr if total_liabilities_cagr is not None else None
+
+        if total_liabilities_cagr is None or math.isnan(total_liabilities_cagr):
+            text_TotalLiabilitiesCAGR = "No Data"
+        else:
+            text_TotalLiabilitiesCAGR = "Good" if total_liabilities_cagr <= 0 else "Not Good"
+
+        self._set_eval(evaluated_metrics, "TotalLiabilitiesCAGR", text_TotalLiabilitiesCAGR)
+
+        # Stockholders Equity
+        stockholders_equity_cagr = fm.safe_round(metrics.get('finantial_health', {}).get("StockholdersEquityCAGR"))
+        evaluated_metrics["StockholdersEquityCAGR"] = stockholders_equity_cagr if stockholders_equity_cagr is not None else None
+
+        if stockholders_equity_cagr is None or math.isnan(stockholders_equity_cagr):
+            text_StockholdersEquityCAGR = "No Data"
+        else:
+            text_StockholdersEquityCAGR = "Good" if stockholders_equity_cagr > 0 else "Not Good"
+
+        self._set_eval(evaluated_metrics, "StockholdersEquityCAGR", text_StockholdersEquityCAGR)
 
         # Dividends - Dividend Coverage Ratio
         div_coverage_raw = fm.safe_round(metrics.get('dividends', {}).get("divCoverageRate"))
@@ -330,72 +437,6 @@ class RiskManagerFundamental():
             text_TotalRevenueCAGR = "Good" if total_revenue_cagr > 0 else "Not Good"
 
         self._set_eval(evaluated_metrics, "TotalRevenueCAGR", text_TotalRevenueCAGR)
-
-        # Debt
-        net_worth = fm.safe_round(metrics.get('liquidity', {}).get("NetWorth"))
-        evaluated_metrics["NetWorth"] = net_worth if net_worth is not None else None
-
-        if net_worth is None:
-            text_NetWorth = "No Data"
-        else:
-            text_NetWorth = "Good" if net_worth > 0 else "Not Good (In Debt)"
-
-        self._set_eval(evaluated_metrics, "NetWorth", text_NetWorth)
-
-        # Short Term Debt Coverage
-        short_debt_cov = fm.safe_round(metrics.get('liquidity', {}).get("ShortTermDebtCoverage"))
-        evaluated_metrics["ShortTermDebtCoverage"] = short_debt_cov if short_debt_cov is not None else None
-
-        if short_debt_cov is None:
-            text_ShortTermDebtCoverage = "No Data"
-        else:
-            text_ShortTermDebtCoverage = "Good" if short_debt_cov > 0 else "Not Good (In Debt)"
-
-        self._set_eval(evaluated_metrics, "ShortTermDebtCoverage", text_ShortTermDebtCoverage)
-
-        # Long Term Debt Coverage
-        long_debt_cov = fm.safe_round(metrics.get('liquidity', {}).get("LongTermDebtCoverage"))
-        evaluated_metrics["LongTermDebtCoverage"] = long_debt_cov if long_debt_cov is not None else None
-
-        if long_debt_cov is None:
-            text_LongTermDebtCoverage = "No Data"
-        else:
-            text_LongTermDebtCoverage = "Good" if long_debt_cov > 0 else "Not Good (In Debt)"
-
-        self._set_eval(evaluated_metrics, "LongTermDebtCoverage", text_LongTermDebtCoverage)
-
-        # Assets Growth
-        total_assets_cagr = fm.safe_round(metrics.get('liquidity', {}).get("TotalAssetsCAGR"))
-        evaluated_metrics["TotalAssetsCAGR"] = total_assets_cagr if total_assets_cagr is not None else None
-
-        if total_assets_cagr is None or math.isnan(total_assets_cagr):
-            text_TotalAssetsCAGR = "No Data"
-        else:
-            text_TotalAssetsCAGR = "Good" if total_assets_cagr > 0 else "Not Good"
-
-        self._set_eval(evaluated_metrics, "TotalAssetsCAGR", text_TotalAssetsCAGR)
-
-        # Liabilities Growth
-        total_liabilities_cagr = fm.safe_round(metrics.get('liquidity', {}).get("TotalLiabilitiesCAGR"))
-        evaluated_metrics["TotalLiabilitiesCAGR"] = total_liabilities_cagr if total_liabilities_cagr is not None else None
-
-        if total_liabilities_cagr is None or math.isnan(total_liabilities_cagr):
-            text_TotalLiabilitiesCAGR = "No Data"
-        else:
-            text_TotalLiabilitiesCAGR = "Good" if total_liabilities_cagr <= 0 else "Not Good"
-
-        self._set_eval(evaluated_metrics, "TotalLiabilitiesCAGR", text_TotalLiabilitiesCAGR)
-
-        # Stockholders Equity
-        stockholders_equity_cagr = fm.safe_round(metrics.get('liquidity', {}).get("StockholdersEquityCAGR"))
-        evaluated_metrics["StockholdersEquityCAGR"] = stockholders_equity_cagr if stockholders_equity_cagr is not None else None
-
-        if stockholders_equity_cagr is None or math.isnan(stockholders_equity_cagr):
-            text_StockholdersEquityCAGR = "No Data"
-        else:
-            text_StockholdersEquityCAGR = "Good" if stockholders_equity_cagr > 0 else "Not Good"
-
-        self._set_eval(evaluated_metrics, "StockholdersEquityCAGR", text_StockholdersEquityCAGR)
 
         # Cash
         # Free Cashflow Yield
@@ -570,3 +611,5 @@ class RiskManagerFundamental():
                 text_ReturnOnEquityCAGR = "Good - Consistent Growth in Equity Returns"
 
         self._set_eval(evaluated_metrics, "ReturnOnEquityCAGR", text_ReturnOnEquityCAGR)
+
+        return evaluated_metrics if evaluated_metrics else "Indefinido"
