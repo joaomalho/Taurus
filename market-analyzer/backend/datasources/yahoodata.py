@@ -305,13 +305,58 @@ class DataHistoryYahoo():
         except Exception:
             yahoo_symbol_income = pd.DataFrame()
         try:
+            yahoo_symbol_income_quarter = yf.Ticker(symbol).quarterly_income_stmt
+        except Exception:
+            yahoo_symbol_income_quarter = pd.DataFrame()
+        try:
             yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
         except Exception:
             yahoo_symbol_cashflow = pd.DataFrame()
 
-        # Valuation
+        # ------ Valuation ------ #
+        # - Price Earnings
         sector = yahoo_symbol_info.get("sector")
         sector_pe = self.get_sector_etf_info(sector, "trailingPE")
+
+        forward_pe = yahoo_symbol_info.get("forwardPE", None),
+        trailing_pe = yahoo_symbol_info.get("trailingPE", None),
+
+        # - Market Cap
+        market_cap = yahoo_symbol_info.get('marketCap')
+        if market_cap is None or (isinstance(market_cap, float) and math.isnan(market_cap)):
+            market_cap = None
+
+        # - Total Debt
+        total_debt = yahoo_symbol_balancesheet.loc["Total Debt"].iloc[0]
+        if total_debt is None or (isinstance(total_debt, float) and math.isnan(total_debt)):
+            total_debt = None
+
+        # - Minority Interest
+        total_equity_gross_minority_interest = yahoo_symbol_balancesheet.loc["Total Equity Gross Minority Interest"].iloc[0]
+        if total_equity_gross_minority_interest is None or (isinstance(total_equity_gross_minority_interest, float) and math.isnan(total_equity_gross_minority_interest)):
+            total_equity_gross_minority_interest = None
+
+        # - Stockholders Equity
+        stockholders_equity = yahoo_symbol_balancesheet.loc["Stockholders Equity"].iloc[0]
+        if stockholders_equity is None or (isinstance(stockholders_equity, float) and math.isnan(stockholders_equity)):
+            stockholders_equity = None
+
+        minority_interest = total_equity_gross_minority_interest - stockholders_equity
+
+        preferred_equity = 0  # incluir se tiver a rubrica
+
+        # - Debt & cash (preferidos)
+        cash_sti = yahoo_symbol_balancesheet.loc["Cash Cash Equivalents And Short Term Investments"].iloc[0]
+        if cash_sti is None:
+            cash = yahoo_symbol_balancesheet.loc["Cash And Cash Equivalents"].iloc[0]
+            sti = yahoo_symbol_balancesheet.loc["Other Short Term Investments"].iloc[0]
+            cash_sti = (cash or 0) + (sti or 0)
+
+        # - Enterprise Value
+        enterprise_value = market_cap + total_debt + minority_interest + preferred_equity - cash_sti
+
+        # - EBITDA  
+        ebitda_ttm = sum(yahoo_symbol_income_quarter.loc["EBITDA"])
 
         # Dividends & BuyBacks
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
@@ -470,11 +515,6 @@ class DataHistoryYahoo():
             if pd.isna(capital_expenditure).all():
                 capital_expenditure = None
 
-        # market_cap
-        market_cap = yahoo_symbol_info.get('marketCap')
-        if market_cap is None or (isinstance(market_cap, float) and math.isnan(market_cap)):
-            market_cap = None
-
         # free_cashflow_yield
         if not pd.isna(market_cap) and market_cap != 0 and not free_cashflow.isna().all():
             free_cashflow_yield = ((free_cashflow.iloc[0] / market_cap) * 100)
@@ -586,10 +626,12 @@ class DataHistoryYahoo():
 
         yahoo_symbol_fundamental_info = {
             "valuation": {
-                "trailingPE": yahoo_symbol_info.get("trailingPE", None),
                 "sectorTrailingPE": sector_pe,
-                "forwardPE": yahoo_symbol_info.get("forwardPE", None),
-                "PEGRatio": yahoo_symbol_info.get("trailingPegRatio", None),
+                "forwardPE": forward_pe,
+                "trailingPE": trailing_pe,
+                "MarketCap": market_cap,
+                "EVenterpriseValue": enterprise_value,
+                "ebitdaTTM": ebitda_ttm,
             },
             "dividends": {
                 "divCoverageRate": div_coverage_rate,
@@ -631,7 +673,6 @@ class DataHistoryYahoo():
                 "FreeCashflow": free_cashflow.iloc[0],
                 "OperatingCashflow": operating_cashflow.iloc[0],
                 "CapitalExpenditure": capital_expenditure.iloc[0],
-                "MarketCap": market_cap,
                 "FreeCashflowYield": free_cashflow_yield,
             },
             "ratios": {

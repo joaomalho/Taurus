@@ -339,11 +339,13 @@ export function displayBioResults(data) {
 /* ─────── QUAL FORMATADOR USAR POR CHAVE ─────── */
 const METRIC_STYLE = {
   // valuation
-  trailingPE: "multiple",
   sectorTrailingPE: "multiple",
+  trailingPE: "multiple",
   forwardPE: "multiple",
-  PEGRatio: "multiple",
-
+  MarketCap: "currency",
+  EV_enterprise_value: "currency",
+  ebitdaTTM: "currency",
+  
   // dividends
   divCoverageRate: "multiple",
   dividendYield: "percent",
@@ -392,7 +394,6 @@ const METRIC_STYLE = {
   FreeCashflow: "currency",
   OperatingCashflow: "currency",
   CapitalExpenditure: "currency",
-  MarketCap: "currency",
   FreeCashflowYield: "percent",
 
   // risco/sentimento
@@ -433,10 +434,12 @@ export function displayFundamentalResults(data) {
 
   const elements = {
     // Valuation
-    trailingPE: valuationData.trailingPE || {},
     sectorTrailingPE: valuationData.sectorTrailingPE || {},
+    trailingPE: valuationData.trailingPE || {},
     forwardPE: valuationData.forwardPE || {},
-    PEGRatio: valuationData.PEGRatio || {},
+    MarketCap: valuationData.MarketCap || {},
+    EVenterpriseValue: valuationData.EVenterpriseValue || {},
+    ebitdaTTM: valuationData.ebitdaTTM || {},
     // Dividends
     divCoverageRate: dividendsData.divCoverageRate || {},
     dividendYield: dividendsData.dividendYield || {},
@@ -471,7 +474,6 @@ export function displayFundamentalResults(data) {
     FreeCashflow: cashflowData.FreeCashflow || {},
     OperatingCashflow: cashflowData.OperatingCashflow || {},
     CapitalExpenditure: cashflowData.CapitalExpenditure || {},
-    MarketCap: cashflowData.MarketCap || {},
     FreeCashflowYield: cashflowData.FreeCashflowYield || {},
     // Ratios
     CurrentRatio: ratiosData.CurrentRatio || {},
@@ -506,7 +508,6 @@ export function displayFundamentalResultsClassification(data) {
   // mapa: [secção em data.evaluations, chave base]
   const fields = [
     ["valuation", "trailingPE"],
-    ["valuation", "PEGRatio"],
     ["dividends", "divCoverageRate"],
     ["profitability", "CostOfRevenueCAGR"],
     ["profitability", "TotalRevenueCAGR"],

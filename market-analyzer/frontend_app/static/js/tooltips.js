@@ -8,12 +8,8 @@ export const DEFAULT_TIPS = {
     "P/E médio do setor, útil para comparação com pares.",
   forwardPE:
     "P/E com base em lucros estimados (12 meses seguintes). Sensível a revisões de analistas.",
-  PEGRatio:
-    "PEG = P/E dividido pelo crescimento dos lucros. < 1 pode sugerir preço atrativo face ao crescimento.",
   trailingPEClass:
     "Classificação qualitativa do P/E face a thresholds por setor.",
-  PEGRatioClass:
-    "Classificação qualitativa do PEG (ex.: <1, 1–2, >2).",
 };
 
 // Cria o ícone

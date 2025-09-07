@@ -223,23 +223,6 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "trailingPE", text_trailingPE)
 
-        # Valuation - PEG Ratio
-        peg_raw = fm.safe_round(metrics.get('valuation', {}).get("PEGRatio"))
-
-        evaluated_metrics["PEGRatio"] = peg_raw if peg_raw is not None else None
-
-        if peg_raw is None:
-            text_PEGRatio = "No Data"
-        else:
-            if peg_raw < 1:
-                text_PEGRatio = "Undervalued"
-            elif peg_raw == 1:
-                text_PEGRatio = "Neutral Valued"
-            else:
-                text_PEGRatio = "Overvalued"
-
-        self._set_eval(evaluated_metrics, "PEGRatio", text_PEGRatio)
-
         # Dividends - Dividend Coverage Ratio
         div_coverage_raw = fm.safe_round(metrics.get('dividends', {}).get("divCoverageRate"))
 
