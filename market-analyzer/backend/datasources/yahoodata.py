@@ -318,8 +318,8 @@ class DataHistoryYahoo():
         sector = yahoo_symbol_info.get("sector")
         sector_pe = self.get_sector_etf_info(sector, "trailingPE")
 
-        forward_pe = yahoo_symbol_info.get("forwardPE", None),
-        trailing_pe = yahoo_symbol_info.get("trailingPE", None),
+        forward_pe = yahoo_symbol_info.get("forwardPE", None)
+        trailing_pe = yahoo_symbol_info.get("trailingPE", None)
 
         # - Market Cap
         market_cap = yahoo_symbol_info.get('marketCap')
@@ -355,8 +355,30 @@ class DataHistoryYahoo():
         # - Enterprise Value
         enterprise_value = market_cap + total_debt + minority_interest + preferred_equity - cash_sti
 
-        # - EBITDA  
+        # - EBITDA
         ebitda_ttm = sum(yahoo_symbol_income_quarter.loc["EBITDA"])
+
+        # - Total Revenue
+        if 'Total Revenue' in yahoo_symbol_income.index:
+            total_revenue = yahoo_symbol_income.loc['Total Revenue']
+            if pd.isna(total_revenue).all():
+                total_revenue = None
+
+        total_revenue_now = total_revenue.iloc[0]
+
+        # - Free Cashflow
+        if 'Free Cash Flow' in yahoo_symbol_cashflow.index:
+            free_cashflow = yahoo_symbol_cashflow.loc['Free Cash Flow']
+            if pd.isna(free_cashflow).all():
+                free_cashflow = None
+
+        free_cashflow_now = free_cashflow.iloc[0]
+
+        # - Métricas
+        ev_ebitda = enterprise_value / ebitda_ttm if enterprise_value is not None and ebitda_ttm and ebitda_ttm > 0 else None
+        p_s = market_cap / total_revenue_now if market_cap is not None and total_revenue_now and total_revenue_now > 0 else None
+        fcf_yield_equity = free_cashflow_now / market_cap if free_cashflow_now is not None and market_cap and market_cap > 0 else None
+        fcf_yield_enterp = free_cashflow_now / enterprise_value if free_cashflow_now is not None and enterprise_value and enterprise_value > 0 else None
 
         # Dividends & BuyBacks
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
@@ -379,12 +401,6 @@ class DataHistoryYahoo():
             net_income = yahoo_symbol_income.loc['Net Income']
             if pd.isna(net_income).all():
                 net_income = None
-
-        # total_revenue
-        if 'Total Revenue' in yahoo_symbol_income.index:
-            total_revenue = yahoo_symbol_income.loc['Total Revenue']
-            if pd.isna(total_revenue).all():
-                total_revenue = None
 
         # cost_of_revenue
         if 'Cost Of Revenue' in yahoo_symbol_income.index:
@@ -497,11 +513,6 @@ class DataHistoryYahoo():
             cagr_stockholder_equity = None
 
         # Cashflow
-        # free_cashflow
-        if 'Free Cash Flow' in yahoo_symbol_cashflow.index:
-            free_cashflow = yahoo_symbol_cashflow.loc['Free Cash Flow']
-            if pd.isna(free_cashflow).all():
-                free_cashflow = None
 
         # operating_cashflow
         if 'Operating Cash Flow' in yahoo_symbol_cashflow.index:
@@ -517,7 +528,7 @@ class DataHistoryYahoo():
 
         # free_cashflow_yield
         if not pd.isna(market_cap) and market_cap != 0 and not free_cashflow.isna().all():
-            free_cashflow_yield = ((free_cashflow.iloc[0] / market_cap) * 100)
+            free_cashflow_yield = ((free_cashflow_now / market_cap) * 100)
         else:
             free_cashflow_yield = None
 
@@ -632,6 +643,10 @@ class DataHistoryYahoo():
                 "MarketCap": market_cap,
                 "EVenterpriseValue": enterprise_value,
                 "ebitdaTTM": ebitda_ttm,
+                "evEbitda": ev_ebitda,
+                "PriceToSale": p_s,
+                "EquityFCFYield": fcf_yield_equity,
+                "EnterpriseFCFYield": fcf_yield_enterp,
             },
             "dividends": {
                 "divCoverageRate": div_coverage_rate,
@@ -670,7 +685,7 @@ class DataHistoryYahoo():
                 "StockholdersEquity": stockholders_equity.iloc[0],
             },
             "cashflow": {
-                "FreeCashflow": free_cashflow.iloc[0],
+                "FreeCashflow": free_cashflow_now,
                 "OperatingCashflow": operating_cashflow.iloc[0],
                 "CapitalExpenditure": capital_expenditure.iloc[0],
                 "FreeCashflowYield": free_cashflow_yield,
@@ -694,9 +709,6 @@ class DataHistoryYahoo():
                 "sharesPercentSharesOut": yahoo_symbol_info.get("sharesPercentSharesOut", None),
                 "recommendationMean": yahoo_symbol_info.get("recommendationMean", None),
                 "targetMeanPrice": yahoo_symbol_info.get("targetMeanPrice", None)
-            },
-            "earnings_quality": {
-                
             }
         }
         return yahoo_symbol_fundamental_info

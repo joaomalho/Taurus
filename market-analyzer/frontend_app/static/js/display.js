@@ -345,7 +345,10 @@ const METRIC_STYLE = {
   MarketCap: "currency",
   EV_enterprise_value: "currency",
   ebitdaTTM: "currency",
-  
+  evEbitda: "multiple",
+  PriceToSale: "multiple",
+  EquityFCFYield: "multiple",
+  EnterpriseFCFYield: "multiple",
   // dividends
   divCoverageRate: "multiple",
   dividendYield: "percent",
@@ -440,6 +443,10 @@ export function displayFundamentalResults(data) {
     MarketCap: valuationData.MarketCap || {},
     EVenterpriseValue: valuationData.EVenterpriseValue || {},
     ebitdaTTM: valuationData.ebitdaTTM || {},
+    evEbitda: valuationData.evEbitda || {},
+    PriceToSale: valuationData.PriceToSale || {},
+    EquityFCFYield: valuationData.EquityFCFYield || {},
+    EnterpriseFCFYield: valuationData.EnterpriseFCFYield || {},
     // Dividends
     divCoverageRate: dividendsData.divCoverageRate || {},
     dividendYield: dividendsData.dividendYield || {},
@@ -453,8 +460,6 @@ export function displayFundamentalResults(data) {
     CostOfRevenueCAGR: profitabilityData.CostOfRevenueCAGR || {},
     TotalRevenueCAGR: profitabilityData.TotalRevenueCAGR || {},
     OperatingExpensesCAGR: profitabilityData.OperatingExpensesCAGR || {},
-    // CostOfRevenueYOY: profitabilityData.CostOfRevenueYOY || {},
-    // TotalRevenueYOY: profitabilityData.TotalRevenueYOY || {},
     // Debt
     TotalAssets: liquidityData.TotalAssets || {},
     TotalLiabilities: liquidityData.TotalLiabilities || {},
