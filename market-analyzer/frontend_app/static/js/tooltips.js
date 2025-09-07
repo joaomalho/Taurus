@@ -2,6 +2,11 @@
 
 // Mapa de textos (podes editar/estender)
 export const DEFAULT_TIPS = {
+  // ----- Valuations ----- //
+  // - KPIs
+  evEbitda:
+    "test \n test \n * test",
+  // - Price : Earnings
   trailingPE:
     "Price/Earnings (TTM). Valor mais baixo pode indicar ‘undervalued’, depende do setor e crescimento.",
   sectorTrailingPE:
@@ -18,8 +23,58 @@ function createHelpIcon(text) {
   icon.className = 'fund-metric-help';
   icon.setAttribute('tabindex', '0');
   icon.setAttribute('aria-label', 'Mais informação');
-  icon.dataset.tooltip = text || '';
+
+  // opcional: um “?” visual
+  const badge = document.createElement('span');
+  badge.className = 'fund-help-badge';
+  badge.textContent = '?';
+  icon.appendChild(badge);
+
+  const bubble = document.createElement('div');
+  bubble.className = 'fund-tooltip';
+  bubble.innerHTML = renderMiniMarkdown(text || '');
+  icon.appendChild(bubble);
+
   return icon;
+}
+
+/* Mini parser: -/ * viram <ul><li>, linhas em branco separam <p> */
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function renderMiniMarkdown(src = "") {
+  const lines = src.split(/\r?\n/);
+  let html = "";
+  let buffer = [];
+  let inList = false;
+
+  const flushP = () => {
+    if (buffer.length) {
+      html += `<p>${escapeHtml(buffer.join(" ").trim())}</p>`;
+      buffer = [];
+    }
+  };
+
+  for (let raw of lines) {
+    const line = raw.trim();
+    if (!line) { // parágrafo novo
+      if (inList) { html += "</ul>"; inList = false; }
+      flushP();
+      continue;
+    }
+    const m = line.match(/^[-*]\s+(.*)$/);
+    if (m) {
+      flushP();
+      if (!inList) { html += "<ul>"; inList = true; }
+      html += `<li>${escapeHtml(m[1])}</li>`;
+    } else {
+      if (inList) { html += "</ul>"; inList = false; }
+      buffer.push(line);
+    }
+  }
+  if (inList) html += "</ul>";
+  flushP();
+  return html;
 }
 
 /**
@@ -62,7 +117,6 @@ export function initMetricTooltips({
     p.appendChild(createHelpIcon(text));
   });
 }
-
 
 export function initAttributeTooltips({
   scope = document,

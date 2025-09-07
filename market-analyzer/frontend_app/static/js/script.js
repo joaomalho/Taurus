@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setupSearchButton();
     setupStockbytopButton();
     initMetricTooltips({ scope: '#fundamentalAnalysis' });
+    initAttributeTooltips({ scope: '#fundamentalAnalysis' });
 
     let pathParts = window.location.pathname.split("/");
     let symbol = pathParts[2];
