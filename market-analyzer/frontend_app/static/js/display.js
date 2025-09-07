@@ -319,10 +319,8 @@ export function displayBioResults(data) {
     CurrentPrice: bioData.CurrentPrice
       ? formatCurrency(bioData.CurrentPrice)
       : "N/A",
-    PreviousClose: bioData.PreviousClose
-      ? formatCurrency(bioData.PreviousClose)
-      : "N/A",
-    OpenPrice: bioData.OpenPrice ? formatCurrency(bioData.OpenPrice) : "N/A",
+    Beta: bioData.Beta || "N/A",
+    ShareTurnover: bioData.ShareTurnover ? formatPercentFromFraction((bioData.ShareTurnover)) : "N/A",
   };
 
   for (const [key, value] of Object.entries(elements)) {

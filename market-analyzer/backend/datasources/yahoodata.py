@@ -27,6 +27,9 @@ class DataHistoryYahoo():
         except Exception:
             yahoo_symbol_info = {}
 
+        adv_3m = yahoo_symbol_info.get("averageDailyVolume3Month")
+        out = yahoo_symbol_info.get("sharesOutstanding")
+        turnover_year_out = (adv_3m * 252)/out if adv_3m is not None else "N/A"
         yahoo_symbol_about_info = {
                 "LongName": yahoo_symbol_info.get("longName", "N/A"),
                 "BusinessName": yahoo_symbol_info.get("longBusinessSummary", "N/A"),
@@ -44,8 +47,8 @@ class DataHistoryYahoo():
                 "QuoteType": yahoo_symbol_info.get("quoteType", "N/A"),
                 "FinancialCurrency": yahoo_symbol_info.get("financialCurrency", "N/A"),
                 "CurrentPrice": yahoo_symbol_info.get("currentPrice", "N/A"),
-                "PreviousClose": yahoo_symbol_info.get("previousClose", "N/A"),
-                "OpenPrice": yahoo_symbol_info.get("open", "N/A"),
+                "Beta": yahoo_symbol_info.get("beta", "N/A"),
+                "ShareTurnover": turnover_year_out,
         }
 
         return yahoo_symbol_about_info

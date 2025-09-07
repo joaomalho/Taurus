@@ -28,5 +28,8 @@ psycopg2-binary>=2.9
 # Interface gráfica
 PyQt6
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import lru_cache
+
 # (Extras possíveis — verificar existência real)
 # QT-PyQt-PySide-Custom-Widgets  # Parece um pacote personalizado ou inexistente
