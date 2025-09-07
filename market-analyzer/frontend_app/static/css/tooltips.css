@@ -1,57 +1,101 @@
 /* ============================= */
-/* Fundamental Tooltips */
+/* Fundamental Tooltips          */
 /* ============================= */
 
-/* Ícone “i” com tooltip */
-.fund-metric-help {
+/* Ícone “i” */
+.fund-metric-help{
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 16px; height: 16px;
   margin-left: 6px;
   border: 1px solid var(--border-color);
   border-radius: 50%;
-  font-size: 11px;
-  line-height: 1;
+  font-size: 11px; line-height: 1;
   color: var(--highlight-color);
   background: var(--button-bg);
   cursor: help;
-  position: relative;
   vertical-align: middle;
 }
 
-/* o “i” dentro do círculo */
-.fund-metric-help::before {
+/* desenha o “i” (se usares o “?” do JS, vê nota no fim) */
+.fund-metric-help::before{
   content: "i";
   font-weight: 700;
 }
 
-/* balão do tooltip */
-.fund-metric-help::after {
-  content: attr(data-tooltip);
+.fund-metric-help::after{ content: none !important; }
+
+/* Bolha nova (HTML) – escondida por defeito */
+.fund-tooltip{
   position: absolute;
-  left: 50%;
-  bottom: 125%;
+  left: 50%; bottom: 125%;
   transform: translateX(-50%);
-  min-width: 220px;
-  max-width: 320px;
+  min-width: 220px; max-width: 320px;
   padding: 8px 10px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 12px; line-height: 1.35;
   color: var(--text-color);
   background: var(--secondary-bg);
   border: 1px solid var(--border-color);
   box-shadow: 0 6px 20px rgba(0,0,0,.35);
-  opacity: 0;
-  pointer-events: none;
+  white-space: normal; z-index: 10;
+
+  opacity: 0; visibility: hidden; pointer-events: none;
   transition: opacity .15s ease-in-out;
-  white-space: normal;
-  z-index: 10;
+}
+/* Seta do balão */
+.fund-tooltip::before{
+  content: "";
+  position: absolute;
+  left: 50%; top: 100%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--secondary-bg);
+}
+.fund-tooltip::after{
+  content: "";
+  position: absolute;
+  left: 50%; top: 100%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: var(--border-color);
+  margin-top: 1px;
 }
 
-/* mostrar no hover e no focus (acessível no teclado) */
-.fund-metric-help:hover::after,
-.fund-metric-help:focus-visible::after {
-  opacity: 1;
+/* Mostrar no hover e no focus (teclado) */
+.fund-metric-help:hover .fund-tooltip,
+.fund-metric-help:focus-within .fund-tooltip{
+  opacity: 1; visibility: visible; pointer-events: auto;
+}
+
+/* Cortar 100% quando JS usa atributo [hidden] */
+.fund-tooltip[hidden]{ display: none !important; }
+
+/* Conteúdos da bolha */
+.fund-tooltip p{ margin: 0 0 .5rem; }
+.fund-tooltip p:last-child{ margin-bottom: 0; }
+.fund-tooltip ul{ margin: .25rem 0 0 1rem; padding: 0; list-style: disc; }
+.fund-tooltip li{ margin: .2rem 0; }
+
+/* Mobile: mostra ao lado em vez de por cima */
+@media (max-width: 640px){
+  .fund-tooltip{
+    left: 0; right: auto; bottom: auto; top: 100%;
+    transform: translate(0, 8px);
+  }
+  .fund-tooltip::before,
+  .fund-tooltip::after{
+    left: 12px; transform: none;
+    top: -6px; /* reposiciona a “seta” para cima */
+    border-top-color: transparent;
+    border-bottom-color: var(--secondary-bg);
+  }
+  .fund-tooltip::after{ border-bottom-color: var(--border-color); top: -7px; }
+}
+
+/* Acessibilidade: reduzir animação se preferido */
+@media (prefers-reduced-motion: reduce){
+  .fund-tooltip{ transition: none; }
 }

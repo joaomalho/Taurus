@@ -17,26 +17,44 @@ export const DEFAULT_TIPS = {
     "Classificação qualitativa do P/E face a thresholds por setor.",
 };
 
-// Cria o ícone
 function createHelpIcon(text) {
   const icon = document.createElement('span');
   icon.className = 'fund-metric-help';
   icon.setAttribute('tabindex', '0');
   icon.setAttribute('aria-label', 'Mais informação');
-
-  // opcional: um “?” visual
-  const badge = document.createElement('span');
-  badge.className = 'fund-help-badge';
-  badge.textContent = '?';
-  icon.appendChild(badge);
+  icon.setAttribute('aria-haspopup', 'dialog');
 
   const bubble = document.createElement('div');
   bubble.className = 'fund-tooltip';
   bubble.innerHTML = renderMiniMarkdown(text || '');
+  bubble.hidden = true;                       // <-- escondido por defeito
   icon.appendChild(bubble);
+
+  // acessibilidade: associa o tooltip
+  const id = 'tip-' + Math.random().toString(36).slice(2);
+  bubble.id = id;
+  bubble.setAttribute('role', 'tooltip');
+  icon.setAttribute('aria-describedby', id);
+
+  // controladores: hover/focus
+  const open = () => { bubble.hidden = false; };
+  const close = () => { bubble.hidden = true; };
+  icon.addEventListener('mouseenter', open);
+  icon.addEventListener('mouseleave', close);
+  icon.addEventListener('focusin', open);
+  icon.addEventListener('focusout', close);
+
+  // mobile/click toggle
+  icon.addEventListener('click', (e) => {
+    e.stopPropagation();
+    bubble.hidden = !bubble.hidden;
+    icon.classList.toggle('is-open', !bubble.hidden);
+  });
+  document.addEventListener('click', () => { bubble.hidden = true; icon.classList.remove('is-open'); });
 
   return icon;
 }
+
 
 /* Mini parser: -/ * viram <ul><li>, linhas em branco separam <p> */
 function escapeHtml(s) {

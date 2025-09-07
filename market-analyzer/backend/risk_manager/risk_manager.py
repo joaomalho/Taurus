@@ -223,6 +223,66 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "trailingPE", text_trailingPE)
 
+        # Equity FCF Yield
+        equity_fcf_yield = fm.safe_round(valuation.get("EquityFCFYield"))
+        evaluated_metrics["EquityFCFYield"] = equity_fcf_yield if equity_fcf_yield is not None else None
+        if equity_fcf_yield is None:
+            text_equity_fcf_yield = "No Data"
+        else:
+            if equity_fcf_yield <= 3:
+                text_equity_fcf_yield = "Caro"
+            elif equity_fcf_yield <= 5:
+                text_equity_fcf_yield = "Justo"
+            else:
+                text_equity_fcf_yield = "Barato"
+
+        self._set_eval(evaluated_metrics, "EquityFCFYield", text_equity_fcf_yield)
+
+        # Enterprise FCF Yield
+        enterprise_fcf_yield = fm.safe_round(valuation.get("EnterpriseFCFYield"))
+        evaluated_metrics["EnterpriseFCFYield"] = enterprise_fcf_yield if enterprise_fcf_yield is not None else None
+        if enterprise_fcf_yield is None:
+            text_enterprise_fcf_yield = "No Data"
+        else:
+            if enterprise_fcf_yield <= 2.5:
+                text_enterprise_fcf_yield = "Caro"
+            elif enterprise_fcf_yield <= 4:
+                text_enterprise_fcf_yield = "Justo"
+            else:
+                text_enterprise_fcf_yield = "Barato"
+
+        self._set_eval(evaluated_metrics, "EnterpriseFCFYield", text_enterprise_fcf_yield)
+
+        # Prise To Sale
+        price_to_sale = fm.safe_round(valuation.get("PriceToSale"))
+        evaluated_metrics["PriceToSale"] = price_to_sale if price_to_sale is not None else None
+        if price_to_sale is None:
+            text_price_to_sale = "No Data"
+        else:
+            if price_to_sale <= 3:
+                text_price_to_sale = "Caro"
+            elif price_to_sale <= 5:
+                text_price_to_sale = "Justo"
+            else:
+                text_price_to_sale = "Barato"
+
+        self._set_eval(evaluated_metrics, "PriceToSale", text_price_to_sale)
+
+        # EV / EBITDA
+        ev_ebitda = fm.safe_round(valuation.get("evEbitda"))
+        evaluated_metrics["evEbitda"] = ev_ebitda if ev_ebitda is not None else None
+        if ev_ebitda is None:
+            text_ev_ebitda = "No Data"
+        else:
+            if ev_ebitda <=3:
+                text_ev_ebitda = "Caro"
+            elif ev_ebitda <=5:
+                text_ev_ebitda = "Justo"
+            else:
+                text_ev_ebitda = "Barato"
+
+        self._set_eval(evaluated_metrics, "evEbitda", text_ev_ebitda)
+
         # Dividends - Dividend Coverage Ratio
         div_coverage_raw = fm.safe_round(metrics.get('dividends', {}).get("divCoverageRate"))
 
@@ -510,5 +570,3 @@ class RiskManagerFundamental():
                 text_ReturnOnEquityCAGR = "Good - Consistent Growth in Equity Returns"
 
         self._set_eval(evaluated_metrics, "ReturnOnEquityCAGR", text_ReturnOnEquityCAGR)
-
-        return evaluated_metrics if evaluated_metrics else "Indefinido"
