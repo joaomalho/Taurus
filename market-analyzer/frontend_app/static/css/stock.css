@@ -537,7 +537,7 @@ canvas {
     color: var(--button-hover-bg);
 }
 
-.fund-cashflow, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-ratios, .fund-risk, .fund-download {
+.fund-cashflow, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-ratios, .fund-risk, .fund-download, .fund-kpis {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 10px;

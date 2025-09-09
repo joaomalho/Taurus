@@ -377,14 +377,14 @@ class DataHistoryYahoo():
         # - Métricas
         ev_ebitda = enterprise_value / ebitda_ttm if enterprise_value is not None and ebitda_ttm and ebitda_ttm > 0 else None
         p_s = market_cap / total_revenue_now if market_cap is not None and total_revenue_now and total_revenue_now > 0 else None
-        fcf_yield_equity = free_cashflow_now / market_cap if free_cashflow_now is not None and market_cap and market_cap > 0 else None
-        fcf_yield_enterp = free_cashflow_now / enterprise_value if free_cashflow_now is not None and enterprise_value and enterprise_value > 0 else None
+        fcf_yield_equity = free_cashflow_now / market_cap * 100 if free_cashflow_now is not None and market_cap and market_cap > 0 else None
+        fcf_yield_enterp = free_cashflow_now / enterprise_value * 100 if free_cashflow_now is not None and enterprise_value and enterprise_value > 0 else None
 
         # ------ Finantial Health ------ #
         # - Net Debt / EBITDA
         net_debt = total_debt - cash_sti
 
-        net_debt_ebitda = net_debt / ebitda_ttm if net_debt is not None and ebitda_ttm and ebitda_ttm > 0 else None
+        net_debt_ebitda = net_debt / ebitda_ttm * 100 if net_debt is not None and ebitda_ttm and ebitda_ttm > 0 else None
 
         # - Interest Coverage (EBIT)
         ebit_ttm = sum(yahoo_symbol_income_quarter.loc["EBIT"])
