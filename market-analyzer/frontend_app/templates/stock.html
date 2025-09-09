@@ -274,21 +274,17 @@
                             <p><strong>Forward P/E:</strong> <span id="forwardPE"></span></p>
                             <p><strong>Sector P/E:</strong> <span id="sectorTrailingPE"></span></p>
                             <p><strong>P/E Classification:</strong> <span id="trailingPEClass"></span></p>
-                            <p><strong>EV/EBITDA:</strong> <span id="evEbitda"></span></p>
-                            <p><strong>Price To Sale (P/S):</strong> <span id="PriceToSale"></span></p>
-                            <p><strong>Equity FCF Yield:</strong> <span id="EquityFCFYield"></span></p>
-                            <p><strong>Enterprise FCF Yield:</strong> <span id="EnterpriseFCFYield"></span></p>
+                            <p><strong>EV/EBITDA:</strong> <span id="evEbitda"></span> <span id="evEbitdaClass"></span></p>
+                            <p><strong>Price To Sale (P/S):</strong> <span id="PriceToSale"></span> <span id="PriceToSaleClass"></span></p>
+                            <p><strong>Equity FCF Yield:</strong> <span id="EquityFCFYield"></span> <span id="EquityFCFYieldClass"></span></p>
+                            <p><strong>Enterprise FCF Yield:</strong> <span id="EnterpriseFCFYield"></span> <span id="EnterpriseFCFYieldClass"></span></p>
                         </div>
                         <div>
                             <h3>Finantial Health</h3>
-                            <p><strong>Net Debt / EBITDA:</strong> <span id="NetDebtEbitda"></span></p>
-                            <p><strong>Net Debt / EBITDA Classification:</strong> <span id="NetDebtEbitdaClass"></span></p>
-                            <p><strong>Interest Coverage (EBIT):</strong> <span id="InterestCoverageEbit"></span></p>
-                            <p><strong>Interest Coverage (EBIT) Classification:</strong> <span id="InterestCoverageEbitClass"></span></p>
-                            <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span></p>
-                            <p><strong>Current Ratio Classification:</strong> <span id="CurrentRatioClass"></span></p>
-                            <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span></p>
-                            <p><strong>Quick Ratio Classification:</strong> <span id="QuickRatioClass"></span></p>
+                            <p><strong>Net Debt / EBITDA:</strong> <span id="NetDebtEbitda"></span> <span id="NetDebtEbitdaClass"></span></p>
+                            <p><strong>Interest Coverage (EBIT):</strong> <span id="InterestCoverageEbit"></span> <span id="InterestCoverageEbitClass"></span></p>
+                            <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span> <span id="CurrentRatioClass"></span></p>
+                            <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span> <span id="QuickRatioClass"></span></p>
                         </div>
                     </div>
                 </div>
@@ -303,10 +299,9 @@
                     <div class="fund-valuation">
                         <div>
                             <h3>Price : Earnings</h3>
-                            <p><strong>P/E Classification:</strong> <span id="trailingPEClass"></span></p>
-                            <p><strong>Trailing P/E:</strong> <span id="trailingPE"></span></p>
-                            <p><strong>Forward P/E:</strong> <span id="forwardPE"></span></p>
-                            <p><strong>Sector P/E:</strong> <span id="sectorTrailingPE"></span></p>
+                            <div class="chart-container">
+                                <canvas id="earningsChart"></canvas>
+                            </div>
                         </div>
                         <div>
                             <h3>Detailed</h3>
@@ -314,9 +309,6 @@
                             <p><strong>Market Cap:</strong> <span id="MarketCap"></span></p>
                             <p><strong>EBITDA TTM:</strong> <span id="ebitdaTTM"></span></p>
                         </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="earningsChart"></canvas>
                     </div>
                 </div>
             </div>
