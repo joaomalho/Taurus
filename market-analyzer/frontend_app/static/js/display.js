@@ -338,20 +338,24 @@ export function displayBioResults(data) {
 
 /* ─────── QUAL FORMATADOR USAR POR CHAVE ─────── */
 const METRIC_STYLE = {
-  // valuation
+  // KPIS
   sectorTrailingPE: "multiple",
   trailingPE: "multiple",
   forwardPE: "multiple",
-  MarketCap: "currency",
-  EV_enterprise_value: "currency",
-  ebitdaTTM: "currency",
+  EVenterpriseValue: "currency",
   evEbitda: "multiple",
   PriceToSale: "multiple",
   EquityFCFYield: "multiple",
   EnterpriseFCFYield: "multiple",
-  // finantial health
   NetDebtEbitda: "multiple",
   InterestCoverageEbit: "multiple",
+  CurrentRatio: "multiple",
+  QuickRatio: "multiple",
+
+  // valuation
+  MarketCap: "currency",
+  ebitdaTTM: "currency",
+  
   // dividends
   divCoverageRate: "multiple",
   dividendYield: "percent",
@@ -375,7 +379,6 @@ const METRIC_STYLE = {
   ReturnOnEquityCAGR: "percent",
 
   // rácios adimensionais
-  CurrentRatio: "multiple",
   CashRatio: "multiple",
 
   // montantes (moeda)
@@ -430,6 +433,7 @@ function formatByKey(key, value, currency = "USD") {
 
 /* ─────────────── FUNÇÃO PARA PREENCHER FUNDAMENTALS ─────────────── */
 export function displayFundamentalResults(data) {
+  const kpisData = data.kpis;
   const valuationData = data.valuation;
   const dividendsData = data.dividends;
   const profitabilityData = data.profitability;
@@ -439,20 +443,26 @@ export function displayFundamentalResults(data) {
   const marketRiskData = data.market_risk_and_sentiment;
 
   const elements = {
+    // KPIS
+    sectorTrailingPE: kpisData.sectorTrailingPE || {},
+    trailingPE: kpisData.trailingPE || {},
+    forwardPE: kpisData.forwardPE || {},
+    EVenterpriseValue: kpisData.EVenterpriseValue || {},
+    evEbitda: kpisData.evEbitda || {},
+    PriceToSale: kpisData.PriceToSale || {},
+    EquityFCFYield: kpisData.EquityFCFYield || {},
+    EnterpriseFCFYield: kpisData.EnterpriseFCFYield || {},
+    NetDebtEbitda: kpisData.NetDebtEbitda || {},
+    InterestCoverageEbit: kpisData.InterestCoverageEbit || {},
+    CurrentRatio: kpisData.CurrentRatio || {},
+    QuickRatio: kpisData.QuickRatio || {},
     // Valuation
     sectorTrailingPE: valuationData.sectorTrailingPE || {},
     trailingPE: valuationData.trailingPE || {},
     forwardPE: valuationData.forwardPE || {},
     MarketCap: valuationData.MarketCap || {},
-    EVenterpriseValue: valuationData.EVenterpriseValue || {},
     ebitdaTTM: valuationData.ebitdaTTM || {},
-    evEbitda: valuationData.evEbitda || {},
-    PriceToSale: valuationData.PriceToSale || {},
-    EquityFCFYield: valuationData.EquityFCFYield || {},
-    EnterpriseFCFYield: valuationData.EnterpriseFCFYield || {},
     // Finantial Health
-    NetDebtEbitda: finantial_healthData.NetDebtEbitda || {},
-    InterestCoverageEbit: finantial_healthData.InterestCoverageEbit || {},
     TotalAssets: finantial_healthData.TotalAssets || {},
     TotalLiabilities: finantial_healthData.TotalLiabilities || {},
     NetWorth: finantial_healthData.NetWorth || {},
@@ -486,7 +496,6 @@ export function displayFundamentalResults(data) {
     CapitalExpenditure: cashflowData.CapitalExpenditure || {},
     FreeCashflowYield: cashflowData.FreeCashflowYield || {},
     // Ratios
-    CurrentRatio: ratiosData.CurrentRatio || {},
     CashRatio: ratiosData.CashRatio || {},
     GrossMargin: ratiosData.GrossMargin || {},
     // GrossMarginCAGR: ratiosData.GrossMarginCAGR || {},
@@ -517,12 +526,16 @@ export function displayFundamentalResults(data) {
 export function displayFundamentalResultsClassification(data) {
   // mapa: [secção em data.evaluations, chave base]
   const fields = [
-    ["valuation", "trailingPE"],
-    ["valuation", "evEbitda"],
-    ["valuation", "PriceToSale"],
-    ["valuation", "EquityFCFYield"],
-    ["valuation", "EnterpriseFCFYield"],
-    ["dividends", "divCoverageRate"],
+    ["kpis", "trailingPE"],
+    ["kpis", "evEbitda"],
+    ["kpis", "EVenterpriseValue"],
+    ["kpis", "PriceToSale"],
+    ["kpis", "EquityFCFYield"],
+    ["kpis", "EnterpriseFCFYield"],
+    ["kpis", "NetDebtEbitda"],
+    ["kpis", "InterestCoverageEbit"],
+    ["kpis", "CurrentRatio"],
+    ["kpis", "QuickRatio"],
     ["profitability", "CostOfRevenueCAGR"],
     ["profitability", "TotalRevenueCAGR"],
     ["finantial_health", "NetWorth"],
@@ -532,7 +545,6 @@ export function displayFundamentalResultsClassification(data) {
     ["finantial_health", "TotalAssetsCAGR"],
     ["finantial_health", "TotalLiabilitiesCAGR"],
     ["cashflow", "FreeCashflowYield"],
-    ["ratios", "CurrentRatio"],
     ["ratios", "CashRatio"],
     ["ratios", "GrossMargin"],
     ["ratios", "OperatingMargin"],

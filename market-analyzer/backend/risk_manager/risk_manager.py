@@ -198,13 +198,14 @@ class RiskManagerFundamental():
 
         evaluated_metrics = {}
 
-        # ----- Valuation ----- #
-        valuation = metrics.get('valuation', {})
-        trailing_pe = fm.safe_round(valuation.get("trailingPE"))
-        sector_pe = fm.safe_round(valuation.get("sectorTrailingPE"))
-        forward_pe = fm.safe_round(valuation.get("forwardPE"))
+        # ----- Imports ----- #
+        kpis = metrics.get('kpis', {})
+        
+        # --- PEs
+        trailing_pe = fm.safe_round(kpis.get("trailingPE"))
+        sector_pe = fm.safe_round(kpis.get("sectorTrailingPE"))
+        forward_pe = fm.safe_round(kpis.get("forwardPE"))
 
-        # Guardar os valores convertidos
         evaluated_metrics["trailingPE"] = trailing_pe if trailing_pe is not None else None
         evaluated_metrics["sectorTrailingPE"] = sector_pe if sector_pe is not None else None
         evaluated_metrics["forwardPE"] = forward_pe if forward_pe is not None else None
@@ -229,39 +230,11 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "trailingPE", text_trailingPE)
 
-        # Equity FCF Yield
-        equity_fcf_yield = fm.safe_round(valuation.get("EquityFCFYield"))
-        evaluated_metrics["EquityFCFYield"] = equity_fcf_yield if equity_fcf_yield is not None else None
-        if equity_fcf_yield is None:
-            text_equity_fcf_yield = "No Data"
-        else:
-            if equity_fcf_yield <= 3:
-                text_equity_fcf_yield = "Expensive"
-            elif equity_fcf_yield <= 5:
-                text_equity_fcf_yield = "Fair"
-            else:
-                text_equity_fcf_yield = "Cheap"
+        # --- Prise To Sale
+        price_to_sale = fm.safe_round(kpis.get("PriceToSale"))
 
-        self._set_eval(evaluated_metrics, "EquityFCFYield", text_equity_fcf_yield)
-
-        # Enterprise FCF Yield
-        enterprise_fcf_yield = fm.safe_round(valuation.get("EnterpriseFCFYield"))
-        evaluated_metrics["EnterpriseFCFYield"] = enterprise_fcf_yield if enterprise_fcf_yield is not None else None
-        if enterprise_fcf_yield is None:
-            text_enterprise_fcf_yield = "No Data"
-        else:
-            if enterprise_fcf_yield <= 2.5:
-                text_enterprise_fcf_yield = "Expensive"
-            elif enterprise_fcf_yield <= 4:
-                text_enterprise_fcf_yield = "Fair"
-            else:
-                text_enterprise_fcf_yield = "Cheap"
-
-        self._set_eval(evaluated_metrics, "EnterpriseFCFYield", text_enterprise_fcf_yield)
-
-        # Prise To Sale
-        price_to_sale = fm.safe_round(valuation.get("PriceToSale"))
         evaluated_metrics["PriceToSale"] = price_to_sale if price_to_sale is not None else None
+        
         if price_to_sale is None:
             text_price_to_sale = "No Data"
         else:
@@ -274,8 +247,8 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "PriceToSale", text_price_to_sale)
 
-        # EV / EBITDA
-        ev_ebitda = fm.safe_round(valuation.get("evEbitda"))
+        # --- EV / EBITDA
+        ev_ebitda = fm.safe_round(kpis.get("evEbitda"))
         evaluated_metrics["evEbitda"] = ev_ebitda if ev_ebitda is not None else None
         if ev_ebitda is None:
             text_ev_ebitda = "No Data"
@@ -289,9 +262,39 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "evEbitda", text_ev_ebitda)
 
+        # --- Equity FCF Yield
+        equity_fcf_yield = fm.safe_round(kpis.get("EquityFCFYield"))
+        evaluated_metrics["EquityFCFYield"] = equity_fcf_yield if equity_fcf_yield is not None else None
+        if equity_fcf_yield is None:
+            text_equity_fcf_yield = "No Data"
+        else:
+            if equity_fcf_yield <= 3:
+                text_equity_fcf_yield = "Expensive"
+            elif equity_fcf_yield <= 5:
+                text_equity_fcf_yield = "Fair"
+            else:
+                text_equity_fcf_yield = "Cheap"
+
+        self._set_eval(evaluated_metrics, "EquityFCFYield", text_equity_fcf_yield)
+
+        # --- Enterprise FCF Yield
+        enterprise_fcf_yield = fm.safe_round(kpis.get("EnterpriseFCFYield"))
+        evaluated_metrics["EnterpriseFCFYield"] = enterprise_fcf_yield if enterprise_fcf_yield is not None else None
+        if enterprise_fcf_yield is None:
+            text_enterprise_fcf_yield = "No Data"
+        else:
+            if enterprise_fcf_yield <= 2.5:
+                text_enterprise_fcf_yield = "Expensive"
+            elif enterprise_fcf_yield <= 4:
+                text_enterprise_fcf_yield = "Fair"
+            else:
+                text_enterprise_fcf_yield = "Cheap"
+
+        self._set_eval(evaluated_metrics, "EnterpriseFCFYield", text_enterprise_fcf_yield)
+
         # ----- Finantial Health ----- #
         # Net Debt Ebitda
-        net_debt_ebitda = fm.safe_round(metrics.get('finantial_health', {}).get("NetDebtEbitda"))
+        net_debt_ebitda = fm.safe_round(kpis.get("NetDebtEbitda"))
         evaluated_metrics["NetDebtEbitda"] = net_debt_ebitda if net_debt_ebitda is not None else None
 
         if net_debt_ebitda is None:
@@ -309,7 +312,7 @@ class RiskManagerFundamental():
         self._set_eval(evaluated_metrics, "NetDebtEbitda", text_net_debt_ebitda)
 
         # Interest Coverage EBIT
-        interest_coverage_ebit = fm.safe_round(metrics.get('finantial_health', {}).get("InterestCoverageEbit"))
+        interest_coverage_ebit = fm.safe_round(kpis.get("InterestCoverageEbit"))
         evaluated_metrics["InterestCoverageEbit"] = interest_coverage_ebit if interest_coverage_ebit is not None else None
 
         if interest_coverage_ebit is None:
@@ -323,6 +326,42 @@ class RiskManagerFundamental():
                 text_interest_coverage_ebit = "Strong"
 
         self._set_eval(evaluated_metrics, "InterestCoverageEbit", text_interest_coverage_ebit)
+
+        # Current Racio
+        current_ratio = fm.safe_round(kpis.get("CurrentRatio"))
+        evaluated_metrics["CurrentRatio"] = current_ratio if current_ratio is not None else None
+
+        if current_ratio is None:
+            text_CurrentRatio = "No Data"
+        else:
+            if current_ratio <= 100:
+                text_CurrentRatio = "Not Good (In Debt)"
+            elif current_ratio <= 120:
+                text_CurrentRatio = "Tight Margin to Debt"
+            elif current_ratio <= 200:
+                text_CurrentRatio = "Good Debt Coverage"
+            else:
+                text_CurrentRatio = "Perfect Coverage (Double +)"
+
+        self._set_eval(evaluated_metrics, "CurrentRatio", text_CurrentRatio)
+
+        # Quick Racio
+        quick_ratio = fm.safe_round(kpis.get("QuickRatio"))
+        evaluated_metrics["QuickRatio"] = quick_ratio if quick_ratio is not None else None
+
+        if quick_ratio is None:
+            text_QuickRatio = "No Data"
+        else:
+            if quick_ratio <= 100:
+                text_QuickRatio = "Not Good (In Debt)"
+            elif quick_ratio <= 120:
+                text_QuickRatio = "Tight Margin to Debt"
+            elif quick_ratio <= 200:
+                text_QuickRatio = "Good Debt Coverage"
+            else:
+                text_QuickRatio = "Perfect Coverage (Double +)"
+
+        self._set_eval(evaluated_metrics, "QuickRatio", text_QuickRatio)
 
         # Net Worth
         net_worth = fm.safe_round(metrics.get('finantial_health', {}).get("NetWorth"))
@@ -455,23 +494,6 @@ class RiskManagerFundamental():
         self._set_eval(evaluated_metrics, "FreeCashflowYield", text_FreeCashflowYield)
 
         # Ratios
-        # Current Ratio
-        current_ratio = fm.safe_round(metrics.get('ratios', {}).get("CurrentRatio"))
-        evaluated_metrics["CurrentRatio"] = current_ratio if current_ratio is not None else None
-
-        if current_ratio is None:
-            text_CurrentRatio = "No Data"
-        else:
-            if current_ratio <= 100:
-                text_CurrentRatio = "Not Good (In Debt)"
-            elif current_ratio <= 120:
-                text_CurrentRatio = "Tight Margin to Debt"
-            elif current_ratio <= 200:
-                text_CurrentRatio = "Good Debt Coverage"
-            else:
-                text_CurrentRatio = "Perfect Coverage (Double +)"
-
-        self._set_eval(evaluated_metrics, "CurrentRatio", text_CurrentRatio)
 
         # Cash Ratio
         cash_ratio = fm.safe_round(metrics.get('ratios', {}).get("CashRatio"))

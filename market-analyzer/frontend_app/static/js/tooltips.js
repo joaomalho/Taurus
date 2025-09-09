@@ -38,6 +38,33 @@ export const DEFAULT_TIPS = {
     - Regras (gerais): >4% barato | 2,5–4% justo | <2,5% caro
     - Evitar bancos/seguradoras; atenção a FCF inflado por variações de working capital
     `,
+    netDebtEbitda: `
+**Net Debt/EBITDA** mede alavancagem efetiva.
+
+- Net Debt = Total Debt − (Cash & ST investments)
+- Usar EBITDA TTM; se não houver, FY
+- Regras: <1x Forte | 1–3x Ok | >3x Fraco
+- Net cash (negativo) = muito forte; EBITDA ≤ 0 → N/A/Fraco
+`,
+  interestCoverage: `
+**Cobertura de Juros** (EBIT / Juros) mostra folga para pagar juros.
+
+- Alternativa: EBITDA / Juros
+- Regras (EBIT): >8x Forte | 3–8x Ok | <3x Fraco
+- Se “Juros” ≤ 0 ou negativos → verificar qualidade do dado
+`,
+  currentRatio: `
+**Current Ratio** = Ativo Circulante / Passivo Circulante.
+
+- Regras: >1,5 Forte | 1,0–1,5 Ok | <1,0 Fraco
+- Combina com Quick Ratio p/ visão mais conservadora
+`,
+  quickRatio: `
+**Quick Ratio** = (Ativo Circ. − Inventários) / Passivo Circ.
+
+- Regras: >1,0 Forte | 0,8–1,0 Ok | <0,8 Fraco
+- Evita dependência de vender inventário para pagar obrigações
+`,
   // - Price : Earnings
   trailingPE:
     "Price/Earnings (TTM). Valor mais baixo pode indicar ‘undervalued’, depende do setor e crescimento.",

@@ -395,6 +395,50 @@ class DataHistoryYahoo():
 
         interest_coverage_ebit = ebit_ttm / interest_expense if ebit_ttm is not None and interest_expense and interest_expense > 0 else None
 
+        # - Current Racio
+        # current_assets
+        if 'Current Assets' in yahoo_symbol_balancesheet.index:
+            current_assets = yahoo_symbol_balancesheet.loc['Current Assets']
+            if pd.isna(current_assets).all():
+                current_assets = None
+
+        # current_liabilities
+        if 'Current Liabilities' in yahoo_symbol_balancesheet.index:
+            current_liabilities = yahoo_symbol_balancesheet.loc['Current Liabilities']
+            if pd.isna(current_liabilities).all():
+                current_liabilities = None
+
+        if not current_assets.isna().all() and not current_liabilities.isna().all():
+            current_liabilities = current_liabilities.replace(0, np.nan)
+            current_ratio_series = (current_assets / current_liabilities) * 100
+            current_ratio_series = current_ratio_series.replace([np.inf, -np.inf], np.nan)
+
+            if current_ratio_series.isna().all():
+                current_ratio = None
+            else:
+                current_ratio = current_ratio_series
+        else:
+            current_ratio = None
+
+        # - Quick Racio
+        # inventory
+        if 'Inventory' in yahoo_symbol_balancesheet.index:
+            inventory = yahoo_symbol_balancesheet.loc['Inventory']
+            if pd.isna(inventory).all():
+                inventory = None
+
+        if not current_assets.isna().all() and not current_liabilities.isna().all() and not inventory.isna().all():
+            current_liabilities = current_liabilities.replace(0, np.nan)
+            quick_ratio_series = ((current_assets - inventory) / current_liabilities) * 100
+            quick_ratio_series = quick_ratio_series.replace([np.inf, -np.inf], np.nan)
+
+            if quick_ratio_series.isna().all():
+                quick_ratio = None
+            else:
+                quick_ratio = quick_ratio_series
+        else:
+            quick_ratio = None
+
         # Dividends & BuyBacks
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
         dividend_rate = yahoo_symbol_info.get("dividendRate")
@@ -552,18 +596,6 @@ class DataHistoryYahoo():
             free_cashflow_yield = None
 
         # Ratios
-        # current_ratio
-        if not current_assets.isna().all() and not current_liabilities.isna().all():
-            current_liabilities = current_liabilities.replace(0, np.nan)
-            current_ratio_series = (current_assets / current_liabilities) * 100
-            current_ratio_series = current_ratio_series.replace([np.inf, -np.inf], np.nan)
-
-            if current_ratio_series.isna().all():
-                current_ratio = None
-            else:
-                current_ratio = current_ratio_series
-        else:
-            current_ratio = None
 
         # cash_ratio
         if not cash_cash_equivalents.isna().all() and not current_liabilities.isna().all():
@@ -646,6 +678,19 @@ class DataHistoryYahoo():
             cagr_return_on_equity = None
 
         yahoo_symbol_fundamental_info = {
+            "kpis": {
+                "trailingPE": trailing_pe,
+                "forwardPE": forward_pe,
+                "sectorTrailingPE": sector_pe,
+                "PriceToSale": p_s,
+                "evEbitda": ev_ebitda,
+                "EquityFCFYield": fcf_yield_equity,
+                "EnterpriseFCFYield": fcf_yield_enterp,
+                "NetDebtEbitda": net_debt_ebitda,
+                "InterestCoverageEbit": interest_coverage_ebit,
+                "CurrentRatio": current_ratio.iloc[0],
+                "QuickRatio": quick_ratio.iloc[0],
+            },
             "valuation": {
                 "sectorTrailingPE": sector_pe,
                 "forwardPE": forward_pe,
