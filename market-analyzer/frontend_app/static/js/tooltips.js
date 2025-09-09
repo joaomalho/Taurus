@@ -38,7 +38,7 @@ export const DEFAULT_TIPS = {
     - Regras (gerais): >4% barato | 2,5–4% justo | <2,5% caro
     - Evitar bancos/seguradoras; atenção a FCF inflado por variações de working capital
     `,
-    netDebtEbitda: `
+    NetDebtEbitda: `
 **Net Debt/EBITDA** mede alavancagem efetiva.
 
 - Net Debt = Total Debt − (Cash & ST investments)
@@ -46,24 +46,34 @@ export const DEFAULT_TIPS = {
 - Regras: <1x Forte | 1–3x Ok | >3x Fraco
 - Net cash (negativo) = muito forte; EBITDA ≤ 0 → N/A/Fraco
 `,
-  interestCoverage: `
+  InterestCoverageEbit: `
 **Cobertura de Juros** (EBIT / Juros) mostra folga para pagar juros.
 
 - Alternativa: EBITDA / Juros
 - Regras (EBIT): >8x Forte | 3–8x Ok | <3x Fraco
 - Se “Juros” ≤ 0 ou negativos → verificar qualidade do dado
 `,
-  currentRatio: `
+  CurrentRatio: `
 **Current Ratio** = Ativo Circulante / Passivo Circulante.
 
 - Regras: >1,5 Forte | 1,0–1,5 Ok | <1,0 Fraco
 - Combina com Quick Ratio p/ visão mais conservadora
 `,
-  quickRatio: `
+  QuickRatio: `
 **Quick Ratio** = (Ativo Circ. − Inventários) / Passivo Circ.
 
 - Regras: >1,0 Forte | 0,8–1,0 Ok | <0,8 Fraco
 - Evita dependência de vender inventário para pagar obrigações
+`,
+  OperatingMargin: `
+**Margem Operacional** = EBIT / Receita.
+- Ideal: usar TTM; senão, FY
+- ≥15% costuma ser forte (ajuste por setor)
+`,
+  FcfMargin: `
+**Margem FCF** = Free Cash Flow / Receita.
+- FCF = Cash from Ops − Capex (TTM se possível)
+- ≥10% forte; 5–10% ok; <5% fraco (ajustar por setor)
 `,
   // - Price : Earnings
   trailingPE:

@@ -301,6 +301,10 @@ class DataHistoryYahoo():
         except Exception:
             yahoo_symbol_balancesheet = pd.DataFrame()
         try:
+            yahoo_symbol_balancesheet_quarter = yf.Ticker(symbol).quarterly_balance_sheet
+        except Exception:
+            yahoo_symbol_balancesheet_quarter = pd.DataFrame()
+        try:
             yahoo_symbol_income = yf.Ticker(symbol).income_stmt
         except Exception:
             yahoo_symbol_income = pd.DataFrame()
@@ -312,6 +316,10 @@ class DataHistoryYahoo():
             yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
         except Exception:
             yahoo_symbol_cashflow = pd.DataFrame()
+        try:
+            yahoo_symbol_cashflow_quarter = yf.Ticker(symbol).quarterly_cash_flow
+        except Exception:
+            yahoo_symbol_cashflow_quarter = pd.DataFrame()
 
         # ------ Valuation ------ #
         # - Price Earnings
@@ -359,26 +367,26 @@ class DataHistoryYahoo():
         ebitda_ttm = sum(yahoo_symbol_income_quarter.loc["EBITDA"])
 
         # - Total Revenue
-        if 'Total Revenue' in yahoo_symbol_income.index:
-            total_revenue = yahoo_symbol_income.loc['Total Revenue']
+        if 'Total Revenue' in yahoo_symbol_income_quarter.index:
+            total_revenue = yahoo_symbol_income_quarter.loc['Total Revenue']
             if pd.isna(total_revenue).all():
                 total_revenue = None
 
-        total_revenue_now = total_revenue.iloc[0]
+        total_revenue_ttm = sum(total_revenue)
 
         # - Free Cashflow
-        if 'Free Cash Flow' in yahoo_symbol_cashflow.index:
-            free_cashflow = yahoo_symbol_cashflow.loc['Free Cash Flow']
+        if 'Free Cash Flow' in yahoo_symbol_cashflow_quarter.index:
+            free_cashflow = yahoo_symbol_cashflow_quarter.loc['Free Cash Flow']
             if pd.isna(free_cashflow).all():
                 free_cashflow = None
 
-        free_cashflow_now = free_cashflow.iloc[0]
+        free_cashflow_ttm = sum(free_cashflow)
 
         # - Métricas
         ev_ebitda = enterprise_value / ebitda_ttm if enterprise_value is not None and ebitda_ttm and ebitda_ttm > 0 else None
-        p_s = market_cap / total_revenue_now if market_cap is not None and total_revenue_now and total_revenue_now > 0 else None
-        fcf_yield_equity = free_cashflow_now / market_cap * 100 if free_cashflow_now is not None and market_cap and market_cap > 0 else None
-        fcf_yield_enterp = free_cashflow_now / enterprise_value * 100 if free_cashflow_now is not None and enterprise_value and enterprise_value > 0 else None
+        p_s = market_cap / total_revenue_ttm if market_cap is not None and total_revenue_ttm and total_revenue_ttm > 0 else None
+        fcf_yield_equity = free_cashflow_ttm / market_cap * 100 if free_cashflow_ttm is not None and market_cap and market_cap > 0 else None
+        fcf_yield_enterp = free_cashflow_ttm / enterprise_value * 100 if free_cashflow_ttm is not None and enterprise_value and enterprise_value > 0 else None
 
         # ------ Finantial Health ------ #
         # - Net Debt / EBITDA
@@ -389,16 +397,16 @@ class DataHistoryYahoo():
         # - Interest Coverage (EBIT)
         ebit_ttm = sum(yahoo_symbol_income_quarter.loc["EBIT"])
 
-        interest_expense_now = yahoo_symbol_income.loc["Interest Expense"].iloc[0]
+        interest_expense_ttm = yahoo_symbol_income.loc["Interest Expense"].iloc[0]  # sum(yahoo_symbol_income_quarter.loc["Interest Expense"])
 
-        interest_expense = interest_expense_now if interest_expense_now is not None else yahoo_symbol_income.loc["Interest Expense"].iloc[1]
+        interest_expense_ttm = interest_expense_ttm if interest_expense_ttm is not None else None
 
-        interest_coverage_ebit = ebit_ttm / interest_expense if ebit_ttm is not None and interest_expense and interest_expense > 0 else None
+        interest_coverage_ebit = ebit_ttm / interest_expense_ttm if ebit_ttm is not None and interest_expense_ttm and interest_expense_ttm > 0 else None
 
         # - Current Racio
         # current_assets
         if 'Current Assets' in yahoo_symbol_balancesheet.index:
-            current_assets = yahoo_symbol_balancesheet.loc['Current Assets']
+            current_assets = yahoo_symbol_balancesheet_quarter.loc['Current Assets']
             if pd.isna(current_assets).all():
                 current_assets = None
 
@@ -439,15 +447,23 @@ class DataHistoryYahoo():
         else:
             quick_ratio = None
 
-        # Dividends & BuyBacks
-        eps_ann = yahoo_symbol_info.get("epsCurrentYear")
-        dividend_rate = yahoo_symbol_info.get("dividendRate")
+        # ------ Profitability ------ #
+        # operation_margin
+        operation_margin = ebit_ttm / total_revenue_ttm if total_revenue_ttm is not None and total_revenue_ttm > 0 else None
+
+        # fcf_margin
+
+        fcf_margin = free_cashflow_ttm / total_revenue_ttm if total_revenue_ttm is not None and total_revenue_ttm > 0 else None
 
         # operating_income
         if 'Operating Income' in yahoo_symbol_income.index:
-            operating_income = yahoo_symbol_income.loc['Operating Income']
+            operating_income = yahoo_symbol_income_quarter.loc['Operating Income']
             if pd.isna(operating_income).all():
                 operating_income = None
+
+        # Dividends & BuyBacks
+        eps_ann = yahoo_symbol_info.get("epsCurrentYear")
+        dividend_rate = yahoo_symbol_info.get("dividendRate")
         if (
             eps_ann is not None and
             dividend_rate is not None and
@@ -591,7 +607,7 @@ class DataHistoryYahoo():
 
         # free_cashflow_yield
         if not pd.isna(market_cap) and market_cap != 0 and not free_cashflow.isna().all():
-            free_cashflow_yield = ((free_cashflow_now / market_cap) * 100)
+            free_cashflow_yield = ((free_cashflow_ttm / market_cap) * 100)
         else:
             free_cashflow_yield = None
 
@@ -623,21 +639,8 @@ class DataHistoryYahoo():
         else:
             gross_margin = None
 
-        # operation_margin
-        if not operating_income.isna().all() and not total_revenue.isna().all():
-            total_revenue = total_revenue.replace(0, np.nan)
-            operating_margin_series = (operating_income / total_revenue) * 100
-            operating_margin_series = operating_margin_series.replace([np.inf, -np.inf], np.nan)
-
-            if operating_margin_series.isna().all():
-                operating_margin = None
-            else:
-                operating_margin = operating_margin_series
-        else:
-            operating_margin = None
-
         # cagr_operating_margin
-        cagr_operating_margin = fm.get_cagr_metric(operating_margin)
+        cagr_operating_margin = fm.get_cagr_metric(operation_margin)
         if cagr_operating_margin is not None and math.isnan(cagr_operating_margin):
             cagr_operating_margin = None
 
@@ -690,6 +693,8 @@ class DataHistoryYahoo():
                 "InterestCoverageEbit": interest_coverage_ebit,
                 "CurrentRatio": current_ratio.iloc[0],
                 "QuickRatio": quick_ratio.iloc[0],
+                "OperationalMargin": operation_margin,
+                "FcfMargin": fcf_margin,
             },
             "valuation": {
                 "sectorTrailingPE": sector_pe,
@@ -742,7 +747,7 @@ class DataHistoryYahoo():
                 "OperatingExpensesCAGR": cagr_operating_expenses,
             },
             "cashflow": {
-                "FreeCashflow": free_cashflow_now,
+                "FreeCashflow": free_cashflow_ttm,
                 "OperatingCashflow": operating_cashflow.iloc[0],
                 "CapitalExpenditure": capital_expenditure.iloc[0],
                 "FreeCashflowYield": free_cashflow_yield,
@@ -754,7 +759,6 @@ class DataHistoryYahoo():
                 # Margins
                 "GrossMargin": gross_margin.iloc[0],
                 # "GrossMarginCAGR": cagr_gross_margin,
-                "OperatingMargin": operating_margin.iloc[0],
                 "OperatingMarginCAGR": cagr_operating_margin,
                 "ProfitMargin": profit_margin.iloc[0],
                 "ProfitMarginCAGR": cagr_profit_margin,

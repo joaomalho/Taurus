@@ -351,6 +351,7 @@ const METRIC_STYLE = {
   InterestCoverageEbit: "multiple",
   CurrentRatio: "multiple",
   QuickRatio: "multiple",
+  OperatingMargin: "percent",
 
   // valuation
   MarketCap: "currency",
@@ -363,10 +364,8 @@ const METRIC_STYLE = {
 
   // profitability (%)
   GrossMargin: "percent",
-  OperatingMargin: "percent",
   ProfitMargin: "percent",
   ReturnOnEquity: "percent",
-
   // growth/CAGR (%)
   CostOfRevenueCAGR: "percent",
   TotalRevenueCAGR: "percent",
@@ -456,6 +455,8 @@ export function displayFundamentalResults(data) {
     InterestCoverageEbit: kpisData.InterestCoverageEbit || {},
     CurrentRatio: kpisData.CurrentRatio || {},
     QuickRatio: kpisData.QuickRatio || {},
+    OperatingMargin: kpisData.OperatingMargin || {},
+    FcfMargin: kpisData.FcfMargin || {},
     // Valuation
     sectorTrailingPE: valuationData.sectorTrailingPE || {},
     trailingPE: valuationData.trailingPE || {},
@@ -536,6 +537,7 @@ export function displayFundamentalResultsClassification(data) {
     ["kpis", "InterestCoverageEbit"],
     ["kpis", "CurrentRatio"],
     ["kpis", "QuickRatio"],
+    ["kpis", "OperatingMargin"],
     ["profitability", "CostOfRevenueCAGR"],
     ["profitability", "TotalRevenueCAGR"],
     ["finantial_health", "NetWorth"],
