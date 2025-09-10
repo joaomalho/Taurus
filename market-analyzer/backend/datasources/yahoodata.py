@@ -335,17 +335,17 @@ class DataHistoryYahoo():
             market_cap = None
 
         # - Total Debt
-        total_debt = yahoo_symbol_balancesheet.loc["Total Debt"].iloc[0]
+        total_debt = yahoo_symbol_balancesheet.loc["Total Debt"].dropna().iloc[0]
         if total_debt is None or (isinstance(total_debt, float) and math.isnan(total_debt)):
             total_debt = None
 
         # - Minority Interest
-        total_equity_gross_minority_interest = yahoo_symbol_balancesheet.loc["Total Equity Gross Minority Interest"].iloc[0]
+        total_equity_gross_minority_interest = yahoo_symbol_balancesheet.loc["Total Equity Gross Minority Interest"].dropna().iloc[0]
         if total_equity_gross_minority_interest is None or (isinstance(total_equity_gross_minority_interest, float) and math.isnan(total_equity_gross_minority_interest)):
             total_equity_gross_minority_interest = None
 
         # - Stockholders Equity
-        stockholders_equity = yahoo_symbol_balancesheet.loc["Stockholders Equity"].iloc[0]
+        stockholders_equity = yahoo_symbol_balancesheet.loc["Stockholders Equity"].dropna().iloc[0]
         if stockholders_equity is None or (isinstance(stockholders_equity, float) and math.isnan(stockholders_equity)):
             stockholders_equity = None
 
@@ -354,10 +354,10 @@ class DataHistoryYahoo():
         preferred_equity = 0  # incluir se tiver a rubrica
 
         # - Debt & cash (preferidos)
-        cash_sti = yahoo_symbol_balancesheet.loc["Cash Cash Equivalents And Short Term Investments"].iloc[0]
+        cash_sti = yahoo_symbol_balancesheet.loc["Cash Cash Equivalents And Short Term Investments"].dropna().iloc[0]
         if cash_sti is None:
-            cash = yahoo_symbol_balancesheet.loc["Cash And Cash Equivalents"].iloc[0]
-            sti = yahoo_symbol_balancesheet.loc["Other Short Term Investments"].iloc[0]
+            cash = yahoo_symbol_balancesheet.loc["Cash And Cash Equivalents"].dropna().iloc[0]
+            sti = yahoo_symbol_balancesheet.loc["Other Short Term Investments"].dropna().iloc[0]
             cash_sti = (cash or 0) + (sti or 0)
 
         # - Enterprise Value
@@ -475,6 +475,28 @@ class DataHistoryYahoo():
         assets_mean = (assets.shift(1) + assets) / 2
         last_assets_mean = assets_mean.dropna().iloc[0]
         roa = net_income_ttm / last_assets_mean
+
+        # ------ Capital Efficiency ------ #
+        # - wacc
+
+        beta = yahoo_symbol_info.get("beta")
+        interest_expense_ttm = yahoo_symbol_income.loc["Interest Expense"].dropna().iloc[0]
+        total_debt = yahoo_symbol_balancesheet.loc["Total Debt"].dropna().iloc[0]
+
+        cd = interest_expense_ttm / total_debt
+
+        tax_provisory_ttm = yahoo_symbol_income_quarter.loc['Tax Provision'].sum()
+        pretax_income_ttm = yahoo_symbol_income_quarter.loc['Pretax Income'].sum()
+        tax_efective = tax_provisory_ttm / pretax_income_ttm 
+
+        market_cap = yahoo_symbol_info.get('marketCap')
+
+        us10y = yf.Ticker("^TNX").info.get("previousClose") / 100
+        erp = 0.055
+
+        ce = us10y + beta * erp
+
+        wacc = ((market_cap / (market_cap + total_debt)) * ce) + ((total_debt / (total_debt + market_cap)) * cd * (1 - tax_efective))
 
         # Dividends & BuyBacks
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
@@ -656,6 +678,7 @@ class DataHistoryYahoo():
                 "ROIC": roic,
                 "ROE": roe,
                 "ROA": roa,
+                "WACC": wacc,
             },
             "valuation": {
                 "sectorTrailingPE": sector_pe,

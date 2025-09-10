@@ -355,6 +355,7 @@ const METRIC_STYLE = {
   ROIC: "percent",
   ROE: "percent",
   ROA: "percent",
+  WACC: "percent",
 
   // valuation
   MarketCap: "currency",
@@ -460,6 +461,7 @@ export function displayFundamentalResults(data) {
     ROIC: kpisData.ROIC || {},
     ROE: kpisData.ROE || {},
     ROA: kpisData.ROA || {},
+    WACC: kpisData.WACC || {},
     // Valuation
     EVenterpriseValue: valuationData.EVenterpriseValue || {},
     sectorTrailingPE: valuationData.sectorTrailingPE || {},
@@ -542,6 +544,7 @@ export function displayFundamentalResultsClassification(data) {
     ["kpis", "ROIC"],
     ["kpis", "ROE"],
     ["kpis", "ROA"],
+    ["kpis", "WACC"],
     ["valuations", "EVenterpriseValue"],
     ["profitability", "CostOfRevenueCAGR"],
     ["profitability", "TotalRevenueCAGR"],
