@@ -1,14 +1,5 @@
 /* ─────── FORMATADORES DE VALORES ─────── */
 export function formatPercent(value, min = 2, max = 2) {
-  return typeof value === "number" && isFinite(value)
-    ? value.toLocaleString("pt-PT", {
-        minimumFractionDigits: min,
-        maximumFractionDigits: max,
-      }) + "%"
-    : "N/A";
-}
-
-export function formatPercentFromFraction(value, min = 2, max = 2) {
   // 0.0131 -> "1,31%"
   return typeof value === "number" && isFinite(value)
     ? (value * 100).toLocaleString("pt-PT", {

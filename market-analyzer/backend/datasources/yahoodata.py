@@ -364,7 +364,7 @@ class DataHistoryYahoo():
         enterprise_value = market_cap + total_debt + minority_interest + preferred_equity - cash_sti
 
         # - EBITDA
-        ebitda_ttm = sum(yahoo_symbol_income_quarter.loc["EBITDA"])
+        ebitda_ttm = yahoo_symbol_income_quarter.loc["EBITDA"].sum()
 
         # - Total Revenue
         if 'Total Revenue' in yahoo_symbol_income_quarter.index:
@@ -372,7 +372,7 @@ class DataHistoryYahoo():
             if pd.isna(total_revenue).all():
                 total_revenue = None
 
-        total_revenue_ttm = sum(total_revenue)
+        total_revenue_ttm = total_revenue.sum()
 
         # - Free Cashflow
         if 'Free Cash Flow' in yahoo_symbol_cashflow_quarter.index:
@@ -380,24 +380,24 @@ class DataHistoryYahoo():
             if pd.isna(free_cashflow).all():
                 free_cashflow = None
 
-        free_cashflow_ttm = sum(free_cashflow)
+        free_cashflow_ttm = free_cashflow.sum()
 
         # - Métricas
         ev_ebitda = enterprise_value / ebitda_ttm if enterprise_value is not None and ebitda_ttm and ebitda_ttm > 0 else None
         p_s = market_cap / total_revenue_ttm if market_cap is not None and total_revenue_ttm and total_revenue_ttm > 0 else None
-        fcf_yield_equity = free_cashflow_ttm / market_cap * 100 if free_cashflow_ttm is not None and market_cap and market_cap > 0 else None
-        fcf_yield_enterp = free_cashflow_ttm / enterprise_value * 100 if free_cashflow_ttm is not None and enterprise_value and enterprise_value > 0 else None
+        fcf_yield_equity = free_cashflow_ttm / market_cap if free_cashflow_ttm is not None and market_cap and market_cap > 0 else None
+        fcf_yield_enterp = free_cashflow_ttm / enterprise_value if free_cashflow_ttm is not None and enterprise_value and enterprise_value > 0 else None
 
         # ------ Finantial Health ------ #
         # - Net Debt / EBITDA
         net_debt = total_debt - cash_sti
 
-        net_debt_ebitda = net_debt / ebitda_ttm * 100 if net_debt is not None and ebitda_ttm and ebitda_ttm > 0 else None
+        net_debt_ebitda = net_debt / ebitda_ttm if net_debt is not None and ebitda_ttm and ebitda_ttm > 0 else None
 
         # - Interest Coverage (EBIT)
-        ebit_ttm = sum(yahoo_symbol_income_quarter.loc["EBIT"])
+        ebit_ttm = yahoo_symbol_income_quarter.loc["EBIT"].sum()
 
-        interest_expense_ttm = yahoo_symbol_income.loc["Interest Expense"].iloc[0]  # sum(yahoo_symbol_income_quarter.loc["Interest Expense"])
+        interest_expense_ttm = yahoo_symbol_income.loc["Interest Expense"].dropna().iloc[0]  # sum(yahoo_symbol_income_quarter.loc["Interest Expense"])
 
         interest_expense_ttm = interest_expense_ttm if interest_expense_ttm is not None else None
 
@@ -405,47 +405,32 @@ class DataHistoryYahoo():
 
         # - Current Racio
         # current_assets
-        if 'Current Assets' in yahoo_symbol_balancesheet.index:
+        if 'Current Assets' in yahoo_symbol_balancesheet_quarter.index:
             current_assets = yahoo_symbol_balancesheet_quarter.loc['Current Assets']
             if pd.isna(current_assets).all():
                 current_assets = None
-
+            else:
+                current_assets = current_assets.dropna().iloc[0]
         # current_liabilities
-        if 'Current Liabilities' in yahoo_symbol_balancesheet.index:
-            current_liabilities = yahoo_symbol_balancesheet.loc['Current Liabilities']
+        if 'Current Liabilities' in yahoo_symbol_balancesheet_quarter.index:
+            current_liabilities = yahoo_symbol_balancesheet_quarter.loc['Current Liabilities']
             if pd.isna(current_liabilities).all():
                 current_liabilities = None
-
-        if not current_assets.isna().all() and not current_liabilities.isna().all():
-            current_liabilities = current_liabilities.replace(0, np.nan)
-            current_ratio_series = (current_assets / current_liabilities) * 100
-            current_ratio_series = current_ratio_series.replace([np.inf, -np.inf], np.nan)
-
-            if current_ratio_series.isna().all():
-                current_ratio = None
             else:
-                current_ratio = current_ratio_series
-        else:
-            current_ratio = None
+                current_liabilities = current_liabilities.dropna().iloc[0]
+
+        current_ratio = (current_assets / current_liabilities) if current_liabilities is not None else None
 
         # - Quick Racio
         # inventory
-        if 'Inventory' in yahoo_symbol_balancesheet.index:
-            inventory = yahoo_symbol_balancesheet.loc['Inventory']
+        if 'Inventory' in yahoo_symbol_balancesheet_quarter.index:
+            inventory = yahoo_symbol_balancesheet_quarter.loc['Inventory']
             if pd.isna(inventory).all():
                 inventory = None
-
-        if not current_assets.isna().all() and not current_liabilities.isna().all() and not inventory.isna().all():
-            current_liabilities = current_liabilities.replace(0, np.nan)
-            quick_ratio_series = ((current_assets - inventory) / current_liabilities) * 100
-            quick_ratio_series = quick_ratio_series.replace([np.inf, -np.inf], np.nan)
-
-            if quick_ratio_series.isna().all():
-                quick_ratio = None
             else:
-                quick_ratio = quick_ratio_series
-        else:
-            quick_ratio = None
+                inventory = inventory.dropna().iloc[0]
+
+        quick_ratio = ((current_assets - inventory) / current_liabilities)
 
         # ------ Profitability ------ #
         # operation_margin
@@ -459,6 +444,8 @@ class DataHistoryYahoo():
             operating_income = yahoo_symbol_income_quarter.loc['Operating Income']
             if pd.isna(operating_income).all():
                 operating_income = None
+            else:
+                operating_income = operating_income.dropna().iloc[0]
 
         # ROIC
         tax_rate_ttm = yahoo_symbol_income_quarter.loc['Tax Rate For Calcs'].mean()
@@ -474,8 +461,10 @@ class DataHistoryYahoo():
             net_income = yahoo_symbol_income_quarter.loc['Net Income']
             if pd.isna(net_income).all():
                 net_income = None
+            else:
+                net_income = net_income.dropna().iloc[0]
 
-        net_income_ttm = sum(net_income)
+        net_income_ttm = net_income.sum()
         equity = yahoo_symbol_balancesheet.loc['Stockholders Equity']
         equity_mean = (equity.shift(1) + equity) / 2
         last_equity_mean = equity_mean.dropna().iloc[0]
@@ -627,14 +616,14 @@ class DataHistoryYahoo():
 
         # free_cashflow_yield
         if not pd.isna(market_cap) and market_cap != 0 and not free_cashflow.isna().all():
-            free_cashflow_yield = ((free_cashflow_ttm / market_cap) * 100)
+            free_cashflow_yield = (free_cashflow_ttm / market_cap)
         else:
             free_cashflow_yield = None
 
         # gross_margin
         if not gross_profit.isna().all() and not total_revenue.isna().all():
             total_revenue = total_revenue.replace(0, np.nan)
-            gross_margin_series = (gross_profit / total_revenue) * 100
+            gross_margin_series = (gross_profit / total_revenue)
             gross_margin_series = gross_margin_series.replace([np.inf, -np.inf], np.nan)
 
             if gross_margin_series.isna().all():
@@ -660,8 +649,8 @@ class DataHistoryYahoo():
                 "EnterpriseFCFYield": fcf_yield_enterp,
                 "NetDebtEbitda": net_debt_ebitda,
                 "InterestCoverageEbit": interest_coverage_ebit,
-                "CurrentRatio": current_ratio.iloc[0],
-                "QuickRatio": quick_ratio.iloc[0],
+                "CurrentRatio": current_ratio,
+                "QuickRatio": quick_ratio,
                 "OperationalMargin": operation_margin,
                 "FcfMargin": fcf_margin,
                 "ROIC": roic,
@@ -682,7 +671,6 @@ class DataHistoryYahoo():
             },
             "finantial_health": {
                 "NetDebtEbitda": net_debt_ebitda,
-                "InterestCoverageEbit": interest_coverage_ebit,
                 # Actual
                 "TotalAssets": total_assets.iloc[0],
                 "TotalLiabilities": total_liabilities.iloc[0],
@@ -726,7 +714,7 @@ class DataHistoryYahoo():
             },
             "ratios": {
                 # Margins
-                "GrossMargin": gross_margin.iloc[0]
+                "GrossMargin": 9999
             },
             "market_risk_and_sentiment": {
                 "beta": yahoo_symbol_info.get("beta", None),

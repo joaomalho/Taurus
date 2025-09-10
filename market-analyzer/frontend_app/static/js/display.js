@@ -1,4 +1,4 @@
-import { formatPercent, formatPercentFromFraction, formatMultiple, formatCurrency, formatNumber, formatDate } from "./formatter.js";
+import { formatPercent, formatMultiple, formatCurrency, formatNumber, formatDate } from "./formatter.js";
 import { Grid, html } from "./gridjs.production.es.min.js";
 import {normalizeNewsItem, sortByDateDesc, dedupeByUrl, renderCard} from "./news.js";
 
@@ -352,6 +352,7 @@ const METRIC_STYLE = {
   CurrentRatio: "multiple",
   QuickRatio: "multiple",
   OperationalMargin: "percent",
+  ROIC: "percent",
   ROE: "percent",
   ROA: "percent",
 
@@ -412,7 +413,7 @@ const METRIC_STYLE = {
   targetMeanPrice: "currency",
 
   // ATENÇÃO: esta costuma vir EM FRAÇÃO (0.0131 -> 1.31%)
-  sharesPercentSharesOut: "percentFraction",
+  sharesPercentSharesOut: "percent",
 };
 
 /* ─────── FORMATADOR CENTRAL ─────── */
@@ -421,8 +422,6 @@ function formatByKey(key, value, currency = "USD") {
   switch (style) {
     case "percent":
       return formatPercent(value);
-    case "percentFraction":
-      return formatPercentFromFraction(value);
     case "multiple":
       return formatMultiple(value);
     case "currency":
@@ -456,7 +455,7 @@ export function displayFundamentalResults(data) {
     InterestCoverageEbit: kpisData.InterestCoverageEbit || {},
     CurrentRatio: kpisData.CurrentRatio || {},
     QuickRatio: kpisData.QuickRatio || {},
-    OperatingMargin: kpisData.OperationalMargin || {},
+    OperationalMargin: kpisData.OperationalMargin || {},
     FcfMargin: kpisData.FcfMargin || {},
     ROIC: kpisData.ROIC || {},
     ROE: kpisData.ROE || {},
@@ -504,8 +503,6 @@ export function displayFundamentalResults(data) {
     // Ratios
     CashRatio: ratiosData.CashRatio || {},
     GrossMargin: ratiosData.GrossMargin || {},
-    // GrossMarginCAGR: ratiosData.GrossMarginCAGR || {},
-    OperatingMargin: ratiosData.OperationalMargin || {},
     OperatingMarginCAGR: ratiosData.OperatingMarginCAGR || {},
     ProfitMargin: ratiosData.ProfitMargin || {},
     ProfitMarginCAGR: ratiosData.ProfitMarginCAGR || {},

@@ -65,7 +65,7 @@ export const DEFAULT_TIPS = {
 - Regras: >1,0 Forte | 0,8–1,0 Ok | <0,8 Fraco
 - Evita dependência de vender inventário para pagar obrigações
 `,
-  OperatingMargin: `
+  OperationalMargin: `
 **Margem Operacional** = EBIT / Receita.
 - Ideal: usar TTM; senão, FY
 - ≥15% costuma ser forte (ajuste por setor)
