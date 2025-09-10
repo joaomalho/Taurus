@@ -631,20 +631,6 @@ class DataHistoryYahoo():
         else:
             free_cashflow_yield = None
 
-        # Ratios
-        # cash_ratio
-        if not cash_cash_equivalents.isna().all() and not current_liabilities.isna().all():
-            current_liabilities = current_liabilities.replace(0, np.nan)
-            cash_ratio_series = (cash_cash_equivalents / current_liabilities) * 100
-            cash_ratio_series = cash_ratio_series.replace([np.inf, -np.inf], np.nan)
-
-            if cash_ratio_series.isna().all():
-                cash_ratio = None
-            else:
-                cash_ratio = cash_ratio_series
-        else:
-            cash_ratio = None
-
         # gross_margin
         if not gross_profit.isna().all() and not total_revenue.isna().all():
             total_revenue = total_revenue.replace(0, np.nan)
