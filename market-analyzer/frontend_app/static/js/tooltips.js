@@ -75,6 +75,22 @@ export const DEFAULT_TIPS = {
 - FCF = Cash from Ops − Capex (TTM se possível)
 - ≥10% forte; 5–10% ok; <5% fraco (ajustar por setor)
 `,
+  ROIC: `
+**ROIC** = NOPAT / Capital Investido Médio.
+- NOPAT ≈ EBIT × (1 − taxa efetiva)
+- Capital Investido: usa “Invested Capital” (média) ou reconstrói
+- >WACC cria valor (proxy: >12% forte; 6–12% ok; <6% fraco)
+`,
+  ROE: `
+**ROE** = Net Income / Equity Médio.
+- >15% forte; 8–15% ok; <8% fraco
+- Atenção à alavancagem: ROE alto com muita dívida nem sempre é “qualidade”
+`,
+  ROA: `
+**ROA** = Net Income / Ativos Médios.
+- >7% forte; 3–7% ok; <3% fraco
+- Útil para comparar eficiência entre setores intensivos em ativos
+`,
   // - Price : Earnings
   trailingPE:
     "Price/Earnings (TTM). Valor mais baixo pode indicar ‘undervalued’, depende do setor e crescimento.",

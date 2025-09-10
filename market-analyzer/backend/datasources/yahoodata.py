@@ -452,14 +452,40 @@ class DataHistoryYahoo():
         operation_margin = ebit_ttm / total_revenue_ttm if total_revenue_ttm is not None and total_revenue_ttm > 0 else None
 
         # fcf_margin
-
         fcf_margin = free_cashflow_ttm / total_revenue_ttm if total_revenue_ttm is not None and total_revenue_ttm > 0 else None
 
         # operating_income
-        if 'Operating Income' in yahoo_symbol_income.index:
+        if 'Operating Income' in yahoo_symbol_income_quarter.index:
             operating_income = yahoo_symbol_income_quarter.loc['Operating Income']
             if pd.isna(operating_income).all():
                 operating_income = None
+
+        # ROIC
+        tax_rate_ttm = yahoo_symbol_income_quarter.loc['Tax Rate For Calcs'].mean()
+        cap_invested = yahoo_symbol_balancesheet.loc['Invested Capital']
+        cap_invested_mean = (cap_invested.shift(1) + cap_invested) / 2
+        last_capital = cap_invested_mean.dropna().iloc[0]
+        nopat_ttm = (ebit_ttm * (1 - tax_rate_ttm))
+        roic = nopat_ttm / last_capital if last_capital is not None else None
+
+        # ROE
+        # net_income
+        if 'Net Income' in yahoo_symbol_income_quarter.index:
+            net_income = yahoo_symbol_income_quarter.loc['Net Income']
+            if pd.isna(net_income).all():
+                net_income = None
+
+        net_income_ttm = sum(net_income)
+        equity = yahoo_symbol_balancesheet.loc['Stockholders Equity']
+        equity_mean = (equity.shift(1) + equity) / 2
+        last_equity_mean = equity_mean.dropna().iloc[0]
+        roe = net_income_ttm / last_equity_mean
+
+        # ROA
+        assets = yahoo_symbol_balancesheet.loc['Total Assets']
+        assets_mean = (assets.shift(1) + assets) / 2
+        last_assets_mean = assets_mean.dropna().iloc[0]
+        roa = net_income_ttm / last_assets_mean
 
         # Dividends & BuyBacks
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
@@ -476,12 +502,6 @@ class DataHistoryYahoo():
             div_coverage_rate = None
 
         # Profitability
-        # net_income
-        if 'Net Income' in yahoo_symbol_income.index:
-            net_income = yahoo_symbol_income.loc['Net Income']
-            if pd.isna(net_income).all():
-                net_income = None
-
         # cost_of_revenue
         if 'Cost Of Revenue' in yahoo_symbol_income.index:
             cost_of_revenue = yahoo_symbol_income.loc['Cost Of Revenue']
@@ -612,7 +632,6 @@ class DataHistoryYahoo():
             free_cashflow_yield = None
 
         # Ratios
-
         # cash_ratio
         if not cash_cash_equivalents.isna().all() and not current_liabilities.isna().all():
             current_liabilities = current_liabilities.replace(0, np.nan)
@@ -644,42 +663,6 @@ class DataHistoryYahoo():
         if cagr_operating_margin is not None and math.isnan(cagr_operating_margin):
             cagr_operating_margin = None
 
-        # profit_margin
-        if not net_income.isna().all() and not total_revenue.isna().all():
-            total_revenue = total_revenue.replace(0, np.nan)
-            profit_margin_series = (net_income / total_revenue) * 100
-            profit_margin_series = profit_margin_series.replace([np.inf, -np.inf], np.nan)
-
-            if profit_margin_series.isna().all():
-                profit_margin = None
-            else:
-                profit_margin = profit_margin_series
-        else:
-            profit_margin = None
-
-        # cagr_profit_margin
-        cagr_profit_margin = fm.get_cagr_metric(profit_margin)
-        if cagr_profit_margin is not None and math.isnan(cagr_profit_margin):
-            cagr_profit_margin = None
-
-        # return_on_equity
-        if not net_income.isna().all() and not stockholders_equity.isna().all():
-            stockholders_equity = stockholders_equity.replace(0, np.nan)
-            return_on_equity_series = (net_income / stockholders_equity) * 100
-            return_on_equity_series = return_on_equity_series.replace([np.inf, -np.inf], np.nan)
-
-            if return_on_equity_series.isna().all():
-                return_on_equity = None
-            else:
-                return_on_equity = return_on_equity_series
-        else:
-            return_on_equity = None
-
-        # cagr_return_on_equity
-        cagr_return_on_equity = fm.get_cagr_metric(return_on_equity)
-        if cagr_return_on_equity is not None and math.isnan(cagr_return_on_equity):
-            cagr_return_on_equity = None
-
         yahoo_symbol_fundamental_info = {
             "kpis": {
                 "trailingPE": trailing_pe,
@@ -695,6 +678,9 @@ class DataHistoryYahoo():
                 "QuickRatio": quick_ratio.iloc[0],
                 "OperationalMargin": operation_margin,
                 "FcfMargin": fcf_margin,
+                "ROIC": roic,
+                "ROE": roe,
+                "ROA": roa,
             },
             "valuation": {
                 "sectorTrailingPE": sector_pe,
@@ -737,7 +723,7 @@ class DataHistoryYahoo():
                 "fiveYearAvgDividendYield": yahoo_symbol_info.get("fiveYearAvgDividendYield", None),
             },
             "profitability": {
-                "NetIncome": net_income.iloc[0],
+                "NetIncome": net_income_ttm,
                 "TotalRevenue": total_revenue.iloc[0],
                 "CostOfRevenue": cost_of_revenue.iloc[0],
                 "GrossProfit": gross_profit.iloc[0],
@@ -753,17 +739,8 @@ class DataHistoryYahoo():
                 "FreeCashflowYield": free_cashflow_yield,
             },
             "ratios": {
-                # Health & Debt
-                "CurrentRatio": current_ratio.iloc[0],
-                "CashRatio": cash_ratio.iloc[0],
                 # Margins
-                "GrossMargin": gross_margin.iloc[0],
-                # "GrossMarginCAGR": cagr_gross_margin,
-                "OperatingMarginCAGR": cagr_operating_margin,
-                "ProfitMargin": profit_margin.iloc[0],
-                "ProfitMarginCAGR": cagr_profit_margin,
-                "ReturnOnEquity": return_on_equity.iloc[0],
-                "ReturnOnEquityCAGR": cagr_return_on_equity,
+                "GrossMargin": gross_margin.iloc[0]
             },
             "market_risk_and_sentiment": {
                 "beta": yahoo_symbol_info.get("beta", None),
