@@ -356,16 +356,18 @@ const METRIC_STYLE = {
   ROE: "percent",
   ROA: "percent",
   WACC: "percent",
+  GrowthReveneuYoY: "percent",
+  CagrGrowthReveneuYoY: "percent",
+  GrowthEPSYoY: "percent",
+  CagrGrowthEPSYoY: "percent",
+  divCoverageRate: "multiple",
+  dividendYield: "percent",
+  fiveYearAvgDividendYield: "percent",
 
   // valuation
   MarketCap: "currency",
   ebitdaTTM: "currency",
   
-  // dividends
-  divCoverageRate: "multiple",
-  dividendYield: "percent",
-  fiveYearAvgDividendYield: "percent",
-
   // profitability (%)
   GrossMargin: "percent",
   ProfitMargin: "percent",
@@ -462,6 +464,13 @@ export function displayFundamentalResults(data) {
     ROE: kpisData.ROE || {},
     ROA: kpisData.ROA || {},
     WACC: kpisData.WACC || {},
+    GrowthReveneuYoY: kpisData.GrowthReveneuYoY || {},
+    CagrGrowthReveneuYoY: kpisData.CagrGrowthReveneuYoY || {},
+    GrowthEPSYoY: kpisData.GrowthEPSYoY || {},
+    CagrGrowthEPSYoY: kpisData.CagrGrowthEPSYoY || {},
+    divCoverageRate: kpisData.divCoverageRate || {},
+    dividendYield: kpisData.dividendYield || {},
+    fiveYearAvgDividendYield: kpisData.fiveYearAvgDividendYield || {},
     // Valuation
     EVenterpriseValue: valuationData.EVenterpriseValue || {},
     sectorTrailingPE: valuationData.sectorTrailingPE || {},
@@ -485,9 +494,6 @@ export function displayFundamentalResults(data) {
     StockholdersEquityCAGR: finantial_healthData.StockholdersEquityCAGR || {},
     StockholdersEquity: finantial_healthData.StockholdersEquity || {},
     // Dividends
-    divCoverageRate: dividendsData.divCoverageRate || {},
-    dividendYield: dividendsData.dividendYield || {},
-    fiveYearAvgDividendYield: dividendsData.fiveYearAvgDividendYield || {},
     // Profitability
     NetIncome: profitabilityData.NetIncome || {},
     TotalRevenue: profitabilityData.TotalRevenue || {},
@@ -545,6 +551,13 @@ export function displayFundamentalResultsClassification(data) {
     ["kpis", "ROE"],
     ["kpis", "ROA"],
     ["kpis", "WACC"],
+    ["kpis", "GrowthReveneuYoY"],
+    ["kpis", "CagrGrowthReveneuYoY"],
+    ["kpis", "GrowthEPSYoY"],
+    ["kpis", "CagrGrowthEPSYoY"],
+    ["kpis", "divCoverageRate"],
+    ["kpis", "dividendYield"],
+    ["kpis", "fiveYearAvgDividendYield"],
     ["valuations", "EVenterpriseValue"],
     ["profitability", "CostOfRevenueCAGR"],
     ["profitability", "TotalRevenueCAGR"],

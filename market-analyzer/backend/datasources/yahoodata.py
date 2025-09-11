@@ -321,6 +321,7 @@ class DataHistoryYahoo():
         except Exception:
             yahoo_symbol_cashflow_quarter = pd.DataFrame()
 
+        fm = Formulas()
         # ------ Valuation ------ #
         # - Price Earnings
         sector = yahoo_symbol_info.get("sector")
@@ -371,6 +372,16 @@ class DataHistoryYahoo():
             total_revenue = yahoo_symbol_income_quarter.loc['Total Revenue']
             if pd.isna(total_revenue).all():
                 total_revenue = None
+            else:
+                total_revenue.dropna()
+
+        # - Total Revenue FY
+        if 'Total Revenue' in yahoo_symbol_income.index:
+            total_revenue_fy = yahoo_symbol_income.loc['Total Revenue']
+            if pd.isna(total_revenue_fy).all():
+                total_revenue_fy = None
+            else:
+                total_revenue_fy = total_revenue_fy.dropna()
 
         total_revenue_ttm = total_revenue.sum()
 
@@ -456,6 +467,14 @@ class DataHistoryYahoo():
         roic = nopat_ttm / last_capital if last_capital is not None else None
 
         # ROE
+        # net_income_fy
+        if 'Net Income' in yahoo_symbol_income.index:
+            net_income_fy = yahoo_symbol_income.loc['Net Income']
+            if pd.isna(net_income_fy).all():
+                net_income_fy = None
+            else:
+                net_income_fy = net_income_fy.dropna()
+        
         # net_income
         if 'Net Income' in yahoo_symbol_income_quarter.index:
             net_income = yahoo_symbol_income_quarter.loc['Net Income']
@@ -487,7 +506,7 @@ class DataHistoryYahoo():
 
         tax_provisory_ttm = yahoo_symbol_income_quarter.loc['Tax Provision'].sum()
         pretax_income_ttm = yahoo_symbol_income_quarter.loc['Pretax Income'].sum()
-        tax_efective = tax_provisory_ttm / pretax_income_ttm 
+        tax_efective = tax_provisory_ttm / pretax_income_ttm
 
         market_cap = yahoo_symbol_info.get('marketCap')
 
@@ -498,7 +517,24 @@ class DataHistoryYahoo():
 
         wacc = ((market_cap / (market_cap + total_debt)) * ce) + ((total_debt / (total_debt + market_cap)) * cd * (1 - tax_efective))
 
+        # ------ Growth ------ #
+        # revenue growth
+        growth_revenue_yoy = (total_revenue_fy.iloc[0] / total_revenue_fy.iloc[1]) - 1 if total_revenue_fy.iloc[1] is not None else None
+        cagr_growth_revenue_yoy = fm.get_cagr_metric(total_revenue_fy)
+        if cagr_growth_revenue_yoy is not None and math.isnan(cagr_growth_revenue_yoy):
+            cagr_growth_revenue_yoy = None
+
+        # eps growth
+        dilutedEPS_fy = yahoo_symbol_income.loc["Diluted EPS"].dropna()
+        growth_eps_yoy = (dilutedEPS_fy.iloc[0] / dilutedEPS_fy.iloc[1]) - 1 if dilutedEPS_fy.iloc[1] is not None else None
+        cagr_growth_eps_yoy = fm.get_cagr_metric(dilutedEPS_fy)
+        if cagr_growth_eps_yoy is not None and math.isnan(cagr_growth_eps_yoy):
+            cagr_growth_eps_yoy = None
+
         # Dividends & BuyBacks
+        dividendYield = yahoo_symbol_info.get("dividendYield", None),
+        fiveYearAvgDividendYield = yahoo_symbol_info.get("fiveYearAvgDividendYield", None)
+
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
         dividend_rate = yahoo_symbol_info.get("dividendRate")
         if (
@@ -530,8 +566,6 @@ class DataHistoryYahoo():
             operating_expenses = yahoo_symbol_income.loc['Operating Expense']
             if pd.isna(operating_expenses).all():
                 operating_expenses = None
-
-        fm = Formulas()
 
         cagr_cost_of_revenue = fm.get_cagr_metric(cost_of_revenue)
         if cagr_cost_of_revenue is not None and math.isnan(cagr_cost_of_revenue):
@@ -679,21 +713,20 @@ class DataHistoryYahoo():
                 "ROE": roe,
                 "ROA": roa,
                 "WACC": wacc,
+                "GrowthReveneuYoY": growth_revenue_yoy,
+                "CagrGrowthReveneuYoY": cagr_growth_revenue_yoy,
+                "GrowthEPSYoY": growth_eps_yoy,
+                "CagrGrowthEPSYoY": cagr_growth_eps_yoy,
+                "divCoverageRate": div_coverage_rate,
+                "dividendYield": dividendYield,
+                "fiveYearAvgDividendYield": fiveYearAvgDividendYield,
             },
             "valuation": {
-                "sectorTrailingPE": sector_pe,
-                "forwardPE": forward_pe,
-                "trailingPE": trailing_pe,
                 "MarketCap": market_cap,
                 "EVenterpriseValue": enterprise_value,
                 "ebitdaTTM": ebitda_ttm,
-                "evEbitda": ev_ebitda,
-                "PriceToSale": p_s,
-                "EquityFCFYield": fcf_yield_equity,
-                "EnterpriseFCFYield": fcf_yield_enterp,
             },
             "finantial_health": {
-                "NetDebtEbitda": net_debt_ebitda,
                 # Actual
                 "TotalAssets": total_assets.iloc[0],
                 "TotalLiabilities": total_liabilities.iloc[0],
@@ -713,11 +746,6 @@ class DataHistoryYahoo():
                 # Stockholders Equity
                 "StockholdersEquityCAGR": cagr_stockholder_equity,
                 "StockholdersEquity": stockholders_equity.iloc[0],
-            },
-            "dividends": {
-                "divCoverageRate": div_coverage_rate,
-                "dividendYield": yahoo_symbol_info.get("dividendYield", None),
-                "fiveYearAvgDividendYield": yahoo_symbol_info.get("fiveYearAvgDividendYield", None),
             },
             "profitability": {
                 "NetIncome": net_income_ttm,

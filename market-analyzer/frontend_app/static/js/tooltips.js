@@ -132,6 +132,28 @@ export const DEFAULT_TIPS = {
 - Mostra quantas “voltas” a receita dá no capital investido
 - Alto em retalho/serviços leves; baixo em setores intensivos em ativos
 `,
+GrowthReveneuYoY: `
+**Crescimento de Vendas (YoY)** = Receita FY atual vs FY anterior.
+- Evita sazonalidade dos trimestres
+- Regras: ≥10% forte | 4–10% moderado | <4% fraco
+`,
+CagrGrowthReveneuYoY: `
+**CAGR 3 anos (Vendas)** = taxa composta em 3 FY.
+- Captura tendência estrutural
+- Ignora ruído de um único ano
+`,
+
+GrowthEPSYoY: `
+**Crescimento de EPS (YoY)** = EPS FY atual vs FY anterior.
+- Sensível a recompras e itens não recorrentes
+- Regras: ≥10% forte | 4–10% moderado | <4% fraco
+`,
+
+CagrGrowthEPSYoY: `
+**CAGR 3 anos (EPS)** = taxa composta em 3 FY.
+- Preferir EPS diluído
+- Se possível, validar com Net Income e ações médias
+`,
 };
 
 function createHelpIcon(text) {

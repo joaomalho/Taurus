@@ -13,7 +13,7 @@ class Formulas():
             series = series.replace(0, np.nan).dropna()
 
             if len(series) >= 2:
-                yoy_growth = ((series - series.shift(-1)) / series.shift(-1)) * 100
+                yoy_growth = ((series - series.shift(-1)) / series.shift(-1))
                 yoy_growth = yoy_growth.dropna()
             else:
                 yoy_growth = pd.Series("N/A", index=series.index)
@@ -38,7 +38,7 @@ class Formulas():
         else:
             cagr = None
 
-        cagr_percent = cagr * 100 if cagr is not None else None
+        cagr_percent = cagr if cagr is not None else None
 
         return cagr_percent
 
