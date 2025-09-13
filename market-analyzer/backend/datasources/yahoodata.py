@@ -559,8 +559,27 @@ class DataHistoryYahoo():
         cagr_dividend_3y = fm.get_cagr_metric(annual_complete.tail(3))
         cagr_dividend_5y = fm.get_cagr_metric(annual_complete.tail(5))
 
-        # shareholder yield
-        shy = div_ttm
+        # Shareholders Yield
+        # cash dividend paid
+        if 'Cash Dividends Paid' in yahoo_symbol_cashflow_quarter.index:
+            cash_dividends_paid = yahoo_symbol_cashflow_quarter.loc['Cash Dividends Paid']
+            if pd.isna(cash_dividends_paid).all():
+                cash_dividends_paid = None
+            else:
+                cash_dividends_paid = cash_dividends_paid.dropna()
+        
+        # rewards ttm
+        if 'Repurchase Of Capital Stock' in yahoo_symbol_cashflow_quarter.index:
+            rewards = yahoo_symbol_cashflow_quarter.loc['Repurchase Of Capital Stock']
+            if pd.isna(rewards).all():
+                rewards = None
+            else:
+                rewards = rewards.dropna()
+        
+        div_ttm_quarter = cash_dividends_paid.sum()
+        rewards_ttm_quarter = rewards.sum()
+
+        shy = (div_ttm_quarter + rewards_ttm_quarter) / market_cap if market_cap is not None else None
 
         fiveYearAvgDividendYield = yahoo_symbol_info.get("fiveYearAvgDividendYield", None)
 
@@ -749,10 +768,11 @@ class DataHistoryYahoo():
                 "CagrGrowthEPSYoY": cagr_growth_eps_yoy,
                 "divCoverageRate": div_coverage_rate,
                 "dividendYield": dividendYield,
-                "fiveYearAvgDividendYield": fiveYearAvgDividendYield,
                 "PayoutRatio": payout_ratio,
                 "CagrGrowthDividend3y": cagr_dividend_3y,
                 "CagrGrowthDividend5y": cagr_dividend_5y,
+                "ShareHolderYield": shy,
+                "fiveYearAvgDividendYield": fiveYearAvgDividendYield,
                 "dividendTTM": div_ttm,
             },
             "valuation": {

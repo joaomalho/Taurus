@@ -152,14 +152,71 @@ CagrGrowthEPSYoY: `
 - Preferir EPS diluído
 - Se possível, validar com Net Income e ações médias
 `,
-ShareholderYield: `
-**Shareholder Yield** = (Dividendos + Recompras) / Market Cap.
+divCoverageRate: `
+**Coverage Ratio** = Lucro / Dividendos.  
+Mostra quanto os lucros cobrem os dividendos pagos.  
 
-- Dividendos: "Cash Dividends Paid" (TTM)
-- Recompras: "Repurchase Of Capital Stock" (TTM)
-- Preferir TTM; fallback FY
-- Regras: >5% excelente | 2–5% ok | <2% baixo
-- Cruzar com FCF e payout para sustentabilidade
+- >2×: cobertura forte, muito espaço para manter/crescer  
+- 1–2×: aceitável  
+- <1×: risco de corte, dividendos > lucros
+`,
+
+dividendYield: `
+**Dividend Yield (TTM)** = Dividendos por ação (últimos 12m) / Preço da ação.  
+
+- Indica retorno em % via dividendos.  
+- 2–5% é considerado saudável  
+- Muito alto pode sinalizar risco
+`,
+
+fiveYearAvgDividendYield: `
+**Dividend Yield Médio 5 anos** = média do dividend yield anual nos últimos 5 anos.  
+
+- Útil para comparar com o yield atual  
+- Yield atual >> média → pode indicar subavaliação  
+- Yield atual << média → pode indicar sobreavaliação
+`,
+
+PayoutRatio: `
+**Payout Ratio** = Dividendos / Lucro Líquido.  
+
+- Mede % dos lucros distribuídos em dividendos  
+- 30–60% → saudável  
+- <30% → espaço para crescer dividendos  
+- >70% → risco de insustentabilidade
+`,
+
+CagrGrowthDividend3y: `
+**CAGR Dividendos 3 anos** = taxa média de crescimento anual dos dividendos por ação nos últimos 3 anos.  
+
+- >5% → bom crescimento  
+- 0–5% → moderado  
+- <0% → corte de dividendos
+`,
+
+CagrGrowthDividend5y: `
+**CAGR Dividendos 5 anos** = taxa média de crescimento anual dos dividendos por ação nos últimos 5 anos.  
+
+- Mostra consistência de longo prazo  
+- >5% → sólido  
+- <0% → histórico de cortes
+`,
+
+dividendTTM: `
+**Dividendos TTM** = soma de todos os dividendos pagos nos últimos 12 meses (em $).  
+
+- Usado para calcular dividend yield  
+- Dá noção do fluxo de dividendos recente
+`,
+
+ShareHolderYield: `
+**Shareholder Yield (SHY)** = (Dividendos + Recompras de ações) / Market Cap.  
+
+- Representa retorno total ao acionista via distribuição e buybacks  
+- >5% → excelente  
+- 2–5% → ok  
+- <2% → baixo  
+- Importante cruzar com FCF e payout para sustentabilidade
 `,
 };
 
