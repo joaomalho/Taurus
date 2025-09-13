@@ -501,7 +501,6 @@ class DataHistoryYahoo():
 
         # ------ Capital Efficiency ------ #
         # - wacc
-
         beta = yahoo_symbol_info.get("beta")
         interest_expense_ttm = yahoo_symbol_income.loc["Interest Expense"].dropna().iloc[0]
         total_debt = yahoo_symbol_balancesheet.loc["Total Debt"].dropna().iloc[0]
@@ -520,6 +519,9 @@ class DataHistoryYahoo():
         ce = us10y + beta * erp
 
         wacc = ((market_cap / (market_cap + total_debt)) * ce) + ((total_debt / (total_debt + market_cap)) * cd * (1 - tax_efective))
+
+        # WACCvsROIC
+        eva = roic - wacc
 
         # ------ Growth ------ #
         # revenue growth
@@ -567,7 +569,7 @@ class DataHistoryYahoo():
                 cash_dividends_paid = None
             else:
                 cash_dividends_paid = cash_dividends_paid.dropna()
-        
+
         # rewards ttm
         if 'Repurchase Of Capital Stock' in yahoo_symbol_cashflow_quarter.index:
             rewards = yahoo_symbol_cashflow_quarter.loc['Repurchase Of Capital Stock']
@@ -575,7 +577,7 @@ class DataHistoryYahoo():
                 rewards = None
             else:
                 rewards = rewards.dropna()
-        
+
         div_ttm_quarter = cash_dividends_paid.sum()
         rewards_ttm_quarter = rewards.sum()
 
@@ -725,24 +727,6 @@ class DataHistoryYahoo():
         else:
             free_cashflow_yield = None
 
-        # gross_margin
-        if not gross_profit.isna().all() and not total_revenue.isna().all():
-            total_revenue = total_revenue.replace(0, np.nan)
-            gross_margin_series = (gross_profit / total_revenue)
-            gross_margin_series = gross_margin_series.replace([np.inf, -np.inf], np.nan)
-
-            if gross_margin_series.isna().all():
-                gross_margin = None
-            else:
-                gross_margin = gross_margin_series
-        else:
-            gross_margin = None
-
-        # cagr_operating_margin
-        cagr_operating_margin = fm.get_cagr_metric(operation_margin)
-        if cagr_operating_margin is not None and math.isnan(cagr_operating_margin):
-            cagr_operating_margin = None
-
         yahoo_symbol_fundamental_info = {
             "kpis": {
                 "trailingPE": trailing_pe,
@@ -758,10 +742,11 @@ class DataHistoryYahoo():
                 "QuickRatio": quick_ratio,
                 "OperationalMargin": operation_margin,
                 "FcfMargin": fcf_margin,
-                "ROIC": roic,
                 "ROE": roe,
                 "ROA": roa,
                 "WACC": wacc,
+                "ROIC": roic,
+                "EVA": eva,
                 "GrowthReveneuYoY": growth_revenue_yoy,
                 "CagrGrowthReveneuYoY": cagr_growth_revenue_yoy,
                 "GrowthEPSYoY": growth_eps_yoy,

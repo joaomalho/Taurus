@@ -107,7 +107,10 @@ class RiskManagerFundamental():
             "Not Good - High Operational Costs or Operational Problems",
             "Not Good - Low Efficiency on Equity Use",
             "Not Good - No Growth or Negative Trend",
-            "Weak"
+            "Weak",
+            "Destroys Value",
+            "Cut on Dividends",
+            "Low",
         ]
         if any(k.lower() in s for k in verybad):
             return "verybad"
@@ -133,7 +136,10 @@ class RiskManagerFundamental():
             "Good - Highly Efficient in Generating Profits",
             "Good - Consistent Growth in Equity Returns",
             "Cheap",
-            "Very Strong"
+            "Very Strong",
+            "Generate Value",
+            "Good Growth",
+            "Excellent"
         ]
         if any(k.lower() in s for k in verygood):
             return "verygood"
@@ -160,6 +166,8 @@ class RiskManagerFundamental():
             "neutral",
             "neutral valued",
             "Moderated - Potential but Need Improvements",
+            "Cover Capital Expenses",
+            "Moderated",
             ]
         if any(k.lower() in s for k in neutral):
             return "neutral"
@@ -200,8 +208,9 @@ class RiskManagerFundamental():
 
         # ----- Imports ----- #
         kpis = metrics.get('kpis', {})
-        
-        # --- PEs
+
+        # ----- VALUATIONS ----- #
+        # ----- PEs ----- #
         trailing_pe = fm.safe_round(kpis.get("trailingPE"))
         sector_pe = fm.safe_round(kpis.get("sectorTrailingPE"))
         forward_pe = fm.safe_round(kpis.get("forwardPE"))
@@ -230,24 +239,7 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "trailingPE", text_trailingPE)
 
-        # --- Prise To Sale
-        price_to_sale = fm.safe_round(kpis.get("PriceToSale"))
-
-        evaluated_metrics["PriceToSale"] = price_to_sale if price_to_sale is not None else None
-        
-        if price_to_sale is None:
-            text_price_to_sale = "No Data"
-        else:
-            if price_to_sale <= 2:
-                text_price_to_sale = "Cheap"
-            elif price_to_sale <= 6:
-                text_price_to_sale = "Fair"
-            else:
-                text_price_to_sale = "Expensive"
-
-        self._set_eval(evaluated_metrics, "PriceToSale", text_price_to_sale)
-
-        # --- EV / EBITDA
+        # ----- EV / EBITDA
         ev_ebitda = fm.safe_round(kpis.get("evEbitda"))
         evaluated_metrics["evEbitda"] = ev_ebitda if ev_ebitda is not None else None
         if ev_ebitda is None:
@@ -262,7 +254,24 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "evEbitda", text_ev_ebitda)
 
-        # --- Equity FCF Yield
+        # ----- Prise To Sale
+        price_to_sale = fm.safe_round(kpis.get("PriceToSale"))
+
+        evaluated_metrics["PriceToSale"] = price_to_sale if price_to_sale is not None else None
+
+        if price_to_sale is None:
+            text_price_to_sale = "No Data"
+        else:
+            if price_to_sale <= 2:
+                text_price_to_sale = "Cheap"
+            elif price_to_sale <= 6:
+                text_price_to_sale = "Fair"
+            else:
+                text_price_to_sale = "Expensive"
+
+        self._set_eval(evaluated_metrics, "PriceToSale", text_price_to_sale)
+
+        # ----- Equity FCF Yield
         equity_fcf_yield = fm.safe_round(kpis.get("EquityFCFYield"))
         evaluated_metrics["EquityFCFYield"] = equity_fcf_yield if equity_fcf_yield is not None else None
         if equity_fcf_yield is None:
@@ -277,7 +286,7 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "EquityFCFYield", text_equity_fcf_yield)
 
-        # --- Enterprise FCF Yield
+        # ----- Enterprise FCF Yield
         enterprise_fcf_yield = fm.safe_round(kpis.get("EnterpriseFCFYield"))
         evaluated_metrics["EnterpriseFCFYield"] = enterprise_fcf_yield if enterprise_fcf_yield is not None else None
         if enterprise_fcf_yield is None:
@@ -293,7 +302,7 @@ class RiskManagerFundamental():
         self._set_eval(evaluated_metrics, "EnterpriseFCFYield", text_enterprise_fcf_yield)
 
         # ----- Finantial Health ----- #
-        # Net Debt Ebitda
+        # ----- Net Debt Ebitda
         net_debt_ebitda = fm.safe_round(kpis.get("NetDebtEbitda"))
         evaluated_metrics["NetDebtEbitda"] = net_debt_ebitda if net_debt_ebitda is not None else None
 
@@ -311,7 +320,7 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "NetDebtEbitda", text_net_debt_ebitda)
 
-        # Interest Coverage EBIT
+        # ----- Interest Coverage EBIT
         interest_coverage_ebit = fm.safe_round(kpis.get("InterestCoverageEbit"))
         evaluated_metrics["InterestCoverageEbit"] = interest_coverage_ebit if interest_coverage_ebit is not None else None
 
@@ -327,43 +336,292 @@ class RiskManagerFundamental():
 
         self._set_eval(evaluated_metrics, "InterestCoverageEbit", text_interest_coverage_ebit)
 
-        # Current Racio
+        # ----- Current Racio
         current_ratio = fm.safe_round(kpis.get("CurrentRatio"))
         evaluated_metrics["CurrentRatio"] = current_ratio if current_ratio is not None else None
 
         if current_ratio is None:
             text_CurrentRatio = "No Data"
         else:
-            if current_ratio <= 100:
+            if current_ratio <= 1:
                 text_CurrentRatio = "Not Good (In Debt)"
-            elif current_ratio <= 120:
+            elif current_ratio <= 1.5:
                 text_CurrentRatio = "Tight Margin to Debt"
-            elif current_ratio <= 200:
+            elif current_ratio <= 2:
                 text_CurrentRatio = "Good Debt Coverage"
             else:
                 text_CurrentRatio = "Perfect Coverage (Double +)"
 
         self._set_eval(evaluated_metrics, "CurrentRatio", text_CurrentRatio)
 
-        # Quick Racio
+        # ----- Quick Racio
         quick_ratio = fm.safe_round(kpis.get("QuickRatio"))
         evaluated_metrics["QuickRatio"] = quick_ratio if quick_ratio is not None else None
 
         if quick_ratio is None:
             text_QuickRatio = "No Data"
         else:
-            if quick_ratio <= 100:
+            if quick_ratio <= 0.8:
                 text_QuickRatio = "Not Good (In Debt)"
-            elif quick_ratio <= 120:
+            elif quick_ratio <= 1:
                 text_QuickRatio = "Tight Margin to Debt"
-            elif quick_ratio <= 200:
+            elif quick_ratio <= 1.5:
                 text_QuickRatio = "Good Debt Coverage"
             else:
                 text_QuickRatio = "Perfect Coverage (Double +)"
 
         self._set_eval(evaluated_metrics, "QuickRatio", text_QuickRatio)
 
-        # Net Worth
+        # ----- Profitability ----- #
+        # ----- Operational Margin
+        operating_margin = fm.safe_round(kpis.get("OperationalMargin"))
+        evaluated_metrics["OperationalMargin"] = operating_margin if operating_margin is not None else None
+
+        if operating_margin is None:
+            text_OperationalMargin = "No Data"
+        else:
+            if operating_margin <= 10:
+                text_OperationalMargin = "Not Good - High Operational Costs or Difficulties to Get Revenue"
+            elif operating_margin <= 20:
+                text_OperationalMargin = "Healthy - Healthy Operational Management"
+            else:
+                text_OperationalMargin = "Good - Efficient Costs Management"
+
+        self._set_eval(evaluated_metrics, "OperationalMargin", text_OperationalMargin)
+
+        # ----- FCF Margin
+        fcf_margin = fm.safe_round(kpis.get("FcfMargin"))
+        evaluated_metrics["FcfMargin"] = fcf_margin if fcf_margin is not None else None
+
+        if fcf_margin is None:
+            text_FcfMargin = "No Data"
+        else:
+            if fcf_margin <= 10:
+                text_FcfMargin = "Not Good - High Operational Costs or Difficulties to Get Revenue"
+            elif fcf_margin <= 20:
+                text_FcfMargin = "Healthy - Healthy Operational Management"
+            else:
+                text_FcfMargin = "Good - Efficient Costs Management"
+
+        self._set_eval(evaluated_metrics, "FcfMargin", text_FcfMargin)
+
+        # ----- ROE
+        roe = fm.safe_round(kpis.get("ROE"))
+        evaluated_metrics["ROE"] = roe if roe is not None else None
+
+        if roe is None:
+            text_ROE = "No Data"
+        else:
+            if roe <= 8:
+                text_ROE = "Weak"
+            elif roe <= 15:
+                text_ROE = "Healthy"
+            else:
+                text_ROE = "Strong"
+
+        self._set_eval(evaluated_metrics, "ROE", text_ROE)
+
+        # ----- ROA
+        roa = fm.safe_round(kpis.get("ROA"))
+        evaluated_metrics["ROA"] = roe if roe is not None else None
+
+        if roa is None:
+            text_ROA = "No Data"
+        else:
+            if roa <= 3:
+                text_ROA = "Weak"
+            elif roa <= 7:
+                text_ROA = "Healthy"
+            else:
+                text_ROA = "Strong"
+
+        self._set_eval(evaluated_metrics, "ROA", text_ROA)
+
+        # ----- Capital Efficiency ----- #
+        # ----- ROIC
+        roic = fm.safe_round(kpis.get("ROIC"))
+        evaluated_metrics["ROIC"] = roic if roic is not None else None
+
+        if roic is None:
+            text_ROIC = "No Data"
+        else:
+            if roic <= 6:
+                text_ROIC = "Weak"
+            elif roic <= 12:
+                text_ROIC = "Healthy"
+            else:
+                text_ROIC = "Strong"
+
+        self._set_eval(evaluated_metrics, "ROIC", text_ROIC)
+
+        # ----- EVA
+        eva = fm.safe_round(kpis.get("EVA"))
+        evaluated_metrics["EVA"] = eva if eva is not None else None
+
+        if eva is None:
+            text_EVA = "No Data"
+        else:
+            if eva <= 0:
+                text_EVA = "Destroys Value"
+            elif eva <= 12:
+                text_EVA = "Cover Capital Expenses"
+            else:
+                text_EVA = "Generate Value"
+
+        self._set_eval(evaluated_metrics, "EVA", text_EVA)
+
+        # ----- Growth ----- #
+        # ----- GrowthReveneuYoY
+        growth_reveneu_yoy = fm.safe_round(kpis.get("GrowthReveneuYoY"))
+        evaluated_metrics["GrowthReveneuYoY"] = growth_reveneu_yoy if growth_reveneu_yoy is not None else None
+
+        if growth_reveneu_yoy is None:
+            text_GrowthReveneuYoY = "No Data"
+        else:
+            if growth_reveneu_yoy <= 4:
+                text_GrowthReveneuYoY = "Weak"
+            elif growth_reveneu_yoy <= 10:
+                text_GrowthReveneuYoY = "Healthy"
+            else:
+                text_GrowthReveneuYoY = "Strong"
+
+        self._set_eval(evaluated_metrics, "GrowthReveneuYoY", text_GrowthReveneuYoY)
+
+        # ----- CagrGrowthReveneuYoY
+        cagr_growth_reveneu_yoy = fm.safe_round(kpis.get("CagrGrowthReveneuYoY"))
+        evaluated_metrics["CagrGrowthReveneuYoY"] = cagr_growth_reveneu_yoy if cagr_growth_reveneu_yoy is not None else None
+
+        if cagr_growth_reveneu_yoy is None:
+            text_CagrGrowthReveneuYoY = "No Data"
+        else:
+            if cagr_growth_reveneu_yoy <= 4:
+                text_CagrGrowthReveneuYoY = "Weak"
+            elif cagr_growth_reveneu_yoy <= 10:
+                text_CagrGrowthReveneuYoY = "Healthy"
+            else:
+                text_CagrGrowthReveneuYoY = "Strong"
+
+        self._set_eval(evaluated_metrics, "CagrGrowthReveneuYoY", text_CagrGrowthReveneuYoY)
+
+        # ----- GrowthEPSYoY
+        growth_eps_yoy = fm.safe_round(kpis.get("GrowthEPSYoY"))
+        evaluated_metrics["GrowthEPSYoY"] = growth_eps_yoy if growth_eps_yoy is not None else None
+
+        if growth_eps_yoy is None:
+            text_GrowthEPSYoY = "No Data"
+        else:
+            if growth_eps_yoy <= 4:
+                text_GrowthEPSYoY = "Weak"
+            elif growth_eps_yoy <= 10:
+                text_GrowthEPSYoY = "Healthy"
+            else:
+                text_GrowthEPSYoY = "Strong"
+
+        self._set_eval(evaluated_metrics, "GrowthEPSYoY", text_GrowthEPSYoY)
+
+        # ----- CagrGrowthEPSYoY
+        cagr_growth_eps_yoy = fm.safe_round(kpis.get("CagrGrowthEPSYoY"))
+        evaluated_metrics["CagrGrowthEPSYoY"] = cagr_growth_eps_yoy if cagr_growth_eps_yoy is not None else None
+
+        if cagr_growth_eps_yoy is None:
+            text_CagrGrowthEPSYoY = "No Data"
+        else:
+            if cagr_growth_eps_yoy <= 4:
+                text_CagrGrowthEPSYoY = "Weak"
+            elif cagr_growth_eps_yoy <= 10:
+                text_CagrGrowthEPSYoY = "Healthy"
+            else:
+                text_CagrGrowthEPSYoY = "Strong"
+
+        self._set_eval(evaluated_metrics, "CagrGrowthEPSYoY", text_CagrGrowthEPSYoY)
+
+        # ----- Dividend ----- #
+        # ----- Dividend Coverage Ratio
+        div_coverage_raw = fm.safe_round(kpis.get("divCoverageRate"))
+        evaluated_metrics["divCoverageRate"] = div_coverage_raw if div_coverage_raw is not None else None
+
+        if div_coverage_raw is None:
+            text_divCoverageRate = "No Data"
+        else:
+            if div_coverage_raw <= 1:
+                text_divCoverageRate = "No Coverage"
+            elif div_coverage_raw <= 1.5:
+                text_divCoverageRate = "Bad Coverage (Cut)"
+            elif div_coverage_raw <= 3:
+                text_divCoverageRate = "Good Coverage"
+            else:
+                text_divCoverageRate = "Very Good Coverage (Greedy)"
+
+        self._set_eval(evaluated_metrics, "divCoverageRate", text_divCoverageRate)
+
+        # ----- payout_ratio
+        payout_ratio = fm.safe_round(kpis.get("PayoutRatio"))
+        evaluated_metrics["PayoutRatio"] = payout_ratio if payout_ratio is not None else None
+
+        if payout_ratio is None:
+            text_PayoutRatio = "No Data"
+        else:
+            if payout_ratio <= 0.3:
+                text_PayoutRatio = "Very Good Coverage (Greedy)"
+            elif payout_ratio <= 0.6:
+                text_PayoutRatio = "Good Coverage"
+            elif payout_ratio <= 0.7:
+                text_PayoutRatio = "Bad Coverage (Cut)"
+            else:
+                text_PayoutRatio = "No Coverage"
+
+        self._set_eval(evaluated_metrics, "PayoutRatio", text_PayoutRatio)
+
+        # ----- CagrGrowthDividend3y
+        cagr_growth_dividend3y = fm.safe_round(kpis.get("CagrGrowthDividend3y"))
+        evaluated_metrics["CagrGrowthDividend3y"] = cagr_growth_dividend3y if cagr_growth_dividend3y is not None else None
+
+        if cagr_growth_dividend3y is None:
+            text_CagrGrowthDividend3y = "No Data"
+        else:
+            if cagr_growth_dividend3y <= 0.00:
+                text_CagrGrowthDividend3y = "Cut on Dividends"
+            elif cagr_growth_dividend3y <= 0.05:
+                text_CagrGrowthDividend3y = "Moderated"
+            else:
+                text_CagrGrowthDividend3y = "Good Growth"
+
+        self._set_eval(evaluated_metrics, "CagrGrowthDividend3y", text_CagrGrowthDividend3y)
+
+        # ----- CagrGrowthDividend5y
+        cagr_growth_dividend5y = fm.safe_round(kpis.get("CagrGrowthDividend5y"))
+        evaluated_metrics["CagrGrowthDividend5y"] = cagr_growth_dividend5y if cagr_growth_dividend5y is not None else None
+
+        if cagr_growth_dividend5y is None:
+            text_CagrGrowthDividend5y = "No Data"
+        else:
+            if cagr_growth_dividend5y <= 0.00:
+                text_CagrGrowthDividend5y = "Cut on Dividends"
+            elif cagr_growth_dividend5y <= 0.05:
+                text_CagrGrowthDividend5y = "Moderated"
+            else:
+                text_CagrGrowthDividend5y = "Good Growth"
+
+        self._set_eval(evaluated_metrics, "CagrGrowthDividend5y", text_CagrGrowthDividend5y)
+
+        # ----- ShareHolderYield
+        shareholder_yield = fm.safe_round(kpis.get("ShareHolderYield"))
+        evaluated_metrics["ShareHolderYield"] = shareholder_yield if shareholder_yield is not None else None
+
+        if shareholder_yield is None:
+            text_ShareHolderYield = "No Data"
+        else:
+            if shareholder_yield <= 0.02:
+                text_ShareHolderYield = "Low"
+            elif shareholder_yield <= 0.05:
+                text_ShareHolderYield = "Moderated"
+            else:
+                text_ShareHolderYield = "Excellent"
+
+        self._set_eval(evaluated_metrics, "ShareHolderYield", text_ShareHolderYield)
+
+        # ----- Extras ----- #
+        # ----- Net Worth
         net_worth = fm.safe_round(metrics.get('finantial_health', {}).get("NetWorth"))
         evaluated_metrics["NetWorth"] = net_worth if net_worth is not None else None
 
@@ -428,27 +686,6 @@ class RiskManagerFundamental():
             text_StockholdersEquityCAGR = "Good" if stockholders_equity_cagr > 0 else "Not Good"
 
         self._set_eval(evaluated_metrics, "StockholdersEquityCAGR", text_StockholdersEquityCAGR)
-
-        # Dividends - Dividend Coverage Ratio
-        div_coverage_raw = fm.safe_round(metrics.get('dividends', {}).get("divCoverageRate"))
-
-        # Armazenar o valor bruto
-        evaluated_metrics["divCoverageRate"] = div_coverage_raw if div_coverage_raw is not None else None
-
-        # Avaliação
-        if div_coverage_raw is None:
-            text_divCoverageRate = "No Data"
-        else:
-            if div_coverage_raw <= 1:
-                text_divCoverageRate = "No Coverage"
-            elif div_coverage_raw <= 1.5:
-                text_divCoverageRate = "Bad Coverage (Cut)"
-            elif div_coverage_raw <= 3:
-                text_divCoverageRate = "Good Coverage"
-            else:
-                text_divCoverageRate = "Very Good Coverage (Greedy)"
-
-        self._set_eval(evaluated_metrics, "divCoverageRate", text_divCoverageRate)
 
         # Profitability - Cost of Revenue CAGR
         cost_revenue_cagr = fm.safe_round(metrics.get('profitability', {}).get("CostOfRevenueCAGR"))
@@ -539,22 +776,6 @@ class RiskManagerFundamental():
             )
 
         self._set_eval(evaluated_metrics, "GrossMarginCAGR", text_GrossMarginCAGR)
-
-        # Operating Margin
-        operating_margin = fm.safe_round(metrics.get('ratios', {}).get("OperatingMargin"))
-        evaluated_metrics["OperatingMargin"] = operating_margin if operating_margin is not None else None
-
-        if operating_margin is None:
-            text_OperatingMargin = "No Data"
-        else:
-            if operating_margin <= 10:
-                text_OperatingMargin = "Not Good - High Operational Costs or Difficulties to Get Revenue"
-            elif operating_margin <= 20:
-                text_OperatingMargin = "Healthy - Healthy Operational Management"
-            else:
-                text_OperatingMargin = "Good - Efficient Costs Management"
-
-        self._set_eval(evaluated_metrics, "OperatingMargin", text_OperatingMargin)
 
         # Operational Margin Growth
         operating_margin_cagr = fm.safe_round(metrics.get('ratios', {}).get("OperatingMarginCAGR"))

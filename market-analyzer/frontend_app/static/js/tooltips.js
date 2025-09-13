@@ -3,6 +3,15 @@
 // Mapa de textos (podes editar/estender)
 export const DEFAULT_TIPS = {
   // ===== Valuation / KPIs =====
+  trailingPE:
+    "P/E (TTM). Mais baixo pode indicar ‘undervalued’, mas depende do crescimento e do setor.",
+  sectorTrailingPE:
+    "P/E médio do setor — bom para comparar com pares imediatos.",
+  forwardPE:
+    "P/E com base em lucros estimados (12M seguintes). Sensível a revisões de analistas.",
+  trailingPEClass:
+    "Classificação qualitativa do P/E face a thresholds por setor.",
+
   evEbitda: `
 **EV/EBITDA** compara o valor do negócio com a geração operacional.
   
@@ -39,6 +48,7 @@ export const DEFAULT_TIPS = {
 - Evitar bancos/seguradoras
 `,
 
+  // ----- Finantial Health ----- //
   NetDebtEbitda: `
 **Net Debt/EBITDA** mede alavancagem.
   
@@ -70,6 +80,7 @@ export const DEFAULT_TIPS = {
 - Usa último **quarter**
 `,
 
+  // ----- Profitability ----- //
   OperationalMargin: `
 **Margem Operacional** = EBIT / Receita.
   
@@ -82,14 +93,6 @@ export const DEFAULT_TIPS = {
   
 - FCF = OCF − Capex (**TTM**)
 - Regras: ≥10% forte | 5–10% ok | <5% fraco
-`,
-
-  ROIC: `
-**ROIC** = NOPAT / Capital Investido Médio.
-  
-- NOPAT ≈ EBIT × (1 − taxa efetiva)
-- Capital Investido: “Invested Capital” médio (t, t−1) ou dívida + equity − caixa
-- **Criar valor**: ROIC > WACC (proxy thresholds: >12% forte | 6–12% ok | <6% fraco)
 `,
 
   ROE: `
@@ -106,32 +109,39 @@ export const DEFAULT_TIPS = {
 - Útil para comparar eficiência entre setores intensivos em ativos
 `,
 
-  // ===== Price : Earnings =====
-  trailingPE:
-    "P/E (TTM). Mais baixo pode indicar ‘undervalued’, mas depende do crescimento e do setor.",
-  sectorTrailingPE:
-    "P/E médio do setor — bom para comparar com pares imediatos.",
-  forwardPE:
-    "P/E com base em lucros estimados (12M seguintes). Sensível a revisões de analistas.",
-  trailingPEClass:
-    "Classificação qualitativa do P/E face a thresholds por setor.",
-
   // ===== Eficiência de Capital =====
-  WACC: `
-**WACC** = custo médio ponderado do capital (equity + dívida).
-  
-- Ce (CAPM): Rf + β × ERP
-- Cd: Juros / Dívida (após impostos: × (1 − taxa))
-- Pesos: E/(D+E) e D/(D+E) com **market cap** e dívida líquida atuais
-- Regra: comparar **ROIC vs WACC** para medir criação de valor
+ROIC: `
+**ROIC** = NOPAT / Capital Investido Médio.
+
+- NOPAT ≈ EBIT × (1 − taxa efetiva)
+- Capital Investido: “Invested Capital” médio (t, t−1) ou (Dívida + Equity − Caixa & ST inv.)
+- Preferir TTM para EBIT; média de 2 períodos para o capital
+- Interpretação: ROIC > WACC ⇒ cria valor
+- Regras (proxy): >12% forte | 6–12% ok | <6% fraco
 `,
 
-  CapitalTurnover: `
-**Giro do Capital Investido** = Receita (**TTM**) / Capital Investido Médio.
-  
-- Mostra quantas “voltas” a receita dá no capital investido
-- Alto em retalho/serviços leves; baixo em setores intensivos em ativos
+WACC: `
+**WACC** = custo médio ponderado do capital (equity + dívida).
+
+- **Ce (CAPM)**: Rf + β × ERP
+- **Cd**: Juros / Dívida; após impostos: Cd × (1 − taxa efetiva)
+- **Pesos**: E/(D+E) e D/(D+E) com market cap e dívida líquida atuais
+- Usos: comparar **ROIC vs WACC** para medir criação de valor
+- Nota: Rf (ex.: US10Y), ERP (ex.: 5–6%), β específico da empresa
 `,
+
+EVA: `
+**EVA (Economic Value Added)** = lucro económico gerado acima do custo do capital.
+
+- Fórmula 1: **EVA** = NOPAT − (WACC × Capital Investido)
+- Fórmula 2 (spread): **EVA** = (ROIC − WACC) × Capital Investido
+- Interpretação:
+  - EVA > 0 ⇒ cria valor
+  - EVA ≈ 0 ⇒ cobre custo de capital
+  - EVA < 0 ⇒ destrói valor
+`,
+
+  // ===== Growth =====
 GrowthReveneuYoY: `
 **Crescimento de Vendas (YoY)** = Receita FY atual vs FY anterior.
 - Evita sazonalidade dos trimestres
@@ -152,6 +162,8 @@ CagrGrowthEPSYoY: `
 - Preferir EPS diluído
 - Se possível, validar com Net Income e ações médias
 `,
+  
+  // ===== Dividend =====
 divCoverageRate: `
 **Coverage Ratio** = Lucro / Dividendos.  
 Mostra quanto os lucros cobrem os dividendos pagos.  
