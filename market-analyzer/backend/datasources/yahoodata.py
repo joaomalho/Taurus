@@ -320,6 +320,10 @@ class DataHistoryYahoo():
             yahoo_symbol_cashflow_quarter = yf.Ticker(symbol).quarterly_cash_flow
         except Exception:
             yahoo_symbol_cashflow_quarter = pd.DataFrame()
+        try:
+            yahoo_symbol_dividends = yf.Ticker(symbol).dividends
+        except Exception:
+            yahoo_symbol_dividends = pd.DataFrame()
 
         fm = Formulas()
         # ------ Valuation ------ #
@@ -474,7 +478,7 @@ class DataHistoryYahoo():
                 net_income_fy = None
             else:
                 net_income_fy = net_income_fy.dropna()
-        
+
         # net_income
         if 'Net Income' in yahoo_symbol_income_quarter.index:
             net_income = yahoo_symbol_income_quarter.loc['Net Income']
@@ -531,10 +535,36 @@ class DataHistoryYahoo():
         if cagr_growth_eps_yoy is not None and math.isnan(cagr_growth_eps_yoy):
             cagr_growth_eps_yoy = None
 
-        # Dividends & BuyBacks
-        dividendYield = yahoo_symbol_info.get("dividendYield", None),
+        # ------ Dividends ------ #
+        # dividend yield
+        dividendYield = yahoo_symbol_info.get("trailingAnnualDividendYield", None),
+        # payout ratio
+        payout_ratio = yahoo_symbol_info.get("payoutRatio", None)
+
+        # Dividend TTM
+        s = yahoo_symbol_dividends.sort_index()
+        last_date = s.index[-1]
+        window_start = last_date - pd.Timedelta(days=365)
+        div_ttm = float(s.loc[s.index > window_start].sum())
+
+        # dividend growth
+        annual = s.groupby(s.index.year).sum().sort_index()
+        current_year = last_date.year
+        # Se o último ano for o ano corrente, consideramos incompleto e removemos
+        if current_year in annual.index:
+            annual_complete = annual.drop(index=current_year)
+        else:
+            annual_complete = annual.copy()
+
+        cagr_dividend_3y = fm.get_cagr_metric(annual_complete.tail(3))
+        cagr_dividend_5y = fm.get_cagr_metric(annual_complete.tail(5))
+
+        # shareholder yield
+        shy = div_ttm
+
         fiveYearAvgDividendYield = yahoo_symbol_info.get("fiveYearAvgDividendYield", None)
 
+        # ------ Extras ------ #
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
         dividend_rate = yahoo_symbol_info.get("dividendRate")
         if (
@@ -720,6 +750,10 @@ class DataHistoryYahoo():
                 "divCoverageRate": div_coverage_rate,
                 "dividendYield": dividendYield,
                 "fiveYearAvgDividendYield": fiveYearAvgDividendYield,
+                "PayoutRatio": payout_ratio,
+                "CagrGrowthDividend3y": cagr_dividend_3y,
+                "CagrGrowthDividend5y": cagr_dividend_5y,
+                "dividendTTM": div_ttm,
             },
             "valuation": {
                 "MarketCap": market_cap,

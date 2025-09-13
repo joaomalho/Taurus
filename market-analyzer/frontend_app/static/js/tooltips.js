@@ -142,17 +142,24 @@ CagrGrowthReveneuYoY: `
 - Captura tendência estrutural
 - Ignora ruído de um único ano
 `,
-
 GrowthEPSYoY: `
 **Crescimento de EPS (YoY)** = EPS FY atual vs FY anterior.
 - Sensível a recompras e itens não recorrentes
 - Regras: ≥10% forte | 4–10% moderado | <4% fraco
 `,
-
 CagrGrowthEPSYoY: `
 **CAGR 3 anos (EPS)** = taxa composta em 3 FY.
 - Preferir EPS diluído
 - Se possível, validar com Net Income e ações médias
+`,
+ShareholderYield: `
+**Shareholder Yield** = (Dividendos + Recompras) / Market Cap.
+
+- Dividendos: "Cash Dividends Paid" (TTM)
+- Recompras: "Repurchase Of Capital Stock" (TTM)
+- Preferir TTM; fallback FY
+- Regras: >5% excelente | 2–5% ok | <2% baixo
+- Cruzar com FCF e payout para sustentabilidade
 `,
 };
 

@@ -363,6 +363,10 @@ const METRIC_STYLE = {
   divCoverageRate: "multiple",
   dividendYield: "percent",
   fiveYearAvgDividendYield: "percent",
+  PayoutRatio: "percent", 
+  CagrGrowthDividend3y: "percent", 
+  CagrGrowthDividend5y: "percent", 
+  dividendTTM: "percent", 
 
   // valuation
   MarketCap: "currency",
@@ -471,6 +475,10 @@ export function displayFundamentalResults(data) {
     divCoverageRate: kpisData.divCoverageRate || {},
     dividendYield: kpisData.dividendYield || {},
     fiveYearAvgDividendYield: kpisData.fiveYearAvgDividendYield || {},
+    PayoutRatio: kpisData.PayoutRatio || {},
+    CagrGrowthDividend3y: kpisData.CagrGrowthDividend3y || {},
+    CagrGrowthDividend5y: kpisData.CagrGrowthDividend5y || {},
+    dividendTTM: kpisData.dividendTTM || {},
     // Valuation
     EVenterpriseValue: valuationData.EVenterpriseValue || {},
     sectorTrailingPE: valuationData.sectorTrailingPE || {},
@@ -558,6 +566,10 @@ export function displayFundamentalResultsClassification(data) {
     ["kpis", "divCoverageRate"],
     ["kpis", "dividendYield"],
     ["kpis", "fiveYearAvgDividendYield"],
+    ["kpis", "PayoutRatio"],
+    ["kpis", "CagrGrowthDividend3y"],
+    ["kpis", "CagrGrowthDividend5y"],
+    ["kpis", "dividendTTM"],
     ["valuations", "EVenterpriseValue"],
     ["profitability", "CostOfRevenueCAGR"],
     ["profitability", "TotalRevenueCAGR"],
