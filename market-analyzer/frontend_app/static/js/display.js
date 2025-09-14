@@ -320,7 +320,7 @@ export function displayBioResults(data) {
       ? formatCurrency(bioData.CurrentPrice)
       : "N/A",
     Beta: bioData.Beta || "N/A",
-    ShareTurnover: bioData.ShareTurnover ? formatPercentFromFraction((bioData.ShareTurnover)) : "N/A",
+    ShareTurnover: bioData.ShareTurnover ? formatPercent((bioData.ShareTurnover)) : "N/A",
   };
 
   for (const [key, value] of Object.entries(elements)) {
