@@ -367,7 +367,6 @@ const METRIC_STYLE = {
   PayoutRatio: "percent", 
   CagrGrowthDividend3y: "percent", 
   CagrGrowthDividend5y: "percent", 
-  dividendTTM: "percent", 
   ShareHolderYield: "percent", 
 
   // valuation
@@ -481,7 +480,6 @@ export function displayFundamentalResults(data) {
     PayoutRatio: kpisData.PayoutRatio || {},
     CagrGrowthDividend3y: kpisData.CagrGrowthDividend3y || {},
     CagrGrowthDividend5y: kpisData.CagrGrowthDividend5y || {},
-    dividendTTM: kpisData.dividendTTM || {},
     ShareHolderYield: kpisData.ShareHolderYield || {},
     // Valuation
     EVenterpriseValue: valuationData.EVenterpriseValue || {},
@@ -574,7 +572,6 @@ export function displayFundamentalResultsClassification(data) {
     ["kpis", "PayoutRatio"],
     ["kpis", "CagrGrowthDividend3y"],
     ["kpis", "CagrGrowthDividend5y"],
-    ["kpis", "dividendTTM"],
     ["kpis", "ShareHolderYield"],
     ["valuations", "EVenterpriseValue"],
     ["profitability", "CostOfRevenueCAGR"],

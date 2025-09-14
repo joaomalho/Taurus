@@ -539,15 +539,13 @@ class DataHistoryYahoo():
 
         # ------ Dividends ------ #
         # dividend yield
-        dividendYield = yahoo_symbol_info.get("trailingAnnualDividendYield", None),
+        dividendYield = yahoo_symbol_info.get("dividendYield", None) / 100
         # payout ratio
         payout_ratio = yahoo_symbol_info.get("payoutRatio", None)
 
         # Dividend TTM
         s = yahoo_symbol_dividends.sort_index()
         last_date = s.index[-1]
-        window_start = last_date - pd.Timedelta(days=365)
-        div_ttm = float(s.loc[s.index > window_start].sum())
 
         # dividend growth
         annual = s.groupby(s.index.year).sum().sort_index()
@@ -583,7 +581,7 @@ class DataHistoryYahoo():
 
         shy = (div_ttm_quarter + rewards_ttm_quarter) / market_cap if market_cap is not None else None
 
-        fiveYearAvgDividendYield = yahoo_symbol_info.get("fiveYearAvgDividendYield", None)
+        fiveYearAvgDividendYield = yahoo_symbol_info.get("fiveYearAvgDividendYield", None) / 100
 
         # ------ Extras ------ #
         eps_ann = yahoo_symbol_info.get("epsCurrentYear")
@@ -758,7 +756,6 @@ class DataHistoryYahoo():
                 "CagrGrowthDividend5y": cagr_dividend_5y,
                 "ShareHolderYield": shy,
                 "fiveYearAvgDividendYield": fiveYearAvgDividendYield,
-                "dividendTTM": div_ttm,
             },
             "valuation": {
                 "MarketCap": market_cap,
