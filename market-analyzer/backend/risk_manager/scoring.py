@@ -20,7 +20,6 @@ PILLARS = {
         "PriceToSale",
         "EquityFCFYield",
         "EnterpriseFCFYield",
-        # Se quiseres, podes criar avaliação tb para forwardPE e sectorTrailingPE
     ],
     "Finantial Health": [
         "NetDebtEbitda",

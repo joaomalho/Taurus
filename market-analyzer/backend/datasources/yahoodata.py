@@ -368,8 +368,17 @@ class DataHistoryYahoo():
         # - Enterprise Value
         enterprise_value = market_cap + total_debt + minority_interest + preferred_equity - cash_sti
 
-        # - EBITDA
-        ebitda_ttm = yahoo_symbol_income_quarter.loc["EBITDA"].sum()
+        # - Total Revenue ---- ADICIONAR ISTO em todo o lado e criar função generica
+        if 'EBITDA' in yahoo_symbol_income_quarter.index:
+            total_ebitda = yahoo_symbol_income_quarter.loc['EBITDA']
+            if pd.isna(total_ebitda).all():
+                total_ebitda = None
+            else:
+                total_ebitda.dropna()
+        else:
+            total_ebitda = None
+
+        ebitda_ttm = total_ebitda.sum() if total_ebitda is not None else None
 
         # - Total Revenue
         if 'Total Revenue' in yahoo_symbol_income_quarter.index:
