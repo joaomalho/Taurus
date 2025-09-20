@@ -52,15 +52,21 @@ PILLARS = {
     ],
 }
 
+
 # rótulo da nota (0..10) -> classe textual (opcional)
 def label_from_score10(x: float) -> str:
     if x is None:
         return "No Data"
-    if x < 2:   return "Very Bad"
-    if x < 4:   return "Bad"
-    if x < 6:   return "Neutral"
-    if x < 8:   return "Good"
+    if x < 2:
+        return "Very Bad"
+    if x < 4:
+        return "Bad"
+    if x < 6:
+        return "Neutral"
+    if x < 8:
+        return "Good"
     return "Very Good"
+
 
 COLOR = {
     "Very Bad": "#ff1414",
@@ -71,14 +77,17 @@ COLOR = {
     "No Data": "#9E9E9E",
 }
 
+
 def _to_score(bucket: str):
     if not bucket:
         return None
     return BUCKET_SCORE.get(bucket.lower(), None)
 
+
 def _avg_ignore_none(values):
     vals = [v for v in values if v is not None]
     return mean(vals) if vals else None
+
 
 def score_pillars(evaluated_metrics: dict):
     """

@@ -339,12 +339,11 @@ export function displayBioResults(data) {
 /* ─────── QUAL FORMATADOR USAR POR CHAVE ─────── */
 const METRIC_STYLE = {
   // KPIS
-  sectorTrailingPE: "multiple",
   trailingPE: "multiple",
   forwardPE: "multiple",
-  EVenterpriseValue: "currency",
-  evEbitda: "multiple",
+  sectorTrailingPE: "multiple",
   PriceToSale: "multiple",
+  evEbitda: "multiple",
   EquityFCFYield: "multiple",
   EnterpriseFCFYield: "multiple",
   NetDebtEbitda: "multiple",
@@ -352,10 +351,11 @@ const METRIC_STYLE = {
   CurrentRatio: "multiple",
   QuickRatio: "multiple",
   OperationalMargin: "percent",
+  FcfMargin: "currency",
   ROE: "percent",
   ROA: "percent",
-  ROIC: "percent",
   WACC: "percent",
+  ROIC: "percent",
   EVA: "percent",
   GrowthReveneuYoY: "percent",
   CagrGrowthReveneuYoY: "percent",
@@ -363,65 +363,35 @@ const METRIC_STYLE = {
   CagrGrowthEPSYoY: "percent",
   divCoverageRate: "multiple",
   dividendYield: "percent",
-  fiveYearAvgDividendYield: "percent",
   PayoutRatio: "percent", 
   CagrGrowthDividend3y: "percent", 
   CagrGrowthDividend5y: "percent", 
   ShareHolderYield: "percent", 
+  fiveYearAvgDividendYield: "percent",
 
   // valuation
   MarketCap: "currency",
+  EVenterpriseValue: "currency",
   ebitdaTTM: "currency",
-  
-  // profitability (%)
-  GrossMargin: "percent",
-  ProfitMargin: "percent",
-  ReturnOnEquity: "percent",
-  // growth/CAGR (%)
-  CostOfRevenueCAGR: "percent",
-  TotalRevenueCAGR: "percent",
-  OperatingExpensesCAGR: "percent",
-  TotalAssetsCAGR: "percent",
-  TotalLiabilitiesCAGR: "percent",
-  StockholdersEquityCAGR: "percent",
-  OperatingMarginCAGR: "percent",
-  ProfitMarginCAGR: "percent",
-  ReturnOnEquityCAGR: "percent",
 
-  // rácios adimensionais
-  CashRatio: "multiple",
+  // Finantial Health
+  StockholdersEquity: "currency",
 
-  // montantes (moeda)
+  // Profitability
   NetIncome: "currency",
   TotalRevenue: "currency",
-  CostOfRevenue: "currency",
-  GrossProfit: "currency",
-  OperatingExpenses: "currency",
-  TotalAssets: "currency",
-  TotalLiabilities: "currency",
-  NetWorth: "currency",
-  ShortTermDebtCoverage: "currency",
-  CashCashEquivalents: "currency",
-  CurrentAssets: "currency",
-  CurrentLiabilities: "currency",
-  LongTermDebtCoverage: "currency",
-  NonCurrentAssets: "currency",
-  NonCurrentLiabilities: "currency",
-  StockholdersEquity: "currency",
 
   // cashflow & mercado
   FreeCashflow: "currency",
-  OperatingCashflow: "currency",
-  CapitalExpenditure: "currency",
-  FreeCashflowYield: "percent",
+
+  // rácios
+  GrossMargin: "percent",
 
   // risco/sentimento
   beta: "number",
+  sharesPercentSharesOut: "percent",
   recommendationMean: "number",
   targetMeanPrice: "currency",
-
-  // ATENÇÃO: esta costuma vir EM FRAÇÃO (0.0131 -> 1.31%)
-  sharesPercentSharesOut: "percent",
 };
 
 /* ─────── FORMATADOR CENTRAL ─────── */
@@ -482,50 +452,18 @@ export function displayFundamentalResults(data) {
     CagrGrowthDividend5y: kpisData.CagrGrowthDividend5y || {},
     ShareHolderYield: kpisData.ShareHolderYield || {},
     // Valuation
-    EVenterpriseValue: valuationData.EVenterpriseValue || {},
-    sectorTrailingPE: valuationData.sectorTrailingPE || {},
-    trailingPE: valuationData.trailingPE || {},
-    forwardPE: valuationData.forwardPE || {},
     MarketCap: valuationData.MarketCap || {},
+    EVenterpriseValue: valuationData.EVenterpriseValue || {},
     ebitdaTTM: valuationData.ebitdaTTM || {},
     // Finantial Health
-    TotalAssets: finantial_healthData.TotalAssets || {},
-    TotalLiabilities: finantial_healthData.TotalLiabilities || {},
-    NetWorth: finantial_healthData.NetWorth || {},
-    CashCashEquivalents: finantial_healthData.CashCashEquivalents || {},
-    ShortTermDebtCoverage: finantial_healthData.ShortTermDebtCoverage || {},
-    CurrentAssets: finantial_healthData.CurrentAssets || {},
-    CurrentLiabilities: finantial_healthData.CurrentLiabilities || {},
-    LongTermDebtCoverage: finantial_healthData.LongTermDebtCoverage || {},
-    NonCurrentAssets: finantial_healthData.NonCurrentAssets || {},
-    NonCurrentLiabilities: finantial_healthData.NonCurrentLiabilities || {},
-    TotalAssetsCAGR: finantial_healthData.TotalAssetsCAGR || {},
-    TotalLiabilitiesCAGR: finantial_healthData.TotalLiabilitiesCAGR || {},
-    StockholdersEquityCAGR: finantial_healthData.StockholdersEquityCAGR || {},
     StockholdersEquity: finantial_healthData.StockholdersEquity || {},
-    // Dividends
     // Profitability
     NetIncome: profitabilityData.NetIncome || {},
     TotalRevenue: profitabilityData.TotalRevenue || {},
-    CostOfRevenue: profitabilityData.CostOfRevenue || {},
-    GrossProfit: profitabilityData.GrossProfit || {},
-    OperatingExpenses: profitabilityData.OperatingExpenses || {},
-    CostOfRevenueCAGR: profitabilityData.CostOfRevenueCAGR || {},
-    TotalRevenueCAGR: profitabilityData.TotalRevenueCAGR || {},
-    OperatingExpensesCAGR: profitabilityData.OperatingExpensesCAGR || {},
     // Cashflow
     FreeCashflow: cashflowData.FreeCashflow || {},
-    OperatingCashflow: cashflowData.OperatingCashflow || {},
-    CapitalExpenditure: cashflowData.CapitalExpenditure || {},
-    FreeCashflowYield: cashflowData.FreeCashflowYield || {},
     // Ratios
-    CashRatio: ratiosData.CashRatio || {},
     GrossMargin: ratiosData.GrossMargin || {},
-    OperatingMarginCAGR: ratiosData.OperatingMarginCAGR || {},
-    ProfitMargin: ratiosData.ProfitMargin || {},
-    ProfitMarginCAGR: ratiosData.ProfitMarginCAGR || {},
-    ReturnOnEquity: ratiosData.ReturnOnEquity || {},
-    ReturnOnEquityCAGR: ratiosData.ReturnOnEquityCAGR || {},
     // Market Risk Sentiment
     beta: marketRiskData.beta || {},
     sharesPercentSharesOut: marketRiskData.sharesPercentSharesOut || {},
@@ -568,29 +506,18 @@ export function displayFundamentalResultsClassification(data) {
     ["kpis", "CagrGrowthEPSYoY"],
     ["kpis", "divCoverageRate"],
     ["kpis", "dividendYield"],
-    ["kpis", "fiveYearAvgDividendYield"],
     ["kpis", "PayoutRatio"],
     ["kpis", "CagrGrowthDividend3y"],
     ["kpis", "CagrGrowthDividend5y"],
     ["kpis", "ShareHolderYield"],
+    ["kpis", "fiveYearAvgDividendYield"],
     ["valuations", "EVenterpriseValue"],
-    ["profitability", "CostOfRevenueCAGR"],
-    ["profitability", "TotalRevenueCAGR"],
-    ["finantial_health", "NetWorth"],
-    ["finantial_health", "ShortTermDebtCoverage"],
-    ["finantial_health", "LongTermDebtCoverage"],
-    ["finantial_health", "StockholdersEquityCAGR"],
-    ["finantial_health", "TotalAssetsCAGR"],
-    ["finantial_health", "TotalLiabilitiesCAGR"],
-    ["cashflow", "FreeCashflowYield"],
-    ["ratios", "CashRatio"],
+    ["finantial_health", "StockholdersEquity"],
+    ["profitability", "NetIncome"],
+    ["profitability", "TotalRevenue"],
+    ["cashflow", "FreeCashflow"],
     ["ratios", "GrossMargin"],
-    ["ratios", "OperatingMargin"],
-    ["ratios", "OperatingMarginCAGR"],
-    ["ratios", "ProfitMargin"],
-    ["ratios", "ProfitMarginCAGR"],
-    ["ratios", "ReturnOnEquity"],
-    ["ratios", "ReturnOnEquityCAGR"],
+    ["risk_sentiment", "beta"],
   ];
 
   for (const [section, key] of fields) {

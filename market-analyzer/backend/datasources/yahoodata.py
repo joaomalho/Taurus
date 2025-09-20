@@ -1,7 +1,7 @@
 import math
 import warnings
 import requests
-import numpy as np
+# import numpy as np
 import pandas as pd
 import yfinance as yf
 from datetime import datetime
@@ -312,10 +312,10 @@ class DataHistoryYahoo():
             yahoo_symbol_income_quarter = yf.Ticker(symbol).quarterly_income_stmt
         except Exception:
             yahoo_symbol_income_quarter = pd.DataFrame()
-        try:
-            yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
-        except Exception:
-            yahoo_symbol_cashflow = pd.DataFrame()
+        # try:
+        #     yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
+        # except Exception:
+        #     yahoo_symbol_cashflow = pd.DataFrame()
         try:
             yahoo_symbol_cashflow_quarter = yf.Ticker(symbol).quarterly_cash_flow
         except Exception:
@@ -323,7 +323,7 @@ class DataHistoryYahoo():
         try:
             yahoo_symbol_dividends = yf.Ticker(symbol).dividends
         except Exception:
-            yahoo_symbol_dividends = pd.DataFrame()
+            yahoo_symbol_dividends = pd.Series(dtype=float)
 
         fm = Formulas()
         # ------ Valuation ------ #
@@ -340,53 +340,137 @@ class DataHistoryYahoo():
             market_cap = None
 
         # - Total Debt
-        total_debt = yahoo_symbol_balancesheet.loc["Total Debt"].dropna().iloc[0]
-        if total_debt is None or (isinstance(total_debt, float) and math.isnan(total_debt)):
-            total_debt = None
+        if 'Total Debt' in yahoo_symbol_balancesheet.index:
+            total_debt = yahoo_symbol_balancesheet.loc["Total Debt"]
+            if pd.isna(total_debt).all():
+                total_debt = None
+                total_debt_last = None
+            else:
+                total_debt = total_debt.dropna()
+                total_debt_last = total_debt.iloc[0]
+        else:
+            total_ebitda = None
+            total_debt_last = None
 
         # - Minority Interest
-        total_equity_gross_minority_interest = yahoo_symbol_balancesheet.loc["Total Equity Gross Minority Interest"].dropna().iloc[0]
-        if total_equity_gross_minority_interest is None or (isinstance(total_equity_gross_minority_interest, float) and math.isnan(total_equity_gross_minority_interest)):
+        if 'Total Equity Gross Minority Interest' in yahoo_symbol_balancesheet.index:
+            total_equity_gross_minority_interest = yahoo_symbol_balancesheet.loc["Total Equity Gross Minority Interest"]
+            if pd.isna(total_equity_gross_minority_interest).all():
+                total_equity_gross_minority_interest = None
+                total_equity_gross_minority_interest_last = None
+            else:
+                total_equity_gross_minority_interest = total_equity_gross_minority_interest.dropna()
+                total_equity_gross_minority_interest_last = total_equity_gross_minority_interest.iloc[0]
+        else:
             total_equity_gross_minority_interest = None
+            total_equity_gross_minority_interest_last = None
 
         # - Stockholders Equity
-        stockholders_equity = yahoo_symbol_balancesheet.loc["Stockholders Equity"].dropna().iloc[0]
-        if stockholders_equity is None or (isinstance(stockholders_equity, float) and math.isnan(stockholders_equity)):
+        if 'Stockholders Equity' in yahoo_symbol_balancesheet.index:
+            stockholders_equity = yahoo_symbol_balancesheet.loc["Stockholders Equity"]
+            if pd.isna(stockholders_equity).all():
+                stockholders_equity = None
+                stockholders_equity_last = None
+                stockholders_equity_mean = None
+                last_stockholders_equity_mean = None
+            else:
+                stockholders_equity = stockholders_equity.dropna()
+                stockholders_equity_last = stockholders_equity.iloc[0]
+                stockholders_equity_mean = (stockholders_equity.shift(1) + stockholders_equity) / 2
+                last_stockholders_equity_mean = stockholders_equity_mean.dropna().iloc[0]
+        else:
             stockholders_equity = None
+            stockholders_equity_last = None
+            stockholders_equity_mean = None
+            last_stockholders_equity_mean = None
 
-        minority_interest = total_equity_gross_minority_interest - stockholders_equity
+        minority_interest = total_equity_gross_minority_interest_last - stockholders_equity_last \
+            if stockholders_equity_last is not None \
+            and total_equity_gross_minority_interest_last is not None \
+            else None
 
         preferred_equity = 0  # incluir se tiver a rubrica
 
         # - Debt & cash (preferidos)
-        cash_sti = yahoo_symbol_balancesheet.loc["Cash Cash Equivalents And Short Term Investments"].dropna().iloc[0]
-        if cash_sti is None:
-            cash = yahoo_symbol_balancesheet.loc["Cash And Cash Equivalents"].dropna().iloc[0]
-            sti = yahoo_symbol_balancesheet.loc["Other Short Term Investments"].dropna().iloc[0]
-            cash_sti = (cash or 0) + (sti or 0)
+        if 'Cash Cash Equivalents And Short Term Investments' in yahoo_symbol_balancesheet.index:
+            cash_sti = yahoo_symbol_balancesheet.loc["Cash Cash Equivalents And Short Term Investments"]
+            if pd.isna(cash_sti).all():
+                cash_sti = None
+                cash_sti_last = None
+            else:
+                cash_sti = cash_sti.dropna()
+                cash_sti_last = cash_sti.iloc[0]
+        else:
+            cash_sti = None
+            cash_sti_last = None
+
+        if cash_sti_last is None:
+            if 'Cash And Cash Equivalents' in yahoo_symbol_balancesheet.index:
+                cash = yahoo_symbol_balancesheet.loc["Cash And Cash Equivalents"]
+                if pd.isna(cash).all():
+                    cash = None
+                    cash_last = None
+                else:
+                    cash = cash.dropna()
+                    cash_last = cash.iloc[0]
+            else:
+                cash = None
+                cash_last = None
+
+            if 'Other Short Term Investments' in yahoo_symbol_balancesheet.index:
+                sti = yahoo_symbol_balancesheet.loc["Other Short Term Investments"]
+                if pd.isna(cash).all():
+                    sti = None
+                    sti_last = None
+                else:
+                    sti = sti.dropna()
+                    sti_last = sti.iloc[0]
+            else:
+                sti = None
+                sti_last = None
+
+            cash_sti_last = (cash_last or 0) + (sti_last or 0) \
+                if cash_last is not None \
+                and sti_last is not None \
+                else None
 
         # - Enterprise Value
-        enterprise_value = market_cap + total_debt + minority_interest + preferred_equity - cash_sti
+        enterprise_value = market_cap + total_debt_last + minority_interest + preferred_equity - cash_sti_last \
+            if market_cap is not None \
+            and total_debt_last is not None \
+            and minority_interest is not None \
+            and preferred_equity is not None \
+            and cash_sti_last is not None \
+            else None
 
         # - Total Revenue ---- ADICIONAR ISTO em todo o lado e criar função generica
         if 'EBITDA' in yahoo_symbol_income_quarter.index:
             total_ebitda = yahoo_symbol_income_quarter.loc['EBITDA']
             if pd.isna(total_ebitda).all():
                 total_ebitda = None
+                ebitda_ttm = None
             else:
-                total_ebitda.dropna()
+                total_ebitda = total_ebitda.dropna()
+                ebitda_ttm = total_ebitda.sum()
         else:
             total_ebitda = None
-
-        ebitda_ttm = total_ebitda.sum() if total_ebitda is not None else None
+            ebitda_ttm = None
 
         # - Total Revenue
         if 'Total Revenue' in yahoo_symbol_income_quarter.index:
             total_revenue = yahoo_symbol_income_quarter.loc['Total Revenue']
             if pd.isna(total_revenue).all():
                 total_revenue = None
+                total_revenue_last = None
+                total_revenue_ttm = None
             else:
-                total_revenue.dropna()
+                total_revenue = total_revenue.dropna()
+                total_revenue_last = total_revenue.iloc[0]
+                total_revenue_ttm = total_revenue.sum()
+        else:
+            total_revenue = None
+            total_revenue_last = None
+            total_revenue_ttm = None
 
         # - Total Revenue FY
         if 'Total Revenue' in yahoo_symbol_income.index:
@@ -395,89 +479,191 @@ class DataHistoryYahoo():
                 total_revenue_fy = None
             else:
                 total_revenue_fy = total_revenue_fy.dropna()
-
-        total_revenue_ttm = total_revenue.sum()
+        else:
+            total_revenue_fy = None
 
         # - Free Cashflow
         if 'Free Cash Flow' in yahoo_symbol_cashflow_quarter.index:
             free_cashflow = yahoo_symbol_cashflow_quarter.loc['Free Cash Flow']
             if pd.isna(free_cashflow).all():
                 free_cashflow = None
-
-        free_cashflow_ttm = free_cashflow.sum()
+                free_cashflow_ttm = None
+            else:
+                free_cashflow = free_cashflow.dropna()
+                free_cashflow_ttm = free_cashflow.sum()
+        else:
+            free_cashflow = None
+            free_cashflow_ttm = None
 
         # - Métricas
-        ev_ebitda = enterprise_value / ebitda_ttm if enterprise_value is not None and ebitda_ttm and ebitda_ttm > 0 else None
-        p_s = market_cap / total_revenue_ttm if market_cap is not None and total_revenue_ttm and total_revenue_ttm > 0 else None
-        fcf_yield_equity = free_cashflow_ttm / market_cap if free_cashflow_ttm is not None and market_cap and market_cap > 0 else None
-        fcf_yield_enterp = free_cashflow_ttm / enterprise_value if free_cashflow_ttm is not None and enterprise_value and enterprise_value > 0 else None
+        ev_ebitda = enterprise_value / ebitda_ttm \
+            if enterprise_value is not None \
+            and ebitda_ttm not in (None, 0) \
+            else None
+        p_s = market_cap / total_revenue_ttm \
+            if market_cap is not None \
+            and total_revenue_ttm not in (None, 0) \
+            else None
+        fcf_yield_equity = free_cashflow_ttm / market_cap \
+            if free_cashflow_ttm is not None \
+            and market_cap not in (None, 0) \
+            else None
+        fcf_yield_enterp = free_cashflow_ttm / enterprise_value \
+            if free_cashflow_ttm is not None \
+            and enterprise_value not in (None, 0) \
+            else None
 
         # ------ Finantial Health ------ #
         # - Net Debt / EBITDA
-        net_debt = total_debt - cash_sti
+        net_debt = total_debt_last - cash_sti_last \
+            if cash_sti_last is not None \
+            and total_debt_last is not None \
+            else None
 
-        net_debt_ebitda = net_debt / ebitda_ttm if net_debt is not None and ebitda_ttm and ebitda_ttm > 0 else None
+        net_debt_ebitda = net_debt / ebitda_ttm \
+            if net_debt is not None \
+            and ebitda_ttm is not None \
+            and ebitda_ttm > 0 \
+            else None
 
         # - Interest Coverage (EBIT)
-        ebit_ttm = yahoo_symbol_income_quarter.loc["EBIT"].sum()
+        if 'EBIT' in yahoo_symbol_income_quarter.index:
+            ebit_quarter = yahoo_symbol_income_quarter.loc['EBIT']
+            if pd.isna(ebit_quarter).all():
+                ebit_quarter = None
+                ebit_quarter_ttm = None
+            else:
+                ebit_quarter = ebit_quarter.dropna()
+                ebit_quarter_ttm = ebit_quarter.sum()
+        else:
+            ebit_quarter = None
+            ebit_quarter_ttm = None
 
-        interest_expense_ttm = yahoo_symbol_income.loc["Interest Expense"].dropna().iloc[0]  # sum(yahoo_symbol_income_quarter.loc["Interest Expense"])
+        # - Interest Expense
+        if 'Interest Expense' in yahoo_symbol_income.index:
+            interest_expense = yahoo_symbol_income.loc['Interest Expense']
+            if pd.isna(interest_expense).all():
+                interest_expense = None
+                interest_expense_ttm = None
+                interest_expense_last = None
+            else:
+                interest_expense = interest_expense.dropna()
+                interest_expense_ttm = interest_expense.sum()
+                interest_expense_last = interest_expense.iloc[0]
+        else:
+            interest_expense = None
+            interest_expense_ttm = None
+            interest_expense_last = None
 
-        interest_expense_ttm = interest_expense_ttm if interest_expense_ttm is not None else None
-
-        interest_coverage_ebit = ebit_ttm / interest_expense_ttm if ebit_ttm is not None and interest_expense_ttm and interest_expense_ttm > 0 else None
+        interest_coverage_ebit = ebit_quarter_ttm / abs(interest_expense_ttm) \
+            if ebit_quarter_ttm is not None \
+            and interest_expense_ttm not in (None, 0) \
+            else None
 
         # - Current Racio
         # current_assets
         if 'Current Assets' in yahoo_symbol_balancesheet_quarter.index:
-            current_assets = yahoo_symbol_balancesheet_quarter.loc['Current Assets']
-            if pd.isna(current_assets).all():
-                current_assets = None
+            current_assets_quarter = yahoo_symbol_balancesheet_quarter.loc['Current Assets']
+            if pd.isna(current_assets_quarter).all():
+                current_assets_quarter = None
+                current_assets_quarter_last = None
             else:
-                current_assets = current_assets.dropna().iloc[0]
+                current_assets_quarter = current_assets_quarter.dropna()
+                current_assets_quarter_last = current_assets_quarter.iloc[0]
+        else:
+            current_assets_quarter = None
+            current_assets_quarter_last = None
+
         # current_liabilities
         if 'Current Liabilities' in yahoo_symbol_balancesheet_quarter.index:
-            current_liabilities = yahoo_symbol_balancesheet_quarter.loc['Current Liabilities']
-            if pd.isna(current_liabilities).all():
-                current_liabilities = None
+            current_liabilities_quarter = yahoo_symbol_balancesheet_quarter.loc['Current Liabilities']
+            if pd.isna(current_liabilities_quarter).all():
+                current_liabilities_quarter = None
+                current_liabilities_quarter_last = None
             else:
-                current_liabilities = current_liabilities.dropna().iloc[0]
+                current_liabilities_quarter = current_liabilities_quarter.dropna()
+                current_liabilities_quarter_last = current_liabilities_quarter.iloc[0]
+        else:
+            current_liabilities_quarter = None
+            current_liabilities_quarter_last = None
 
-        current_ratio = (current_assets / current_liabilities) if current_liabilities is not None else None
+        current_ratio = (current_assets_quarter_last / current_liabilities_quarter_last) \
+            if current_liabilities_quarter_last not in (None, 0) \
+            and current_assets_quarter_last is not None \
+            else None
 
         # - Quick Racio
         # inventory
         if 'Inventory' in yahoo_symbol_balancesheet_quarter.index:
-            inventory = yahoo_symbol_balancesheet_quarter.loc['Inventory']
-            if pd.isna(inventory).all():
-                inventory = None
+            inventory_quarter = yahoo_symbol_balancesheet_quarter.loc['Inventory']
+            if pd.isna(inventory_quarter).all():
+                inventory_quarter = None
+                inventory_quarter_last = None
             else:
-                inventory = inventory.dropna().iloc[0]
+                inventory_quarter = inventory_quarter.dropna()
+                inventory_quarter_last = inventory_quarter.iloc[0]
+        else:
+            inventory_quarter = None
+            inventory_quarter_last = None
 
-        quick_ratio = ((current_assets - inventory) / current_liabilities)
+        quick_ratio = ((current_assets_quarter_last - inventory_quarter_last) / current_liabilities_quarter_last) \
+            if current_assets_quarter_last is not None \
+            and inventory_quarter_last is not None \
+            and current_liabilities_quarter_last not in (None, 0) \
+            else None
 
         # ------ Profitability ------ #
         # operation_margin
-        operation_margin = ebit_ttm / total_revenue_ttm if total_revenue_ttm is not None and total_revenue_ttm > 0 else None
+        operation_margin = ebit_quarter_ttm / total_revenue_ttm \
+            if ebit_quarter_ttm is not None \
+            and total_revenue_ttm not in (None, 0) \
+            else None
 
         # fcf_margin
-        fcf_margin = free_cashflow_ttm / total_revenue_ttm if total_revenue_ttm is not None and total_revenue_ttm > 0 else None
-
-        # operating_income
-        if 'Operating Income' in yahoo_symbol_income_quarter.index:
-            operating_income = yahoo_symbol_income_quarter.loc['Operating Income']
-            if pd.isna(operating_income).all():
-                operating_income = None
-            else:
-                operating_income = operating_income.dropna().iloc[0]
+        fcf_margin = free_cashflow_ttm / total_revenue_ttm \
+            if free_cashflow_ttm is not None \
+            and total_revenue_ttm not in (None, 0) \
+            else None
 
         # ROIC
-        tax_rate_ttm = yahoo_symbol_income_quarter.loc['Tax Rate For Calcs'].mean()
-        cap_invested = yahoo_symbol_balancesheet.loc['Invested Capital']
-        cap_invested_mean = (cap_invested.shift(1) + cap_invested) / 2
-        last_capital = cap_invested_mean.dropna().iloc[0]
-        nopat_ttm = (ebit_ttm * (1 - tax_rate_ttm))
-        roic = nopat_ttm / last_capital if last_capital is not None else None
+        # Tax Rate For Calcs
+        if 'Tax Rate For Calcs' in yahoo_symbol_income_quarter.index:
+            tax_rate_quarter = yahoo_symbol_income_quarter.loc['Tax Rate For Calcs']
+            if pd.isna(tax_rate_quarter).all():
+                tax_rate_quarter = None
+                tax_rate_ttm = None
+            else:
+                tax_rate_quarter = tax_rate_quarter.dropna()
+                tax_rate_ttm = tax_rate_quarter.mean()
+        else:
+            tax_rate_quarter = None
+            tax_rate_ttm = None
+
+        # Invested Capital
+        if 'Invested Capital' in yahoo_symbol_balancesheet.index:
+            cap_invested = yahoo_symbol_balancesheet.loc['Invested Capital']
+            if pd.isna(cap_invested).all():
+                cap_invested = None
+                cap_invested_mean = None
+                last_capital = None
+            else:
+                cap_invested = cap_invested.dropna()
+                cap_invested_mean = (cap_invested.shift(1) + cap_invested) / 2
+                last_capital = cap_invested_mean.dropna().iloc[0]
+        else:
+            cap_invested = None
+            cap_invested_mean = None
+            last_capital = None
+
+        nopat_ttm = (ebit_quarter_ttm * (1 - tax_rate_ttm)) \
+            if ebit_quarter_ttm is not None \
+            and tax_rate_ttm is not None \
+            else None
+
+        roic = nopat_ttm / last_capital \
+            if nopat_ttm is not None \
+            and last_capital is not None \
+            else None
 
         # ROE
         # net_income_fy
@@ -487,86 +673,166 @@ class DataHistoryYahoo():
                 net_income_fy = None
             else:
                 net_income_fy = net_income_fy.dropna()
+        else:
+            net_income_fy = None
 
         # net_income
         if 'Net Income' in yahoo_symbol_income_quarter.index:
-            net_income = yahoo_symbol_income_quarter.loc['Net Income']
-            if pd.isna(net_income).all():
-                net_income = None
+            net_income_quarter = yahoo_symbol_income_quarter.loc['Net Income']
+            if pd.isna(net_income_quarter).all():
+                net_income_quarter = None
+                net_income_ttm = None
             else:
-                net_income = net_income.dropna().iloc[0]
+                net_income_quarter = net_income_quarter.dropna()
+                net_income_ttm = net_income_quarter.sum()
+        else:
+            net_income_quarter = None
+            net_income_ttm = None
 
-        net_income_ttm = net_income.sum()
-        equity = yahoo_symbol_balancesheet.loc['Stockholders Equity']
-        equity_mean = (equity.shift(1) + equity) / 2
-        last_equity_mean = equity_mean.dropna().iloc[0]
-        roe = net_income_ttm / last_equity_mean
+        roe = net_income_ttm / last_stockholders_equity_mean \
+            if net_income_ttm is not None \
+            and last_stockholders_equity_mean not in (None,0) \
+            else None
 
         # ROA
-        assets = yahoo_symbol_balancesheet.loc['Total Assets']
-        assets_mean = (assets.shift(1) + assets) / 2
-        last_assets_mean = assets_mean.dropna().iloc[0]
-        roa = net_income_ttm / last_assets_mean
+        # Total Assets
+        if 'Total Assets' in yahoo_symbol_balancesheet.index:
+            assets = yahoo_symbol_balancesheet.loc['Total Assets']
+            if pd.isna(assets).all():
+                assets = None
+                assets_mean = None
+                last_assets_mean = None
+            else:
+                assets = assets.dropna()
+                assets_mean = (assets.shift(1) + assets) / 2
+                last_assets_mean = assets_mean.dropna().iloc[0]
+        else:
+            assets = None
+            assets_mean = None
+            last_assets_mean = None
+
+        roa = net_income_ttm / last_assets_mean \
+            if net_income_ttm is not None \
+            and last_assets_mean not in (None, 0) \
+            else None
 
         # ------ Capital Efficiency ------ #
         # - wacc
-        beta = yahoo_symbol_info.get("beta")
-        interest_expense_ttm = yahoo_symbol_income.loc["Interest Expense"].dropna().iloc[0]
-        total_debt = yahoo_symbol_balancesheet.loc["Total Debt"].dropna().iloc[0]
+        beta = yahoo_symbol_info.get("beta", None)
 
-        cd = interest_expense_ttm / total_debt
+        cd = interest_expense_last / total_debt_last \
+            if interest_expense_last is not None \
+            and total_debt_last not in (None, 0) \
+            else None
 
-        tax_provisory_ttm = yahoo_symbol_income_quarter.loc['Tax Provision'].sum()
-        pretax_income_ttm = yahoo_symbol_income_quarter.loc['Pretax Income'].sum()
-        tax_efective = tax_provisory_ttm / pretax_income_ttm
+        # Tax Provision
+        if 'Tax Provision' in yahoo_symbol_income_quarter.index:
+            tax_provisory_quarter = yahoo_symbol_income_quarter.loc['Tax Provision']
+            if pd.isna(tax_provisory_quarter).all():
+                tax_provisory_quarter = None
+                tax_provisory_ttm = None
+            else:
+                tax_provisory_quarter = tax_provisory_quarter.dropna()
+                tax_provisory_ttm = tax_provisory_quarter.sum()
+        else:
+            tax_provisory_quarter = None
+            tax_provisory_ttm = None
+
+        # Pretax Income
+        if 'Pretax Income' in yahoo_symbol_income_quarter.index:
+            pretax_income_quarter = yahoo_symbol_income_quarter.loc['Pretax Income']
+            if pd.isna(pretax_income_quarter).all():
+                pretax_income_quarter = None
+                pretax_income_ttm = None
+            else:
+                pretax_income_quarter = pretax_income_quarter.dropna()
+                pretax_income_ttm = pretax_income_quarter.sum()
+        else:
+            pretax_income_quarter = None
+            pretax_income_ttm = None
+
+        tax_efective = tax_provisory_ttm / pretax_income_ttm \
+            if tax_provisory_ttm is not None \
+            and pretax_income_ttm not in (None, 0) \
+            else None
 
         market_cap = yahoo_symbol_info.get('marketCap')
 
-        us10y = yf.Ticker("^TNX").info.get("previousClose") / 100
+        us10y = yf.Ticker("^TNX").info.get("previousClose")
+        us10y = us10y / 100 \
+            if us10y is not None \
+            else None
+
         erp = 0.055
 
-        ce = us10y + beta * erp
+        ce = us10y + beta * erp \
+            if us10y is not None \
+            and beta is not None \
+            else None
 
-        wacc = ((market_cap / (market_cap + total_debt)) * ce) + ((total_debt / (total_debt + market_cap)) * cd * (1 - tax_efective))
+        wacc = None
+        if all(v is not None for v in [market_cap, total_debt_last, ce, cd, tax_efective]):
+            total_cap = market_cap + total_debt_last
+            if total_cap and total_cap > 0:
+                wacc = ((market_cap / total_cap) * ce) + ((total_debt_last / total_cap) * cd * (1 - tax_efective))
 
         # WACCvsROIC
-        eva = roic - wacc
+        eva = roic - wacc \
+            if roic is not None \
+            and wacc is not None \
+            else None
 
         # ------ Growth ------ #
         # revenue growth
-        growth_revenue_yoy = (total_revenue_fy.iloc[0] / total_revenue_fy.iloc[1]) - 1 if total_revenue_fy.iloc[1] is not None else None
+        growth_revenue_yoy = (total_revenue_fy.iloc[0] / total_revenue_fy.iloc[1]) - 1 \
+            if isinstance(total_revenue_fy, pd.Series) and len(total_revenue_fy.dropna()) >= 2 else None
+
         cagr_growth_revenue_yoy = fm.get_cagr_metric(total_revenue_fy)
         if cagr_growth_revenue_yoy is not None and math.isnan(cagr_growth_revenue_yoy):
             cagr_growth_revenue_yoy = None
 
         # eps growth
-        dilutedEPS_fy = yahoo_symbol_income.loc["Diluted EPS"].dropna()
-        growth_eps_yoy = (dilutedEPS_fy.iloc[0] / dilutedEPS_fy.iloc[1]) - 1 if dilutedEPS_fy.iloc[1] is not None else None
+        # Diluted EPS
+        if 'Diluted EPS' in yahoo_symbol_income.index:
+            dilutedEPS_fy = yahoo_symbol_income.loc['Diluted EPS']
+            if pd.isna(dilutedEPS_fy).all():
+                dilutedEPS_fy = None
+            else:
+                dilutedEPS_fy = dilutedEPS_fy.dropna()
+        else:
+            dilutedEPS_fy = None
+
+        growth_eps_yoy = (dilutedEPS_fy.iloc[0] / dilutedEPS_fy.iloc[1]) - 1 \
+            if isinstance(dilutedEPS_fy, pd.Series) and len(dilutedEPS_fy.dropna()) >= 2 else None
+
         cagr_growth_eps_yoy = fm.get_cagr_metric(dilutedEPS_fy)
         if cagr_growth_eps_yoy is not None and math.isnan(cagr_growth_eps_yoy):
             cagr_growth_eps_yoy = None
 
         # ------ Dividends ------ #
         # dividend yield
-        dividendYield = yahoo_symbol_info.get("dividendYield", None) / 100
+        dividendYield = yahoo_symbol_info.get("dividendYield", None)
+        dividendYield = dividendYield / 100 \
+            if dividendYield is not None \
+            else None
+
         # payout ratio
         payout_ratio = yahoo_symbol_info.get("payoutRatio", None)
 
         # Dividend TTM
-        s = yahoo_symbol_dividends.sort_index()
-        last_date = s.index[-1]
+        s = yahoo_symbol_dividends if isinstance(yahoo_symbol_dividends, pd.Series) else pd.Series(dtype=float)
+        s = s.sort_index()
+        last_date = s.index[-1] if len(s) else None
 
-        # dividend growth
-        annual = s.groupby(s.index.year).sum().sort_index()
-        current_year = last_date.year
-        # Se o último ano for o ano corrente, consideramos incompleto e removemos
-        if current_year in annual.index:
-            annual_complete = annual.drop(index=current_year)
+        if len(s):
+            annual = s.groupby(s.index.year).sum().sort_index()
+            current_year = last_date.year
+            annual_complete = annual.drop(index=current_year) if current_year in annual.index else annual.copy()
+            cagr_dividend_3y = fm.get_cagr_metric(annual_complete.tail(3)) if len(annual_complete) >= 2 else None
+            cagr_dividend_5y = fm.get_cagr_metric(annual_complete.tail(5)) if len(annual_complete) >= 2 else None
         else:
-            annual_complete = annual.copy()
-
-        cagr_dividend_3y = fm.get_cagr_metric(annual_complete.tail(3))
-        cagr_dividend_5y = fm.get_cagr_metric(annual_complete.tail(5))
+            cagr_dividend_3y = None
+            cagr_dividend_5y = None
 
         # Shareholders Yield
         # cash dividend paid
@@ -576,6 +842,8 @@ class DataHistoryYahoo():
                 cash_dividends_paid = None
             else:
                 cash_dividends_paid = cash_dividends_paid.dropna()
+        else:
+            cash_dividends_paid = None
 
         # rewards ttm
         if 'Repurchase Of Capital Stock' in yahoo_symbol_cashflow_quarter.index:
@@ -584,17 +852,29 @@ class DataHistoryYahoo():
                 rewards = None
             else:
                 rewards = rewards.dropna()
+        else:
+            rewards = None
 
-        div_ttm_quarter = cash_dividends_paid.sum()
-        rewards_ttm_quarter = rewards.sum()
+        div_ttm_quarter = cash_dividends_paid.sum() \
+            if cash_dividends_paid is not None \
+            else None
+        rewards_ttm_quarter = rewards.sum() \
+            if rewards is not None \
+            else None
 
-        shy = (div_ttm_quarter + rewards_ttm_quarter) / market_cap if market_cap is not None else None
+        shy = (div_ttm_quarter + rewards_ttm_quarter) / market_cap \
+            if market_cap is not None \
+            and div_ttm_quarter is not None \
+            and rewards_ttm_quarter is not None \
+            else None
 
-        fiveYearAvgDividendYield = yahoo_symbol_info.get("fiveYearAvgDividendYield", None) / 100
+        fiveYearAvgDY = yahoo_symbol_info.get("fiveYearAvgDividendYield", None)
+        fiveYearAvgDividendYield = fiveYearAvgDY / 100 \
+            if fiveYearAvgDY is not None \
+            else None
 
-        # ------ Extras ------ #
-        eps_ann = yahoo_symbol_info.get("epsCurrentYear")
-        dividend_rate = yahoo_symbol_info.get("dividendRate")
+        eps_ann = yahoo_symbol_info.get("epsCurrentYear", None)
+        dividend_rate = yahoo_symbol_info.get("dividendRate", None)
         if (
             eps_ann is not None and
             dividend_rate is not None and
@@ -606,134 +886,13 @@ class DataHistoryYahoo():
         else:
             div_coverage_rate = None
 
-        # Profitability
-        # cost_of_revenue
-        if 'Cost Of Revenue' in yahoo_symbol_income.index:
-            cost_of_revenue = yahoo_symbol_income.loc['Cost Of Revenue']
-            if pd.isna(cost_of_revenue).all():
-                cost_of_revenue = None
+        # ------ Dividends ------ #
+        # Beta
+        sharesPercentSharesOut = yahoo_symbol_info.get("sharesPercentSharesOut", None)
+        recommendationMean = yahoo_symbol_info.get("recommendationMean", None)
+        targetMeanPrice = yahoo_symbol_info.get("targetMeanPrice", None)
 
-        # gross_profit
-        if 'Gross Profit' in yahoo_symbol_income.index:
-            gross_profit = yahoo_symbol_income.loc['Gross Profit']
-            if pd.isna(gross_profit).all():
-                gross_profit = None
-
-        # operating_expenses
-        if 'Operating Expense' in yahoo_symbol_income.index:
-            operating_expenses = yahoo_symbol_income.loc['Operating Expense']
-            if pd.isna(operating_expenses).all():
-                operating_expenses = None
-
-        cagr_cost_of_revenue = fm.get_cagr_metric(cost_of_revenue)
-        if cagr_cost_of_revenue is not None and math.isnan(cagr_cost_of_revenue):
-            cagr_cost_of_revenue = None
-        cagr_total_revenue = fm.get_cagr_metric(total_revenue)
-        if cagr_total_revenue is not None and math.isnan(cagr_total_revenue):
-            cagr_total_revenue = None
-        cagr_operating_expenses = fm.get_cagr_metric(operating_expenses)
-        if cagr_operating_expenses is not None and math.isnan(cagr_operating_expenses):
-            cagr_operating_expenses = None
-
-        # Growth & NetWorth & Health
-        # total_assets
-        if 'Total Assets' in yahoo_symbol_balancesheet.index:
-            total_assets = yahoo_symbol_balancesheet.loc['Total Assets']
-            if pd.isna(total_assets).all():
-                total_assets = None
-
-        # current_liabilities
-        if 'Current Liabilities' in yahoo_symbol_balancesheet.index:
-            current_liabilities = yahoo_symbol_balancesheet.loc['Current Liabilities']
-            if pd.isna(current_liabilities).all():
-                current_liabilities = None
-
-        # non_current_liabilities
-        if 'Total Non Current Liabilities Net Minority Interest' in yahoo_symbol_balancesheet.index:
-            non_current_liabilities = yahoo_symbol_balancesheet.loc['Total Non Current Liabilities Net Minority Interest']
-            if pd.isna(non_current_liabilities).all():
-                non_current_liabilities = None
-
-        # total_liabilities
-        if not current_liabilities.isna().all() and not non_current_liabilities.isna().all():
-            total_liabilities = (current_liabilities + non_current_liabilities)
-        else:
-            total_liabilities = None
-
-        # net_worth
-        if not total_assets.isna().all() and not current_liabilities.isna().all() and not non_current_liabilities.isna().all():
-            total_assets = total_assets.replace(0, np.nan)
-            net_worth = total_assets.iloc[0] - total_liabilities.iloc[0]
-        else:
-            net_worth = None
-
-        # current_assets
-        if 'Current Assets' in yahoo_symbol_balancesheet.index:
-            current_assets = yahoo_symbol_balancesheet.loc['Current Assets']
-            if pd.isna(current_assets).all():
-                current_assets = None
-
-        # non_current_assets
-        if 'Total Non Current Assets' in yahoo_symbol_balancesheet.index:
-            non_current_assets = yahoo_symbol_balancesheet.loc['Total Non Current Assets']
-            if pd.isna(non_current_assets).all():
-                non_current_assets = None
-
-        # short_term_debt_coverage
-        if not current_assets.isna().all() and not current_liabilities.isna().all():
-            short_term_debt_coverage = current_assets - current_liabilities
-        else:
-            short_term_debt_coverage = None
-
-        # long_term_debt_coverage
-        if not non_current_assets.isna().all() and not non_current_liabilities.isna().all():
-            long_term_debt_coverage = non_current_assets - non_current_liabilities
-        else:
-            long_term_debt_coverage = None
-
-        cagr_total_liabilities = fm.get_cagr_metric(total_liabilities)
-        if cagr_total_liabilities is not None and math.isnan(cagr_total_liabilities):
-            cagr_total_liabilities = None
-
-        cagr_total_assets = fm.get_cagr_metric(total_assets)
-        if cagr_total_assets is not None and math.isnan(cagr_total_assets):
-            cagr_total_assets = None
-
-        # cash_cash_equivalents
-        if 'Cash And Cash Equivalents' in yahoo_symbol_balancesheet.index:
-            cash_cash_equivalents = yahoo_symbol_balancesheet.loc['Cash And Cash Equivalents']
-            if pd.isna(cash_cash_equivalents).all():
-                cash_cash_equivalents = None
-
-        # stockholders_equity
-        if 'Stockholders Equity' in yahoo_symbol_balancesheet.index:
-            stockholders_equity = yahoo_symbol_balancesheet.loc['Stockholders Equity']
-            if pd.isna(stockholders_equity).all():
-                stockholders_equity = None
-
-        cagr_stockholder_equity = fm.get_cagr_metric(stockholders_equity)
-        if cagr_stockholder_equity is not None and math.isnan(cagr_stockholder_equity):
-            cagr_stockholder_equity = None
-
-        # Cashflow
-        # operating_cashflow
-        if 'Operating Cash Flow' in yahoo_symbol_cashflow.index:
-            operating_cashflow = yahoo_symbol_cashflow.loc['Operating Cash Flow']
-            if pd.isna(operating_cashflow).all():
-                operating_cashflow = None
-
-        # capital_expenditure
-        if 'Capital Expenditure' in yahoo_symbol_cashflow.index:
-            capital_expenditure = yahoo_symbol_cashflow.loc['Capital Expenditure']
-            if pd.isna(capital_expenditure).all():
-                capital_expenditure = None
-
-        # free_cashflow_yield
-        if not pd.isna(market_cap) and market_cap != 0 and not free_cashflow.isna().all():
-            free_cashflow_yield = (free_cashflow_ttm / market_cap)
-        else:
-            free_cashflow_yield = None
-
+        # ------ Extras ------ #
         yahoo_symbol_fundamental_info = {
             "kpis": {
                 "trailingPE": trailing_pe,
@@ -772,51 +931,24 @@ class DataHistoryYahoo():
                 "ebitdaTTM": ebitda_ttm,
             },
             "finantial_health": {
-                # Actual
-                "TotalAssets": total_assets.iloc[0],
-                "TotalLiabilities": total_liabilities.iloc[0],
-                "NetWorth": net_worth,
-                "CashCashEquivalents": cash_cash_equivalents.iloc[0],
-                # Short Term 1y
-                "ShortTermDebtCoverage": short_term_debt_coverage.iloc[0],
-                "CurrentAssets": current_assets.iloc[0],
-                "CurrentLiabilities": current_liabilities.iloc[0],
-                # Long Term
-                "LongTermDebtCoverage": long_term_debt_coverage.iloc[0],
-                "NonCurrentAssets": non_current_assets.iloc[0],
-                "NonCurrentLiabilities": non_current_liabilities.iloc[0],
-                # Growth
-                "TotalAssetsCAGR": cagr_total_assets,
-                "TotalLiabilitiesCAGR": cagr_total_liabilities,
-                # Stockholders Equity
-                "StockholdersEquityCAGR": cagr_stockholder_equity,
-                "StockholdersEquity": stockholders_equity.iloc[0],
+                "StockholdersEquity": stockholders_equity_last,
             },
             "profitability": {
                 "NetIncome": net_income_ttm,
-                "TotalRevenue": total_revenue.iloc[0],
-                "CostOfRevenue": cost_of_revenue.iloc[0],
-                "GrossProfit": gross_profit.iloc[0],
-                "OperatingExpenses": operating_expenses.iloc[0],
-                "CostOfRevenueCAGR": cagr_cost_of_revenue,
-                "TotalRevenueCAGR": cagr_total_revenue,
-                "OperatingExpensesCAGR": cagr_operating_expenses,
+                "TotalRevenue": total_revenue_last,
             },
             "cashflow": {
                 "FreeCashflow": free_cashflow_ttm,
-                "OperatingCashflow": operating_cashflow.iloc[0],
-                "CapitalExpenditure": capital_expenditure.iloc[0],
-                "FreeCashflowYield": free_cashflow_yield,
             },
             "ratios": {
                 # Margins
                 "GrossMargin": 9999
             },
             "market_risk_and_sentiment": {
-                "beta": yahoo_symbol_info.get("beta", None),
-                "sharesPercentSharesOut": yahoo_symbol_info.get("sharesPercentSharesOut", None),
-                "recommendationMean": yahoo_symbol_info.get("recommendationMean", None),
-                "targetMeanPrice": yahoo_symbol_info.get("targetMeanPrice", None)
+                "beta": beta,
+                "sharesPercentSharesOut": sharesPercentSharesOut,
+                "recommendationMean": recommendationMean,
+                "targetMeanPrice": targetMeanPrice
             }
         }
         return yahoo_symbol_fundamental_info
