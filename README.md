@@ -408,3 +408,9 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **Information about metrics**
 - **KPIS Finish**
 - **Sectors Charts**
+
+Notas:
+-- continuar o finantial health
+
+Net Debt muito inferiores e muito superiores
+Interest Coverage muito inferiores e muito superiores

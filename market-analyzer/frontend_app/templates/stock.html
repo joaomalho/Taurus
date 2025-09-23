@@ -357,8 +357,9 @@
                             <canvas id="liquidityHeatmap"></canvas>
                         </div>
                         <div>
-                            <h3>Stockholders Equity</h3>
-                            <p><strong>Stockholders Equity:</strong> <span id="StockholdersEquity"></span></p>
+                            <span id="net_debt_ebitda_generico"></span>
+                            <span id="net_debt_generico"></span>
+                            <span id="ebitda_generico"></span>
                         </div>
                     </div>
                 </div>
@@ -605,5 +606,7 @@
     <script src="{% static 'js/custom_charts/theme.js' %}"></script>
     <script type="module" src="{% static 'js/custom_charts/chartsandgraphs.js' %}"></script>
     <script type="module" src="{% static 'js/custom_charts/financialhealthcharts.js' %}"></script>
+    <!-- Glossarios.js -->
+    <script src="{% static 'js/results_text/genericos.js' %}"></script>
 {% endblock %}
 

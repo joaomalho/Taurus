@@ -1,9 +1,11 @@
 import json
 import numpy as np
 import pandas as pd
+from io import BytesIO
 from datetime import datetime, timezone
 from django.shortcuts import render
-from django.http import JsonResponse, Http404
+from django.utils.timezone import now
+from django.http import JsonResponse, Http404, HttpResponse
 from django.core.validators import RegexValidator
 from backend.datasources.yahoodata import DataHistoryYahoo
 from backend.tecnical_analysis.trend_metrics import TrendMetrics
@@ -73,16 +75,12 @@ def _parse_iso_date(s: str):
 
 
 def _df_to_excel_response(df, base_filename: str):
-    import pandas as pd
-    from io import BytesIO
-    from django.http import HttpResponse
-    from django.utils.timezone import now
 
     if df is None or df.empty:
         return JsonResponse({"error": "No data found"}, status=404)
 
     # Melhorar layout: índice como coluna
-    df_out = df.copy().T.reset_index().rename(columns={"index": "Period"})
+    df_out = df.copy().reset_index().rename(columns={"index": "Period"})
 
     timestamp = now().strftime("%Y%m%d-%H%M")
     filename = f"{base_filename}_{timestamp}.xlsx"

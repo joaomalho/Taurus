@@ -182,7 +182,7 @@ scatterChart = new Chart(ctx, {
     },
     scales: {
         x: {
-        title: { display: true, text: "Net Debt / EBITDA (x)" },
+        title: { display: true, text: "Net Debt / EBITDA (Years)" },
         min: -6, max: 6,
         grid: { display: false }
         },

@@ -1,0 +1,1 @@
+// USAR O mesmo esquema do genericos
