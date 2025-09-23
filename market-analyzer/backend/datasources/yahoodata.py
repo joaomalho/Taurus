@@ -691,7 +691,7 @@ class DataHistoryYahoo():
 
         roe = net_income_ttm / last_stockholders_equity_mean \
             if net_income_ttm is not None \
-            and last_stockholders_equity_mean not in (None,0) \
+            and last_stockholders_equity_mean not in (None, 0) \
             else None
 
         # ROA

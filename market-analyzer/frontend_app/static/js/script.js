@@ -1,5 +1,5 @@
-import { renderCandlestickFromData } from "./candlestick.js";
-import "./chartsandgraphs.js";
+import { renderCandlestickFromData } from "./custom_charts/candlestick.js";
+import "./custom_charts/chartsandgraphs.js";
 import { initMetricTooltips, initAttributeTooltips } from "./tooltips.js";
 import {
     fetchYahooStockGainers,

@@ -1,5 +1,5 @@
-import { formatPercent, formatMultiple, formatCurrency, formatNumber, formatDate } from "./formatter.js";
-import { Grid, html } from "./gridjs.production.es.min.js";
+import { formatPercent, formatMultiple, formatCurrency, formatNumber, formatDate } from "./utils/formatter.js";
+import { Grid, html } from "./plugins/gridjs.production.es.min.js";
 import {normalizeNewsItem, sortByDateDesc, dedupeByUrl, renderCard} from "./news.js";
 
 /* ─────── HELPERS DE ESTILO POR BUCKET ─────── */

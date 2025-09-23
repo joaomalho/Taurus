@@ -62,7 +62,13 @@ export function fetchYahooStockMostActive() {
     return fetch("/stockbytop/stock_most_active/").then(res => res.json());
 }
 
-//////////// ##### API: EPS ###### ////////////
+//////////// ##### API: CUSTOM CHART###### ////////////
+//////////// ##### EPS CHART###### ////////////
 export function fetchSymbolEarnings(symbol) {
   return fetch(`/stock/${symbol}/earnings/`).then(res => res.json());
+}
+
+//////////// ##### FINANCIAL HEALTH CHART###### ////////////
+export function fetchSymbolFinancialHealth(symbol) {
+  return fetch(`/stock/${symbol}/finacial_health_chart/`).then(res => res.json());
 }

@@ -279,7 +279,7 @@
                             <p><strong>Enterprise FCF Yield:</strong> <span id="EnterpriseFCFYield"></span> <span id="EnterpriseFCFYieldClass"></span></p>
                         </div>
                         <div>
-                            <h3>Finantial Health</h3>
+                            <h3>Financial Health</h3>
                             <p><strong>Net Debt / EBITDA:</strong> <span id="NetDebtEbitda"></span> <span id="NetDebtEbitdaClass"></span></p>
                             <p><strong>Interest Coverage (EBIT):</strong> <span id="InterestCoverageEbit"></span> <span id="InterestCoverageEbitClass"></span></p>
                             <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span> <span id="CurrentRatioClass"></span></p>
@@ -328,7 +328,7 @@
                     <div class="fund-valuation">
                         <div>
                             <h3>Price : Earnings</h3>
-                            <div class="chart-container">
+                            <div class="chart-container-earnings">
                                 <canvas id="earningsChart"></canvas>
                             </div>
                         </div>
@@ -342,14 +342,17 @@
                 </div>
             </div>
 
-            <!-- Finantial Health -->
+            <!-- Financial Health -->
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funHealth">
-                    <h2>Finantial Health</h2>
+                    <h2>Financial Health</h2>
                     <span class="toggle-icon">+</span>
                 </div>
                 <div class="health-content hidden">
                     <div class="fund-health">
+                        <div class="chart-container-financial">
+                            <canvas id="financialHealthScatter"></canvas>
+                        </div>
                         <div>
                             <h3>Stockholders Equity</h3>
                             <p><strong>Stockholders Equity:</strong> <span id="StockholdersEquity"></span></p>
@@ -417,7 +420,7 @@
             <div class="fundamental-card">
 
                 <div class="fundamental-header" id="funRatios">
-                    <h2>Finantial Ratios & Margins </h2>
+                    <h2>Financial Ratios & Margins </h2>
                     <span class="toggle-icon">+</span>
                 </div>
                 
@@ -483,7 +486,7 @@
                             <p><strong>Liabilities Growth CAGR Classification:</strong> <span id="TotalLiabilitiesCAGRClassOverview"></span></p>
                             <h3>Cashflow</h3>
                             <p><strong>Free Cashflow Yield Classification:</strong> <span id="FreeCashflowYieldClassOverview"></span></p>
-                            <h3>Finantials</h3>
+                            <h3>Financials</h3>
                             <p><strong>Current Ratio Classification:</strong> <span id="CurrentRatioClassOverview"></span></p>
                             <p><strong>Cash Ratio Classification:</strong> <span id="CashRatioClassOverview"></span></p>
                             <h3>Margins</h3>
@@ -592,11 +595,12 @@
 
 {% block extra_js %}
     <!-- Candlestick.js -->
-    <script src="{% static 'js/lightweight-charts.standalone.production.js' %}"></script>
+    <script src="{% static 'js/plugins/lightweight-charts.standalone.production.js' %}"></script>
     <!-- Chart.js -->
-    <script src="{% static 'js/chart.js' %}"></script>
-    <script src="{% static 'js/chartjs-plugin-datalabels.js' %}"></script>
-    <script src="{% static 'js/theme.js' %}"></script>
-    <script type="module" src="{% static 'js/chartsandgraphs.js' %}"></script>
+    <script src="{% static 'js/plugins/chart.js' %}"></script>
+    <script src="{% static 'js/plugins/chartjs-plugin-datalabels.js' %}"></script>
+    <script src="{% static 'js/custom_charts/theme.js' %}"></script>
+    <script type="module" src="{% static 'js/custom_charts/chartsandgraphs.js' %}"></script>
+    <script type="module" src="{% static 'js/custom_charts/financialhealthcharts.js' %}"></script>
 {% endblock %}
 

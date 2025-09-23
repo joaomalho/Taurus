@@ -8,7 +8,7 @@ from .views import (home, stock_page, stockbytop_page, get_stock_gainers, get_st
                     get_fundamental_cashflow_download, get_fundamental_balance_sheet_download,
                     get_fundamental_income_quarterly_download, get_fundamental_cashflow_quarterly_download,
                     get_fundamental_balance_sheet_quarterly_download, get_symbol_fundamental_news,
-                    get_yahoo_symbol_earnings_dates)
+                    get_yahoo_symbol_earnings_dates, get_financial_health_chart_info)
 
 urlpatterns = [
     # ------ MAIN PAGE ------
@@ -32,7 +32,10 @@ urlpatterns = [
     path('stock/<str:symbol>/inside_transactions/', get_inside_transactions, name='get_inside_transactions'),
     path('stock/<str:symbol>/recommendations/', get_recommendations, name='get_recommendations'),
     path('stock/<str:symbol>/news/', get_symbol_fundamental_news, name='get_symbol_fundamental_news'),
+    
+    # ------ Custom Chart Draw ------
     path('stock/<str:symbol>/earnings/', get_yahoo_symbol_earnings_dates, name='get_yahoo_symbol_earnings_dates'),
+    path('stock/<str:symbol>/finacial_health_chart/', get_financial_health_chart_info, name='get_financial_health_chart_info'),
 
     # ------ Candlestick Chart Draw ------
     path("stock/<str:symbol>/crossover_draw/", get_crossover_trend_metrics_draw, name='get_crossover_trend_metrics_draw'),

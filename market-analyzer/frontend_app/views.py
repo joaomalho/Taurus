@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone
 from django.shortcuts import render
 from django.http import JsonResponse, Http404
 from django.core.validators import RegexValidator
@@ -995,3 +995,64 @@ def get_yahoo_symbol_earnings_dates(request, symbol: str):
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {e}"}, status=500)
+
+
+# Financial Health Chart
+def get_financial_health_chart_info(request, symbol: str):
+    """
+    Return company information for financial health charts.
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        bio_info = data_history.get_symbol_bio_info(symbol)
+        bio_fund_info = data_history.get_symbol_fundamental_info(symbol)
+
+        if not bio_info:
+            return JsonResponse({"error": "No bio data found"}, status=404)
+
+        if not bio_fund_info:
+            return JsonResponse({"error": "No fundamental data found"}, status=404)
+
+        company = bio_info.get("LongName") or symbol
+        sector = bio_info.get("Sector")
+        # KPIs que precisamos (4 para o scatter + heatmap)
+        kpis = bio_fund_info.get("kpis", {})
+        metrics = {
+            "net_debt_ebitda":       kpis.get("NetDebtEbitda"),
+            "interest_coverage":     kpis.get("InterestCoverageEbit"),
+            "current_ratio":         kpis.get("CurrentRatio"),
+            "quick_ratio":           kpis.get("QuickRatio"),
+        }
+
+        # thresholds (torna isto configurável se quiseres)
+        thresholds = {
+            "nde_neutral":      0.0,
+            "nde_strong":       1.0,
+            "nde_very_strong":  3.0,
+            "ic_weak":          3.0,
+            "ic_neutral":       8.0,
+        }
+
+        payload = {
+            "symbol": symbol,
+            "company": company,
+            "sector": sector or "Unknown",
+            "metrics": metrics,
+            "thresholds": thresholds,
+            "asof": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "peers": []
+        }
+
+        return JsonResponse({"data": payload}, status=200)
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
