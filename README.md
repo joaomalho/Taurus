@@ -414,3 +414,5 @@ Notas:
 
 Net Debt muito inferiores e muito superiores
 Interest Coverage muito inferiores e muito superiores
+
+SubTotais nos excel
