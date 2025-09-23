@@ -1,4 +1,11 @@
-// === Financial Health charts (Scatter + Heatmap) ===
+////////////////////////////////////
+// FINANCIAL HEALTH CHART (Scatter + Heatmap)
+////////////////////////////////////
+
+////////////////////////////////////
+// FINANCIAL HEALTH CHART (Scatter)
+////////////////////////////////////
+
 import { fetchSymbolFinancialHealth } from "../api.js";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -56,7 +63,6 @@ if (!ctx) return;
 
 if (scatterChart) scatterChart.destroy();
 
-// constrói pontos (empresa + pares se existirem)
 const rows = [];
 const pushRow = (item, isMain=false) => {
     const x = numOrNull(item?.metrics?.net_debt_ebitda);
@@ -74,7 +80,6 @@ const pushRow = (item, isMain=false) => {
 pushRow(payload, true);
 (payload.peers || []).forEach(p => pushRow(p, false));
 
-// datasets por setor (cores por setor)
 const sectors = [...new Set(rows.map(d => d.sector))];
 const datasets = sectors.map(sec => ({
     label: sec,
@@ -113,7 +118,6 @@ const mainLabelPlugin = {
   }
 };
 
-// plugin para desenhar linhas guia + rótulos de linha + quadrantes
 const guidePlugin = {
     id: "financialGuide",
     afterDraw(chart, args, opts) {
@@ -135,14 +139,14 @@ const guidePlugin = {
         const text = labels[idx];
         ctx.globalAlpha = 0.5;
         ctx.fillStyle = COLOR_TEXT;
-        ctx.textAlign = "center";
+        ctx.textAlign = "left";
         ctx.textBaseline = "alphabetic";
-        ctx.translate(X + 15, bottom - 50);
+        ctx.translate(X - 6, bottom - 12);
         ctx.rotate(-Math.PI/2);
         ctx.fillText(`↑ ${text} ↑`, 0, 0);
         ctx.restore();
     });
-
+    
     // linhas horizontais
     [thr.y1, thr.y2].forEach((vy, idx) => {
         const Y = y.getPixelForValue(vy);
@@ -161,7 +165,8 @@ const guidePlugin = {
         ctx.fillStyle = COLOR_TEXT;
         ctx.textAlign = "left";
         ctx.textBaseline = "alphabetic";
-        ctx.fillText(`↓ ${text} ↓`, left + 6, Y - 6);
+        ctx.translate(left + 6, Y + 12);
+        ctx.fillText(`↓ ${text} ↓`, 0, 0);
         ctx.restore();
     });
     }
@@ -173,7 +178,7 @@ scatterChart = new Chart(ctx, {
     options: {
     maintainAspectRatio: false,
     plugins: {
-        legend: { display: true }
+        legend: { display: false }
     },
     scales: {
         x: {
@@ -205,118 +210,6 @@ if (warn.length) {
 }
 }
 
-// --- RENDER HEATMAP (Current vs Quick Ratio por setor) ---
-let heatmapChart;
-function renderLiquidityHeatmap(payload) {
-const ctx = document.getElementById("liquidityHeatmap");
-if (!ctx) return;
-
-if (heatmapChart) heatmapChart.destroy();
-
-// Agrega por setor (média simples; podes trocar para mediana)
-const rows = [];
-const all = [];
-const pushRow = (item) => {
-    all.push({
-    sector: item.sector || "Unknown",
-    current: numOrNull(item?.metrics?.current_ratio),
-    quick: numOrNull(item?.metrics?.quick_ratio)
-    });
-};
-pushRow(payload);
-(payload.peers || []).forEach(pushRow);
-
-const bySector = {};
-all.forEach(r => {
-    if (r.current === null && r.quick === null) return;
-    if (!bySector[r.sector]) bySector[r.sector] = {n:0, current:0, quick:0};
-    if (r.current !== null) { bySector[r.sector].current += r.current; }
-    if (r.quick   !== null) { bySector[r.sector].quick   += r.quick; }
-    bySector[r.sector].n += 1;
-});
-
-const sectors = Object.keys(bySector);
-sectors.forEach(sec => {
-    const n = bySector[sec].n || 1;
-    rows.push({ sector: sec, metric: "Current Ratio", value: bySector[sec].current / n });
-    rows.push({ sector: sec, metric: "Quick Ratio",   value: bySector[sec].quick   / n });
-});
-
-// mapear setores e métricas para coordenadas da matriz
-const sectorIndex = [...new Set(rows.map(r => r.sector))];
-const metricIndex = ["Current Ratio", "Quick Ratio"];
-
-const matrixData = rows.map(r => ({
-    x: metricIndex.indexOf(r.metric),
-    y: sectorIndex.indexOf(r.sector),
-    v: r.value
-}));
-
-// escala de cores simples (quanto maior, mais “intenso”)
-function valueToRGBA(v) {
-    if (v === null || !Number.isFinite(v)) return "rgba(200,200,200,0.3)";
-    // mapeia 0..3.5 para 0..1
-    const t = Math.max(0, Math.min(1, v / 3.5));
-    const g = Math.round(80 + 150 * t);
-    return `rgba(0, ${g}, 0, ${0.15 + 0.55 * t})`; // verde com alpha crescente
-}
-
-heatmapChart = new Chart(ctx, {
-    type: "matrix",
-    data: {
-    datasets: [{
-        label: "Liquidity by Sector",
-        data: matrixData,
-        width: ({chart}) => (chart.chartArea.width / metricIndex.length) * 0.9,
-        height: ({chart}) => (chart.chartArea.height / sectorIndex.length) * 0.9,
-        backgroundColor: (ctx) => valueToRGBA(ctx.raw.v),
-        borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.1)"
-    }]
-    },
-    options: {
-    maintainAspectRatio: false,
-    plugins: {
-        legend: { display: false },
-        tooltip: {
-        callbacks: {
-            title: (items) => {
-            const r = items[0].raw;
-            return `${sectorIndex[r.y]} — ${metricIndex[r.x]}`;
-            },
-            label: (item) => {
-            const v = item.raw.v;
-            return `Valor: ${v != null && isFinite(v) ? v.toFixed(2) + "x" : "N/A"}`;
-            }
-        }
-        }
-    },
-    scales: {
-        x: {
-        type: "linear",
-        position: "top",
-        ticks: {
-            callback: (v) => metricIndex[v] ?? ""
-        },
-        min: -0.5,
-        max: metricIndex.length - 0.5,
-        grid: { display: false }
-        },
-        y: {
-        type: "linear",
-        ticks: {
-            callback: (v) => sectorIndex[v] ?? ""
-        },
-        reverse: true,
-        min: -0.5,
-        max: sectorIndex.length - 0.5,
-        grid: { display: false }
-        }
-    }
-    }
-});
-}
-
 // --- Bootstrap: obter símbolo da URL e renderizar ---
 const pathParts = window.location.pathname.split("/");
 const symbol = pathParts[2];
@@ -344,5 +237,99 @@ fetchFinancialHealth(symbol)
 } else {
 console.error("Nenhum símbolo encontrado na URL para Financial Health");
 }
+
+////////////////////////////////////
+// FINANCIAL HEALTH CHART (Heatmap)
+////////////////////////////////////
+// --- RENDER BAR CHART (apenas os dois ratios no eixo X) ---
+let liquidityChart;
+function renderLiquidityHeatmap(payload) { // mantém o nome p/ drop-in
+  const ctx = document.getElementById("liquidityHeatmap");
+  if (!ctx) return;
+
+  if (liquidityChart) liquidityChart.destroy();
+
+  // valores da "principal"
+  const currentMain = numOrNull(payload?.metrics?.current_ratio);
+  const quickMain   = numOrNull(payload?.metrics?.quick_ratio);
+
+  // média simples dos peers (opcional)
+  let currentPeers = NaN, quickPeers = NaN;
+  if (Array.isArray(payload?.peers) && payload.peers.length) {
+    let cSum = 0, cN = 0, qSum = 0, qN = 0;
+    for (const p of payload.peers) {
+      const c = numOrNull(p?.metrics?.current_ratio);
+      const q = numOrNull(p?.metrics?.quick_ratio);
+      if (c != null && isFinite(c)) { cSum += c; cN++; }
+      if (q != null && isFinite(q)) { qSum += q; qN++; }
+    }
+    currentPeers = cN ? cSum / cN : NaN;
+    quickPeers   = qN ? qSum / qN : NaN;
+  }
+
+  const labels = ["Current Ratio", "Quick Ratio"];
+
+  const datasets = [
+    {
+      label: payload?.ticker || payload?.name || "Empresa",
+      data: [currentMain, quickMain],
+      borderWidth: 1,
+      backgroundColor: "rgba(25, 118, 210, 0.45)",
+      borderColor: "rgba(25, 118, 210, 0.9)",
+    }
+  ];
+
+  // se houver peers válidos, acrescenta dataset de comparação
+  if (Number.isFinite(currentPeers) || Number.isFinite(quickPeers)) {
+    datasets.push({
+      label: "Peers (média)",
+      data: [currentPeers, quickPeers],
+      borderWidth: 1,
+      backgroundColor: "rgba(46, 125, 50, 0.45)",
+      borderColor: "rgba(46, 125, 50, 0.9)",
+    });
+  }
+
+  liquidityChart = new Chart(ctx, {
+    type: "bar",
+    data: { labels, datasets },
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+      plugins: {
+        legend: { display: false, position: "top" },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.y;
+              return `${ctx.dataset.label}: ${Number.isFinite(v) ? v.toFixed(2) + "x" : "N/A"}`;
+            },
+          },
+        },
+        datalabels: {
+        anchor: 'end',     // “agarra” ao topo da barra
+        align: 'end',      // alinha no topo
+        offset: 4,         // pequeno afastamento da barra
+        clamp: true,       // impede que saia do chart area
+        font: { weight: '600' },
+        textAlign: 'center' // centrado horizontalmente na barra
+        // color: '#111'    // opcional (senão usa a default)
+        },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: "Ratios" },
+          ticks: { autoSkip: false },
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "x" },
+          grid: { drawBorder: false },
+        },
+      },
+    },
+  });
+}
+
 
 });
