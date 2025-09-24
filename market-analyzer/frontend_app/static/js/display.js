@@ -84,6 +84,18 @@ const dateCompare = (a, b) => {
   return pa - pb;
 };
 
+/* ─────── HELPER PARA LER A AVALIAÇÃO ─────── */
+function getEvalObj(data, section, key) {
+  const base = data?.evaluations?.[section] ?? {};
+  return {
+    evaluation: base?.[`${key}_evaluation`] ?? null,
+    bucket: base?.[`${key}_bucket`] ?? null,
+    color: base?.[`${key}_color`] ?? null,
+    messages: base?.[`${key}_messages`] ?? null,
+    value: base?.[key] ?? null,
+  };
+}
+
 function renderStockTable(containerId, headers, tableData) {
   new Grid({
     columns: headers,
@@ -99,90 +111,7 @@ function renderStockTable(containerId, headers, tableData) {
 }
 
 /* ─────────────── FUNÇÕES DE CLASSIFICAÇÃO DE METRICAS + CHARTS─────────────── */
-function classifyMetricForGauge(metric, value) {
-  if (value === "N/A")
-    return { classification: "N/A", color: "#9E9E9E", intervals: [0, 100] };
 
-  switch (metric) {
-    case "QuickRatio":
-      return {
-        classification:
-          value >= 2
-            ? "Excelente"
-            : value >= 1.5
-            ? "Bom"
-            : value >= 1.0
-            ? "Razoável"
-            : value >= 0.5
-            ? "Fraco"
-            : "Muito Fraco",
-        color:
-          value >= 2
-            ? "#068008"
-            : value >= 1.5
-            ? "#089981"
-            : value >= 1.0
-            ? "#f2b636"
-            : value >= 0.5
-            ? "#f24536"
-            : "#ed0000",
-        intervals: [0.5, 1, 1.5, 2],
-      };
-
-    case "CurrentRatio":
-      return {
-        classification:
-          value >= 2.5
-            ? "Excelente"
-            : value >= 1.5
-            ? "Bom"
-            : value >= 1.0
-            ? "Razoável"
-            : value >= 0.5
-            ? "Fraco"
-            : "Muito Fraco",
-        color:
-          value >= 2.5
-            ? "#068008"
-            : value >= 1.5
-            ? "#089981"
-            : value >= 1.0
-            ? "#f2b636"
-            : value >= 0.5
-            ? "#f24536"
-            : "#ed0000",
-        intervals: [0.5, 1, 1.5, 2.5],
-      };
-
-    case "CashRatio":
-      return {
-        classification:
-          value >= 1.5
-            ? "Excelente"
-            : value >= 1.0
-            ? "Bom"
-            : value >= 0.5
-            ? "Razoável"
-            : value >= 0.1
-            ? "Fraco"
-            : "Muito Fraco",
-        color:
-          value >= 1.5
-            ? "#068008"
-            : value >= 1.0
-            ? "#089981"
-            : value >= 0.5
-            ? "#f2b636"
-            : value >= 0.1
-            ? "#f24536"
-            : "#ed0000",
-        intervals: [0.1, 0.5, 1, 1.5],
-      };
-
-    default:
-      return { classification: "N/A", color: "#9E9E9E", intervals: [0, 100] };
-  }
-}
 
 /* ─────────────── FUNÇÕES DE MANIPULAÇÃO DE DADOS ─────────────── */
 export function displayCrossoverResults(data) {
@@ -351,7 +280,7 @@ const METRIC_STYLE = {
   CurrentRatio: "multiple",
   QuickRatio: "multiple",
   OperationalMargin: "percent",
-  FcfMargin: "currency",
+  FcfMargin: "percent",
   ROE: "percent",
   ROA: "percent",
   WACC: "percent",
@@ -521,33 +450,39 @@ export function displayFundamentalResultsClassification(data) {
   ];
 
   for (const [section, key] of fields) {
-    const evaluation =
-      data?.evaluations?.[section]?.[`${key}_evaluation`] ?? null;
+    const { evaluation, bucket, messages } = getEvalObj(data, section, key);
 
-    const bucket =
-      data?.evaluations?.[section]?.[`${key}_bucket`] ??
-      (evaluation ? textToBucket(evaluation) : "nodata");
+    const b = bucket || (evaluation ? textToBucket(evaluation) : "nodata");
 
-    // escreve texto + aplica cor no chip principal
+    // chip principal
     const el = document.getElementById(`${key}Class`);
     if (el) {
       el.textContent = evaluation ?? "N/A";
-      applyBadgeClass(el, bucket);
+      applyBadgeClass(el, b);
+      if (messages?.tooltip) el.title = messages.tooltip; // hover
     }
 
-    // escreve texto + aplica cor na versão “overview” (se existir)
+    // chip “overview” (se existir)
     const elOverview = document.getElementById(`${key}ClassOverview`);
     if (elOverview) {
       elOverview.textContent = evaluation ?? "N/A";
-      applyBadgeClass(elOverview, bucket);
+      applyBadgeClass(elOverview, b);
+      if (messages?.tooltip) elOverview.title = messages.tooltip;
     }
+
+    // textos (se existir um alvo no HTML)
+    const shortEl = document.getElementById(`${key}ShortText`);
+    if (shortEl && messages?.short) shortEl.textContent = messages.short;
+
+    const detailEl = document.getElementById(`${key}DetailText`);
+    if (detailEl && messages?.detail) detailEl.textContent = messages.detail;
   }
 
   // Pintar a MODAL de fundamentals com uma âncora (ex.: trailingPE)
   const anchorEval =
-    data?.evaluations?.valuation?.trailingPE_evaluation ?? null;
+    data?.evaluations?.kpis?.trailingPE_evaluation ?? null;
   const anchorBucket =
-    data?.evaluations?.valuation?.trailingPE_bucket ??
+    data?.evaluations?.kpis?.trailingPE_bucket ??
     (anchorEval ? textToBucket(anchorEval) : "neutral");
 
   const fundamentalsModal = document.querySelector("#fundamentalsModal");

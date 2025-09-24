@@ -83,119 +83,227 @@ class RiskManagerFundamental():
         self.stoploss = None
         self.takeprofit = None
 
-    @staticmethod
-    def evaluation_bucket(label: str) -> str:
-        """
-        Classify fundamental metrics evaluation in buckets:
-        * verygood
-        * good
-        * neutral
-        * bad
-        * nodata
-        """
-        if not label:
-            return "nodata"
+    COLORS = {
+        "verygood": "#1cf467",
+        "good":     "#0f8a3b",
+        "neutral":  "#6b7280",
+        "bad":      "#9b3232",
+        "verybad":  "#ff1414",
+        "nodata":   "#9E9E9E",
+    }
 
-        s = str(label).strip().lower()
+    METRIC_RULES = {
+        "NetDebtEbitda": [
+            (0,          "Very Strong", "verygood"),
+            (1,          "Strong",      "good"),
+            (3,          "Neutral",     "neutral"),
+            (math.inf,   "Weak",        "bad"),
+        ],
+        "InterestCoverageEbit": [
+            (3,          "Weak",        "bad"),
+            (8,          "Neutral",     "neutral"),
+            (math.inf,   "Strong",      "good"),
+        ],
+        "CurrentRatio": [
+            (1.0,        "Not Good (In Debt)",                "bad"),
+            (1.5,        "Tight Margin to Debt",              "neutral"),
+            (2.0,        "Good Debt Coverage",                "good"),
+            (math.inf,   "Perfect Coverage (Double +)",       "verygood"),
+        ],
+        "QuickRatio": [
+            (0.8,        "Not Good (In Debt)",                "bad"),
+            (1.0,        "Tight Margin to Debt",              "neutral"),
+            (1.5,        "Good Debt Coverage",                "good"),
+            (math.inf,   "Perfect Coverage (Double +)",       "verygood"),
+        ],
+    }
 
-        verybad = [
-            "very high overvalued",
-            "no coverage",
-            "not good",
-            "Not Good - Short Margins or High Costs",
-            "Not Good - High Operational Costs or Difficulties to Get Revenue",
-            "Not Good - High Operational Costs or Operational Problems",
-            "Not Good - Low Efficiency on Equity Use",
-            "Not Good - No Growth or Negative Trend",
-            "Weak",
-            "Destroys Value",
-            "Cut on Dividends",
-            "Low",
-        ]
-        if any(k.lower() in s for k in verybad):
-            return "verybad"
+    METRIC_MESSAGES_PT = {
+        "NetDebtEbitda": {
+            "verygood": lambda v: {
+                "short":  f"Net Debt/EBITDA {v:.2f} — posição de caixa líquido.",
+                "detail": (
+                        "**Significado:** "
+                        "- A empresa apresenta caixa líquido (tem mais dinheiro em caixa do que dívida)."
+                        "**Interpretação:** "
+                        "- A a empresa encontra-se em posição de caixa líquido, conseguindo teoricamente liquidar toda a dívida de imediato. Situação de grande solidez financeira."
+                        "- Não depende de financiamento externo para sustentar operações e pode até reforçar dividendos ou investir sem necessidade de se endividar."
+                        "**Risco:**"
+                        "- Muito baixo — o balanço funciona como um verdadeiro “colchão” contra crises."
+                ),
+                "tooltip": "≤0: caixa líquido (muito sólido)."
+            },
+            "good": lambda v: {
+                "short":  f"Net Debt/EBITDA {v:.2f} — ≤1: A dívida líquida é inferior a um ano de geração de EBITDA.",
+                "detail": (
+                        "**Significado:** "
+                        "- A dívida líquida é inferior a um ano de geração de EBITDA."
+                        "**Interpretação:** "
+                        "- A empresa tem baixa alavancagem e consegue reduzir dívida rapidamente sem comprometer operações."
+                        "- Precisaria de apenas um ano de geração operacional para liquidar a sua dívida líquida. Perfil de risco bastante saudável."
+                        "**Risco:** "
+                        "- Conservador — ainda robusta perante cenários adversos."
+                    ),
+                "tooltip": "≤1: baixo endividamento."
+            },
+            "neutral": lambda v: {
+                "short":  f"Net Debt/EBITDA {v:.2f} — alavancagem moderada.",
+                "detail": (
+                        "**Significado: ** "
+                        "- A dívida líquida corresponde a 1 a 3 anos de EBITDA."
+                        "**Interpretação:** "
+                        "- É um nível comum em setores mais intensivos em capital; aceitável, mas requer monitorização."
+                        "- A empresa apresenta alavancagem moderada. É aceitável, mas aumenta a sensibilidade a ciclos económicos ou choques de mercado."
+                        "**Risco:** "
+                        "- Moderado — uma quebra nos lucros ou subida dos juros pode exercer pressão."
+                    ),
+                "tooltip": "1–3: alavancagem moderada."
+            },
+            "bad": lambda v: {
+                "short":  f"Net Debt/EBITDA {v:.2f} — >3: elevated leverage; higher refinancing risk.",
+                "detail": (
+                        "**Significado: **"
+                        "- A dívida líquida supera 3 anos de geração de EBITDA."
+                        "**Interpretação: **"
+                        "- A empresa está altamente alavancada, mais dependente de condições de crédito favoráveis e de resultados estáveis."
+                        "- Encontra-se bastante endividada e dependente da estabilidade operacional e das condições de financiamento."
+                        "- Pequenas quedas no EBITDA podem comprometer a capacidade de honrar compromissos."
+                        "**Risco: **"
+                        "- Elevado — maior vulnerabilidade a recessões, subida de juros ou quebras de EBITDA."
+                ),
+                "tooltip": ">3: endividamento elevado."
+            },
+            "nodata": lambda v: {
+                "short": "Sem dados para Net Debt/EBITDA.",
+                "detail": "Informação insuficiente para avaliar o nível de alavancagem.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "InterestCoverageEbit": {
+            "good": lambda v: {
+                "short":  f"Interest coverage {v:.2f}× — strong ability to service interest.",
+                "detail": "EBIT comfortably covers interest expense; headroom to absorb shocks.",
+                "tooltip": "≤3× weak, 3–8× adequate, >8× strong."
+            },
+            "neutral": lambda v: {
+                "short":  f"Interest coverage {v:.2f}× — adequate but should be monitored.",
+                "detail": "Coverage in a moderate zone; sensitive to earnings pressure or rate hikes.",
+                "tooltip": "≤3× weak, 3–8× adequate, >8× strong."
+            },
+            "bad": lambda v: {
+                "short":  f"Interest coverage {v:.2f}× — weak; vulnerable to shocks.",
+                "detail": "Coverage ≤3× suggests potential strain meeting interest if earnings soften.",
+                "tooltip": "≤3× weak, 3–8× adequate, >8× strong."
+            },
+            "nodata": lambda v: {
+                "short": "No data for interest coverage.",
+                "detail": "Insufficient information to assess EBIT/interest.",
+                "tooltip": "No data."
+            },
+        },
+        "CurrentRatio": {
+            "verygood": lambda v: {
+                "short":  f"Current ratio {v:.2f} — ≥2.0: ample short-term liquidity.",
+                "detail": "Ample coverage of short-term liabilities; possibly conservative working capital.",
+                "tooltip": "≤1.0 weak, 1.0–1.5 tight, 1.5–2.0 healthy, ≥2.0 ample."
+            },
+            "good": lambda v: {
+                "short":  f"Current ratio {v:.2f} — ~1.5–2.0: healthy.",
+                "detail": "Healthy coverage of short-term obligations with comfortable buffer.",
+                "tooltip": "≤1.0 weak, 1.0–1.5 tight, 1.5–2.0 healthy, ≥2.0 ample."
+            },
+            "neutral": lambda v: {
+                "short":  f"Current ratio {v:.2f} — ~1.0–1.5: tight but acceptable.",
+                "detail": "Coverage is tight; watch cash conversion and working capital discipline.",
+                "tooltip": "≤1.0 weak, 1.0–1.5 tight, 1.5–2.0 healthy, ≥2.0 ample."
+            },
+            "bad": lambda v: {
+                "short":  f"Current ratio {v:.2f} — ≤1.0: potential liquidity pressure.",
+                "detail": "Coverage at/under 1.0 may indicate difficulty meeting near-term obligations.",
+                "tooltip": "≤1.0 weak, 1.0–1.5 tight, 1.5–2.0 healthy, ≥2.0 ample."
+            },
+            "nodata": lambda v: {
+                "short": "No data for current ratio.",
+                "detail": "Insufficient information to assess short-term liquidity.",
+                "tooltip": "No data."
+            },
+        },
+        "QuickRatio": {
+            "verygood": lambda v: {
+                "short":  f"Quick ratio {v:.2f} — ≥1.5: strong immediate liquidity.",
+                "detail": "Excluding inventories, liquid assets provide strong coverage of near-term liabilities.",
+                "tooltip": "<0.8 weak, 0.8–1.0 tight, 1.0–1.5 sound, ≥1.5 strong."
+            },
+            "good": lambda v: {
+                "short":  f"Quick ratio {v:.2f} — 1.0–1.5: sound liquidity.",
+                "detail": "Manageable near-term obligations with adequate liquid assets.",
+                "tooltip": "<0.8 weak, 0.8–1.0 tight, 1.0–1.5 sound, ≥1.5 strong."
+            },
+            "neutral": lambda v: {
+                "short":  f"Quick ratio {v:.2f} — 0.8–1.0: tight coverage.",
+                "detail": "Coverage is tight; dependent on timely cash collection.",
+                "tooltip": "<0.8 weak, 0.8–1.0 tight, 1.0–1.5 sound, ≥1.5 strong."
+            },
+            "bad": lambda v: {
+                "short":  f"Quick ratio {v:.2f} — <0.8: weak immediate liquidity.",
+                "detail": "Potential cash strain absent external funding or faster working capital turnover.",
+                "tooltip": "<0.8 weak, 0.8–1.0 tight, 1.0–1.5 sound, ≥1.5 strong."
+            },
+            "nodata": lambda v: {
+                "short": "No data for quick ratio.",
+                "detail": "Insufficient information to assess immediate liquidity.",
+                "tooltip": "No data."
+            },
+        },
+    }
 
-        bad = [
-            "overvalued",
-            "high overvalued",
-            "bad coverage (cut)",
-            "tight margin to debt",
-            "Not Good - Declining or No Growth",
-            "Expensive"
-        ]
-        if any(k.lower() in s for k in bad):
-            return "bad"
-
-        verygood = [
-            "very low undervalued",
-            "good",
-            "very good coverage (greedy)",
-            "Good - Efficient Costs Management",
-            "Good - Efficient Costs Management",
-            "Good - Highly Profitable and Eficient Profit Generate",
-            "Good - Highly Efficient in Generating Profits",
-            "Good - Consistent Growth in Equity Returns",
-            "Cheap",
-            "Very Strong",
-            "Generate Value",
-            "Good Growth",
-            "Excellent"
-        ]
-        if any(k.lower() in s for k in verygood):
-            return "verygood"
-
-        good = [
-            "low undervalued",
-            "undervalued",
-            "good coverage",
-            "healthy",
-            "Healthy - Healthy Margins Good Management",
-            "Healthy - Healthy Operational Management",
-            "Healthy - Healthy and Solid Management",
-            "Good - Growing Profitability Over Time",
-            "Healthy - Efficient and Solid Management",
-            "Fair",
-            "Strong"
-        ]
-        if any(k.lower() in s for k in good):
-            return "good"
-
-        neutral = [
-            "no data",
-            "Indefinido",
-            "neutral",
-            "neutral valued",
-            "Moderated - Potential but Need Improvements",
-            "Cover Capital Expenses",
-            "Moderated",
-            ]
-        if any(k.lower() in s for k in neutral):
-            return "neutral"
-        return "neutral"
-
-    @staticmethod
-    def bucket_color(bucket: str) -> str:
-        """
-        Atributes a color to each classification bucket
-        """
-        return {
-            "verygood": "#1cf467",
-            "good": "#0f8a3b",
-            "neutral": "#6b7280",
-            "bad": "#9b3232",
-            "verybad": "#ff1414",
-            "nodata": "#9E9E9E",
-        }.get(bucket, "#6b7280")
-
+    # ---------- Funções utilitárias ----------
     @staticmethod
     def _is_number(x):
         return isinstance(x, (int, float)) and not math.isnan(x)
 
+    def classify_value(self, key: str, value):
+        """Aplica as regras do registry para obter (evaluation, bucket)."""
+        if value is None or not self._is_number(value):
+            return "No Data", "nodata"
+        rules = self.METRIC_RULES.get(key)
+        if not rules:
+            # fallback se não houver regra registada
+            return "Indefinido", "neutral"
+        for ub, label, bucket in rules:
+            if value <= ub:
+                return label, bucket
+        return "Indefinido", "neutral"
+
+    def messages_for(self, key: str, value, bucket: str, lang: str = "en"):
+        """Gera mensagens a partir dos templates do registry."""
+        reg = self.METRIC_MESSAGES_PT if lang == "en" else self.METRIC_MESSAGES_PT
+        maker = (reg.get(key, {}).get(bucket) or reg.get(key, {}).get("nodata"))
+        return maker(value) if callable(maker) else {"short": "", "detail": "", "tooltip": ""}
+
+    # ---------- Emissão compatível com o front ----------
     def _set_eval(self, out: dict, key: str, text: str):
         out[f"{key}_evaluation"] = text
-        bucket = self.evaluation_bucket(text)
+        # usa o bucket vindo das regras em vez de inferir por substring
+        # (mantemos compatibilidade: se vier um texto diferente, cai em neutral)
+        bucket = out.get(f"{key}_bucket") or {
+            "Very Strong": "verygood", "Strong": "good", "Neutral": "neutral", "Weak": "bad", "No Data": "nodata"
+        }.get(text, "neutral")
         out[f"{key}_bucket"] = bucket
-        out[f"{key}_color"] = self.bucket_color(bucket)
+        out[f"{key}_color"] = self.COLORS.get(bucket, "#6b7280")
+
+    def _set_message(self, out: dict, key: str, which: str, text: str):
+        k = f"{key}_messages"
+        if k not in out or not isinstance(out[k], dict):
+            out[k] = {}
+        out[k][which] = text
+
+    def _emit_full(self, out: dict, key: str, value, evaluation: str, bucket: str, msgs: dict):
+        out[key] = value if value is not None else None
+        out[f"{key}_bucket"] = bucket                # define o bucket antes
+        self._set_eval(out, key, evaluation)         # mantém chaves/cores existentes
+        for k, v in (msgs or {}).items():
+            self._set_message(out, key, k, v)
 
     def evaluate_metrics(self, metrics):
         """
@@ -302,75 +410,29 @@ class RiskManagerFundamental():
         self._set_eval(evaluated_metrics, "EnterpriseFCFYield", text_enterprise_fcf_yield)
 
         # ----- Finantial Health ----- #
-        # ----- Net Debt Ebitda
-        net_debt_ebitda = fm.safe_round(kpis.get("NetDebtEbitda"))
-        evaluated_metrics["NetDebtEbitda"] = net_debt_ebitda if net_debt_ebitda is not None else None
+        # --- Net Debt / EBITDA ---
+        nd = fm.safe_round(kpis.get("NetDebtEbitda"))
+        eval_nd, bucket_nd = self.classify_value("NetDebtEbitda", nd)
+        msgs_nd = self.messages_for("NetDebtEbitda", nd, bucket_nd, lang="en")
+        self._emit_full(evaluated_metrics, "NetDebtEbitda", nd, eval_nd, bucket_nd, msgs_nd)
 
-        if net_debt_ebitda is None:
-            text_net_debt_ebitda = "No Data"
-        else:
-            if net_debt_ebitda <= 0:
-                text_net_debt_ebitda = "Very Strong"
-            elif net_debt_ebitda <= 1:
-                text_net_debt_ebitda = "Strong"
-            elif net_debt_ebitda <= 3:
-                text_net_debt_ebitda = "Neutral"
-            else:
-                text_net_debt_ebitda = "Weak"
+        # --- Interest Coverage (EBIT) ---
+        ic = fm.safe_round(kpis.get("InterestCoverageEbit"))
+        eval_ic, bucket_ic = self.classify_value("InterestCoverageEbit", ic)
+        msgs_ic = self.messages_for("InterestCoverageEbit", ic, bucket_ic, lang="en")
+        self._emit_full(evaluated_metrics, "InterestCoverageEbit", ic, eval_ic, bucket_ic, msgs_ic)
 
-        self._set_eval(evaluated_metrics, "NetDebtEbitda", text_net_debt_ebitda)
+        # --- Current Ratio ---
+        cr = fm.safe_round(kpis.get("CurrentRatio"))
+        eval_cr, bucket_cr = self.classify_value("CurrentRatio", cr)
+        msgs_cr = self.messages_for("CurrentRatio", cr, bucket_cr, lang="en")
+        self._emit_full(evaluated_metrics, "CurrentRatio", cr, eval_cr, bucket_cr, msgs_cr)
 
-        # ----- Interest Coverage EBIT
-        interest_coverage_ebit = fm.safe_round(kpis.get("InterestCoverageEbit"))
-        evaluated_metrics["InterestCoverageEbit"] = interest_coverage_ebit if interest_coverage_ebit is not None else None
-
-        if interest_coverage_ebit is None:
-            text_interest_coverage_ebit = "No Data"
-        else:
-            if interest_coverage_ebit <= 3:
-                text_interest_coverage_ebit = "Weak"
-            elif interest_coverage_ebit <= 8:
-                text_interest_coverage_ebit = "Neutral"
-            else:
-                text_interest_coverage_ebit = "Strong"
-
-        self._set_eval(evaluated_metrics, "InterestCoverageEbit", text_interest_coverage_ebit)
-
-        # ----- Current Racio
-        current_ratio = fm.safe_round(kpis.get("CurrentRatio"))
-        evaluated_metrics["CurrentRatio"] = current_ratio if current_ratio is not None else None
-
-        if current_ratio is None:
-            text_CurrentRatio = "No Data"
-        else:
-            if current_ratio <= 1:
-                text_CurrentRatio = "Not Good (In Debt)"
-            elif current_ratio <= 1.5:
-                text_CurrentRatio = "Tight Margin to Debt"
-            elif current_ratio <= 2:
-                text_CurrentRatio = "Good Debt Coverage"
-            else:
-                text_CurrentRatio = "Perfect Coverage (Double +)"
-
-        self._set_eval(evaluated_metrics, "CurrentRatio", text_CurrentRatio)
-
-        # ----- Quick Racio
-        quick_ratio = fm.safe_round(kpis.get("QuickRatio"))
-        evaluated_metrics["QuickRatio"] = quick_ratio if quick_ratio is not None else None
-
-        if quick_ratio is None:
-            text_QuickRatio = "No Data"
-        else:
-            if quick_ratio <= 0.8:
-                text_QuickRatio = "Not Good (In Debt)"
-            elif quick_ratio <= 1:
-                text_QuickRatio = "Tight Margin to Debt"
-            elif quick_ratio <= 1.5:
-                text_QuickRatio = "Good Debt Coverage"
-            else:
-                text_QuickRatio = "Perfect Coverage (Double +)"
-
-        self._set_eval(evaluated_metrics, "QuickRatio", text_QuickRatio)
+        # --- Quick Ratio ---
+        qr = fm.safe_round(kpis.get("QuickRatio"))
+        eval_qr, bucket_qr = self.classify_value("QuickRatio", qr)
+        msgs_qr = self.messages_for("QuickRatio", qr, bucket_qr, lang="en")
+        self._emit_full(evaluated_metrics, "QuickRatio", qr, eval_qr, bucket_qr, msgs_qr)
 
         # ----- Profitability ----- #
         # ----- Operational Margin
@@ -423,7 +485,7 @@ class RiskManagerFundamental():
 
         # ----- ROA
         roa = fm.safe_round(kpis.get("ROA"))
-        evaluated_metrics["ROA"] = roe if roe is not None else None
+        evaluated_metrics["ROA"] = roa if roa is not None else None
 
         if roa is None:
             text_ROA = "No Data"

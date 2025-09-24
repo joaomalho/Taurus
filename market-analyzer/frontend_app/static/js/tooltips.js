@@ -52,6 +52,10 @@ export const DEFAULT_TIPS = {
   NetDebtEbitda: `
 **Net Debt/EBITDA** mede alavancagem.
   
+- **O que mede?** Relação entre a dívida líquida (dívida total menos caixa) e a geração de EBITDA (lucros antes de juros, impostos, depreciação e amortização).
+- **Porquê importante?** Mostra quantos anos de EBITDA seriam necessários, em teoria, para liquidar a dívida líquida.
+- **Usado por quem?** Muito usado por analistas de crédito, bancos e agências de rating para medir alavancagem.
+
 - Net Debt = Total Debt − (Caixa + ST investments)
 - Usar **EBITDA TTM**; senão, FY
 - Regras: <1x forte | 1–3x ok | >3x fraco
