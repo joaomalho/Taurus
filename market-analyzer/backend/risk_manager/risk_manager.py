@@ -116,143 +116,282 @@ class RiskManagerFundamental():
             (1.5,        "Good Debt Coverage",                "good"),
             (math.inf,   "Perfect Coverage (Double +)",       "verygood"),
         ],
+        "EnterpriseFCFYield": [
+            (2.5,        "Expensive",                         "bad"),
+            (4.0,        "Fair",                              "neutral"),
+            (math.inf,   "Cheap",                             "verygood"),
+        ],
     }
 
     METRIC_MESSAGES_PT = {
         "NetDebtEbitda": {
             "verygood": lambda v: {
-                "short":  f"Net Debt/EBITDA {v:.2f} — posição de caixa líquido.",
+                "short":  f"**Net Debt / EBITDA =** {v:.2f}",
                 "detail": (
-                        "**Significado:** "
-                        "- A empresa apresenta caixa líquido (tem mais dinheiro em caixa do que dívida)."
-                        "**Interpretação:** "
-                        "- A a empresa encontra-se em posição de caixa líquido, conseguindo teoricamente liquidar toda a dívida de imediato. Situação de grande solidez financeira."
-                        "- Não depende de financiamento externo para sustentar operações e pode até reforçar dividendos ou investir sem necessidade de se endividar."
-                        "**Risco:**"
+                        "**Significado:**\n"
+                        "- A empresa apresenta caixa líquido (tem mais dinheiro em caixa do que dívida).\n\n"
+                        "**Interpretação:**\n"
+                        "- A a empresa encontra-se em posição de caixa líquido, conseguindo teoricamente liquidar toda a dívida de imediato. Situação de grande solidez financeira.\n"
+                        "- Não depende de financiamento externo para sustentar operações e pode até reforçar dividendos ou investir sem necessidade de se endividar.\n\n"
+                        "**Risco:**\n"
                         "- Muito baixo — o balanço funciona como um verdadeiro “colchão” contra crises."
                 ),
                 "tooltip": "≤0: caixa líquido (muito sólido)."
             },
             "good": lambda v: {
-                "short":  f"Net Debt/EBITDA {v:.2f} — ≤1: A dívida líquida é inferior a um ano de geração de EBITDA.",
+                "short":  f"**Net Debt / EBITDA =** {v:.2f}",
                 "detail": (
-                        "**Significado:** "
-                        "- A dívida líquida é inferior a um ano de geração de EBITDA."
-                        "**Interpretação:** "
-                        "- A empresa tem baixa alavancagem e consegue reduzir dívida rapidamente sem comprometer operações."
-                        "- Precisaria de apenas um ano de geração operacional para liquidar a sua dívida líquida. Perfil de risco bastante saudável."
-                        "**Risco:** "
+                        "**Significado:**\n"
+                        "- A dívida líquida é inferior a um ano de geração de EBITDA.\n\n"
+                        "**Interpretação:**\n"
+                        "- A empresa tem baixa alavancagem e consegue reduzir dívida rapidamente sem comprometer operações.\n"
+                        "- Precisaria de apenas um ano de geração operacional para liquidar a sua dívida líquida. Perfil de risco bastante saudável.\n\n"
+                        "**Risco:**\n"
                         "- Conservador — ainda robusta perante cenários adversos."
                     ),
                 "tooltip": "≤1: baixo endividamento."
             },
             "neutral": lambda v: {
-                "short":  f"Net Debt/EBITDA {v:.2f} — alavancagem moderada.",
+                "short":  f"**Net Debt / EBITDA =** {v:.2f}",
                 "detail": (
-                        "**Significado: ** "
-                        "- A dívida líquida corresponde a 1 a 3 anos de EBITDA."
-                        "**Interpretação:** "
-                        "- É um nível comum em setores mais intensivos em capital; aceitável, mas requer monitorização."
-                        "- A empresa apresenta alavancagem moderada. É aceitável, mas aumenta a sensibilidade a ciclos económicos ou choques de mercado."
-                        "**Risco:** "
+                        "**Significado:**\n"
+                        "- A dívida líquida corresponde a 1 a 3 anos de EBITDA.\n\n"
+                        "**Interpretação:**\n"
+                        "- É um nível comum em setores mais intensivos em capital; aceitável, mas requer monitorização.\n"
+                        "- A empresa apresenta alavancagem moderada. É aceitável, mas aumenta a sensibilidade a ciclos económicos ou choques de mercado.\n\n"
+                        "**Risco:**\n"
                         "- Moderado — uma quebra nos lucros ou subida dos juros pode exercer pressão."
                     ),
                 "tooltip": "1–3: alavancagem moderada."
             },
             "bad": lambda v: {
-                "short":  f"Net Debt/EBITDA {v:.2f} — >3: elevated leverage; higher refinancing risk.",
+                "short":  f"**Net Debt / EBITDA =** {v:.2f}",
                 "detail": (
-                        "**Significado: **"
-                        "- A dívida líquida supera 3 anos de geração de EBITDA."
-                        "**Interpretação: **"
-                        "- A empresa está altamente alavancada, mais dependente de condições de crédito favoráveis e de resultados estáveis."
-                        "- Encontra-se bastante endividada e dependente da estabilidade operacional e das condições de financiamento."
-                        "- Pequenas quedas no EBITDA podem comprometer a capacidade de honrar compromissos."
-                        "**Risco: **"
+                        "**Significado:**\n"
+                        "- A dívida líquida supera 3 anos de geração de EBITDA.\n\n"
+                        "**Interpretação: **\n"
+                        "- A empresa está altamente alavancada, mais dependente de condições de crédito favoráveis e de resultados estáveis.\n"
+                        "- Encontra-se bastante endividada e dependente da estabilidade operacional e das condições de financiamento.\n"
+                        "- Pequenas quedas no EBITDA podem comprometer a capacidade de honrar compromissos.\n\n"
+                        "**Risco: **\n"
                         "- Elevado — maior vulnerabilidade a recessões, subida de juros ou quebras de EBITDA."
                 ),
                 "tooltip": ">3: endividamento elevado."
             },
             "nodata": lambda v: {
-                "short": "Sem dados para Net Debt/EBITDA.",
+                "short": "**Sem dados para Net Debt / EBITDA.**",
                 "detail": "Informação insuficiente para avaliar o nível de alavancagem.",
                 "tooltip": "Sem dados."
             },
         },
         "InterestCoverageEbit": {
             "good": lambda v: {
-                "short":  f"Interest coverage {v:.2f}× — strong ability to service interest.",
-                "detail": "EBIT comfortably covers interest expense; headroom to absorb shocks.",
-                "tooltip": "≤3× weak, 3–8× adequate, >8× strong."
+                "short":  f"**Interest Coverage (EBIT) =** {v:.2f}×",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Quantas vezes o EBIT cobre os encargos de juros.\n\n"
+                    "**Interpretação:**\n"
+                    "- Cobertura elevada dos juros, com margem para absorver quedas de resultados ou subidas de taxas.\n"
+                    "- Menor dependência de refinanciamentos em condições adversas.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo — elevada capacidade de serviço da dívida."
+                ),
+                "tooltip": ">8×: cobertura forte (saudável). 3–8×: adequada. ≤3×: fraca."
             },
             "neutral": lambda v: {
-                "short":  f"Interest coverage {v:.2f}× — adequate but should be monitored.",
-                "detail": "Coverage in a moderate zone; sensitive to earnings pressure or rate hikes.",
-                "tooltip": "≤3× weak, 3–8× adequate, >8× strong."
+                "short":  f"**Interest Coverage (EBIT) =** {v:.2f}×",
+                "detail": (
+                    "**Significado:**\n"
+                    "- EBIT cobre os juros num intervalo moderado.\n\n"
+                    "**Interpretação:**\n"
+                    "- Situação aceitável, mas sensível a descidas do EBIT ou a subidas de juros.\n"
+                    "- Requer acompanhamento regular do custo da dívida e da rentabilidade.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — pode degradar em ciclos menos favoráveis."
+                ),
+                "tooltip": "3–8×: cobertura adequada (neutro). >8×: forte. ≤3×: fraca."
             },
             "bad": lambda v: {
-                "short":  f"Interest coverage {v:.2f}× — weak; vulnerable to shocks.",
-                "detail": "Coverage ≤3× suggests potential strain meeting interest if earnings soften.",
-                "tooltip": "≤3× weak, 3–8× adequate, >8× strong."
+                "short":  f"**Interest Coverage (EBIT) =** {v:.2f}×",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Cobertura dos juros baixa (EBIT cobre pouco os encargos financeiros).\n\n"
+                    "**Interpretação:**\n"
+                    "- Maior probabilidade de pressão de liquidez se o EBIT cair.\n"
+                    "- Pode necessitar de refinanciamento, alongamento de prazos ou redução de dívida.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — vulnerável a choques operacionais ou financeiros."
+                ),
+                "tooltip": "≤3×: cobertura fraca (risco elevado). 3–8×: adequada. >8×: forte."
             },
             "nodata": lambda v: {
-                "short": "No data for interest coverage.",
-                "detail": "Insufficient information to assess EBIT/interest.",
-                "tooltip": "No data."
+                "short": "**Sem dados para Interest Coverage (EBIT).**",
+                "detail": "Informação insuficiente para avaliar a cobertura de juros (EBIT/juros).",
+                "tooltip": "Sem dados."
             },
         },
         "CurrentRatio": {
             "verygood": lambda v: {
-                "short":  f"Current ratio {v:.2f} — ≥2.0: ample short-term liquidity.",
-                "detail": "Ample coverage of short-term liabilities; possibly conservative working capital.",
-                "tooltip": "≤1.0 weak, 1.0–1.5 tight, 1.5–2.0 healthy, ≥2.0 ample."
+                "short":  f"**Current Ratio =** {v:.2f}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Relação entre ativos correntes e passivos correntes (liquidez de curto prazo).\n\n"
+                    "**Interpretação:**\n"
+                    "- Cobertura folgada das obrigações de curto prazo; almofada de liquidez confortável.\n"
+                    "- Pode indicar gestão conservadora de fundo de maneio.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo — boa capacidade de cumprir compromissos imediatos."
+                ),
+                "tooltip": "≥2.0: muito bom (folgado). 1.5–2.0: saudável. 1.0–1.5: apertado. ≤1.0: fraco."
             },
             "good": lambda v: {
-                "short":  f"Current ratio {v:.2f} — ~1.5–2.0: healthy.",
-                "detail": "Healthy coverage of short-term obligations with comfortable buffer.",
-                "tooltip": "≤1.0 weak, 1.0–1.5 tight, 1.5–2.0 healthy, ≥2.0 ample."
+                "short":  f"**Current Ratio =** {v:.2f}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Ativos correntes cobrem confortavelmente os passivos correntes.\n\n"
+                    "**Interpretação:**\n"
+                    "- Liquidez saudável com alguma folga.\n"
+                    "- Boa disciplina de capital circulante.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado-baixo — perfil equilibrado de liquidez."
+                ),
+                "tooltip": "1.5–2.0: saudável. ≥2.0: muito bom. 1.0–1.5: apertado. ≤1.0: fraco."
             },
             "neutral": lambda v: {
-                "short":  f"Current ratio {v:.2f} — ~1.0–1.5: tight but acceptable.",
-                "detail": "Coverage is tight; watch cash conversion and working capital discipline.",
-                "tooltip": "≤1.0 weak, 1.0–1.5 tight, 1.5–2.0 healthy, ≥2.0 ample."
+                "short":  f"**Current Ratio =** {v:.2f}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Cobertura próxima do limiar mínimo (entre 1.0 e 1.5).\n\n"
+                    "**Interpretação:**\n"
+                    "- Situação aceitável mas apertada; dependente da conversão de inventários/recebimentos em caixa.\n"
+                    "- Convém monitorizar prazos de recebimento e rotação de inventários.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — sensível a atrasos de clientes ou choques de curto prazo."
+                ),
+                "tooltip": "1.0–1.5: apertado (neutro). 1.5–2.0: saudável. ≥2.0: muito bom. ≤1.0: fraco."
             },
             "bad": lambda v: {
-                "short":  f"Current ratio {v:.2f} — ≤1.0: potential liquidity pressure.",
-                "detail": "Coverage at/under 1.0 may indicate difficulty meeting near-term obligations.",
-                "tooltip": "≤1.0 weak, 1.0–1.5 tight, 1.5–2.0 healthy, ≥2.0 ample."
+                "short":  f"**Current Ratio =** {v:.2f}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Ativos correntes não cobrem os passivos correntes (≤1.0).\n\n"
+                    "**Interpretação:**\n"
+                    "- Risco de pressão de liquidez no curto prazo; pode exigir reforço de caixa ou renegociação de prazos.\n"
+                    "- Maior dependência de linhas de crédito.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — probabilidade acrescida de tensão de caixa."
+                ),
+                "tooltip": "≤1.0: fraco (risco de liquidez). 1.0–1.5: apertado. 1.5–2.0: saudável. ≥2.0: muito bom."
             },
             "nodata": lambda v: {
-                "short": "No data for current ratio.",
-                "detail": "Insufficient information to assess short-term liquidity.",
-                "tooltip": "No data."
+                "short": "**Sem dados para Current Ratio.**",
+                "detail": "Informação insuficiente para avaliar a liquidez de curto prazo.",
+                "tooltip": "Sem dados."
             },
         },
         "QuickRatio": {
             "verygood": lambda v: {
-                "short":  f"Quick ratio {v:.2f} — ≥1.5: strong immediate liquidity.",
-                "detail": "Excluding inventories, liquid assets provide strong coverage of near-term liabilities.",
-                "tooltip": "<0.8 weak, 0.8–1.0 tight, 1.0–1.5 sound, ≥1.5 strong."
+                "short":  f"**Quick Ratio =** {v:.2f}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Liquidez imediata (exclui inventários) face a dívidas de curto prazo.\n\n"
+                    "**Interpretação:**\n"
+                    "- Cobertura forte das obrigações imediatas com ativos líquidos (caixa + recebimentos).\n"
+                    "- Menor dependência de vender inventário para cumprir prazos.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo — robustez de liquidez no curtíssimo prazo."
+                ),
+                "tooltip": "≥1.5: forte (muito bom). 1.0–1.5: bom. 0.8–1.0: apertado. <0.8: fraco."
             },
             "good": lambda v: {
-                "short":  f"Quick ratio {v:.2f} — 1.0–1.5: sound liquidity.",
-                "detail": "Manageable near-term obligations with adequate liquid assets.",
-                "tooltip": "<0.8 weak, 0.8–1.0 tight, 1.0–1.5 sound, ≥1.5 strong."
+                "short":  f"**Quick Ratio =** {v:.2f}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Ativos líquidos cobrem de forma adequada as obrigações de curto prazo.\n\n"
+                    "**Interpretação:**\n"
+                    "- Liquidez imediata suficiente, desde que a cobrança ocorra em prazos normais.\n"
+                    "- Perfil equilibrado sem excesso de caixa.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado-baixo — condição estável."
+                ),
+                "tooltip": "1.0–1.5: bom. ≥1.5: muito bom. 0.8–1.0: apertado. <0.8: fraco."
             },
             "neutral": lambda v: {
-                "short":  f"Quick ratio {v:.2f} — 0.8–1.0: tight coverage.",
-                "detail": "Coverage is tight; dependent on timely cash collection.",
-                "tooltip": "<0.8 weak, 0.8–1.0 tight, 1.0–1.5 sound, ≥1.5 strong."
+                "short":  f"**Quick Ratio =** {v:.2f}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Cobertura apertada com ativos rapidamente realizáveis.\n\n"
+                    "**Interpretação:**\n"
+                    "- Dependente de cobrança atempada de clientes; pequena derrapagem pode gerar tensão.\n"
+                    "- Convém reforçar caixa ou melhorar prazos de recebimento.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — pouca folga de segurança."
+                ),
+                "tooltip": "0.8–1.0: apertado (neutro). 1.0–1.5: bom. ≥1.5: muito bom. <0.8: fraco."
             },
             "bad": lambda v: {
-                "short":  f"Quick ratio {v:.2f} — <0.8: weak immediate liquidity.",
-                "detail": "Potential cash strain absent external funding or faster working capital turnover.",
-                "tooltip": "<0.8 weak, 0.8–1.0 tight, 1.0–1.5 sound, ≥1.5 strong."
+                "short":  f"**Quick Ratio =** {v:.2f}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Ativos líquidos insuficientes para cobrir dívidas imediatas (<0.8).\n\n"
+                    "**Interpretação:**\n"
+                    "- Elevada probabilidade de tensão de caixa sem financiamento externo ou melhoria rápida da rotação.\n"
+                    "- Pode exigir medidas de gestão de capital circulante.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — vulnerabilidade no curtíssimo prazo."
+                ),
+                "tooltip": "<0.8: fraco (risco imediato). 0.8–1.0: apertado. 1.0–1.5: bom. ≥1.5: muito bom."
             },
             "nodata": lambda v: {
-                "short": "No data for quick ratio.",
-                "detail": "Insufficient information to assess immediate liquidity.",
-                "tooltip": "No data."
+                "short": "**Sem dados para Quick Ratio.**",
+                "detail": "Informação insuficiente para avaliar a liquidez imediata.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "EquityFCFYield": {
+            "verygood": lambda v: {
+                "short":  f"**Equity FCF Yield =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Cheap*: o fluxo de caixa livre gerado é elevado face ao valor do capital próprio.\n\n"
+                    "**Interpretação:**\n"
+                    "- Avaliação atrativa; maior capacidade para dividendos, *buybacks*, desalavancagem ou investimento sem diluição.\n"
+                    "- Pode indicar *margin of safety*, assumindo que o FCF é recorrente e sustentável.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — ainda assim, verificar qualidade do FCF (one-offs, capitalização de custos, ciclo de CAPEX)."
+                ),
+                "tooltip": ">5%: barato (muito bom). 3–5%: razoável. ≤3%: caro."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Equity FCF Yield =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Fair*: o FCF face ao valor do capital próprio está em linha com o razoável.\n\n"
+                    "**Interpretação:**\n"
+                    "- Avaliação equilibrada; retorno em caixa adequado para o risco médio do setor.\n"
+                    "- Monitorizar ciclo de investimento/FCF e necessidades de CAPEX de manutenção.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — sensível a volatilidade do FCF e a revisões de expectativas."
+                ),
+                "tooltip": "3–5%: razoável (neutro). >5%: barato. ≤3%: caro."
+            },
+            "bad": lambda v: {
+                "short":  f"**Equity FCF Yield =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Expensive*: baixo retorno de caixa livre face ao valor do capital próprio.\n\n"
+                    "**Interpretação:**\n"
+                    "- Mercado embute expectativas de crescimento/melhoria operacional; pouco retorno imediato em caixa.\n"
+                    "- Menor folga para remunerar acionistas sem recorrer a dívida ou diluição.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — se o crescimento desiludir, a compressão de múltiplos pode penalizar a ação."
+                ),
+                "tooltip": "≤3%: caro (fraco). 3–5%: razoável. >5%: barato."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Equity FCF Yield.**",
+                "detail": "Informação insuficiente para avaliar o retorno de caixa livre para os acionistas.",
+                "tooltip": "Sem dados."
             },
         },
     }
@@ -395,19 +534,10 @@ class RiskManagerFundamental():
         self._set_eval(evaluated_metrics, "EquityFCFYield", text_equity_fcf_yield)
 
         # ----- Enterprise FCF Yield
-        enterprise_fcf_yield = fm.safe_round(kpis.get("EnterpriseFCFYield"))
-        evaluated_metrics["EnterpriseFCFYield"] = enterprise_fcf_yield if enterprise_fcf_yield is not None else None
-        if enterprise_fcf_yield is None:
-            text_enterprise_fcf_yield = "No Data"
-        else:
-            if enterprise_fcf_yield <= 2.5:
-                text_enterprise_fcf_yield = "Expensive"
-            elif enterprise_fcf_yield <= 4:
-                text_enterprise_fcf_yield = "Fair"
-            else:
-                text_enterprise_fcf_yield = "Cheap"
-
-        self._set_eval(evaluated_metrics, "EnterpriseFCFYield", text_enterprise_fcf_yield)
+        efy = fm.safe_round(kpis.get("EnterpriseFCFYield"))
+        eval_efy, bucket_efy = self.classify_value("EnterpriseFCFYield", efy)
+        msgs_efy = self.messages_for("EnterpriseFCFYield", efy, bucket_efy, lang="en")
+        self._emit_full(evaluated_metrics, "EnterpriseFCFYield", efy, eval_efy, bucket_efy, msgs_efy)
 
         # ----- Finantial Health ----- #
         # --- Net Debt / EBITDA ---

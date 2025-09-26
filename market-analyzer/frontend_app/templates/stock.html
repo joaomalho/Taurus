@@ -280,10 +280,10 @@
                         </div>
                         <div>
                             <h3>Financial Health</h3>
-                            <p><strong>Net Debt / EBITDA:</strong> <span id="NetDebtEbitda"></span> <span id="NetDebtEbitdaClass"></span></p>
-                            <p><strong>Interest Coverage (EBIT):</strong> <span id="InterestCoverageEbit"></span> <span id="InterestCoverageEbitClass"></span></p>
-                            <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span> <span id="CurrentRatioClass"></span></p>
-                            <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span> <span id="QuickRatioClass"></span></p>
+                            <p><strong>Net Debt / EBITDA:</strong> <span id="NetDebtEbitda"></span> </span></p> 
+                            <p><strong>Interest Coverage (EBIT):</strong> <span id="InterestCoverageEbit"></span></span></p>
+                            <p><strong>Current Ratio:</strong> <span id="CurrentRatio"></span></span></p>
+                            <p><strong>Quick Ratio:</strong> <span id="QuickRatio"></span></span></p>
                         </div>
                         <div>
                             <h3>Profitability</h3>
@@ -332,12 +332,6 @@
                                 <canvas id="earningsChart"></canvas>
                             </div>
                         </div>
-                        <div>
-                            <h3>Detailed</h3>
-                            <p><strong>EV (Enterprise Value):</strong> <span id="EVenterpriseValue"></span></p>
-                            <p><strong>Market Cap:</strong> <span id="MarketCap"></span></p>
-                            <p><strong>EBITDA TTM:</strong> <span id="ebitdaTTM"></span></p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -356,19 +350,26 @@
                         <div class="chart-container-financial">
                             <canvas id="liquidityHeatmap"></canvas>
                         </div>
-                        <div>
-                            <span id="net_debt_ebitda_generico"></span>
-                            <span id="net_debt_generico"></span>
-                            <span id="ebitda_generico"></span>
-                        </div>
                     </div>
                     <div>
-                        <span id="NetDebtEbitdaClass" class="badge"></span>
-                        <p id="NetDebtEbitdaShortText" class="kpi-short"></p>
-                        <details class="kpi-detail">
-                        <summary>Ver detalhe</summary>
+                        <p> <span id="NetDebtEbitdaClass" class="badge"></span></p> 
+                        <p> <span id="NetDebtEbitdaShortText" class="kpi-short"></span></p>
                         <p id="NetDebtEbitdaDetailText"></p>
-                        </details>
+                    </div>
+                    <div>
+                        <p> <span id="InterestCoverageEbitClass" class="badge"></span></p> 
+                        <p> <span id="InterestCoverageEbitShortText" class="kpi-short"></span></p>
+                        <p id="InterestCoverageEbitDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="CurrentRatioClass" class="badge"></span></p> 
+                        <p> <span id="CurrentRatioShortText" class="kpi-short"></span></p>
+                        <p id="CurrentRatioDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="QuickRatioClass" class="badge"></span></p> 
+                        <p> <span id="QuickRatioShortText" class="kpi-short"></span></p>
+                        <p id="QuickRatioDetailText"></p>
                     </div>
                 </div>
             </div>
@@ -615,6 +616,7 @@
     <script type="module" src="{% static 'js/custom_charts/chartsandgraphs.js' %}"></script>
     <script type="module" src="{% static 'js/custom_charts/financialhealthcharts.js' %}"></script>
     <!-- Glossarios.js -->
-    <script src="{% static 'js/results_text/genericos.js' %}"></script>
+    <script src="{% static 'js/plugins/marked.min.js' %}"></script>
+    <script src="{% static 'js/plugins/purify.min.js' %}"></script>
 {% endblock %}
 

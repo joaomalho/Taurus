@@ -338,6 +338,13 @@ function formatByKey(key, value, currency = "USD") {
   }
 }
 
+function renderMarkdownSafe(md) {
+  if (!md) return "";
+  // window.marked e window.DOMPurify estarão disponíveis via <script>
+  const html = window.marked.parse(md);
+  return window.DOMPurify.sanitize(html);
+}
+
 /* ─────────────── FUNÇÃO PARA PREENCHER FUNDAMENTALS ─────────────── */
 export function displayFundamentalResults(data) {
   const kpisData = data.kpis;
@@ -471,11 +478,14 @@ export function displayFundamentalResultsClassification(data) {
     }
 
     // textos (se existir um alvo no HTML)
-    const shortEl = document.getElementById(`${key}ShortText`);
-    if (shortEl && messages?.short) shortEl.textContent = messages.short;
+    const shortEl  = document.getElementById(`${key}ShortText`);
+    if (shortEl && messages?.short) {
+      shortEl.innerHTML = renderMarkdownSafe(messages.short);
+    }
 
     const detailEl = document.getElementById(`${key}DetailText`);
-    if (detailEl && messages?.detail) detailEl.textContent = messages.detail;
+    if (detailEl && messages?.detail) {
+      detailEl.innerHTML = renderMarkdownSafe(messages.detail);
   }
 
   // Pintar a MODAL de fundamentals com uma âncora (ex.: trailingPE)
@@ -487,7 +497,7 @@ export function displayFundamentalResultsClassification(data) {
 
   const fundamentalsModal = document.querySelector("#fundamentalsModal");
   applyModalClass(fundamentalsModal, anchorBucket);
-}
+}}
 
 export function displayInsideTransactions(response) {
   const data = response.data;
