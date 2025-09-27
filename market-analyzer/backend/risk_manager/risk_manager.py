@@ -105,21 +105,36 @@ class RiskManagerFundamental():
             (math.inf,   "Strong",      "good"),
         ],
         "CurrentRatio": [
-            (1.0,        "Not Good (In Debt)",                "bad"),
-            (1.5,        "Tight Margin to Debt",              "neutral"),
-            (2.0,        "Good Debt Coverage",                "good"),
-            (math.inf,   "Perfect Coverage (Double +)",       "verygood"),
+            (1.0,        "Not Good (In Debt)",                  "bad"),
+            (1.5,        "Tight Margin to Debt",                "neutral"),
+            (2.0,        "Good Debt Coverage",                  "good"),
+            (math.inf,   "Perfect Coverage (Double +)",         "verygood"),
         ],
         "QuickRatio": [
-            (0.8,        "Not Good (In Debt)",                "bad"),
-            (1.0,        "Tight Margin to Debt",              "neutral"),
-            (1.5,        "Good Debt Coverage",                "good"),
-            (math.inf,   "Perfect Coverage (Double +)",       "verygood"),
+            (0.8,        "Not Good (In Debt)",                  "bad"),
+            (1.0,        "Tight Margin to Debt",                "neutral"),
+            (1.5,        "Good Debt Coverage",                  "good"),
+            (math.inf,   "Perfect Coverage (Double +)",         "verygood"),
         ],
         "EnterpriseFCFYield": [
-            (2.5,        "Expensive",                         "bad"),
-            (4.0,        "Fair",                              "neutral"),
-            (math.inf,   "Cheap",                             "verygood"),
+            (2.5,        "Expensive",                           "bad"),
+            (4.0,        "Fair",                                "neutral"),
+            (math.inf,   "Cheap",                               "verygood"),
+        ],
+        "EquityFCFYield": [
+            (3.0,        "Expensive",                           "bad"),
+            (5.0,        "Fair",                                "neutral"),
+            (math.inf,   "Cheap",                               "verygood"),
+        ],
+        "PriceToSale": [
+            (2.0,        "Cheap",                               "verygood"),
+            (6.0,        "Fair",                                "neutral"),
+            (math.inf,   "Expensive",                           "bad"),
+        ],
+        "evEbitda": [
+            (8.0,        "Cheap",                               "verygood"),
+            (12.0,       "Fair",                                "neutral"),
+            (math.inf,   "Expensive",                           "bad"),
         ],
     }
 
@@ -348,9 +363,83 @@ class RiskManagerFundamental():
                 "tooltip": "Sem dados."
             },
         },
+        "trailingPE": {
+            "verygood": lambda ctx: {
+                # ctx traz trailing, forward, sector, score
+                "short":  f"**Trailing P/E =** {ctx['trailing']:.2f}× — **Undervalued** face ao setor/forward.",
+                "detail": (
+                    "**Significado:**\n"
+                    "- A ação negocia com desconto vs. o setor e/ou o P/E desce no *forward*, refletindo expectativa de crescimento.\n\n"
+                    "**Interpretação:**\n"
+                    f"- **Sector P/E:** {ctx['sector']:.2f}× | **Forward P/E:** {ctx['forward']:.2f}×.\n"
+                    "- A relação de P/E sugere avaliação atrativa, assumindo que as estimativas se confirmam.\n"
+                    "- Usa o gráfico de *earnings* (estimado/real/surprise) para validar consistência.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado/baixo — risco principal é a execução (lucros têm de aparecer)."
+                ),
+                "tooltip": "Trailing < Sector, Forward < Sector e/ou Trailing > Forward (crescimento à frente)."
+            },
+            "good": lambda ctx: {
+                "short":  f"**Trailing P/E =** {ctx['trailing']:.2f}× — **Undervalued** moderado.",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Desconto moderado face ao setor e/ou melhoria no *forward*.\n\n"
+                    "**Interpretação:**\n"
+                    f"- **Sector P/E:** {ctx['sector']:.2f}× | **Forward P/E:** {ctx['forward']:.2f}×.\n"
+                    "- Sinal positivo, mas dependente de estimativas e *mix* de margens.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — monitorizar *earnings surprise* e revisões de consenso."
+                ),
+                "tooltip": "Algumas condições favoráveis vs setor/forward; desconto não extremo."
+            },
+            "neutral": lambda ctx: {
+                "short":  f"**Trailing P/E =** {ctx['trailing']:.2f}× — **Neutral Valued**.",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Múltiplo em linha com o setor e/ou sem melhoria material no *forward*.\n\n"
+                    "**Interpretação:**\n"
+                    f"- **Sector P/E:** {ctx['sector']:.2f}× | **Forward P/E:** {ctx['forward']:.2f}×.\n"
+                    "- Avaliação equilibrada; performance vai depender do *delivery* operacional.\n\n"
+                    "**Risco:**\n"
+                    "- Médio — sem margem de segurança evidente, mas também sem prémio excessivo."
+                ),
+                "tooltip": "Em linha com o setor; sem grande desconto/prémio."
+            },
+            "bad": lambda ctx: {
+                "short":  f"**Trailing P/E =** {ctx['trailing']:.2f}× — **Overvalued**.",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Prémio vs. setor e/ou *forward* não mostra alívio suficiente.\n\n"
+                    "**Interpretação:**\n"
+                    f"- **Sector P/E:** {ctx['sector']:.2f}× | **Forward P/E:** {ctx['forward']:.2f}×.\n"
+                    "- Mercado embute expectativas otimistas; sensível a surpresas negativas.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — compressão de múltiplos se o crescimento desiludir."
+                ),
+                "tooltip": "Trailing ≥ Sector e/ou Forward não compensa o prémio."
+            },
+            "verybad": lambda ctx: {
+                "short":  f"**Trailing P/E =** {ctx['trailing']:.2f}× — **Very High Overvalued**.",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Avaliação exigente face ao setor, pouco suporte no *forward*.\n\n"
+                    "**Interpretação:**\n"
+                    f"- **Sector P/E:** {ctx['sector']:.2f}× | **Forward P/E:** {ctx['forward']:.2f}×.\n"
+                    "- Elevada dependência de crescimento acelerado e de *execution flawless*.\n\n"
+                    "**Risco:**\n"
+                    "- Alto — forte vulnerabilidade a *misses* de resultados."
+                ),
+                "tooltip": "Prémio acentuado vs setor; forward não justifica."
+            },
+            "nodata": lambda ctx: {
+                "short":  "**Sem dados suficientes para P/E.**",
+                "detail": "Faltam valores de trailing/forward/sector para avaliar.",
+                "tooltip": "Sem dados."
+            }
+        },
         "EquityFCFYield": {
             "verygood": lambda v: {
-                "short":  f"**Equity FCF Yield =** {v:.2f}%",
+                "short":  f"**Equity FCF Yield =** {v*100:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- *Cheap*: o fluxo de caixa livre gerado é elevado face ao valor do capital próprio.\n\n"
@@ -363,7 +452,7 @@ class RiskManagerFundamental():
                 "tooltip": ">5%: barato (muito bom). 3–5%: razoável. ≤3%: caro."
             },
             "neutral": lambda v: {
-                "short":  f"**Equity FCF Yield =** {v:.2f}%",
+                "short":  f"**Equity FCF Yield =** {v*100:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- *Fair*: o FCF face ao valor do capital próprio está em linha com o razoável.\n\n"
@@ -376,7 +465,7 @@ class RiskManagerFundamental():
                 "tooltip": "3–5%: razoável (neutro). >5%: barato. ≤3%: caro."
             },
             "bad": lambda v: {
-                "short":  f"**Equity FCF Yield =** {v:.2f}%",
+                "short":  f"**Equity FCF Yield =** {v*100:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- *Expensive*: baixo retorno de caixa livre face ao valor do capital próprio.\n\n"
@@ -394,6 +483,154 @@ class RiskManagerFundamental():
                 "tooltip": "Sem dados."
             },
         },
+        "EnterpriseFCFYield": {
+            "verygood": lambda v: {
+                "short":  f"**Enterprise FCF Yield =** {v*100:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Cheap*: a empresa gera fluxo de caixa livre elevado face ao seu valor empresarial (dívida + capital próprio − caixa).\n\n"
+                    "**Interpretação:**\n"
+                    "- Avaliação atrativa baseada em caixa; maior capacidade para desalavancar, investir e remunerar acionistas sem pressão de financiamento.\n"
+                    "- Pode indicar *margin of safety*, assumindo FCF recorrente e sustentável.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — validar qualidade do FCF (one-offs, sazonalidade, CAPEX de manutenção)."
+                ),
+                "tooltip": ">4: barato (muito bom). 2,5–4: razoável. ≤2,5: caro."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Enterprise FCF Yield =** {v*100:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Fair*: retorno de caixa livre em linha com um nível razoável para o risco do negócio.\n\n"
+                    "**Interpretação:**\n"
+                    "- Avaliação equilibrada; retorno adequado, sem grande almofada.\n"
+                    "- Monitorizar ciclo de investimento e estabilidade do FCF.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — sensível a volatilidade do FCF e a revisões de expectativas."
+                ),
+                "tooltip": "2,5–4: razoável (neutro). >4: barato. ≤2,5: caro."
+            },
+            "bad": lambda v: {
+                "short":  f"**Enterprise FCF Yield =** {v*100:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Expensive*: baixo FCF face ao valor empresarial.\n\n"
+                    "**Interpretação:**\n"
+                    "- Mercado precifica crescimento/melhoria operacional; pouco retorno imediato em caixa.\n"
+                    "- Menor folga para desalavancar ou remunerar acionistas sem recorrer a dívida/diluição.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — vulnerável a desilusões no crescimento e compressão de múltiplos."
+                ),
+                "tooltip": "≤2,5: caro (fraco). 2,5–4: razoável. >4: barato."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Enterprise FCF Yield.**",
+                "detail": "Informação insuficiente para avaliar o retorno de caixa livre face ao valor empresarial.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "PriceToSale": {
+            "verygood": lambda v: {
+                "short":  f"**Price to Sales (P/S) =** {v:.2f}×",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Cheap*: preço baixo face às vendas anuais.\n\n"
+                    "**Interpretação:**\n"
+                    "- Pode ser atrativo, sobretudo se a empresa tiver margens em expansão e boa rotação.\n"
+                    "- Confirmar qualidade das receitas (mix, recorrência) e rentabilidade.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — atenção a negócios de baixa margem onde P/S pode enganar."
+                ),
+                "tooltip": "≤2×: barato (muito bom). 2–6×: razoável. >6×: caro."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Price to Sales (P/S) =** {v:.2f}×",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Fair*: preço em linha com as vendas para o perfil do setor.\n\n"
+                    "**Interpretação:**\n"
+                    "- Avaliação equilibrada; justifica-se se margens/ crescimento forem médios.\n"
+                    "- Acompanhar evolução de margem bruta/operacional.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — dependente da conversão de vendas em lucro/FCF."
+                ),
+                "tooltip": "2–6×: razoável (neutro). ≤2×: barato. >6×: caro."
+            },
+            "bad": lambda v: {
+                "short":  f"**Price to Sales (P/S) =** {v:.2f}×",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Expensive*: preço alto face às vendas.\n\n"
+                    "**Interpretação:**\n"
+                    "- Só se justifica com **crescimento acelerado** e/ou **margens muito altas**.\n"
+                    "- Se o *mix* de receitas mudar ou o crescimento abrandar, o múltiplo pode comprimir.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — vulnerável a desilusões no crescimento e na rentabilidade."
+                ),
+                "tooltip": ">6×: caro (fraco). 2–6×: razoável. ≤2×: barato."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para P/S.**",
+                "detail": "Informação insuficiente para avaliar o preço face às vendas.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "evEbitda": {
+            "verygood": lambda v: {
+                "short":  f"**EV / EBITDA =** {v:.2f}×",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Cheap*: valor empresarial baixo face à geração operacional (EBITDA).\n\n"
+                    "**Interpretação:**\n"
+                    "- Atraente se o EBITDA for sustentável e não houver risco de CAPEX/ dívida oculto.\n"
+                    "- Útil para comparar empresas com estruturas de capital distintas.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — confirmar qualidade do EBITDA (ajustes, sazonalidade, *one-offs*)."
+                ),
+                "tooltip": "≤8×: barato (muito bom). 8–12×: razoável. >12×: caro."
+            },
+            "neutral": lambda v: {
+                "short":  f"**EV / EBITDA =** {v:.2f}×",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Fair*: relação equilibrada entre valor empresarial e EBITDA.\n\n"
+                    "**Interpretação:**\n"
+                    "- Avaliação em linha com pares/sector.\n"
+                    "- Evolução vai depender de crescimento e disciplina de investimento.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — sem grande almofada, mas também sem prémio excessivo."
+                ),
+                "tooltip": "8–12×: razoável (neutro). ≤8×: barato. >12×: caro."
+            },
+            "bad": lambda v: {
+                "short":  f"**EV / EBITDA =** {v:.2f}×",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Expensive*: valor empresarial elevado face à geração operacional.\n\n"
+                    "**Interpretação:**\n"
+                    "- Mercado embute expectativas de crescimento/margens mais fortes.\n"
+                    "- Sensível a *misses* de resultados ou subida de custos/juros.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — potencial de compressão do múltiplo se as expectativas falharem."
+                ),
+                "tooltip": ">12×: caro (fraco). 8–12×: razoável. ≤8×: barato."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para EV / EBITDA.**",
+                "detail": "Informação insuficiente para avaliar o valor empresarial face ao EBITDA.",
+                "tooltip": "Sem dados."
+            },
+        },
+    }
+
+    PE_TEXT_TO_BUCKET = {
+        "Very Low Undervalued": "verygood",
+        "Low Undervalued":      "verygood",
+        "Undervalued":          "good",
+        "Neutral Valued":       "neutral",
+        "Overvalued":           "bad",
+        "High Overvalued":      "bad",
+        "Very High Overvalued": "verybad",
     }
 
     # ---------- Funções utilitárias ----------
@@ -423,8 +660,6 @@ class RiskManagerFundamental():
     # ---------- Emissão compatível com o front ----------
     def _set_eval(self, out: dict, key: str, text: str):
         out[f"{key}_evaluation"] = text
-        # usa o bucket vindo das regras em vez de inferir por substring
-        # (mantemos compatibilidade: se vier um texto diferente, cai em neutral)
         bucket = out.get(f"{key}_bucket") or {
             "Very Strong": "verygood", "Strong": "good", "Neutral": "neutral", "Weak": "bad", "No Data": "nodata"
         }.get(text, "neutral")
@@ -439,10 +674,35 @@ class RiskManagerFundamental():
 
     def _emit_full(self, out: dict, key: str, value, evaluation: str, bucket: str, msgs: dict):
         out[key] = value if value is not None else None
-        out[f"{key}_bucket"] = bucket                # define o bucket antes
-        self._set_eval(out, key, evaluation)         # mantém chaves/cores existentes
+        out[f"{key}_bucket"] = bucket         
+        self._set_eval(out, key, evaluation)
         for k, v in (msgs or {}).items():
             self._set_message(out, key, k, v)
+
+    def classify_trailing_pe(self, trailing, sector, forward):
+        """
+        Replica o teu score (3 condições) e devolve (evaluation_text, bucket, score).
+        """
+        if None in (trailing, sector, forward) or \
+                not all(self._is_number(x) for x in (trailing, sector, forward)):
+            return "No Data", "nodata", None
+
+        score = 0
+        score += 1 if trailing < sector else -1 if trailing > sector else 0
+        score += 1 if forward < sector else -1 if forward > sector else 0
+        score += 1 if trailing > forward else -1 if trailing < forward else 0
+
+        text = {
+            3:  "Very Low Undervalued",
+            2:  "Low Undervalued",
+            1:  "Undervalued",
+            0:  "Neutral Valued",
+            -1: "Overvalued",
+            -2: "High Overvalued",
+        }.get(score, "Very High Overvalued")
+
+        bucket = self.PE_TEXT_TO_BUCKET.get(text, "neutral")
+        return text, bucket, score
 
     def evaluate_metrics(self, metrics):
         """
@@ -462,79 +722,46 @@ class RiskManagerFundamental():
         sector_pe = fm.safe_round(kpis.get("sectorTrailingPE"))
         forward_pe = fm.safe_round(kpis.get("forwardPE"))
 
+        # valores crus (continua a expor no payload normal)
         evaluated_metrics["trailingPE"] = trailing_pe if trailing_pe is not None else None
         evaluated_metrics["sectorTrailingPE"] = sector_pe if sector_pe is not None else None
         evaluated_metrics["forwardPE"] = forward_pe if forward_pe is not None else None
 
-        # Só avalia o score se TODOS estiverem presentes
-        if None not in (trailing_pe, sector_pe, forward_pe):
-            score_pe = 0
-            score_pe += 1 if trailing_pe < sector_pe else -1 if trailing_pe > sector_pe else 0
-            score_pe += 1 if forward_pe < sector_pe else -1 if forward_pe > sector_pe else 0
-            score_pe += 1 if trailing_pe > forward_pe else -1 if trailing_pe < forward_pe else 0
+        # classificar + mensagens (dedicado ao P/E)
+        eval_pe, bucket_pe, score_pe = self.classify_trailing_pe(trailing_pe, sector_pe, forward_pe)
 
-            text_trailingPE = {
-                3:  "Very Low Undervalued",
-                2:  "Low Undervalued",
-                1:  "Undervalued",
-                0:  "Neutral Valued",
-                -1: "Overvalued",
-                -2: "High Overvalued",
-            }.get(score_pe, "Very High Overvalued")
-        else:
-            text_trailingPE = "No Data"
+        # mensagens com contexto (passa dicionário em vez de número)
+        ctx = {"trailing": trailing_pe or float("nan"),
+               "forward": forward_pe or float("nan"),
+               "sector": sector_pe or float("nan"),
+               "score": score_pe}
 
-        self._set_eval(evaluated_metrics, "trailingPE", text_trailingPE)
+        msgs_pe = (self.METRIC_MESSAGES_PT.get("trailingPE", {}).get(bucket_pe, self.METRIC_MESSAGES_PT.get("trailingPE", {}).get("nodata")))
+
+        msgs_pe = msgs_pe(ctx) if callable(msgs_pe) else {"short": "", "detail": "", "tooltip": ""}
+
+        self._emit_full(evaluated_metrics, "trailingPE", trailing_pe, eval_pe, bucket_pe, msgs_pe)
 
         # ----- EV / EBITDA
         ev_ebitda = fm.safe_round(kpis.get("evEbitda"))
-        evaluated_metrics["evEbitda"] = ev_ebitda if ev_ebitda is not None else None
-        if ev_ebitda is None:
-            text_ev_ebitda = "No Data"
-        else:
-            if ev_ebitda <= 8:
-                text_ev_ebitda = "Cheap"
-            elif ev_ebitda <= 12:
-                text_ev_ebitda = "Fair"
-            else:
-                text_ev_ebitda = "Expensive"
-
-        self._set_eval(evaluated_metrics, "evEbitda", text_ev_ebitda)
+        eval_ev_ebitda, bucket_ev_ebitda = self.classify_value("evEbitda", ev_ebitda)
+        msgs_ev_ebitda = self.messages_for("evEbitda", ev_ebitda, bucket_ev_ebitda, lang="en")
+        self._emit_full(evaluated_metrics, "evEbitda", ev_ebitda, eval_ev_ebitda, bucket_ev_ebitda, msgs_ev_ebitda)
 
         # ----- Prise To Sale
-        price_to_sale = fm.safe_round(kpis.get("PriceToSale"))
-
-        evaluated_metrics["PriceToSale"] = price_to_sale if price_to_sale is not None else None
-
-        if price_to_sale is None:
-            text_price_to_sale = "No Data"
-        else:
-            if price_to_sale <= 2:
-                text_price_to_sale = "Cheap"
-            elif price_to_sale <= 6:
-                text_price_to_sale = "Fair"
-            else:
-                text_price_to_sale = "Expensive"
-
-        self._set_eval(evaluated_metrics, "PriceToSale", text_price_to_sale)
+        ps = fm.safe_round(kpis.get("PriceToSale"))
+        eval_ps, bucket_ps = self.classify_value("PriceToSale", ps)
+        msgs_ps = self.messages_for("PriceToSale", ps, bucket_ps, lang="en")
+        self._emit_full(evaluated_metrics, "PriceToSale", ps, eval_ps, bucket_ps, msgs_ps)
 
         # ----- Equity FCF Yield
-        equity_fcf_yield = fm.safe_round(kpis.get("EquityFCFYield"))
-        evaluated_metrics["EquityFCFYield"] = equity_fcf_yield if equity_fcf_yield is not None else None
-        if equity_fcf_yield is None:
-            text_equity_fcf_yield = "No Data"
-        else:
-            if equity_fcf_yield <= 3:
-                text_equity_fcf_yield = "Expensive"
-            elif equity_fcf_yield <= 5:
-                text_equity_fcf_yield = "Fair"
-            else:
-                text_equity_fcf_yield = "Cheap"
-
-        self._set_eval(evaluated_metrics, "EquityFCFYield", text_equity_fcf_yield)
+        eqfy = kpis.get("EquityFCFYield")
+        eval_eqfy, bucket_eqfy = self.classify_value("EquityFCFYield", eqfy)
+        msgs_eqfy = self.messages_for("EquityFCFYield", eqfy, bucket_eqfy, lang="en")
+        self._emit_full(evaluated_metrics, "EquityFCFYield", eqfy, eval_eqfy, bucket_eqfy, msgs_eqfy)
 
         # ----- Enterprise FCF Yield
-        efy = fm.safe_round(kpis.get("EnterpriseFCFYield"))
+        efy = kpis.get("EnterpriseFCFYield")
         eval_efy, bucket_efy = self.classify_value("EnterpriseFCFYield", efy)
         msgs_efy = self.messages_for("EnterpriseFCFYield", efy, bucket_efy, lang="en")
         self._emit_full(evaluated_metrics, "EnterpriseFCFYield", efy, eval_efy, bucket_efy, msgs_efy)

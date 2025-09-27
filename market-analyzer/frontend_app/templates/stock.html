@@ -270,13 +270,13 @@
                     <div class="fund-kpis">
                         <div>
                             <h3>Valuations</h3>
-                            <p><strong>Trailing P/E:</strong> <span id="trailingPE"></span> <span id="trailingPEClass"></span></p>
+                            <p><strong>Trailing P/E:</strong> <span id="trailingPE"></span></p>
                             <p><strong>Forward P/E:</strong> <span id="forwardPE"></span></p>
                             <p><strong>Sector P/E:</strong> <span id="sectorTrailingPE"></span></p>
-                            <p><strong>EV/EBITDA:</strong> <span id="evEbitda"></span> <span id="evEbitdaClass"></span></p>
-                            <p><strong>Price To Sale (P/S):</strong> <span id="PriceToSale"></span> <span id="PriceToSaleClass"></span></p>
-                            <p><strong>Equity FCF Yield:</strong> <span id="EquityFCFYield"></span> <span id="EquityFCFYieldClass"></span></p>
-                            <p><strong>Enterprise FCF Yield:</strong> <span id="EnterpriseFCFYield"></span> <span id="EnterpriseFCFYieldClass"></span></p>
+                            <p><strong>EV/EBITDA:</strong> <span id="evEbitda"></span></p>
+                            <p><strong>Price To Sale (P/S):</strong> <span id="PriceToSale"></span></p>
+                            <p><strong>Equity FCF Yield:</strong> <span id="EquityFCFYield"></span></p>
+                            <p><strong>Enterprise FCF Yield:</strong> <span id="EnterpriseFCFYield"></span></p>
                         </div>
                         <div>
                             <h3>Financial Health</h3>
@@ -326,12 +326,34 @@
                 </div>
                 <div class="valuation-content hidden">
                     <div class="fund-valuation">
-                        <div>
-                            <h3>Price : Earnings</h3>
-                            <div class="chart-container-earnings">
-                                <canvas id="earningsChart"></canvas>
-                            </div>
+                        <div class="chart-container-earnings">
+                            <canvas id="earningsChart"></canvas>
                         </div>
+                    </div>
+                    <div>
+                        <p> <span id="trailingPEClass" class="badge"></span></p> 
+                        <p> <span id="trailingPEShortText" class="kpi-short"></span></p>
+                        <p id="trailingPEDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="evEbitdaClass" class="badge"></span></p> 
+                        <p> <span id="evEbitdaShortText" class="kpi-short"></span></p>
+                        <p id="evEbitdaDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="PriceToSaleClass" class="badge"></span></p> 
+                        <p> <span id="PriceToSaleShortText" class="kpi-short"></span></p>
+                        <p id="PriceToSaleDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="EquityFCFYieldClass" class="badge"></span></p> 
+                        <p> <span id="EquityFCFYieldShortText" class="kpi-short"></span></p>
+                        <p id="EquityFCFYieldDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="EnterpriseFCFYieldClass" class="badge"></span></p> 
+                        <p> <span id="EnterpriseFCFYieldShortText" class="kpi-short"></span></p>
+                        <p id="EnterpriseFCFYieldDetailText"></p>
                     </div>
                 </div>
             </div>
@@ -374,21 +396,6 @@
                 </div>
             </div>
 
-            <!-- Dividends -->
-            <div class="fundamental-card">
-                <div class="fundamental-header" id="funDividends">
-                    <h2>Dividends & Buybacks</h2>
-                    <span class="toggle-icon">+</span>
-                </div>
-                <div class="dividends-content hidden">
-                    <div>
-                        <h3>Distribution</h3>
-                    </div>
-                    <div class="fund-dividends">  
-                    </div>
-                </div>
-            </div>
-
             <!-- Profitability-->
             <div class="fundamental-card">
 
@@ -406,6 +413,21 @@
                             <p><strong>Net Income:</strong> <span id="NetIncome"></span></p>
                             <p><strong>Total Revenue:</strong> <span id="TotalRevenue"></span></p>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dividends -->
+            <div class="fundamental-card">
+                <div class="fundamental-header" id="funDividends">
+                    <h2>Dividends & Buybacks</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="dividends-content hidden">
+                    <div>
+                        <h3>Distribution</h3>
+                    </div>
+                    <div class="fund-dividends">  
                     </div>
                 </div>
             </div>
@@ -429,26 +451,6 @@
                 </div>
             </div>
 
-            <!-- Ratios-->
-            <div class="fundamental-card">
-
-                <div class="fundamental-header" id="funRatios">
-                    <h2>Financial Ratios & Margins </h2>
-                    <span class="toggle-icon">+</span>
-                </div>
-                
-                <div class="ratios-content hidden">
-                    
-                    <div class="fund-ratios">
-                       <div>
-                            <h3>Margins</h3>
-                            <p><strong>Gross Margin Classification:</strong> <span id="GrossMarginClass"></span></p>
-                            <p><strong>Gross Margin:</strong> <span id="GrossMargin"></span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Risk-->
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funRisk">
@@ -465,52 +467,6 @@
                         <p><strong>Short Interest:</strong> <span id="sharesPercentSharesOut"></span></p>
                         <p><strong>Recommendaton Mean:</strong> <span id="recommendationMean"></span></p>
                         <p><strong>Target Mean Price:</strong> <span id="targetMeanPrice"></span></p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Overview Decision -->
-            <div class="fundamental-card">
-
-                <div class="fundamental-header" id="funOverview">
-                    <h2>Overview Decision Resume</h2>
-                    <span class="toggle-icon">+</span>
-                </div>
-
-                <div class="overview-content hidden">
-                    <div class="fund-overview" >
-                        <div>
-                            <h3>Valuation</h3>
-                            <p><strong>P/E Classification:</strong> <span id="trailingPEClassOverview"></span></p>
-                            <p><strong>PEG Classification:</strong> <span id="PEGRatioClassOverview"></span></p>
-                            <h3>Dividends</h3>
-                            <p><strong>Coverage Ratio Classification:</strong> <span id="divCoverageRateClassOverview"></span></p>
-                            <h3>Profitability</h3>
-                            <p><strong>Cost Of Revenue CAGR Classification:</strong> <span id="CostOfRevenueCAGRClassOverview"></span></p>
-                            <p><strong>Total Of Revenue CAGR Classification:</strong> <span id="TotalRevenueCAGRClassOverview"></span></p>
-                            <h3>Debt</h3>
-                            <p><strong>Net Worth Classification:</strong> <span id="NetWorthClassOverview"></span></p>
-                            <p><strong>Short Debt Coverage Classification:</strong> <span id="ShortTermDebtCoverageClassOverview"></span></p>
-                            <p><strong>Long Debt Coverage Classification:</strong> <span id="LongTermDebtCoverageClassOverview"></span></p>
-                            <h3>Stockholders Equity</h3>
-                            <p><strong>Stockholders Equity CAGR Classification:</strong> <span id="StockholdersEquityCAGRClassOverview"></span></p>
-                            <h3>Growth</h3>
-                            <p><strong>Assets Growth CAGR Classification:</strong> <span id="TotalAssetsCAGRClassOverview"></span></p>
-                            <p><strong>Liabilities Growth CAGR Classification:</strong> <span id="TotalLiabilitiesCAGRClassOverview"></span></p>
-                            <h3>Cashflow</h3>
-                            <p><strong>Free Cashflow Yield Classification:</strong> <span id="FreeCashflowYieldClassOverview"></span></p>
-                            <h3>Financials</h3>
-                            <p><strong>Current Ratio Classification:</strong> <span id="CurrentRatioClassOverview"></span></p>
-                            <p><strong>Cash Ratio Classification:</strong> <span id="CashRatioClassOverview"></span></p>
-                            <h3>Margins</h3>
-                            <p><strong>Gross Margin Classification:</strong> <span id="GrossMarginClassOverview"></span></p>
-                            <p><strong>Operating Margin Classification:</strong> <span id="OperatingMarginClassOverview"></span></p>
-                            <p><strong>Operating Margin CAGR Classification:</strong> <span id="OperatingMarginCAGRClassOverview"></span></p>
-                            <p><strong>Profit Margin Classification:</strong> <span id="ProfitMarginClassOverview"></span></p>
-                            <p><strong>Profit Margin CAGR Classification:</strong> <span id="ProfitMarginCAGRClassOverview"></span></p>
-                            <p><strong>Return on Equity (ROE) Classification:</strong> <span id="ReturnOnEquityClassOverview"></span></p>
-                            <p><strong>Return on Equity (ROE) CAGR Classification:</strong> <span id="ReturnOnEquityCAGRClassOverview"></span></p>
-                        </div>
                     </div>
                 </div>
             </div>
