@@ -136,12 +136,33 @@ class RiskManagerFundamental():
             (12.0,       "Fair",                                "neutral"),
             (math.inf,   "Expensive",                           "bad"),
         ],
+        "OperationalMargin": [
+            (10.0,       "Not Good",                            "bad"),
+            (15.0,       "Tight",                               "neutral"),
+            (20.0,       "Healthy",                             "good"),
+            (math.inf,   "Good",                                "verygood"),
+        ],
+        "FcfMargin": [
+            (5.0,        "Not Good",                            "bad"),
+            (10.0,       "Tight",                               "neutral"),
+            (math.inf,   "Good",                                "verygood"),
+        ],
+        "ROE": [
+            (8.0,        "Weak",                                "bad"),
+            (15.0,       "Healthy",                             "good"),
+            (math.inf,   "Strong",                              "verygood"),
+        ],
+        "ROA": [
+            (3.0,        "Weak",                                "bad"),
+            (7.0,        "Healthy",                             "good"),
+            (math.inf,   "Strong",                              "verygood"),
+        ],
     }
 
     METRIC_MESSAGES_PT = {
         "NetDebtEbitda": {
             "verygood": lambda v: {
-                "short":  f"**Net Debt / EBITDA =** {v:.2f}",
+                "short":  f"**Net Debt / EBITDA =** {v:.2f}x",
                 "detail": (
                         "**Significado:**\n"
                         "- A empresa apresenta caixa líquido (tem mais dinheiro em caixa do que dívida).\n\n"
@@ -154,7 +175,7 @@ class RiskManagerFundamental():
                 "tooltip": "≤0: caixa líquido (muito sólido)."
             },
             "good": lambda v: {
-                "short":  f"**Net Debt / EBITDA =** {v:.2f}",
+                "short":  f"**Net Debt / EBITDA =** {v:.2f}x",
                 "detail": (
                         "**Significado:**\n"
                         "- A dívida líquida é inferior a um ano de geração de EBITDA.\n\n"
@@ -167,7 +188,7 @@ class RiskManagerFundamental():
                 "tooltip": "≤1: baixo endividamento."
             },
             "neutral": lambda v: {
-                "short":  f"**Net Debt / EBITDA =** {v:.2f}",
+                "short":  f"**Net Debt / EBITDA =** {v:.2f}x",
                 "detail": (
                         "**Significado:**\n"
                         "- A dívida líquida corresponde a 1 a 3 anos de EBITDA.\n\n"
@@ -180,7 +201,7 @@ class RiskManagerFundamental():
                 "tooltip": "1–3: alavancagem moderada."
             },
             "bad": lambda v: {
-                "short":  f"**Net Debt / EBITDA =** {v:.2f}",
+                "short":  f"**Net Debt / EBITDA =** {v:.2f}x",
                 "detail": (
                         "**Significado:**\n"
                         "- A dívida líquida supera 3 anos de geração de EBITDA.\n\n"
@@ -247,7 +268,7 @@ class RiskManagerFundamental():
         },
         "CurrentRatio": {
             "verygood": lambda v: {
-                "short":  f"**Current Ratio =** {v:.2f}",
+                "short":  f"**Current Ratio =** {v:.2f}x",
                 "detail": (
                     "**Significado:**\n"
                     "- Relação entre ativos correntes e passivos correntes (liquidez de curto prazo).\n\n"
@@ -260,7 +281,7 @@ class RiskManagerFundamental():
                 "tooltip": "≥2.0: muito bom (folgado). 1.5–2.0: saudável. 1.0–1.5: apertado. ≤1.0: fraco."
             },
             "good": lambda v: {
-                "short":  f"**Current Ratio =** {v:.2f}",
+                "short":  f"**Current Ratio =** {v:.2f}x",
                 "detail": (
                     "**Significado:**\n"
                     "- Ativos correntes cobrem confortavelmente os passivos correntes.\n\n"
@@ -273,7 +294,7 @@ class RiskManagerFundamental():
                 "tooltip": "1.5–2.0: saudável. ≥2.0: muito bom. 1.0–1.5: apertado. ≤1.0: fraco."
             },
             "neutral": lambda v: {
-                "short":  f"**Current Ratio =** {v:.2f}",
+                "short":  f"**Current Ratio =** {v:.2f}x",
                 "detail": (
                     "**Significado:**\n"
                     "- Cobertura próxima do limiar mínimo (entre 1.0 e 1.5).\n\n"
@@ -286,7 +307,7 @@ class RiskManagerFundamental():
                 "tooltip": "1.0–1.5: apertado (neutro). 1.5–2.0: saudável. ≥2.0: muito bom. ≤1.0: fraco."
             },
             "bad": lambda v: {
-                "short":  f"**Current Ratio =** {v:.2f}",
+                "short":  f"**Current Ratio =** {v:.2f}x",
                 "detail": (
                     "**Significado:**\n"
                     "- Ativos correntes não cobrem os passivos correntes (≤1.0).\n\n"
@@ -306,7 +327,7 @@ class RiskManagerFundamental():
         },
         "QuickRatio": {
             "verygood": lambda v: {
-                "short":  f"**Quick Ratio =** {v:.2f}",
+                "short":  f"**Quick Ratio =** {v:.2f}x",
                 "detail": (
                     "**Significado:**\n"
                     "- Liquidez imediata (exclui inventários) face a dívidas de curto prazo.\n\n"
@@ -319,7 +340,7 @@ class RiskManagerFundamental():
                 "tooltip": "≥1.5: forte (muito bom). 1.0–1.5: bom. 0.8–1.0: apertado. <0.8: fraco."
             },
             "good": lambda v: {
-                "short":  f"**Quick Ratio =** {v:.2f}",
+                "short":  f"**Quick Ratio =** {v:.2f}x",
                 "detail": (
                     "**Significado:**\n"
                     "- Ativos líquidos cobrem de forma adequada as obrigações de curto prazo.\n\n"
@@ -332,7 +353,7 @@ class RiskManagerFundamental():
                 "tooltip": "1.0–1.5: bom. ≥1.5: muito bom. 0.8–1.0: apertado. <0.8: fraco."
             },
             "neutral": lambda v: {
-                "short":  f"**Quick Ratio =** {v:.2f}",
+                "short":  f"**Quick Ratio =** {v:.2f}x",
                 "detail": (
                     "**Significado:**\n"
                     "- Cobertura apertada com ativos rapidamente realizáveis.\n\n"
@@ -345,7 +366,7 @@ class RiskManagerFundamental():
                 "tooltip": "0.8–1.0: apertado (neutro). 1.0–1.5: bom. ≥1.5: muito bom. <0.8: fraco."
             },
             "bad": lambda v: {
-                "short":  f"**Quick Ratio =** {v:.2f}",
+                "short":  f"**Quick Ratio =** {v:.2f}x",
                 "detail": (
                     "**Significado:**\n"
                     "- Ativos líquidos insuficientes para cobrir dívidas imediatas (<0.8).\n\n"
@@ -621,6 +642,196 @@ class RiskManagerFundamental():
                 "tooltip": "Sem dados."
             },
         },
+        "OperationalMargin": {
+            "verygood": lambda v: {
+                "short":  f"**Margem Operacional =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Margem elevada; forte eficiência operacional e poder de preço.\n\n"
+                    "**Interpretação:**\n"
+                    "- Negócio com vantagem competitiva/escala; maior resiliência a choques.\n"
+                    "- Normalmente traduz-se em FCF consistente.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — monitorizar pressão de custos e concorrência."
+                ),
+                "tooltip": "≥20%: muito bom."
+            },
+            "good": lambda v: {
+                "short":  f"**Margem Operacional =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Margem saudável; custos sob controlo.\n\n"
+                    "**Interpretação:**\n"
+                    "- Perfil sólido com alguma almofada de segurança.\n"
+                    "- Espaço para melhorar via mix e produtividade.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado-baixo — acompanhar inflação e disciplina comercial."
+                ),
+                "tooltip": "15–20%: saudável."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Margem Operacional =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Cobertura apertada; eficiência aceitável mas sem folga.\n\n"
+                    "**Interpretação:**\n"
+                    "- Dependente de execução e escala para expandir margens.\n"
+                    "- Convém acompanhar evolução de custos e pricing.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — sensível a choques de curto prazo."
+                ),
+                "tooltip": "10–15%: apertado (neutro)."
+            },
+            "bad": lambda v: {
+                "short":  f"**Margem Operacional =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Margem baixa; estrutura de custos pesada ou pricing fraco.\n\n"
+                    "**Interpretação:**\n"
+                    "- Menor folga para investir/remunerar acionistas; maior alavanca operacional.\n"
+                    "- Pode precisar de programa de eficiência/repensar mix.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — resultados podem degradar rapidamente."
+                ),
+                "tooltip": "≤10%: fraco."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Margem Operacional.**",
+                "detail": "Informação insuficiente para avaliar a eficiência operacional.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "FcfMargin": {
+            "verygood": lambda v: {
+                "short":  f"**Margem FCF =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Forte conversão de resultados em caixa livre.\n\n"
+                    "**Interpretação:**\n"
+                    "- Capacidade para investir, desalavancar e remunerar acionistas.\n"
+                    "- Geralmente indica disciplina de CAPEX e fundo de maneio.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — confirmar recorrência (evitar one-offs)."
+                ),
+                "tooltip": "≥10%: muito bom."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Margem FCF =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Conversão razoável em caixa.\n\n"
+                    "**Interpretação:**\n"
+                    "- Adequada para o risco médio; há espaço para otimização de CAPEX/working capital.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — sensível a ciclos de investimento."
+                ),
+                "tooltip": "5–10%: razoável (neutro)."
+            },
+            "bad": lambda v: {
+                "short":  f"**Margem FCF =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Fraca geração de caixa livre.\n\n"
+                    "**Interpretação:**\n"
+                    "- Pouca folga para financiar crescimento e remuneração sem dívida/diluição.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — vulnerável a choques operacionais."
+                ),
+                "tooltip": "≤5%: fraco."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Margem FCF.**",
+                "detail": "Informação insuficiente para avaliar a geração de caixa livre.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "ROE": {
+            "verygood": lambda v: {
+                "short":  f"**ROE =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Elevada rentabilidade do capital próprio.\n\n"
+                    "**Interpretação:**\n"
+                    "- Eficiência na alocação de capital e/ou vantagens competitivas.\n"
+                    "- Verificar qualidade (não apenas alavancagem).\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — atenção a ciclos e estrutura de capital."
+                ),
+                "tooltip": ">15%: forte."
+            },
+            "good": lambda v: {
+                "short":  f"**ROE =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Rentabilidade saudável para o setor.\n\n"
+                    "**Interpretação:**\n"
+                    "- Sinal de gestão eficiente e criação de valor.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado-baixo — dependente da estabilidade dos lucros."
+                ),
+                "tooltip": "8–15%: saudável."
+            },
+            "bad": lambda v: {
+                "short":  f"**ROE =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Baixa rentabilidade do capital próprio.\n\n"
+                    "**Interpretação:**\n"
+                    "- Pode refletir margens fracas, má alocação de capital ou excesso de capital.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — criação de valor limitada."
+                ),
+                "tooltip": "≤8%: fraco."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para ROE.**",
+                "detail": "Informação insuficiente para avaliar a rentabilidade do capital próprio.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "ROA": {
+            "verygood": lambda v: {
+                "short":  f"**ROA =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Elevada rentabilidade dos ativos.\n\n"
+                    "**Interpretação:**\n"
+                    "- Boa eficiência operacional e uso de ativos; normalmente menos dependente de alavancagem.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — acompanhar ciclos de capex."
+                ),
+                "tooltip": ">7%: forte."
+            },
+            "good": lambda v: {
+                "short":  f"**ROA =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Rentabilidade adequada dos ativos.\n\n"
+                    "**Interpretação:**\n"
+                    "- Eficiência razoável; há espaço para otimização.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado-baixo — dependente do mix de ativos e utilização."
+                ),
+                "tooltip": "3–7%: saudável."
+            },
+            "bad": lambda v: {
+                "short":  f"**ROA =** {v:.2f}%",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Baixa rentabilidade dos ativos.\n\n"
+                    "**Interpretação:**\n"
+                    "- Utilização fraca/ativos sub-rendibilizados; pode requerer desinvestimentos.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — retorno abaixo do custo de capital."
+                ),
+                "tooltip": "≤3%: fraco."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para ROA.**",
+                "detail": "Informação insuficiente para avaliar a rentabilidade dos ativos.",
+                "tooltip": "Sem dados."
+            },
+        },
     }
 
     PE_TEXT_TO_BUCKET = {
@@ -793,68 +1004,28 @@ class RiskManagerFundamental():
 
         # ----- Profitability ----- #
         # ----- Operational Margin
-        operating_margin = fm.safe_round(kpis.get("OperationalMargin"))
-        evaluated_metrics["OperationalMargin"] = operating_margin if operating_margin is not None else None
-
-        if operating_margin is None:
-            text_OperationalMargin = "No Data"
-        else:
-            if operating_margin <= 10:
-                text_OperationalMargin = "Not Good - High Operational Costs or Difficulties to Get Revenue"
-            elif operating_margin <= 20:
-                text_OperationalMargin = "Healthy - Healthy Operational Management"
-            else:
-                text_OperationalMargin = "Good - Efficient Costs Management"
-
-        self._set_eval(evaluated_metrics, "OperationalMargin", text_OperationalMargin)
+        opm = fm.safe_round(kpis.get("OperationalMargin"))
+        eval_opm, bucket_opm = self.classify_value("OperationalMargin", opm)
+        msgs_opm = self.messages_for("OperationalMargin", opm, bucket_opm, lang="en")
+        self._emit_full(evaluated_metrics, "OperationalMargin", opm, eval_opm, bucket_opm, msgs_opm)
 
         # ----- FCF Margin
-        fcf_margin = fm.safe_round(kpis.get("FcfMargin"))
-        evaluated_metrics["FcfMargin"] = fcf_margin if fcf_margin is not None else None
-
-        if fcf_margin is None:
-            text_FcfMargin = "No Data"
-        else:
-            if fcf_margin <= 10:
-                text_FcfMargin = "Not Good - High Operational Costs or Difficulties to Get Revenue"
-            elif fcf_margin <= 20:
-                text_FcfMargin = "Healthy - Healthy Operational Management"
-            else:
-                text_FcfMargin = "Good - Efficient Costs Management"
-
-        self._set_eval(evaluated_metrics, "FcfMargin", text_FcfMargin)
+        fcfm = fm.safe_round(kpis.get("FcfMargin"))
+        eval_fcfm, bucket_fcfm = self.classify_value("FcfMargin", fcfm)
+        msgs_fcfm = self.messages_for("FcfMargin", fcfm, bucket_fcfm, lang="en")
+        self._emit_full(evaluated_metrics, "FcfMargin", fcfm, eval_fcfm, bucket_fcfm, msgs_fcfm)
 
         # ----- ROE
         roe = fm.safe_round(kpis.get("ROE"))
-        evaluated_metrics["ROE"] = roe if roe is not None else None
-
-        if roe is None:
-            text_ROE = "No Data"
-        else:
-            if roe <= 8:
-                text_ROE = "Weak"
-            elif roe <= 15:
-                text_ROE = "Healthy"
-            else:
-                text_ROE = "Strong"
-
-        self._set_eval(evaluated_metrics, "ROE", text_ROE)
+        eval_roe, bucket_roe = self.classify_value("ROE", roe)
+        msgs_roe = self.messages_for("ROE", roe, bucket_roe, lang="en")
+        self._emit_full(evaluated_metrics, "ROE", roe, eval_roe, bucket_roe, msgs_roe)
 
         # ----- ROA
         roa = fm.safe_round(kpis.get("ROA"))
-        evaluated_metrics["ROA"] = roa if roa is not None else None
-
-        if roa is None:
-            text_ROA = "No Data"
-        else:
-            if roa <= 3:
-                text_ROA = "Weak"
-            elif roa <= 7:
-                text_ROA = "Healthy"
-            else:
-                text_ROA = "Strong"
-
-        self._set_eval(evaluated_metrics, "ROA", text_ROA)
+        eval_roa, bucket_roa = self.classify_value("ROA", roa)
+        msgs_roa = self.messages_for("ROA", roa, bucket_roa, lang="en")
+        self._emit_full(evaluated_metrics, "RROAOE", roa, eval_roa, bucket_roa, msgs_roa)
 
         # ----- Capital Efficiency ----- #
         # ----- ROIC
