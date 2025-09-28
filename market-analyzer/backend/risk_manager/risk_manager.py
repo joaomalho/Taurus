@@ -460,7 +460,7 @@ class RiskManagerFundamental():
         },
         "EquityFCFYield": {
             "verygood": lambda v: {
-                "short":  f"**Equity FCF Yield =** {v*100:.2f}%",
+                "short":  f"**Equity Free Cash Flow Yield =** {v*100:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- *Cheap*: o fluxo de caixa livre gerado é elevado face ao valor do capital próprio.\n\n"
@@ -473,7 +473,7 @@ class RiskManagerFundamental():
                 "tooltip": ">5%: barato (muito bom). 3–5%: razoável. ≤3%: caro."
             },
             "neutral": lambda v: {
-                "short":  f"**Equity FCF Yield =** {v*100:.2f}%",
+                "short":  f"**Equity Free Cash Flow Yield =** {v*100:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- *Fair*: o FCF face ao valor do capital próprio está em linha com o razoável.\n\n"
@@ -486,7 +486,7 @@ class RiskManagerFundamental():
                 "tooltip": "3–5%: razoável (neutro). >5%: barato. ≤3%: caro."
             },
             "bad": lambda v: {
-                "short":  f"**Equity FCF Yield =** {v*100:.2f}%",
+                "short":  f"**Equity Free Cash Flow Yield =** {v*100:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- *Expensive*: baixo retorno de caixa livre face ao valor do capital próprio.\n\n"
@@ -519,7 +519,7 @@ class RiskManagerFundamental():
                 "tooltip": ">4: barato (muito bom). 2,5–4: razoável. ≤2,5: caro."
             },
             "neutral": lambda v: {
-                "short":  f"**Enterprise FCF Yield =** {v*100:.2f}%",
+                "short":  f"**Enterprise Free Cash Flow Yield =** {v*100:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- *Fair*: retorno de caixa livre em linha com um nível razoável para o risco do negócio.\n\n"
@@ -532,7 +532,7 @@ class RiskManagerFundamental():
                 "tooltip": "2,5–4: razoável (neutro). >4: barato. ≤2,5: caro."
             },
             "bad": lambda v: {
-                "short":  f"**Enterprise FCF Yield =** {v*100:.2f}%",
+                "short":  f"**Enterprise Free Cash Flow Yield =** {v*100:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- *Expensive*: baixo FCF face ao valor empresarial.\n\n"
@@ -545,7 +545,7 @@ class RiskManagerFundamental():
                 "tooltip": "≤2,5: caro (fraco). 2,5–4: razoável. >4: barato."
             },
             "nodata": lambda v: {
-                "short": "**Sem dados para Enterprise FCF Yield.**",
+                "short": "**Sem dados para Enterprise Free Cash Flow Yield.**",
                 "detail": "Informação insuficiente para avaliar o retorno de caixa livre face ao valor empresarial.",
                 "tooltip": "Sem dados."
             },
@@ -603,7 +603,7 @@ class RiskManagerFundamental():
                     "**Significado:**\n"
                     "- *Cheap*: valor empresarial baixo face à geração operacional (EBITDA).\n\n"
                     "**Interpretação:**\n"
-                    "- Atraente se o EBITDA for sustentável e não houver risco de CAPEX/ dívida oculto.\n"
+                    "- Atraente se o EBITDA for sustentável e não houver risco de CAPEX/dívida oculto.\n"
                     "- Útil para comparar empresas com estruturas de capital distintas.\n\n"
                     "**Risco:**\n"
                     "- Baixo/moderado — confirmar qualidade do EBITDA (ajustes, sazonalidade, *one-offs*)."
@@ -703,7 +703,7 @@ class RiskManagerFundamental():
         },
         "FcfMargin": {
             "verygood": lambda v: {
-                "short":  f"**Margem FCF =** {v:.2f}%",
+                "short":  f"**Margem Free Cash Flow =** {v:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- Forte conversão de resultados em caixa livre.\n\n"
@@ -716,7 +716,7 @@ class RiskManagerFundamental():
                 "tooltip": "≥10%: muito bom."
             },
             "neutral": lambda v: {
-                "short":  f"**Margem FCF =** {v:.2f}%",
+                "short":  f"**Margem Free Cash Flow =** {v:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- Conversão razoável em caixa.\n\n"
@@ -728,7 +728,7 @@ class RiskManagerFundamental():
                 "tooltip": "5–10%: razoável (neutro)."
             },
             "bad": lambda v: {
-                "short":  f"**Margem FCF =** {v:.2f}%",
+                "short":  f"**Margem Free Cash Flow =** {v:.2f}%",
                 "detail": (
                     "**Significado:**\n"
                     "- Fraca geração de caixa livre.\n\n"
@@ -740,7 +740,7 @@ class RiskManagerFundamental():
                 "tooltip": "≤5%: fraco."
             },
             "nodata": lambda v: {
-                "short": "**Sem dados para Margem FCF.**",
+                "short": "**Sem dados para Margem Free Cash Flow.**",
                 "detail": "Informação insuficiente para avaliar a geração de caixa livre.",
                 "tooltip": "Sem dados."
             },
@@ -885,7 +885,7 @@ class RiskManagerFundamental():
 
     def _emit_full(self, out: dict, key: str, value, evaluation: str, bucket: str, msgs: dict):
         out[key] = value if value is not None else None
-        out[f"{key}_bucket"] = bucket         
+        out[f"{key}_bucket"] = bucket
         self._set_eval(out, key, evaluation)
         for k, v in (msgs or {}).items():
             self._set_message(out, key, k, v)
@@ -1025,7 +1025,7 @@ class RiskManagerFundamental():
         roa = fm.safe_round(kpis.get("ROA"))
         eval_roa, bucket_roa = self.classify_value("ROA", roa)
         msgs_roa = self.messages_for("ROA", roa, bucket_roa, lang="en")
-        self._emit_full(evaluated_metrics, "RROAOE", roa, eval_roa, bucket_roa, msgs_roa)
+        self._emit_full(evaluated_metrics, "ROA", roa, eval_roa, bucket_roa, msgs_roa)
 
         # ----- Capital Efficiency ----- #
         # ----- ROIC

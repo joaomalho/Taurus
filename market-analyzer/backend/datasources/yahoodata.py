@@ -16,12 +16,17 @@ class DataHistoryYahoo():
     def __init__(self) -> None:
         self
 
+    def get_endpoints_yahoo(self, symbol: str):
+        '''
+        Request all necessary endpoints to pass for remaining funcions 
+        '''
+        # WIP
+
     # ---------- STOCKS TOPs ----------
     def get_symbol_bio_info(self, symbol: str):
         '''
         Return detailed company information.
         '''
-
         try:
             yahoo_symbol_info = yf.Ticker(symbol).info
         except Exception:
@@ -312,10 +317,10 @@ class DataHistoryYahoo():
             yahoo_symbol_income_quarter = yf.Ticker(symbol).quarterly_income_stmt
         except Exception:
             yahoo_symbol_income_quarter = pd.DataFrame()
-        # try:
-        #     yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
-        # except Exception:
-        #     yahoo_symbol_cashflow = pd.DataFrame()
+        try:
+            yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
+        except Exception:
+            yahoo_symbol_cashflow = pd.DataFrame()
         try:
             yahoo_symbol_cashflow_quarter = yf.Ticker(symbol).quarterly_cash_flow
         except Exception:
@@ -384,6 +389,19 @@ class DataHistoryYahoo():
             stockholders_equity_mean = None
             last_stockholders_equity_mean = None
 
+        # - Stockholders Equity Quarter
+        if 'Stockholders Equity' in yahoo_symbol_balancesheet_quarter.index:
+            stockholders_equity_quarter = yahoo_symbol_balancesheet_quarter.loc["Stockholders Equity"]
+            if pd.isna(stockholders_equity_quarter).all():
+                stockholders_equity_quarter = None
+                stockholders_equity_quarter_mean = None
+            else:
+                stockholders_equity_quarter = stockholders_equity_quarter.dropna()
+                stockholders_equity_quarter_mean = (stockholders_equity_quarter.shift(1) + stockholders_equity_quarter) / 2
+        else:
+            stockholders_equity_quarter = None
+            stockholders_equity_quarter_mean = None
+
         minority_interest = total_equity_gross_minority_interest_last - stockholders_equity_last \
             if stockholders_equity_last is not None \
             and total_equity_gross_minority_interest_last is not None \
@@ -443,7 +461,19 @@ class DataHistoryYahoo():
             and cash_sti_last is not None \
             else None
 
-        # - Total Revenue ---- ADICIONAR ISTO em todo o lado e criar função generica
+        # - EBITDA ----
+        if 'EBITDA' in yahoo_symbol_income.index:
+            total_ebitda_fy = yahoo_symbol_income.loc['EBITDA']
+            if pd.isna(total_ebitda_fy).all():
+                total_ebitda_fy = None
+                ebitda_fy_ttm = None
+            else:
+                total_ebitda = total_ebitda_fy.dropna()
+                ebitda_fy_ttm = total_ebitda_fy.sum()
+        else:
+            total_ebitda_fy = None
+            ebitda_fy_ttm = None
+
         if 'EBITDA' in yahoo_symbol_income_quarter.index:
             total_ebitda = yahoo_symbol_income_quarter.loc['EBITDA']
             if pd.isna(total_ebitda).all():
@@ -495,6 +525,16 @@ class DataHistoryYahoo():
             free_cashflow = None
             free_cashflow_ttm = None
 
+        # - Free Cashflow For Year
+        if 'Free Cash Flow' in yahoo_symbol_cashflow.index:
+            free_cashflow_fy = yahoo_symbol_cashflow.loc['Free Cash Flow']
+            if pd.isna(free_cashflow_fy).all():
+                free_cashflow_fy = None
+            else:
+                free_cashflow_fy = free_cashflow_fy.dropna()
+        else:
+            free_cashflow_fy = None
+
         # - Métricas
         ev_ebitda = enterprise_value / ebitda_ttm \
             if enterprise_value is not None \
@@ -538,6 +578,19 @@ class DataHistoryYahoo():
         else:
             ebit_quarter = None
             ebit_quarter_ttm = None
+
+        # - Interest Coverage (EBIT)
+        if 'EBIT' in yahoo_symbol_income.index:
+            ebit_fy = yahoo_symbol_income.loc['EBIT']
+            if pd.isna(ebit_fy).all():
+                ebit_fy = None
+                ebit_fy_ttm = None
+            else:
+                ebit_fy = ebit_fy.dropna()
+                ebit_fy_ttm = ebit_fy.sum()
+        else:
+            ebit_fy = None
+            ebit_fy_ttm = None
 
         # - Interest Expense
         if 'Interest Expense' in yahoo_symbol_income.index:
@@ -619,10 +672,34 @@ class DataHistoryYahoo():
             and total_revenue_ttm not in (None, 0) \
             else None
 
+        # operation_margin for years
+        operation_margin_fy = ebit_fy / total_revenue_fy \
+            if ebit_fy is not None \
+            and total_revenue_fy not in (None, 0) \
+            else None
+
+        # operation_margin for quarters
+        operation_margin_quarter = ebit_quarter / total_revenue \
+            if ebit_fy is not None \
+            and total_revenue_fy not in (None, 0) \
+            else None
+
         # fcf_margin
         fcf_margin = free_cashflow_ttm / total_revenue_ttm \
             if free_cashflow_ttm is not None \
             and total_revenue_ttm not in (None, 0) \
+            else None
+
+        # fcf_margin_fy
+        fcf_margin_fy = free_cashflow_fy / total_revenue_fy \
+            if free_cashflow_fy is not None \
+            and total_revenue_fy not in (None, 0) \
+            else None
+
+        # fcf_margin_quarter
+        fcf_margin_quarter = free_cashflow / total_revenue \
+            if free_cashflow is not None \
+            and total_revenue not in (None, 0) \
             else None
 
         # ROIC
@@ -694,6 +771,16 @@ class DataHistoryYahoo():
             and last_stockholders_equity_mean not in (None, 0) \
             else None
 
+        roe_fy = net_income_fy / stockholders_equity_mean \
+            if net_income_fy is not None \
+            and stockholders_equity_mean not in (None, 0) \
+            else None
+
+        roe_quarter = net_income_ttm / stockholders_equity_quarter_mean \
+            if net_income_ttm is not None \
+            and stockholders_equity_quarter_mean not in (None, 0) \
+            else None
+
         # ROA
         # Total Assets
         if 'Total Assets' in yahoo_symbol_balancesheet.index:
@@ -711,9 +798,32 @@ class DataHistoryYahoo():
             assets_mean = None
             last_assets_mean = None
 
+        # Total Assets Quarter
+        if 'Total Assets' in yahoo_symbol_balancesheet_quarter.index:
+            assets_quarter = yahoo_symbol_balancesheet_quarter.loc['Total Assets']
+            if pd.isna(assets_quarter).all():
+                assets_quarter = None
+                assets_quarter_mean = None
+            else:
+                assets_quarter = assets_quarter.dropna()
+                assets_quarter_mean = (assets_quarter.shift(1) + assets_quarter) / 2
+        else:
+            assets_quarter = None
+            assets_quarter_mean = None
+
         roa = net_income_ttm / last_assets_mean \
             if net_income_ttm is not None \
             and last_assets_mean not in (None, 0) \
+            else None
+
+        roa_fy = net_income_fy / assets_mean \
+            if net_income_fy is not None \
+            and assets_mean not in (None, 0) \
+            else None
+        
+        roa_quarter = net_income_quarter / assets_quarter_mean \
+            if net_income_quarter is not None \
+            and assets_quarter_mean not in (None, 0) \
             else None
 
         # ------ Capital Efficiency ------ #
@@ -934,8 +1044,22 @@ class DataHistoryYahoo():
                 "StockholdersEquity": stockholders_equity_last,
             },
             "profitability": {
-                "NetIncome": net_income_ttm,
-                "TotalRevenue": total_revenue_last,
+                "total_ebitda_fy": total_ebitda_fy,
+                "total_ebitda_quarter": total_ebitda,
+                "total_revenue_fy": total_revenue_fy,
+                "total_revenue_quarter": total_revenue,
+                "operation_margin_fy": operation_margin_fy,
+                "operation_margin_quarter": operation_margin_quarter,
+                "fcf_margin_fy": fcf_margin_fy,
+                "fcf_margin_quarter": fcf_margin_quarter,
+                "roe_quarter": roe_quarter,
+                "roe_fy": roe_fy,
+                "roa_quarter": roa_quarter,
+                "roa_fy": roa_fy,
+                # extras
+                "ebitda_fy_ttm": ebitda_fy_ttm,
+                "ebit_fy_ttm": ebit_fy_ttm,
+                "total_revenue_last": total_revenue_last,
             },
             "cashflow": {
                 "FreeCashflow": free_cashflow_ttm,

@@ -434,6 +434,7 @@ export function displayFundamentalResultsClassification(data) {
     ["kpis", "ROIC"],
     ["kpis", "ROE"],
     ["kpis", "ROA"],
+    ["kpis", "FcfMargin"],
     ["kpis", "WACC"],
     ["kpis", "EVA"],
     ["kpis", "GrowthReveneuYoY"],

@@ -398,20 +398,20 @@
 
             <!-- Profitability-->
             <div class="fundamental-card">
-
                 <div class="fundamental-header" id="funProfitability">
                     <h2>Profitability</h2>
                     <span class="toggle-icon">+</span>
                 </div>
-
                 <div class="profitability-content hidden">
-                    <div >
-                        <h3>Efficiency, Profitability and Value Generation</h3>
-                    </div>
                     <div class="fund-profitability">
-                        <div>
-                            <p><strong>Net Income:</strong> <span id="NetIncome"></span></p>
-                            <p><strong>Total Revenue:</strong> <span id="TotalRevenue"></span></p>
+                        <div class="chart-container-profitability">
+                            <canvas id="revEbitMarginChart"></canvas>
+                        </div>
+                        <div class="chart-container-profitability">
+                            <canvas id="roeRoaChart"></canvas>
+                        </div>
+                        <div class="chart-container-profitability">
+                            <canvas id="fcfMarginChart"></canvas>
                         </div>
                     </div>
                     <div>
@@ -591,6 +591,7 @@
     <script src="{% static 'js/custom_charts/theme.js' %}"></script>
     <script type="module" src="{% static 'js/custom_charts/chartsandgraphs.js' %}"></script>
     <script type="module" src="{% static 'js/custom_charts/financialhealthcharts.js' %}"></script>
+    <script type="module" src="{% static 'js/custom_charts/profitabilitycharts.js' %}"></script>
     <!-- Glossarios.js -->
     <script src="{% static 'js/plugins/marked.min.js' %}"></script>
     <script src="{% static 'js/plugins/purify.min.js' %}"></script>

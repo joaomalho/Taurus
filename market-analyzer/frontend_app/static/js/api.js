@@ -72,3 +72,8 @@ export function fetchSymbolEarnings(symbol) {
 export function fetchSymbolFinancialHealth(symbol) {
   return fetch(`/stock/${symbol}/finacial_health_chart/`).then(res => res.json());
 }
+
+//////////// ##### PROFITABILITY CHART###### ////////////
+export function fetchSymbolProfitability(symbol) {
+  return fetch(`/stock/${symbol}/profitability_chart/`).then(res => res.json());
+}

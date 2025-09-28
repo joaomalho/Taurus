@@ -220,6 +220,29 @@
   height: 95% !important;
 }
 
+/* ============================= */
+/* CHARTS - PROFITABILITY        */
+/* ============================= */
+
+.chart-container-profitability {
+    position: relative;
+    width: 100%;
+    max-width: 100%;     /* opcional */
+    height: 360px;         /* controla a altura aqui, no container */
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--primary-bg);
+    color: var(--text-color-black);
+    font-size: 12px;
+    font-style: italic
+}
+
+.chart-container-profitability canvas {
+  display: block;   
+  width: 100% !important;
+  height: 95% !important;
+}
+
 
 /* Ajustando responsividade */
 @media screen and (max-width: 1024px) {

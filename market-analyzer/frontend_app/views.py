@@ -1019,7 +1019,6 @@ def get_financial_health_chart_info(request, symbol: str):
 
         company = bio_info.get("LongName") or symbol
         sector = bio_info.get("Sector")
-        # KPIs que precisamos (4 para o scatter + heatmap)
         kpis = bio_fund_info.get("kpis", {})
         metrics = {
             "net_debt_ebitda":       kpis.get("NetDebtEbitda"),
@@ -1028,7 +1027,6 @@ def get_financial_health_chart_info(request, symbol: str):
             "quick_ratio":           kpis.get("QuickRatio"),
         }
 
-        # thresholds (torna isto configurável se quiseres)
         thresholds = {
             "nde_neutral":      0.0,
             "nde_strong":       1.0,
@@ -1043,6 +1041,60 @@ def get_financial_health_chart_info(request, symbol: str):
             "sector": sector or "Unknown",
             "metrics": metrics,
             "thresholds": thresholds,
+            "asof": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "peers": []
+        }
+
+        return JsonResponse({"data": payload}, status=200)
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+# Financial Health Chart
+def get_profitability_chart_info(request, symbol: str):
+    """
+    Return company information for profitability charts.
+    """
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        bio_info = data_history.get_symbol_bio_info(symbol)
+        bio_fund_info = data_history.get_symbol_fundamental_info(symbol)
+
+        if not bio_info:
+            return JsonResponse({"error": "No bio data found"}, status=404)
+
+        if not bio_fund_info:
+            return JsonResponse({"error": "No fundamental data found"}, status=404)
+
+        profitability = bio_fund_info.get("profitability", {})
+        metrics = {
+            "total_ebitda_fy":                  profitability.get("total_ebitda_fy"),
+            "total_ebitda_quarter":             profitability.get("total_ebitda_quarter"),
+            "total_revenue_fy":                 profitability.get("total_revenue_fy"),
+            "total_revenue_quarter":            profitability.get("total_revenue_quarter"),
+            "operation_margin_fy":              profitability.get("operation_margin_fy"),
+            "operation_margin_quarter":         profitability.get("operation_margin_quarter"),
+            "fcf_margin_fy":                    profitability.get("fcf_margin_fy"),
+            "fcf_margin_quarter":               profitability.get("fcf_margin_quarter"),
+            "roe_quarter":                      profitability.get("roe_quarter"),
+            "roe_fy":                           profitability.get("roe_fy"),
+            "roa_quarter":                      profitability.get("roa_quarter"),
+            "roa_fy":                           profitability.get("roa_fy"),
+        }
+
+        payload = {
+            "symbol": symbol,
+            "metrics": metrics,
             "asof": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "peers": []
         }
