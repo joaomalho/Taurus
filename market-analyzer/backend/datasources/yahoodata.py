@@ -354,7 +354,7 @@ class DataHistoryYahoo():
                 total_debt = total_debt.dropna()
                 total_debt_last = total_debt.iloc[0]
         else:
-            total_ebitda = None
+            total_debt = None
             total_debt_last = None
 
         # - Minority Interest
@@ -1255,3 +1255,246 @@ class DataHistoryYahoo():
         '''
         yahoo_data_earnings_dates = yf.Ticker(symbol).earnings_dates
         return yahoo_data_earnings_dates
+
+    def get_symbol_fundamental_info_profitability(self, symbol: str):
+        '''
+        Return detailed fundamental information for profitability charts
+        '''
+        try:
+            yahoo_symbol_balancesheet = yf.Ticker(symbol).balance_sheet
+        except Exception:
+            yahoo_symbol_balancesheet = pd.DataFrame()
+        try:
+            yahoo_symbol_balancesheet_quarter = yf.Ticker(symbol).quarterly_balance_sheet
+        except Exception:
+            yahoo_symbol_balancesheet_quarter = pd.DataFrame()
+        try:
+            yahoo_symbol_income = yf.Ticker(symbol).income_stmt
+        except Exception:
+            yahoo_symbol_income = pd.DataFrame()
+        try:
+            yahoo_symbol_income_quarter = yf.Ticker(symbol).quarterly_income_stmt
+        except Exception:
+            yahoo_symbol_income_quarter = pd.DataFrame()
+        try:
+            yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
+        except Exception:
+            yahoo_symbol_cashflow = pd.DataFrame()
+        try:
+            yahoo_symbol_cashflow_quarter = yf.Ticker(symbol).quarterly_cash_flow
+        except Exception:
+            yahoo_symbol_cashflow_quarter = pd.DataFrame()
+
+        # - EBITDA Year
+        if 'EBITDA' in yahoo_symbol_income.index:
+            total_ebitda_fy = yahoo_symbol_income.loc['EBITDA']
+            if pd.isna(total_ebitda_fy).all():
+                total_ebitda_fy = None
+            else:
+                total_ebitda_fy = total_ebitda_fy.dropna()
+        else:
+            total_ebitda_fy = None
+
+        # - EBITDA Quarter
+        if 'EBITDA' in yahoo_symbol_income_quarter.index:
+            total_ebitda_quarter = yahoo_symbol_income_quarter.loc['EBITDA']
+            if pd.isna(total_ebitda_quarter).all():
+                total_ebitda_quarter = None
+            else:
+                total_ebitda_quarter = total_ebitda_quarter.dropna()
+        else:
+            total_ebitda_quarter = None
+
+        # - Total Revenue Year
+        if 'Total Revenue' in yahoo_symbol_income.index:
+            total_revenue_fy = yahoo_symbol_income.loc['Total Revenue']
+            if pd.isna(total_revenue_fy).all():
+                total_revenue_fy = None
+            else:
+                total_revenue_fy = total_revenue_fy.dropna()
+        else:
+            total_revenue_fy = None
+
+        # - Total Revenue Quarter
+        if 'Total Revenue' in yahoo_symbol_income_quarter.index:
+            total_revenue_quarter = yahoo_symbol_income_quarter.loc['Total Revenue']
+            if pd.isna(total_revenue_quarter).all():
+                total_revenue_quarter = None
+            else:
+                total_revenue_quarter = total_revenue_quarter.dropna()
+        else:
+            total_revenue_quarter = None
+
+        # - Interest Coverage (EBIT) Year
+        if 'EBIT' in yahoo_symbol_income.index:
+            ebit_fy = yahoo_symbol_income.loc['EBIT']
+            if pd.isna(ebit_fy).all():
+                ebit_fy = None
+            else:
+                ebit_fy = ebit_fy.dropna()
+        else:
+            ebit_fy = None
+
+        # - Interest Coverage (EBIT) Quarter
+        if 'EBIT' in yahoo_symbol_income_quarter.index:
+            ebit_quarter = yahoo_symbol_income_quarter.loc['EBIT']
+            if pd.isna(ebit_quarter).all():
+                ebit_quarter = None
+            else:
+                ebit_quarter = ebit_quarter.dropna()
+        else:
+            ebit_quarter = None
+
+        # operation_margin Year
+        operation_margin_fy = ebit_fy / total_revenue_fy \
+            if ebit_fy is not None \
+            and total_revenue_fy is not None \
+            else None
+
+        # operation_margin Quarter
+        operation_margin_quarter = ebit_quarter / total_revenue_quarter \
+            if total_revenue_quarter is not None \
+            and ebit_quarter is not None \
+            else None
+
+        # - Free Cash Flow Year
+        if 'Free Cash Flow' in yahoo_symbol_cashflow.index:
+            free_cashflow_fy = yahoo_symbol_cashflow.loc['Free Cash Flow']
+            if pd.isna(free_cashflow_fy).all():
+                free_cashflow_fy = None
+            else:
+                free_cashflow_fy = free_cashflow_fy.dropna()
+        else:
+            free_cashflow_fy = None
+
+        # - Free Cash Flow Quarter
+        if 'Free Cash Flow' in yahoo_symbol_cashflow_quarter.index:
+            free_cashflow_quarter = yahoo_symbol_cashflow_quarter.loc['Free Cash Flow']
+            if pd.isna(free_cashflow_quarter).all():
+                free_cashflow_quarter = None
+            else:
+                free_cashflow_quarter = free_cashflow_quarter.dropna()
+        else:
+            free_cashflow_quarter = None
+
+        # fcf_margin Year
+        fcf_margin_fy = total_revenue_fy / total_revenue_fy \
+            if total_revenue_fy is not None \
+            and total_revenue_fy is not None \
+            else None
+
+        # fcf_margin Quarter
+        fcf_margin_quarter = free_cashflow_quarter / total_revenue_quarter \
+            if free_cashflow_quarter is not None \
+            and total_revenue_quarter is not None \
+            else None
+
+        # - Stockholders Equity Year
+        if 'Stockholders Equity' in yahoo_symbol_balancesheet.index:
+            stockholders_equity_fy = yahoo_symbol_balancesheet.loc["Stockholders Equity"]
+            if pd.isna(stockholders_equity_fy).all():
+                stockholders_equity_fy = None
+                stockholders_equity_fy_mean = None
+            else:
+                stockholders_equity_fy = stockholders_equity_fy.dropna()
+                stockholders_equity_fy_mean = (stockholders_equity_fy.shift(1) + stockholders_equity_fy) / 2
+        else:
+            stockholders_equity_fy = None
+            stockholders_equity_fy_mean = None
+
+        # - Stockholders Equity Quarter
+        if 'Stockholders Equity' in yahoo_symbol_balancesheet_quarter.index:
+            stockholders_equity_quarter = yahoo_symbol_balancesheet_quarter.loc["Stockholders Equity"]
+            if pd.isna(stockholders_equity_quarter).all():
+                stockholders_equity_quarter = None
+                stockholders_equity_quarter_mean = None
+            else:
+                stockholders_equity_quarter = stockholders_equity_quarter.dropna()
+                stockholders_equity_quarter_mean = (stockholders_equity_quarter.shift(1) + stockholders_equity_quarter) / 2
+        else:
+            stockholders_equity_quarter = None
+            stockholders_equity_quarter_mean = None
+
+        # net_income_fy Year
+        if 'Net Income' in yahoo_symbol_income.index:
+            net_income_fy = yahoo_symbol_income.loc['Net Income']
+            if pd.isna(net_income_fy).all():
+                net_income_fy = None
+            else:
+                net_income_fy = net_income_fy.dropna()
+        else:
+            net_income_fy = None
+
+        # net_income Quarter
+        if 'Net Income' in yahoo_symbol_income_quarter.index:
+            net_income_quarter = yahoo_symbol_income_quarter.loc['Net Income']
+            if pd.isna(net_income_quarter).all():
+                net_income_quarter = None
+            else:
+                net_income_quarter = net_income_quarter.dropna()
+        else:
+            net_income_quarter = None
+
+        roe_fy = net_income_fy / stockholders_equity_fy_mean \
+            if net_income_fy is not None \
+            and stockholders_equity_fy_mean is not None \
+            else None
+
+        roe_quarter = net_income_quarter / stockholders_equity_quarter_mean \
+            if net_income_quarter is not None \
+            and stockholders_equity_quarter_mean is not None \
+            else None
+
+        # Total Assets Year
+        if 'Total Assets' in yahoo_symbol_balancesheet.index:
+            assets_fy = yahoo_symbol_balancesheet.loc['Total Assets']
+            if pd.isna(assets_fy).all():
+                assets_fy = None
+                assets_fy_mean = None
+            else:
+                assets_fy = assets_fy.dropna()
+                assets_fy_mean = (assets_fy.shift(1) + assets_fy) / 2
+        else:
+            assets_fy = None
+            assets_fy_mean = None
+
+        # Total Assets Quarter
+        if 'Total Assets' in yahoo_symbol_balancesheet_quarter.index:
+            assets_quarter = yahoo_symbol_balancesheet_quarter.loc['Total Assets']
+            if pd.isna(assets_quarter).all():
+                assets_quarter = None
+                assets_quarter_mean = None
+            else:
+                assets_quarter = assets_quarter.dropna()
+                assets_quarter_mean = (assets_quarter.shift(1) + assets_quarter) / 2
+        else:
+            assets_quarter = None
+            assets_quarter_mean = None
+
+        roa_fy = net_income_fy / assets_fy_mean \
+            if net_income_fy is not None \
+            and assets_fy_mean is not None \
+            else None
+
+        roa_quarter = net_income_quarter / assets_quarter_mean \
+            if net_income_quarter is not None \
+            and assets_quarter_mean is not None \
+            else None
+
+        data = {
+            "profitability": {
+                "total_ebitda_fy": total_ebitda_fy,
+                "total_ebitda_quarter": total_ebitda_quarter,
+                "total_revenue_fy": total_revenue_fy,
+                "total_revenue_quarter": total_revenue_quarter,
+                "operation_margin_fy": operation_margin_fy,
+                "operation_margin_quarter": operation_margin_quarter,
+                "fcf_margin_fy": fcf_margin_fy,
+                "fcf_margin_quarter": fcf_margin_quarter,
+                "roe_fy": roe_fy,
+                "roe_quarter": roe_quarter,
+                "roa_fy": roa_fy,
+                "roa_quarter": roa_quarter,
+            }
+        }
+        return data

@@ -1068,7 +1068,7 @@ def get_profitability_chart_info(request, symbol: str):
 
         data_history = DataHistoryYahoo()
         bio_info = data_history.get_symbol_bio_info(symbol)
-        bio_fund_info = data_history.get_symbol_fundamental_info(symbol)
+        bio_fund_info = data_history.get_symbol_fundamental_info_profitability(symbol)
 
         if not bio_info:
             return JsonResponse({"error": "No bio data found"}, status=404)
