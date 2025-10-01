@@ -67,7 +67,7 @@ const rows = [];
 const pushRow = (item, isMain=false) => {
     const x = numOrNull(item?.metrics?.net_debt_ebitda);
     const y = numOrNull(item?.metrics?.interest_coverage);
-    if (x === null || y === null) return; // só plota se ambos existirem
+    if (x === null || y === null) return;
     rows.push({
     x, y,
     r: isMain ? 6 : 4, // raio

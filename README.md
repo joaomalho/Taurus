@@ -409,10 +409,6 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **KPIS Finish**
 - **Sectors Charts**
 
-Notas:
--- continuar o finantial health
-
-Net Debt muito inferiores e muito superiores
-Interest Coverage muito inferiores e muito superiores
-
-SubTotais nos excel
+Notes:
+-- Adjust charts over values. Fine tunning Profitability
+-- Finish css pallete

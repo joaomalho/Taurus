@@ -3,7 +3,6 @@ import { fetchSymbolProfitability } from "../api.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // ===== Helpers =====
-  const num = (v) => (Number.isFinite(+v) ? +v : null);
   const numOrNull = (v) => {
     if (v === null || v === undefined) return null;
     if (typeof v === "string" && v.trim().toLowerCase() === "n/a") return null;
@@ -30,11 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }).format(v);
 
   // Normaliza várias formas de payload:
-  // Aceita:
   //  a) payload.series = { labels:[], revenue:[], ebit:[], op_margin:[], roe:[], roa:[], fcf_margin:[] }
   //  b) payload.series = [{period, revenue, ebit, op_margin, roe, roa, fcf_margin}, ...]
-  function normalizeProfitability(payload) {
-    const s = payload?.series;
+  function normalizeSeriesObject(s) {
     if (!s) return { labels: [], revenue: [], ebit: [], opMargin: [], roe: [], roa: [], fcfMargin: [] };
 
     // (a) objeto com arrays
@@ -240,6 +237,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function renderAll(series) {
+    renderRevEbitMarginChart("revEbitMarginChart", series.labels, series.revenue, series.ebit, series.opMargin);
+    renderRoeRoaChart("roeRoaChart", series.labels, series.roe, series.roa);
+    renderFcfMarginChart("fcfMarginChart", series.labels, series.fcfMargin);
+  }
+
   // ===== Bootstrap =====
   const symbol = (window.location.pathname.split("/") || [])[2];
   if (!symbol) {
@@ -254,18 +257,30 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       const data = api?.data ?? api; // aceita ambos
-      const series = normalizeProfitability(data);
 
-      // Render
-      renderRevEbitMarginChart(
-        "revEbitMarginChart",
-        series.labels,
-        series.revenue,
-        series.ebit,
-        series.opMargin
-      );
-      renderRoeRoaChart("roeRoaChart", series.labels, series.roe, series.roa);
-      renderFcfMarginChart("fcfMarginChart", series.labels, series.fcfMargin);
+      // 1) Normaliza as diferentes formas
+      const baseSeries = normalizeSeriesObject(data?.series);
+
+      // 2) (Opcional) também normaliza FY e Quarter se vierem
+      const seriesFY = normalizeSeriesObject(data?.series_fy);
+      const seriesQ  = normalizeSeriesObject(data?.series_quarter);
+
+      // 3) Escolha inicial: prioriza trimestral se existir; caso contrário usa FY; senão usa base
+      let current = (seriesQ.labels.length > 0 ? seriesQ : (seriesFY.labels.length > 0 ? seriesFY : baseSeries));
+
+      // 4) Se existir um seletor #profitabilityPeriod, permite trocar entre quarter/FY
+      const sel = document.getElementById("profitabilityPeriod");
+      if (sel) {
+        // Ajusta o valor inicial do seletor
+        sel.value = (current === seriesQ) ? "quarter" : "fy";
+        sel.addEventListener("change", () => {
+          current = (sel.value === "quarter") ? (seriesQ.labels.length ? seriesQ : seriesFY) : (seriesFY.labels.length ? seriesFY : seriesQ);
+          renderAll(current);
+        });
+      }
+
+      // Render inicial
+      renderAll(current);
     })
     .catch((err) => console.error("Erro ao carregar Profitability:", err));
 });

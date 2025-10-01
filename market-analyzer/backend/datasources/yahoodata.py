@@ -1285,6 +1285,91 @@ class DataHistoryYahoo():
         except Exception:
             yahoo_symbol_cashflow_quarter = pd.DataFrame()
 
+        # ==================== HELPERS ====================
+        def _safe_row(df, row_name):
+            if isinstance(df, pd.DataFrame) and row_name in df.index:
+                s = df.loc[row_name].dropna()
+                return s if not s.empty else None
+            return None
+
+        def _labels_from_index_year(idx):
+            if idx is None or len(idx) == 0:
+                return []
+            labels = []
+            for k in idx:
+                try:
+                    if hasattr(k, "year"):
+                        labels.append(str(int(k.year)))
+                    else:
+                        ts = pd.to_datetime(k, errors="coerce")
+                        labels.append(str(int(ts.year)) if ts is not None and not pd.isna(ts) else str(k))
+                except Exception:
+                    labels.append(str(k))
+            return labels
+
+        def _labels_from_index_quarter(idx):
+            if idx is None or len(idx) == 0:
+                return []
+            labels = []
+            for k in idx:
+                try:
+                    ts = pd.to_datetime(k, errors="coerce")
+                    if ts is not None and not pd.isna(ts):
+                        q = ts.to_period("Q")
+                        labels.append(f"{q.year}-Q{q.quarter}")
+                    else:
+                        labels.append(str(k))
+                except Exception:
+                    labels.append(str(k))
+            return labels
+
+        def _values_for(s, idx, to_percent=False):
+            if s is None or idx is None:
+                return []
+            s2 = s.reindex(idx)
+            out = []
+            for v in s2.values:
+                if pd.isna(v):
+                    out.append(None)
+                else:
+                    x = float(v)
+                    out.append(x * 100.0 if to_percent else x)
+            return out
+
+        def _build_series(index_labels_func, mapping):
+            """
+            mapping: dict com chaves destino -> pandas.Series (ou None)
+            Alinha por interseção de índices, ordena cronologicamente, gera labels/arrays.
+            """
+            common_idx = None
+            for s in mapping.values():
+                if s is None:
+                    continue
+                common_idx = s.index if common_idx is None else common_idx.intersection(s.index)
+
+            if common_idx is None or len(common_idx) == 0:
+                return {
+                    "labels": [], "revenue": [], "ebit": [],
+                    "op_margin": [], "roe": [], "roa": [], "fcf_margin": []
+                }
+
+            # ordenar crescentemente por data
+            try:
+                common_idx = pd.Index(sorted(common_idx, key=lambda k: pd.to_datetime(k, errors="coerce")))
+            except Exception:
+                pass
+
+            labels = index_labels_func(common_idx)
+            return {
+                "labels": labels,
+                "revenue": _values_for(mapping["revenue"], common_idx, to_percent=False),
+                "ebit": _values_for(mapping["ebit"], common_idx, to_percent=False),
+                "op_margin": _values_for(mapping["op_margin"], common_idx, to_percent=True),
+                "roe": _values_for(mapping["roe"], common_idx, to_percent=True),
+                "roa": _values_for(mapping["roa"], common_idx, to_percent=True),
+                "fcf_margin": _values_for(mapping["fcf_margin"], common_idx, to_percent=True),
+            }
+
         # - EBITDA Year
         if 'EBITDA' in yahoo_symbol_income.index:
             total_ebitda_fy = yahoo_symbol_income.loc['EBITDA']
@@ -1378,8 +1463,8 @@ class DataHistoryYahoo():
             free_cashflow_quarter = None
 
         # fcf_margin Year
-        fcf_margin_fy = total_revenue_fy / total_revenue_fy \
-            if total_revenue_fy is not None \
+        fcf_margin_fy = free_cashflow_fy / total_revenue_fy \
+            if free_cashflow_fy is not None \
             and total_revenue_fy is not None \
             else None
 
@@ -1480,21 +1565,37 @@ class DataHistoryYahoo():
             if net_income_quarter is not None \
             and assets_quarter_mean is not None \
             else None
+    
+        # ==================== FY (ANUAL) ====================
+        series_fy = _build_series(
+            _labels_from_index_year,
+            {
+                "revenue": total_revenue_fy,
+                "ebit": ebit_fy,
+                "op_margin": operation_margin_fy,
+                "fcf_margin": fcf_margin_fy,
+                "roe": roe_fy,
+                "roa": roa_fy,
+            },
+        )
 
-        data = {
-            "profitability": {
-                "total_ebitda_fy": total_ebitda_fy,
-                "total_ebitda_quarter": total_ebitda_quarter,
-                "total_revenue_fy": total_revenue_fy,
-                "total_revenue_quarter": total_revenue_quarter,
-                "operation_margin_fy": operation_margin_fy,
-                "operation_margin_quarter": operation_margin_quarter,
-                "fcf_margin_fy": fcf_margin_fy,
-                "fcf_margin_quarter": fcf_margin_quarter,
-                "roe_fy": roe_fy,
-                "roe_quarter": roe_quarter,
-                "roa_fy": roa_fy,
-                "roa_quarter": roa_quarter,
-            }
+        series_quarter = _build_series(
+            _labels_from_index_quarter,
+            {
+                "revenue": total_revenue_quarter,
+                "ebit": ebit_quarter,
+                "op_margin": operation_margin_quarter,
+                "fcf_margin": fcf_margin_quarter,
+                "roe": roe_quarter,
+                "roa": roa_quarter,
+            },
+        )
+
+        # ==================== ESCOLHA PRINCIPAL (compatibilidade com o teu JS) ====================
+        primary = series_quarter if len(series_quarter["labels"]) > 0 else series_fy
+
+        return {
+            "series": primary,
+            "series_fy": series_fy,
+            "series_quarter": series_quarter,
         }
-        return data
