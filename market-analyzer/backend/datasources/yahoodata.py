@@ -1565,7 +1565,7 @@ class DataHistoryYahoo():
             if net_income_quarter is not None \
             and assets_quarter_mean is not None \
             else None
-    
+
         # ==================== FY (ANUAL) ====================
         series_fy = _build_series(
             _labels_from_index_year,

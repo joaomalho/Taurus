@@ -289,16 +289,16 @@ canvas {
     margin: 0;
 }
 
-/* CASHFLOW */
+/* CAPITAL EFFICIENCY */
 
-.cashflow-content {
+.capitalefi-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
     line-height: 1.5;
     background-color: var(--content-bg);
 }
 
-.cashflow-content p {
+.capitalefi-content p {
     margin: 6px 0;
     padding: 8px 12px;
     background-color: var(--content-p-bg);
@@ -306,12 +306,12 @@ canvas {
     border-left: 4px solid var(--stock-info-border-color); 
 }
 
-.cashflow-content a {
+.capitalefi-content a {
     color: var(--link-color);
     font-weight: bold;
 }
 
-.cashflow-content a:hover {
+.capitalefi-content a:hover {
     color: var(--button-hover-bg);
 }
 
@@ -524,7 +524,7 @@ canvas {
     color: var(--button-hover-bg);
 }
 
-.fund-cashflow, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-ratios, .fund-risk, .fund-download, .fund-kpis {
+.fund-capitalefi, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-ratios, .fund-risk, .fund-download, .fund-kpis {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 10px;

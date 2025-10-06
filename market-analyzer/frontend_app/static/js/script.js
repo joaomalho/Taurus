@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
             { toggleSelector: "#funHealth", contentSelector: ".health-content" },
             { toggleSelector: "#funDividends", contentSelector: ".dividends-content" },
             { toggleSelector: "#funProfitability", contentSelector: ".profitability-content" },
-            { toggleSelector: "#funCashflow", contentSelector: ".cashflow-content" },
+            { toggleSelector: "#funCapitalEf", contentSelector: ".capitalefi-content" },
             { toggleSelector: "#funRatios", contentSelector: ".ratios-content" },
             { toggleSelector: "#funRisk", contentSelector: ".risk-content" },
             { toggleSelector: "#funOverview", contentSelector: ".overview-content" },

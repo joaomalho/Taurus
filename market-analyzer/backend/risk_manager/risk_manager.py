@@ -157,6 +157,23 @@ class RiskManagerFundamental():
             (7.0,        "Healthy",                             "good"),
             (math.inf,   "Strong",                              "verygood"),
         ],
+        "EVA": [
+            (0.00,      "Destroys Value",                       "bad"),      
+            (0.05,      "Cover Capital Expenses",               "neutral"),  
+            (0.12,      "Value Creating",                       "good"),     
+            (math.inf,  "Strong Value Creation",                "verygood"), 
+        ],
+        "ROIC": [
+            (0.06,      "Weak",                                 "bad"),
+            (0.12,      "Tight",                                "neutral"),
+            (0.15,      "Healthy",                              "good"),
+            (math.inf,  "Strong",                               "verygood"),
+        ],
+        "WACC": [
+            (0.07,      "Low",                                  "good"),
+            (0.12,      "Normal",                               "neutral"),
+            (math.inf,  "High",                                 "bad"),
+        ],
     }
 
     METRIC_MESSAGES_PT = {
@@ -832,6 +849,148 @@ class RiskManagerFundamental():
                 "tooltip": "Sem dados."
             },
         },
+        "EVA": {
+            "verygood": lambda v: {
+                "short":  f"**ROIC − WACC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Retorno do capital investido excede claramente o custo de capital.\n\n"
+                    "**Interpretação:**\n"
+                    "- A empresa **cobre o custo de capital e ainda gera excedente** económico substancial.\n"
+                    "- Normalmente sustentável em negócios com *moat* ou execução superior.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — desde que ROIC e margens se mantenham."
+                ),
+                "tooltip": ">12 p.p. acima do WACC. Forte criação de valor."
+            },
+            "good": lambda v: {
+                "short":  f"**ROIC − WACC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- ROIC acima do WACC por uma margem confortável.\n\n"
+                    "**Interpretação:**\n"
+                    "- Investimentos tendem a **acrescentar valor**; sinal positivo de disciplina alocativa.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — vigiar ciclos e necessidade de CAPEX."
+                ),
+                "tooltip": "Entre 5 e 12 p.p. acima do WACC. Criação de valor."
+            },
+            "neutral": lambda v: {
+                "short":  f"**ROIC − WACC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Cobertura do custo de capital com **pouca folga**.\n\n"
+                    "**Interpretação:**\n"
+                    "- Pequenas quedas em margens/rotação podem eliminar a criação de valor.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — sensível a choques operacionais."
+                ),
+                "tooltip": "0–5 p.p. acima do WACC. Margem curta."
+            },
+            "bad": lambda v: {
+                "short":  f"**ROIC − WACC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Destruição de valor: o retorno **não cobre** o custo do capital.\n\n"
+                    "**Interpretação:**\n"
+                    "- Necessidade de melhorar margens/rotação ou reavaliar investimentos.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — pressão sobre crescimento e múltiplos."
+                ),
+                "tooltip": "≤0 p.p. (abaixo do WACC). Abaixo do custo de capital."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para ROIC − WACC.**",
+                "detail": "Falta ROIC e/ou WACC para calcular o spread.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "ROIC": {
+            "verygood": lambda v: {
+                "short":  f"**ROIC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Retorno elevado sobre o capital investido.\n\n"
+                    "**Interpretação:**\n"
+                    "- Eficiência operacional/rotacional robusta; boa disciplina de capital.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — desde que o *moat* se mantenha."
+                ),
+                "tooltip": "Forte."
+            },
+            "good": lambda v: {
+                "short":  f"**ROIC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Bom retorno para o risco típico do setor.\n\n"
+                    "**Interpretação:**\n"
+                    "- Valor criado acima do custo de capital em condições normais."
+                ),
+                "tooltip": "Saudável."
+            },
+            "neutral": lambda v: {
+                "short":  f"**ROIC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Retorno próximo do limiar “aceitável”.\n\n"
+                    "**Interpretação:**\n"
+                    "- Sensível a compressão de margens ou subida do WACC."
+                ),
+                "tooltip": "Apertado."
+            },
+            "bad": lambda v: {
+                "short":  f"**ROIC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Retorno baixo; provável destruição de valor se WACC for normal.\n\n"
+                    "**Interpretação:**\n"
+                    "- Melhorias operacionais/capital são necessárias."
+                ),
+                "tooltip": "Fraco."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para ROIC.**",
+                "detail": "Não foi possível calcular o retorno sobre o capital investido.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "WACC": {
+            "good": lambda v: {
+                "short":  f"**WACC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Custo de capital competitivo.\n\n"
+                    "**Interpretação:**\n"
+                    "- Facilita criação de valor para um dado ROIC."
+                ),
+                "tooltip": "Baixo."
+            },
+            "neutral": lambda v: {
+                "short":  f"**WACC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Em linha com risco/mercado.\n\n"
+                    "**Interpretação:**\n"
+                    "- Exige ROIC moderado para criar valor."
+                ),
+                "tooltip": "Normal."
+            },
+            "bad": lambda v: {
+                "short":  f"**WACC =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Custo de capital elevado (risco/estrutura).\n\n"
+                    "**Interpretação:**\n"
+                    "- Requer ROIC elevado para criar valor."
+                ),
+                "tooltip": "Alto."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para WACC.**",
+                "detail": "Não foi possível calcular o custo médio ponderado de capital.",
+                "tooltip": "Sem dados."
+            },
+        },
     }
 
     PE_TEXT_TO_BUCKET = {
@@ -1030,35 +1189,21 @@ class RiskManagerFundamental():
         # ----- Capital Efficiency ----- #
         # ----- ROIC
         roic = fm.safe_round(kpis.get("ROIC"))
-        evaluated_metrics["ROIC"] = roic if roic is not None else None
-
-        if roic is None:
-            text_ROIC = "No Data"
-        else:
-            if roic <= 6:
-                text_ROIC = "Weak"
-            elif roic <= 12:
-                text_ROIC = "Healthy"
-            else:
-                text_ROIC = "Strong"
-
-        self._set_eval(evaluated_metrics, "ROIC", text_ROIC)
+        eval_roic, bucket_roic = self.classify_value("ROIC", roic)
+        msgs_roic = self.messages_for("ROIC", roic, bucket_roic, lang="en")
+        self._emit_full(evaluated_metrics, "ROIC", roic, eval_roic, bucket_roic, msgs_roic)
 
         # ----- EVA
         eva = fm.safe_round(kpis.get("EVA"))
-        evaluated_metrics["EVA"] = eva if eva is not None else None
+        eval_eva, bucket_eva = self.classify_value("EVA", eva)
+        msgs_eva = self.messages_for("EVA", eva, bucket_eva, lang="en")
+        self._emit_full(evaluated_metrics, "EVA", eva, eval_eva, bucket_eva, msgs_eva)
 
-        if eva is None:
-            text_EVA = "No Data"
-        else:
-            if eva <= 0:
-                text_EVA = "Destroys Value"
-            elif eva <= 12:
-                text_EVA = "Cover Capital Expenses"
-            else:
-                text_EVA = "Generate Value"
-
-        self._set_eval(evaluated_metrics, "EVA", text_EVA)
+        # ----- WACC
+        wacc = fm.safe_round(kpis.get("WACC"))
+        eval_wacc, bucket_wacc = self.classify_value("WACC", wacc)
+        msgs_wacc = self.messages_for("WACC", wacc, bucket_wacc, lang="en")
+        self._emit_full(evaluated_metrics, "WACC", wacc, eval_wacc, bucket_wacc, msgs_wacc)
 
         # ----- Growth ----- #
         # ----- GrowthReveneuYoY
