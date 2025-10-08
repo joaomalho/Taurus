@@ -18,7 +18,7 @@ class DataHistoryYahoo():
 
     def get_endpoints_yahoo(self, symbol: str):
         '''
-        Request all necessary endpoints to pass for remaining funcions 
+        Request all necessary endpoints to pass for remaining funcions.
         '''
         # WIP
 
@@ -1598,4 +1598,247 @@ class DataHistoryYahoo():
             "series": primary,
             "series_fy": series_fy,
             "series_quarter": series_quarter,
+        }
+
+    def get_symbol_fundamental_info_capefficiency(self, symbol: str):
+        '''
+        Return detailed fundamental information for capital efficiency charts
+        '''
+        try:
+            yahoo_symbol_balancesheet = yf.Ticker(symbol).balance_sheet
+        except Exception:
+            yahoo_symbol_balancesheet = pd.DataFrame()
+        try:
+            yahoo_symbol_income = yf.Ticker(symbol).income_stmt
+        except Exception:
+            yahoo_symbol_income = pd.DataFrame()
+        try:
+            yahoo_symbol_info = yf.Ticker(symbol).info
+        except Exception:
+            yahoo_symbol_info = {}
+
+        # ==================== HELPERS ====================
+        def _safe_row(df, row_name):
+            if isinstance(df, pd.DataFrame) and row_name in df.index:
+                s = df.loc[row_name].dropna()
+                return s if not s.empty else None
+            return None
+
+        def _labels_from_index_year(idx):
+            if idx is None or len(idx) == 0:
+                return []
+            labels = []
+            for k in idx:
+                try:
+                    if hasattr(k, "year"):
+                        labels.append(str(int(k.year)))
+                    else:
+                        ts = pd.to_datetime(k, errors="coerce")
+                        labels.append(str(int(ts.year)) if ts is not None and not pd.isna(ts) else str(k))
+                except Exception:
+                    labels.append(str(k))
+            return labels
+
+        def _values_for(s, idx, to_percent=False):
+            if s is None or idx is None:
+                return []
+            s2 = s.reindex(idx)
+            out = []
+            for v in s2.values:
+                if pd.isna(v):
+                    out.append(None)
+                else:
+                    x = float(v)
+                    out.append(x * 100.0 if to_percent else x)
+            return out
+
+        def _build_series(index_labels_func, mapping):
+            """
+            mapping: dict com chaves destino -> pandas.Series (ou None)
+            Alinha por interseção de índices, ordena cronologicamente, gera labels/arrays.
+            """
+            common_idx = None
+            for s in mapping.values():
+                if s is None:
+                    continue
+                common_idx = s.index if common_idx is None else common_idx.intersection(s.index)
+
+            if common_idx is None or len(common_idx) == 0:
+                return {
+                    "labels": [],
+                    "ebit": [],
+                    "tax_rate": [],
+                    "cap_invested": [],
+                    "roic": [],
+                    "wacc": [],
+                    "eva": []
+                }
+            # ordenar crescentemente por data
+            try:
+                common_idx = pd.Index(sorted(common_idx, key=lambda k: pd.to_datetime(k, errors="coerce")))
+            except Exception:
+                pass
+
+            labels = index_labels_func(common_idx)
+            return {
+                "labels": labels,
+                "ebit": _values_for(mapping["ebit"], common_idx, to_percent=False),
+                "tax_rate": _values_for(mapping["tax_rate"], common_idx, to_percent=True),
+                "cap_invested": _values_for(mapping["cap_invested"], common_idx, to_percent=False),
+                "roic": _values_for(mapping["roic"], common_idx, to_percent=True),
+                "wacc": _values_for(mapping["wacc"], common_idx, to_percent=True),
+                "eva": _values_for(mapping["eva"], common_idx, to_percent=True),
+            }
+
+        # - Interest Coverage (EBIT) Year
+        if 'EBIT' in yahoo_symbol_income.index:
+            ebit_fy = yahoo_symbol_income.loc['EBIT']
+            if pd.isna(ebit_fy).all():
+                ebit_fy = None
+            else:
+                ebit_fy = ebit_fy.dropna().sort_index()
+        else:
+            ebit_fy = None
+
+        # ROIC
+        # Tax Rate For Calcs Year
+        if 'Tax Rate For Calcs' in yahoo_symbol_income.index:
+            tax_rate_fy = yahoo_symbol_income.loc['Tax Rate For Calcs']
+            if pd.isna(tax_rate_fy).all():
+                tax_rate_fy = None
+            else:
+                tax_rate_fy = tax_rate_fy.dropna().sort_index()
+        else:
+            tax_rate_fy = None
+
+        # Invested Capital Year
+        if 'Invested Capital' in yahoo_symbol_balancesheet.index:
+            cap_invested_fy = yahoo_symbol_balancesheet.loc['Invested Capital']
+            if pd.isna(cap_invested_fy).all():
+                cap_invested_fy = None
+                cap_invested_fy_mean = None
+            else:
+                cap_invested_fy = cap_invested_fy.dropna().sort_index()
+                cap_invested_fy_mean = (cap_invested_fy.shift(1) + cap_invested_fy) / 2
+        else:
+            cap_invested_fy = None
+            cap_invested_fy_mean = None
+
+        nopat_ttm_fy = (ebit_fy * (1 - tax_rate_fy)) \
+            if ebit_fy is not None \
+            and tax_rate_fy is not None \
+            else None
+
+        roic_fy = nopat_ttm_fy / cap_invested_fy_mean \
+            if nopat_ttm_fy is not None \
+            and cap_invested_fy_mean is not None \
+            else None
+
+        roic_fy = roic_fy.sort_index()
+
+        # - wacc
+        # - Market Cap
+        market_cap = yahoo_symbol_info.get('marketCap')
+        if market_cap is None or (isinstance(market_cap, float) and math.isnan(market_cap)):
+            market_cap = None
+
+        # - Total Debt Year
+        if 'Total Debt' in yahoo_symbol_balancesheet.index:
+            total_debt_fy = _safe_row(yahoo_symbol_balancesheet, "Total Debt")
+            if pd.isna(total_debt_fy).all():
+                total_debt_fy = None
+            else:
+                total_debt_fy = total_debt_fy.dropna().sort_index()
+        else:
+            total_debt_fy = None
+
+        # - Interest Expense Year
+        if 'Interest Expense' in yahoo_symbol_income.index:
+            interest_expense_fy = _safe_row(yahoo_symbol_income, "Interest Expense")
+            if pd.isna(interest_expense_fy).all():
+                interest_expense_fy = None
+            else:
+                interest_expense_fy = interest_expense_fy.dropna().sort_index()
+        else:
+            interest_expense_fy = None
+
+        beta = yahoo_symbol_info.get("beta", None)
+
+        cd_fy = interest_expense_fy.abs() / total_debt_fy \
+            if interest_expense_fy is not None \
+            and total_debt_fy is not None \
+            else None
+
+        cd_fy = cd_fy.sort_index()
+
+        # Tax Provision Year
+        if 'Tax Provision' in yahoo_symbol_income.index:
+            tax_provisory_fy = yahoo_symbol_income.loc['Tax Provision']
+            if pd.isna(tax_provisory_fy).all():
+                tax_provisory_fy = None
+            else:
+                tax_provisory_fy = tax_provisory_fy.dropna().sort_index()
+        else:
+            tax_provisory_fy = None
+
+        # Pretax Income Year
+        if 'Pretax Income' in yahoo_symbol_income.index:
+            pretax_income_fy = yahoo_symbol_income.loc['Pretax Income']
+            if pd.isna(pretax_income_fy).all():
+                pretax_income_fy = None
+            else:
+                pretax_income_fy = pretax_income_fy.dropna().sort_index()
+        else:
+            pretax_income_fy = None
+
+        tax_efective_fy = tax_provisory_fy / pretax_income_fy \
+            if tax_provisory_fy is not None \
+            and pretax_income_fy is not None \
+            else None
+
+        tax_efective_fy = tax_efective_fy.sort_index()
+
+        us10y = yf.Ticker("^TNX").info.get("previousClose")
+        us10y = us10y / 100 \
+            if us10y is not None \
+            else None
+
+        erp = 0.055
+
+        ce = us10y + beta * erp \
+            if us10y is not None \
+            and beta is not None \
+            else None
+
+        wacc_fy = None
+        if all(v is not None for v in [market_cap, total_debt_fy, ce, cd_fy, tax_efective_fy]):
+            total_cap_fy = market_cap + total_debt_fy
+            if not pd.isna(total_cap_fy).all():
+                wacc_fy = ((market_cap / total_cap_fy) * ce) + ((total_debt_fy / total_cap_fy) * cd_fy * (1 - tax_efective_fy))
+
+        wacc_fy = wacc_fy.sort_index()
+
+        # WACCvsROIC
+        eva_fy = roic_fy - wacc_fy \
+            if roic_fy is not None \
+            and wacc_fy is not None \
+            else None
+
+        eva_fy = eva_fy.sort_index()
+
+        # ==================== FY (ANUAL) ====================
+        series_fy = _build_series(
+            _labels_from_index_year,
+            {
+                "ebit": ebit_fy,
+                "tax_rate": tax_rate_fy,
+                "cap_invested": cap_invested_fy,
+                "roic": roic_fy,
+                "wacc": wacc_fy,
+                "eva": eva_fy,
+            },
+        )
+
+        return {
+            "series_fy": series_fy,
         }

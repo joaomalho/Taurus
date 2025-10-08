@@ -318,6 +318,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- Valuation -->
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funValuation">
@@ -449,6 +450,12 @@
                 </div>
                 <div class="capitalefi-content hidden">
                     <div class="fund-capitalefi"> 
+                        <div class="chart-container-efficiency">
+                            <canvas id="roicWaccChart"></canvas>
+                        </div>
+                        <div class="chart-container-efficiency">
+                            <canvas id="evaChart"></canvas>
+                        </div>
                     </div>
                     <div>
                         <p> <span id="EVAClass" class="badge"></span></p> 
@@ -543,46 +550,40 @@
                 <div class="download-content hidden">
                     <div class="fund-download">
                         <div>
-                            <h3>Cashflow</h3>
-                            <p><strong>Document</strong></p>
-                                <a id="dl-cf-annual"  class="btn-download" title="Cashflow (Anualy)">
-                                    <img src="{% static 'images/excel-file.png' %}" alt="">
-                                    <span class="label">Cashflow (Anualy)</span>
-                                    <span class="spinner hidden"></span>
-                                </a>
-                                <a id="dl-cf-quarter" class="btn-download" title="Cashflow (Quarterly)">
-                                    <img src="{% static 'images/excel-file.png' %}" alt="">
-                                    <span class="label">Cashflow (Quarterly)</span>
-                                    <span class="spinner hidden"></span>
-                                </a>
+                            <a id="dl-cf-annual"  class="btn-download" title="Cashflow (Anualy)">
+                                <img src="{% static 'images/excel-file.png' %}" alt="">
+                                <span class="label">Cashflow (Anualy)</span>
+                                <span class="spinner hidden"></span>
+                            </a>
+                            <a id="dl-cf-quarter" class="btn-download" title="Cashflow (Quarterly)">
+                                <img src="{% static 'images/excel-file.png' %}" alt="">
+                                <span class="label">Cashflow (Quarterly)</span>
+                                <span class="spinner hidden"></span>
+                            </a>
                         </div>
                         <div>
-                            <h3>Balance Sheet</h3>
-                            <p><strong>Document</strong></p>
-                                <a id="dl-bs-annual"  class="btn-download" title="Balance Sheet (Anualy)">
-                                    <img src="{% static 'images/excel-file.png' %}" alt="">
-                                    <span class="label">Balance Sheet (Anualy)</span>
-                                    <span class="spinner hidden"></span>
-                                </a>
-                                <a id="dl-bs-quarter" class="btn-download" title="Balance Sheet (Quarterly)">
-                                    <img src="{% static 'images/excel-file.png' %}" alt="">
-                                    <span class="label">Balance Sheet (Quarterly)</span>
-                                    <span class="spinner hidden"></span>
-                                </a>
+                            <a id="dl-bs-annual"  class="btn-download" title="Balance Sheet (Anualy)">
+                                <img src="{% static 'images/excel-file.png' %}" alt="">
+                                <span class="label">Balance Sheet (Anualy)</span>
+                                <span class="spinner hidden"></span>
+                            </a>
+                            <a id="dl-bs-quarter" class="btn-download" title="Balance Sheet (Quarterly)">
+                                <img src="{% static 'images/excel-file.png' %}" alt="">
+                                <span class="label">Balance Sheet (Quarterly)</span>
+                                <span class="spinner hidden"></span>
+                            </a>
                         </div>
                         <div>
-                            <h3>Income Statement</h3>
-                            <p><strong>Document</strong></p>
-                                <a id="dl-income-annual"  class="btn-download" title="Income (Anualy)">
-                                    <img src="{% static 'images/excel-file.png' %}" alt="">
-                                    <span class="label">Income (Anualy)</span>
-                                    <span class="spinner hidden"></span>
-                                </a>
-                                <a id="dl-income-quarter" class="btn-download" title="Income (Quarterly)">
-                                    <img src="{% static 'images/excel-file.png' %}" alt="">
-                                    <span class="label">Income (Quarterly)</span>
-                                    <span class="spinner hidden"></span>
-                                </a>
+                            <a id="dl-income-annual"  class="btn-download" title="Income (Anualy)">
+                                <img src="{% static 'images/excel-file.png' %}" alt="">
+                                <span class="label">Income (Anualy)</span>
+                                <span class="spinner hidden"></span>
+                            </a>
+                            <a id="dl-income-quarter" class="btn-download" title="Income (Quarterly)">
+                                <img src="{% static 'images/excel-file.png' %}" alt="">
+                                <span class="label">Income (Quarterly)</span>
+                                <span class="spinner hidden"></span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -604,6 +605,7 @@
     <script type="module" src="{% static 'js/custom_charts/chartsandgraphs.js' %}"></script>
     <script type="module" src="{% static 'js/custom_charts/financialhealthcharts.js' %}"></script>
     <script type="module" src="{% static 'js/custom_charts/profitabilitycharts.js' %}"></script>
+    <script type="module" src="{% static 'js/custom_charts/efficiencycharts.js' %}"></script>
     <!-- Glossarios.js -->
     <script src="{% static 'js/plugins/marked.min.js' %}"></script>
     <script src="{% static 'js/plugins/purify.min.js' %}"></script>

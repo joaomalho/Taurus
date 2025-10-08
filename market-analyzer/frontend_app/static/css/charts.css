@@ -9,8 +9,9 @@
     /* max-height: 500px; */
     position: relative;
     overflow: visible;
-    border: 1px solid #485c7b;
+    border: 1px solid var(--border-color);
     margin-bottom: 30px;
+    background-color: var(--primary-bg);
 }
 
 #candlestickChart {
@@ -29,8 +30,9 @@
     margin-top: 8px;
     position: relative;
     overflow: hidden;
-    border: 1px solid #485c7b;
+    border: 1px solid var(--border-color);
     margin-bottom: 0;
+    background-color: var(--primary-bg);
 }
 
 #rsiChart {
@@ -238,6 +240,29 @@
 }
 
 .chart-container-profitability canvas {
+  display: block;   
+  width: 100% !important;
+  height: 95% !important;
+}
+
+/* ============================= */
+/* CHARTS - EFFICIENCY        */
+/* ============================= */
+
+.chart-container-efficiency {
+    position: relative;
+    width: 100%;
+    max-width: 100%;     /* opcional */
+    height: 360px;         /* controla a altura aqui, no container */
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--primary-bg);
+    color: var(--text-color-black);
+    font-size: 12px;
+    font-style: italic
+}
+
+.chart-container-efficiency canvas {
   display: block;   
   width: 100% !important;
   height: 95% !important;

@@ -410,5 +410,5 @@ We are also looking to grow our community with **key roles in market analysis**:
 - **Sectors Charts**
 
 Notes:
--- Adjust charts over values. Fine tunning Profitability
+-- Adjust charts over values. Fine tunning.
 -- Finish css pallete

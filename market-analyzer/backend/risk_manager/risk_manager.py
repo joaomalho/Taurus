@@ -158,10 +158,10 @@ class RiskManagerFundamental():
             (math.inf,   "Strong",                              "verygood"),
         ],
         "EVA": [
-            (0.00,      "Destroys Value",                       "bad"),      
-            (0.05,      "Cover Capital Expenses",               "neutral"),  
-            (0.12,      "Value Creating",                       "good"),     
-            (math.inf,  "Strong Value Creation",                "verygood"), 
+            (0.00,      "Destroys Value",                       "bad"),
+            (0.05,      "Cover Capital Expenses",               "neutral"),
+            (0.12,      "Value Creating",                       "good"),
+            (math.inf,  "Strong Value Creation",                "verygood"),
         ],
         "ROIC": [
             (0.06,      "Weak",                                 "bad"),

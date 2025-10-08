@@ -1096,3 +1096,42 @@ def get_profitability_chart_info(request, symbol: str):
 
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+# Financial Health Chart
+def get_efficiency_chart_info(request, symbol: str):
+    """
+    Return company information for efficiency (ROIC/WACC/EVA) charts.
+    """
+    try:
+        symbol = (symbol or "").strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+
+        data_history = DataHistoryYahoo()
+        bio_info = data_history.get_symbol_bio_info(symbol)
+        cap_eff = data_history.get_symbol_fundamental_info_capefficiency(symbol)
+
+        if not bio_info:
+            return JsonResponse({"error": "No bio data found"}, status=404)
+        if not cap_eff:
+            return JsonResponse({"error": "No fundamental data found"}, status=404)
+
+        series_fy = cap_eff.get("series_fy", {})
+        if not isinstance(series_fy, dict) or not series_fy.get("labels"):
+            return JsonResponse({"error": "No FY series data found"}, status=404)
+
+        payload = {
+            "symbol": symbol,
+            "series_fy": series_fy,  # {labels, ebit, tax_rate, cap_invested, roic, wacc, eva}
+            "asof": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "peers": [],
+        }
+        return JsonResponse({"data": payload}, status=200)
+
+    except ConnectionError:
+        return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
