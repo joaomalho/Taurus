@@ -1,7 +1,8 @@
+from typing import Callable, Any
 import math
+import time
 import warnings
 import requests
-# import numpy as np
 import pandas as pd
 import yfinance as yf
 from datetime import datetime
@@ -13,50 +14,116 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
 class DataHistoryYahoo():
 
-    def __init__(self) -> None:
-        self
+    def __init__(self, ttl_seconds: int = 30) -> None:
+        self._info_cache: dict[str, dict] = {}
+        self._endpoint_cache: dict[str, dict[str, dict]] = {}
+        self._tickers: dict[str, yf.Ticker] = {}
+        self._ttl_seconds = int(ttl_seconds * 60)
 
-    def get_endpoints_yahoo(self, symbol: str):
+    def _get_ticker(self, symbol: str) -> yf.Ticker:
+        if symbol not in self._tickers:
+            self._tickers[symbol] = yf.Ticker(symbol)
+        return self._tickers[symbol]
+
+    def _is_expired(self, ts_mono: float) -> bool:
+        return (time.monotonic() - ts_mono) > self._ttl_seconds
+
+    def _get_cached_endpoint(self, symbol: str, endpoint: str, fetch: Callable[[], Any]) -> Any:
+        """
+        Cache genérico por símbolo+endpoint. Guarda o resultado de fetch()
+        e devolve do cache se ainda dentro do TTL.
+        """
+        symbol = symbol.strip().upper()
+        sym_cache = self._endpoint_cache.setdefault(symbol, {})
+        entry = sym_cache.get(endpoint)
+
+        if entry and not self._is_expired(entry["ts_mono"]):
+            return entry["data"]
+
+        try:
+            data = fetch()
+        except Exception:
+            data = None
+
+        sym_cache[endpoint] = {"data": data, "ts_mono": time.monotonic()}
+        return data
+
+    def clear_cache(self) -> None:
+        """
+        Clear cache.
+        """
+        self._info_cache.clear()
+        self._endpoint_cache.clear()
+        self._tickers.clear()
+
+    def prune_expired(self) -> None:
+        """Remove entradas expiradas de _info_cache e _endpoint_cache (limpeza ativa)."""
+        # info
+        to_del = [sym for sym, entry in self._info_cache.items() if self._is_expired(entry["ts_mono"])]
+        for sym in to_del:
+            self._info_cache.pop(sym, None)
+
+        # endpoints
+        symbols_to_delete = []
+        for sym, endpoints in self._endpoint_cache.items():
+            expired_eps = [ep for ep, entry in endpoints.items() if self._is_expired(entry["ts_mono"])]
+            for ep in expired_eps:
+                endpoints.pop(ep, None)
+            if not endpoints:  # se ficou vazio, marcamos o símbolo para remoção
+                symbols_to_delete.append(sym)
+        for sym in symbols_to_delete:
+            self._endpoint_cache.pop(sym, None)
+
+    def get_endpoints_yahoo(self, symbol: str) -> dict:
         '''
-        Request all necessary endpoints to pass for remaining funcions.
+        Request all necessary endpoints once and store in cache with timeout.
+        Return always dictionary or {} if error.
         '''
-        # WIP
+        cached = self._info_cache.get(symbol)
+        if cached and not self._is_expired(cached["ts_mono"]):
+            return cached["data"]
+
+        try:
+            info = self._get_ticker(symbol).get_info()
+            if not isinstance(info, dict):
+                info = {}
+        except Exception:
+            info = {}
+
+        self._info_cache[symbol] = {"data": info, "ts_mono": time.monotonic()}
+        return info
 
     # ---------- STOCKS TOPs ----------
     def get_symbol_bio_info(self, symbol: str):
         '''
         Return detailed company information.
         '''
-        try:
-            yahoo_symbol_info = yf.Ticker(symbol).info
-        except Exception:
-            yahoo_symbol_info = {}
+        info = self.get_endpoints_yahoo(symbol)
 
-        adv_3m = yahoo_symbol_info.get("averageDailyVolume3Month")
-        out = yahoo_symbol_info.get("sharesOutstanding")
-        turnover_year_out = (adv_3m * 252)/out if adv_3m is not None else "N/A"
-        yahoo_symbol_about_info = {
-                "LongName": yahoo_symbol_info.get("longName", "N/A"),
-                "BusinessName": yahoo_symbol_info.get("longBusinessSummary", "N/A"),
-                "Symbol": yahoo_symbol_info.get("symbol", "N/A"),
-                "City": yahoo_symbol_info.get("city", "N/A"),
-                "State": yahoo_symbol_info.get("state", "N/A"),
-                "ZipCode": yahoo_symbol_info.get("zip", "N/A"),
-                "Country": yahoo_symbol_info.get("country", "N/A"),
-                "Sector": yahoo_symbol_info.get("sector", "N/A"),
-                "Industry": yahoo_symbol_info.get("industry", "N/A"),
-                "Employees": yahoo_symbol_info.get("fullTimeEmployees", "N/A"),
-                "Website": yahoo_symbol_info.get("website", "N/A"),
-                "ReportWebsite": yahoo_symbol_info.get("irWebsite", "N/A"),
-                "QuoteSource": yahoo_symbol_info.get("quoteSourceName", "N/A"),
-                "QuoteType": yahoo_symbol_info.get("quoteType", "N/A"),
-                "FinancialCurrency": yahoo_symbol_info.get("financialCurrency", "N/A"),
-                "CurrentPrice": yahoo_symbol_info.get("currentPrice", "N/A"),
-                "Beta": yahoo_symbol_info.get("beta", "N/A"),
+        adv_3m = info.get("averageDailyVolume3Month")
+        out = info.get("sharesOutstanding")
+        turnover_year_out = ((adv_3m * 252) / out if isinstance(adv_3m, (int, float)) and isinstance(out, (int, float)) and out else "N/A")
+
+        return {
+                "LongName": info.get("longName", "N/A"),
+                "BusinessName": info.get("longBusinessSummary", "N/A"),
+                "Symbol": info.get("symbol", "N/A"),
+                "City": info.get("city", "N/A"),
+                "State": info.get("state", "N/A"),
+                "ZipCode": info.get("zip", "N/A"),
+                "Country": info.get("country", "N/A"),
+                "Sector": info.get("sector", "N/A"),
+                "Industry": info.get("industry", "N/A"),
+                "Employees": info.get("fullTimeEmployees", "N/A"),
+                "Website": info.get("website", "N/A"),
+                "ReportWebsite": info.get("irWebsite", "N/A"),
+                "QuoteSource": info.get("quoteSourceName", "N/A"),
+                "QuoteType": info.get("quoteType", "N/A"),
+                "FinancialCurrency": info.get("financialCurrency", "N/A"),
+                "CurrentPrice": info.get("currentPrice", "N/A"),
+                "Beta": info.get("beta", "N/A"),
                 "ShareTurnover": turnover_year_out,
         }
-
-        return yahoo_symbol_about_info
 
     def get_stocks_gainers(self, table_class: str = None) -> pd.DataFrame:
         """
@@ -242,16 +309,28 @@ class DataHistoryYahoo():
 
         return yahoo_data_history
 
-    def get_symbol_institutional_holders(self, symbol: str):
+    def get_symbol_institutional_holders(self, symbol: str) -> pd.DataFrame:
         '''
         Return the list of major institutional holders
         '''
-        yahoo_symbol_institutional_holders = yf.Ticker(symbol).institutional_holders
-        yahoo_symbol_institutional_holders['Date Reported'] = yahoo_symbol_institutional_holders['Date Reported'].dt.strftime("%Y-%m-%d %H:%M")
-        yahoo_symbol_institutional_holders['pctHeld'] = yahoo_symbol_institutional_holders['pctHeld']*100
-        yahoo_symbol_institutional_holders['pctChange'] = yahoo_symbol_institutional_holders['pctChange']*100
+        ticker = self._get_ticker(symbol)
 
-        return yahoo_symbol_institutional_holders
+        def _fetch():
+            return ticker.institutional_holders  # pode ser None/DF vazio conforme o ativo
+
+        df = self._get_cached_endpoint(symbol, "institutional_holders", _fetch)
+
+        if df is None:
+            return pd.DataFrame()
+
+        df = df.copy()
+        if "Date Reported" in df.columns:
+            df['Date Reported'] = df['Date Reported'].dt.strftime("%Y-%m-%d %H:%M")
+        for col in ("pctHeld", "pctChange"):
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors="coerce") * 100.0
+
+        return df
 
     def get_symbol_recommendations(self, symbol: str):
         '''
@@ -297,56 +376,78 @@ class DataHistoryYahoo():
         '''
         Return detailed fundamental information about asset
         '''
-        try:
-            yahoo_symbol_info = yf.Ticker(symbol).info
-        except Exception:
-            yahoo_symbol_info = {}
-        try:
-            yahoo_symbol_balancesheet = yf.Ticker(symbol).balance_sheet
-        except Exception:
-            yahoo_symbol_balancesheet = pd.DataFrame()
-        try:
-            yahoo_symbol_balancesheet_quarter = yf.Ticker(symbol).quarterly_balance_sheet
-        except Exception:
-            yahoo_symbol_balancesheet_quarter = pd.DataFrame()
-        try:
-            yahoo_symbol_income = yf.Ticker(symbol).income_stmt
-        except Exception:
-            yahoo_symbol_income = pd.DataFrame()
-        try:
-            yahoo_symbol_income_quarter = yf.Ticker(symbol).quarterly_income_stmt
-        except Exception:
-            yahoo_symbol_income_quarter = pd.DataFrame()
+        ticker = self._get_ticker(symbol)
+
+        def safe_df(endpoint_name: str, attr: str) -> pd.DataFrame:
+            def _fetch():
+                return getattr(ticker, attr)
+            df = self._get_cached_endpoint(symbol, endpoint_name, _fetch)
+            return df.copy() if isinstance(df, pd.DataFrame) else pd.DataFrame()
+
+        def safe_series(endpoint_name: str, attr: str) -> pd.Series:
+            def _fetch():
+                return getattr(ticker, attr)
+            s = self._get_cached_endpoint(symbol, endpoint_name, _fetch)
+            return s.copy() if isinstance(s, pd.Series) else pd.Series(dtype=float)
+
+        info = self.get_endpoints_yahoo(symbol) or {}
+        balance_sheet = safe_df("balance_sheet", "balance_sheet")
+        balance_sheet_q = safe_df("quarterly_balance_sheet", "quarterly_balance_sheet")
+        income = safe_df("income_stmt", "income_stmt")
+        income_q = safe_df("quarterly_income_stmt", "quarterly_income_stmt")
+        cashflow_q = safe_df("quarterly_cash_flow", "quarterly_cash_flow")
+        dividends = safe_series("dividends", "dividends")
+
         # try:
-        #     yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
+        #     yahoo_symbol_info = yf.Ticker(symbol).info
         # except Exception:
-        #     yahoo_symbol_cashflow = pd.DataFrame()
-        try:
-            yahoo_symbol_cashflow_quarter = yf.Ticker(symbol).quarterly_cash_flow
-        except Exception:
-            yahoo_symbol_cashflow_quarter = pd.DataFrame()
-        try:
-            yahoo_symbol_dividends = yf.Ticker(symbol).dividends
-        except Exception:
-            yahoo_symbol_dividends = pd.Series(dtype=float)
+        #     yahoo_symbol_info = {}
+        # try:
+        #     yahoo_symbol_balancesheet = yf.Ticker(symbol).balance_sheet
+        # except Exception:
+        #     yahoo_symbol_balancesheet = pd.DataFrame()
+        # try:
+        #     yahoo_symbol_balancesheet_quarter = yf.Ticker(symbol).quarterly_balance_sheet
+        # except Exception:
+        #     yahoo_symbol_balancesheet_quarter = pd.DataFrame()
+        # try:
+        #     yahoo_symbol_income = yf.Ticker(symbol).income_stmt
+        # except Exception:
+        #     yahoo_symbol_income = pd.DataFrame()
+        # try:
+        #     yahoo_symbol_income_quarter = yf.Ticker(symbol).quarterly_income_stmt
+        # except Exception:
+        #     yahoo_symbol_income_quarter = pd.DataFrame()
+        # # try:
+        # #     yahoo_symbol_cashflow = yf.Ticker(symbol).cash_flow
+        # # except Exception:
+        # #     yahoo_symbol_cashflow = pd.DataFrame()
+        # try:
+        #     yahoo_symbol_cashflow_quarter = yf.Ticker(symbol).quarterly_cash_flow
+        # except Exception:
+        #     yahoo_symbol_cashflow_quarter = pd.DataFrame()
+        # try:
+        #     yahoo_symbol_dividends = yf.Ticker(symbol).dividends
+        # except Exception:
+        #     yahoo_symbol_dividends = pd.Series(dtype=float)
 
         fm = Formulas()
         # ------ Valuation ------ #
         # - Price Earnings
-        sector = yahoo_symbol_info.get("sector")
+        sector = info.get("sector")
         sector_pe = self.get_sector_etf_info(sector, "trailingPE")
 
-        forward_pe = yahoo_symbol_info.get("forwardPE", None)
-        trailing_pe = yahoo_symbol_info.get("trailingPE", None)
+        forward_pe = info.get("forwardPE", None)
+        trailing_pe = info.get("trailingPE", None)
 
         # - Market Cap
-        market_cap = yahoo_symbol_info.get('marketCap')
+        market_cap = info.get('marketCap')
         if market_cap is None or (isinstance(market_cap, float) and math.isnan(market_cap)):
             market_cap = None
 
         # - Total Debt
-        if 'Total Debt' in yahoo_symbol_balancesheet.index:
-            total_debt = yahoo_symbol_balancesheet.loc["Total Debt"]
+        if 'Total Debt' in balance_sheet.index:
+            total_debt = balance_sheet.loc["Total Debt"]
             if pd.isna(total_debt).all():
                 total_debt = None
                 total_debt_last = None
@@ -358,8 +459,8 @@ class DataHistoryYahoo():
             total_debt_last = None
 
         # - Minority Interest
-        if 'Total Equity Gross Minority Interest' in yahoo_symbol_balancesheet.index:
-            total_equity_gross_minority_interest = yahoo_symbol_balancesheet.loc["Total Equity Gross Minority Interest"]
+        if 'Total Equity Gross Minority Interest' in balance_sheet.index:
+            total_equity_gross_minority_interest = balance_sheet.loc["Total Equity Gross Minority Interest"]
             if pd.isna(total_equity_gross_minority_interest).all():
                 total_equity_gross_minority_interest = None
                 total_equity_gross_minority_interest_last = None
@@ -371,8 +472,8 @@ class DataHistoryYahoo():
             total_equity_gross_minority_interest_last = None
 
         # - Stockholders Equity
-        if 'Stockholders Equity' in yahoo_symbol_balancesheet.index:
-            stockholders_equity = yahoo_symbol_balancesheet.loc["Stockholders Equity"]
+        if 'Stockholders Equity' in balance_sheet.index:
+            stockholders_equity = balance_sheet.loc["Stockholders Equity"]
             if pd.isna(stockholders_equity).all():
                 stockholders_equity = None
                 stockholders_equity_last = None
@@ -397,8 +498,8 @@ class DataHistoryYahoo():
         preferred_equity = 0  # incluir se tiver a rubrica
 
         # - Debt & cash (preferidos)
-        if 'Cash Cash Equivalents And Short Term Investments' in yahoo_symbol_balancesheet.index:
-            cash_sti = yahoo_symbol_balancesheet.loc["Cash Cash Equivalents And Short Term Investments"]
+        if 'Cash Cash Equivalents And Short Term Investments' in balance_sheet.index:
+            cash_sti = balance_sheet.loc["Cash Cash Equivalents And Short Term Investments"]
             if pd.isna(cash_sti).all():
                 cash_sti = None
                 cash_sti_last = None
@@ -410,8 +511,8 @@ class DataHistoryYahoo():
             cash_sti_last = None
 
         if cash_sti_last is None:
-            if 'Cash And Cash Equivalents' in yahoo_symbol_balancesheet.index:
-                cash = yahoo_symbol_balancesheet.loc["Cash And Cash Equivalents"]
+            if 'Cash And Cash Equivalents' in balance_sheet.index:
+                cash = balance_sheet.loc["Cash And Cash Equivalents"]
                 if pd.isna(cash).all():
                     cash = None
                     cash_last = None
@@ -422,8 +523,8 @@ class DataHistoryYahoo():
                 cash = None
                 cash_last = None
 
-            if 'Other Short Term Investments' in yahoo_symbol_balancesheet.index:
-                sti = yahoo_symbol_balancesheet.loc["Other Short Term Investments"]
+            if 'Other Short Term Investments' in balance_sheet.index:
+                sti = balance_sheet.loc["Other Short Term Investments"]
                 if pd.isna(cash).all():
                     sti = None
                     sti_last = None
@@ -449,8 +550,8 @@ class DataHistoryYahoo():
             else None
 
         # - Total Revenue ---- ADICIONAR ISTO em todo o lado e criar função generica
-        if 'EBITDA' in yahoo_symbol_income_quarter.index:
-            total_ebitda = yahoo_symbol_income_quarter.loc['EBITDA']
+        if 'EBITDA' in income_q.index:
+            total_ebitda = income_q.loc['EBITDA']
             if pd.isna(total_ebitda).all():
                 total_ebitda = None
                 ebitda_ttm = None
@@ -462,8 +563,8 @@ class DataHistoryYahoo():
             ebitda_ttm = None
 
         # - Total Revenue
-        if 'Total Revenue' in yahoo_symbol_income_quarter.index:
-            total_revenue = yahoo_symbol_income_quarter.loc['Total Revenue']
+        if 'Total Revenue' in income_q.index:
+            total_revenue = income_q.loc['Total Revenue']
             if pd.isna(total_revenue).all():
                 total_revenue = None
                 total_revenue_last = None
@@ -478,8 +579,8 @@ class DataHistoryYahoo():
             total_revenue_ttm = None
 
         # - Total Revenue FY
-        if 'Total Revenue' in yahoo_symbol_income.index:
-            total_revenue_fy = yahoo_symbol_income.loc['Total Revenue']
+        if 'Total Revenue' in income.index:
+            total_revenue_fy = income.loc['Total Revenue']
             if pd.isna(total_revenue_fy).all():
                 total_revenue_fy = None
             else:
@@ -488,8 +589,8 @@ class DataHistoryYahoo():
             total_revenue_fy = None
 
         # - Free Cashflow
-        if 'Free Cash Flow' in yahoo_symbol_cashflow_quarter.index:
-            free_cashflow = yahoo_symbol_cashflow_quarter.loc['Free Cash Flow']
+        if 'Free Cash Flow' in cashflow_q.index:
+            free_cashflow = cashflow_q.loc['Free Cash Flow']
             if pd.isna(free_cashflow).all():
                 free_cashflow = None
                 free_cashflow_ttm = None
@@ -532,8 +633,8 @@ class DataHistoryYahoo():
             else None
 
         # - Interest Coverage (EBIT)
-        if 'EBIT' in yahoo_symbol_income_quarter.index:
-            ebit_quarter = yahoo_symbol_income_quarter.loc['EBIT']
+        if 'EBIT' in income_q.index:
+            ebit_quarter = income_q.loc['EBIT']
             if pd.isna(ebit_quarter).all():
                 ebit_quarter = None
                 ebit_quarter_ttm = None
@@ -545,8 +646,8 @@ class DataHistoryYahoo():
             ebit_quarter_ttm = None
 
         # - Interest Expense
-        if 'Interest Expense' in yahoo_symbol_income.index:
-            interest_expense = yahoo_symbol_income.loc['Interest Expense']
+        if 'Interest Expense' in income.index:
+            interest_expense = income.loc['Interest Expense']
             if pd.isna(interest_expense).all():
                 interest_expense = None
                 interest_expense_ttm = None
@@ -567,8 +668,8 @@ class DataHistoryYahoo():
 
         # - Current Racio
         # current_assets
-        if 'Current Assets' in yahoo_symbol_balancesheet_quarter.index:
-            current_assets_quarter = yahoo_symbol_balancesheet_quarter.loc['Current Assets']
+        if 'Current Assets' in balance_sheet_q.index:
+            current_assets_quarter = balance_sheet_q.loc['Current Assets']
             if pd.isna(current_assets_quarter).all():
                 current_assets_quarter = None
                 current_assets_quarter_last = None
@@ -580,8 +681,8 @@ class DataHistoryYahoo():
             current_assets_quarter_last = None
 
         # current_liabilities
-        if 'Current Liabilities' in yahoo_symbol_balancesheet_quarter.index:
-            current_liabilities_quarter = yahoo_symbol_balancesheet_quarter.loc['Current Liabilities']
+        if 'Current Liabilities' in balance_sheet_q.index:
+            current_liabilities_quarter = balance_sheet_q.loc['Current Liabilities']
             if pd.isna(current_liabilities_quarter).all():
                 current_liabilities_quarter = None
                 current_liabilities_quarter_last = None
@@ -599,8 +700,8 @@ class DataHistoryYahoo():
 
         # - Quick Racio
         # inventory
-        if 'Inventory' in yahoo_symbol_balancesheet_quarter.index:
-            inventory_quarter = yahoo_symbol_balancesheet_quarter.loc['Inventory']
+        if 'Inventory' in balance_sheet_q.index:
+            inventory_quarter = balance_sheet_q.loc['Inventory']
             if pd.isna(inventory_quarter).all():
                 inventory_quarter = None
                 inventory_quarter_last = None
@@ -632,8 +733,8 @@ class DataHistoryYahoo():
 
         # ROIC
         # Tax Rate For Calcs
-        if 'Tax Rate For Calcs' in yahoo_symbol_income_quarter.index:
-            tax_rate_quarter = yahoo_symbol_income_quarter.loc['Tax Rate For Calcs']
+        if 'Tax Rate For Calcs' in income_q.index:
+            tax_rate_quarter = income_q.loc['Tax Rate For Calcs']
             if pd.isna(tax_rate_quarter).all():
                 tax_rate_quarter = None
                 tax_rate_ttm = None
@@ -645,8 +746,8 @@ class DataHistoryYahoo():
             tax_rate_ttm = None
 
         # Invested Capital
-        if 'Invested Capital' in yahoo_symbol_balancesheet.index:
-            cap_invested = yahoo_symbol_balancesheet.loc['Invested Capital']
+        if 'Invested Capital' in balance_sheet.index:
+            cap_invested = balance_sheet.loc['Invested Capital']
             if pd.isna(cap_invested).all():
                 cap_invested = None
                 cap_invested_mean = None
@@ -672,8 +773,8 @@ class DataHistoryYahoo():
 
         # ROE
         # net_income_fy
-        if 'Net Income' in yahoo_symbol_income.index:
-            net_income_fy = yahoo_symbol_income.loc['Net Income']
+        if 'Net Income' in income.index:
+            net_income_fy = income.loc['Net Income']
             if pd.isna(net_income_fy).all():
                 net_income_fy = None
             else:
@@ -682,8 +783,8 @@ class DataHistoryYahoo():
             net_income_fy = None
 
         # net_income
-        if 'Net Income' in yahoo_symbol_income_quarter.index:
-            net_income_quarter = yahoo_symbol_income_quarter.loc['Net Income']
+        if 'Net Income' in income_q.index:
+            net_income_quarter = income_q.loc['Net Income']
             if pd.isna(net_income_quarter).all():
                 net_income_quarter = None
                 net_income_ttm = None
@@ -701,8 +802,8 @@ class DataHistoryYahoo():
 
         # ROA
         # Total Assets
-        if 'Total Assets' in yahoo_symbol_balancesheet.index:
-            assets = yahoo_symbol_balancesheet.loc['Total Assets']
+        if 'Total Assets' in balance_sheet.index:
+            assets = balance_sheet.loc['Total Assets']
             if pd.isna(assets).all():
                 assets = None
                 assets_mean = None
@@ -723,7 +824,7 @@ class DataHistoryYahoo():
 
         # ------ Capital Efficiency ------ #
         # - wacc
-        beta = yahoo_symbol_info.get("beta", None)
+        beta = info.get("beta", None)
 
         cd = interest_expense_last / total_debt_last \
             if interest_expense_last is not None \
@@ -731,8 +832,8 @@ class DataHistoryYahoo():
             else None
 
         # Tax Provision
-        if 'Tax Provision' in yahoo_symbol_income_quarter.index:
-            tax_provisory_quarter = yahoo_symbol_income_quarter.loc['Tax Provision']
+        if 'Tax Provision' in income_q.index:
+            tax_provisory_quarter = income_q.loc['Tax Provision']
             if pd.isna(tax_provisory_quarter).all():
                 tax_provisory_quarter = None
                 tax_provisory_ttm = None
@@ -744,8 +845,8 @@ class DataHistoryYahoo():
             tax_provisory_ttm = None
 
         # Pretax Income
-        if 'Pretax Income' in yahoo_symbol_income_quarter.index:
-            pretax_income_quarter = yahoo_symbol_income_quarter.loc['Pretax Income']
+        if 'Pretax Income' in income_q.index:
+            pretax_income_quarter = income_q.loc['Pretax Income']
             if pd.isna(pretax_income_quarter).all():
                 pretax_income_quarter = None
                 pretax_income_ttm = None
@@ -761,7 +862,7 @@ class DataHistoryYahoo():
             and pretax_income_ttm not in (None, 0) \
             else None
 
-        market_cap = yahoo_symbol_info.get('marketCap')
+        market_cap = info.get('marketCap')
 
         us10y = yf.Ticker("^TNX").info.get("previousClose")
         us10y = us10y / 100 \
@@ -798,8 +899,8 @@ class DataHistoryYahoo():
 
         # eps growth
         # Diluted EPS
-        if 'Diluted EPS' in yahoo_symbol_income.index:
-            dilutedEPS_fy = yahoo_symbol_income.loc['Diluted EPS']
+        if 'Diluted EPS' in income.index:
+            dilutedEPS_fy = income.loc['Diluted EPS']
             if pd.isna(dilutedEPS_fy).all():
                 dilutedEPS_fy = None
             else:
@@ -816,16 +917,16 @@ class DataHistoryYahoo():
 
         # ------ Dividends ------ #
         # dividend yield
-        dividendYield = yahoo_symbol_info.get("dividendYield", None)
+        dividendYield = info.get("dividendYield", None)
         dividendYield = dividendYield / 100 \
             if dividendYield is not None \
             else None
 
         # payout ratio
-        payout_ratio = yahoo_symbol_info.get("payoutRatio", None)
+        payout_ratio = info.get("payoutRatio", None)
 
         # Dividend TTM
-        s = yahoo_symbol_dividends if isinstance(yahoo_symbol_dividends, pd.Series) else pd.Series(dtype=float)
+        s = dividends if isinstance(dividends, pd.Series) else pd.Series(dtype=float)
         s = s.sort_index()
         last_date = s.index[-1] if len(s) else None
 
@@ -841,8 +942,8 @@ class DataHistoryYahoo():
 
         # Shareholders Yield
         # cash dividend paid
-        if 'Cash Dividends Paid' in yahoo_symbol_cashflow_quarter.index:
-            cash_dividends_paid = yahoo_symbol_cashflow_quarter.loc['Cash Dividends Paid']
+        if 'Cash Dividends Paid' in cashflow_q.index:
+            cash_dividends_paid = cashflow_q.loc['Cash Dividends Paid']
             if pd.isna(cash_dividends_paid).all():
                 cash_dividends_paid = None
             else:
@@ -851,8 +952,8 @@ class DataHistoryYahoo():
             cash_dividends_paid = None
 
         # rewards ttm
-        if 'Repurchase Of Capital Stock' in yahoo_symbol_cashflow_quarter.index:
-            rewards = yahoo_symbol_cashflow_quarter.loc['Repurchase Of Capital Stock']
+        if 'Repurchase Of Capital Stock' in cashflow_q.index:
+            rewards = cashflow_q.loc['Repurchase Of Capital Stock']
             if pd.isna(rewards).all():
                 rewards = None
             else:
@@ -873,13 +974,13 @@ class DataHistoryYahoo():
             and rewards_ttm_quarter is not None \
             else None
 
-        fiveYearAvgDY = yahoo_symbol_info.get("fiveYearAvgDividendYield", None)
+        fiveYearAvgDY = info.get("fiveYearAvgDividendYield", None)
         fiveYearAvgDividendYield = fiveYearAvgDY / 100 \
             if fiveYearAvgDY is not None \
             else None
 
-        eps_ann = yahoo_symbol_info.get("epsCurrentYear", None)
-        dividend_rate = yahoo_symbol_info.get("dividendRate", None)
+        eps_ann = info.get("epsCurrentYear", None)
+        dividend_rate = info.get("dividendRate", None)
         if (
             eps_ann is not None and
             dividend_rate is not None and
@@ -893,9 +994,9 @@ class DataHistoryYahoo():
 
         # ------ Dividends ------ #
         # Beta
-        sharesPercentSharesOut = yahoo_symbol_info.get("sharesPercentSharesOut", None)
-        recommendationMean = yahoo_symbol_info.get("recommendationMean", None)
-        targetMeanPrice = yahoo_symbol_info.get("targetMeanPrice", None)
+        sharesPercentSharesOut = info.get("sharesPercentSharesOut", None)
+        recommendationMean = info.get("recommendationMean", None)
+        targetMeanPrice = info.get("targetMeanPrice", None)
 
         # ------ Extras ------ #
         yahoo_symbol_fundamental_info = {

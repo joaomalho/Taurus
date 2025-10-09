@@ -402,13 +402,10 @@ We are also looking to grow our community with **key roles in market analysis**:
 
 ## **🚀 Latest Improvements**
 
-- **Download Documents**
-- **User Log**
-- **Centralize data presentation formats**
-- **Information about metrics**
-- **KPIS Finish**
-- **Sectors Charts**
+- **Cache Improvement**
+- **Refactor on Requests**
 
 Notes:
 -- Adjust charts over values. Fine tunning.
 -- Finish css pallete
+-- Finish cache use
