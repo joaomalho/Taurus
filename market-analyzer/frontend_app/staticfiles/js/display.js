@@ -1,5 +1,5 @@
-import { formatPercent, formatPercentFromFraction, formatMultiple, formatCurrency, formatNumber, formatDate } from "./formatter.js";
-import { Grid, html } from "./gridjs.production.es.min.js";
+import { formatPercent, formatMultiple, formatCurrency, formatNumber, formatDate } from "./utils/formatter.js";
+import { Grid, html } from "./plugins/gridjs.production.es.min.js";
 import {normalizeNewsItem, sortByDateDesc, dedupeByUrl, renderCard} from "./news.js";
 
 /* ─────── HELPERS DE ESTILO POR BUCKET ─────── */
@@ -84,6 +84,18 @@ const dateCompare = (a, b) => {
   return pa - pb;
 };
 
+/* ─────── HELPER PARA LER A AVALIAÇÃO ─────── */
+function getEvalObj(data, section, key) {
+  const base = data?.evaluations?.[section] ?? {};
+  return {
+    evaluation: base?.[`${key}_evaluation`] ?? null,
+    bucket: base?.[`${key}_bucket`] ?? null,
+    color: base?.[`${key}_color`] ?? null,
+    messages: base?.[`${key}_messages`] ?? null,
+    value: base?.[key] ?? null,
+  };
+}
+
 function renderStockTable(containerId, headers, tableData) {
   new Grid({
     columns: headers,
@@ -99,90 +111,7 @@ function renderStockTable(containerId, headers, tableData) {
 }
 
 /* ─────────────── FUNÇÕES DE CLASSIFICAÇÃO DE METRICAS + CHARTS─────────────── */
-function classifyMetricForGauge(metric, value) {
-  if (value === "N/A")
-    return { classification: "N/A", color: "#9E9E9E", intervals: [0, 100] };
 
-  switch (metric) {
-    case "QuickRatio":
-      return {
-        classification:
-          value >= 2
-            ? "Excelente"
-            : value >= 1.5
-            ? "Bom"
-            : value >= 1.0
-            ? "Razoável"
-            : value >= 0.5
-            ? "Fraco"
-            : "Muito Fraco",
-        color:
-          value >= 2
-            ? "#068008"
-            : value >= 1.5
-            ? "#089981"
-            : value >= 1.0
-            ? "#f2b636"
-            : value >= 0.5
-            ? "#f24536"
-            : "#ed0000",
-        intervals: [0.5, 1, 1.5, 2],
-      };
-
-    case "CurrentRatio":
-      return {
-        classification:
-          value >= 2.5
-            ? "Excelente"
-            : value >= 1.5
-            ? "Bom"
-            : value >= 1.0
-            ? "Razoável"
-            : value >= 0.5
-            ? "Fraco"
-            : "Muito Fraco",
-        color:
-          value >= 2.5
-            ? "#068008"
-            : value >= 1.5
-            ? "#089981"
-            : value >= 1.0
-            ? "#f2b636"
-            : value >= 0.5
-            ? "#f24536"
-            : "#ed0000",
-        intervals: [0.5, 1, 1.5, 2.5],
-      };
-
-    case "CashRatio":
-      return {
-        classification:
-          value >= 1.5
-            ? "Excelente"
-            : value >= 1.0
-            ? "Bom"
-            : value >= 0.5
-            ? "Razoável"
-            : value >= 0.1
-            ? "Fraco"
-            : "Muito Fraco",
-        color:
-          value >= 1.5
-            ? "#068008"
-            : value >= 1.0
-            ? "#089981"
-            : value >= 0.5
-            ? "#f2b636"
-            : value >= 0.1
-            ? "#f24536"
-            : "#ed0000",
-        intervals: [0.1, 0.5, 1, 1.5],
-      };
-
-    default:
-      return { classification: "N/A", color: "#9E9E9E", intervals: [0, 100] };
-  }
-}
 
 /* ─────────────── FUNÇÕES DE MANIPULAÇÃO DE DADOS ─────────────── */
 export function displayCrossoverResults(data) {
@@ -320,7 +249,7 @@ export function displayBioResults(data) {
       ? formatCurrency(bioData.CurrentPrice)
       : "N/A",
     Beta: bioData.Beta || "N/A",
-    ShareTurnover: bioData.ShareTurnover ? formatPercentFromFraction((bioData.ShareTurnover)) : "N/A",
+    ShareTurnover: bioData.ShareTurnover ? formatPercent((bioData.ShareTurnover)) : "N/A",
   };
 
   for (const [key, value] of Object.entries(elements)) {
@@ -338,74 +267,60 @@ export function displayBioResults(data) {
 
 /* ─────── QUAL FORMATADOR USAR POR CHAVE ─────── */
 const METRIC_STYLE = {
-  // valuation
-  sectorTrailingPE: "multiple",
+  // KPIS
   trailingPE: "multiple",
   forwardPE: "multiple",
-  MarketCap: "currency",
-  EV_enterprise_value: "currency",
-  ebitdaTTM: "currency",
-  evEbitda: "multiple",
+  sectorTrailingPE: "multiple",
   PriceToSale: "multiple",
-  EquityFCFYield: "multiple",
-  EnterpriseFCFYield: "multiple",
-  // dividends
+  evEbitda: "multiple",
+  EquityFCFYield: "percent",
+  EnterpriseFCFYield: "percent",
+  NetDebtEbitda: "multiple",
+  InterestCoverageEbit: "multiple",
+  CurrentRatio: "multiple",
+  QuickRatio: "multiple",
+  OperationalMargin: "percent",
+  FcfMargin: "percent",
+  ROE: "percent",
+  ROA: "percent",
+  WACC: "percent",
+  ROIC: "percent",
+  EVA: "percent",
+  GrowthReveneuYoY: "percent",
+  CagrGrowthReveneuYoY: "percent",
+  GrowthEPSYoY: "percent",
+  CagrGrowthEPSYoY: "percent",
   divCoverageRate: "multiple",
   dividendYield: "percent",
+  PayoutRatio: "percent", 
+  CagrGrowthDividend3y: "percent", 
+  CagrGrowthDividend5y: "percent", 
+  ShareHolderYield: "percent", 
   fiveYearAvgDividendYield: "percent",
 
-  // profitability (%)
-  GrossMargin: "percent",
-  OperatingMargin: "percent",
-  ProfitMargin: "percent",
-  ReturnOnEquity: "percent",
+  // valuation
+  MarketCap: "currency",
+  EVenterpriseValue: "currency",
+  ebitdaTTM: "currency",
 
-  // growth/CAGR (%)
-  CostOfRevenueCAGR: "percent",
-  TotalRevenueCAGR: "percent",
-  OperatingExpensesCAGR: "percent",
-  TotalAssetsCAGR: "percent",
-  TotalLiabilitiesCAGR: "percent",
-  StockholdersEquityCAGR: "percent",
-  OperatingMarginCAGR: "percent",
-  ProfitMarginCAGR: "percent",
-  ReturnOnEquityCAGR: "percent",
+  // Finantial Health
+  StockholdersEquity: "currency",
 
-  // rácios adimensionais
-  CurrentRatio: "multiple",
-  CashRatio: "multiple",
-
-  // montantes (moeda)
+  // Profitability
   NetIncome: "currency",
   TotalRevenue: "currency",
-  CostOfRevenue: "currency",
-  GrossProfit: "currency",
-  OperatingExpenses: "currency",
-  TotalAssets: "currency",
-  TotalLiabilities: "currency",
-  NetWorth: "currency",
-  ShortTermDebtCoverage: "currency",
-  CashCashEquivalents: "currency",
-  CurrentAssets: "currency",
-  CurrentLiabilities: "currency",
-  LongTermDebtCoverage: "currency",
-  NonCurrentAssets: "currency",
-  NonCurrentLiabilities: "currency",
-  StockholdersEquity: "currency",
 
   // cashflow & mercado
   FreeCashflow: "currency",
-  OperatingCashflow: "currency",
-  CapitalExpenditure: "currency",
-  FreeCashflowYield: "percent",
+
+  // rácios
+  GrossMargin: "percent",
 
   // risco/sentimento
   beta: "number",
+  sharesPercentSharesOut: "percent",
   recommendationMean: "number",
   targetMeanPrice: "currency",
-
-  // ATENÇÃO: esta costuma vir EM FRAÇÃO (0.0131 -> 1.31%)
-  sharesPercentSharesOut: "percentFraction",
 };
 
 /* ─────── FORMATADOR CENTRAL ─────── */
@@ -414,8 +329,6 @@ function formatByKey(key, value, currency = "USD") {
   switch (style) {
     case "percent":
       return formatPercent(value);
-    case "percentFraction":
-      return formatPercentFromFraction(value);
     case "multiple":
       return formatMultiple(value);
     case "currency":
@@ -425,72 +338,68 @@ function formatByKey(key, value, currency = "USD") {
   }
 }
 
+function renderMarkdownSafe(md) {
+  if (!md) return "";
+  // window.marked e window.DOMPurify estarão disponíveis via <script>
+  const html = window.marked.parse(md);
+  return window.DOMPurify.sanitize(html);
+}
+
 /* ─────────────── FUNÇÃO PARA PREENCHER FUNDAMENTALS ─────────────── */
 export function displayFundamentalResults(data) {
+  const kpisData = data.kpis;
   const valuationData = data.valuation;
   const dividendsData = data.dividends;
   const profitabilityData = data.profitability;
-  const liquidityData = data.liquidity;
+  const finantial_healthData = data.finantial_health;
   const cashflowData = data.cashflow;
   const ratiosData = data.ratios;
   const marketRiskData = data.market_risk_and_sentiment;
 
   const elements = {
+    // KPIS
+    sectorTrailingPE: kpisData.sectorTrailingPE || {},
+    trailingPE: kpisData.trailingPE || {},
+    forwardPE: kpisData.forwardPE || {},
+    evEbitda: kpisData.evEbitda || {},
+    PriceToSale: kpisData.PriceToSale || {},
+    EquityFCFYield: kpisData.EquityFCFYield || {},
+    EnterpriseFCFYield: kpisData.EnterpriseFCFYield || {},
+    NetDebtEbitda: kpisData.NetDebtEbitda || {},
+    InterestCoverageEbit: kpisData.InterestCoverageEbit || {},
+    CurrentRatio: kpisData.CurrentRatio || {},
+    QuickRatio: kpisData.QuickRatio || {},
+    OperationalMargin: kpisData.OperationalMargin || {},
+    FcfMargin: kpisData.FcfMargin || {},
+    ROIC: kpisData.ROIC || {},
+    ROE: kpisData.ROE || {},
+    ROA: kpisData.ROA || {},
+    WACC: kpisData.WACC || {},
+    EVA: kpisData.EVA || {},
+    GrowthReveneuYoY: kpisData.GrowthReveneuYoY || {},
+    CagrGrowthReveneuYoY: kpisData.CagrGrowthReveneuYoY || {},
+    GrowthEPSYoY: kpisData.GrowthEPSYoY || {},
+    CagrGrowthEPSYoY: kpisData.CagrGrowthEPSYoY || {},
+    divCoverageRate: kpisData.divCoverageRate || {},
+    dividendYield: kpisData.dividendYield || {},
+    fiveYearAvgDividendYield: kpisData.fiveYearAvgDividendYield || {},
+    PayoutRatio: kpisData.PayoutRatio || {},
+    CagrGrowthDividend3y: kpisData.CagrGrowthDividend3y || {},
+    CagrGrowthDividend5y: kpisData.CagrGrowthDividend5y || {},
+    ShareHolderYield: kpisData.ShareHolderYield || {},
     // Valuation
-    sectorTrailingPE: valuationData.sectorTrailingPE || {},
-    trailingPE: valuationData.trailingPE || {},
-    forwardPE: valuationData.forwardPE || {},
     MarketCap: valuationData.MarketCap || {},
     EVenterpriseValue: valuationData.EVenterpriseValue || {},
     ebitdaTTM: valuationData.ebitdaTTM || {},
-    evEbitda: valuationData.evEbitda || {},
-    PriceToSale: valuationData.PriceToSale || {},
-    EquityFCFYield: valuationData.EquityFCFYield || {},
-    EnterpriseFCFYield: valuationData.EnterpriseFCFYield || {},
-    // Dividends
-    divCoverageRate: dividendsData.divCoverageRate || {},
-    dividendYield: dividendsData.dividendYield || {},
-    fiveYearAvgDividendYield: dividendsData.fiveYearAvgDividendYield || {},
+    // Finantial Health
+    StockholdersEquity: finantial_healthData.StockholdersEquity || {},
     // Profitability
     NetIncome: profitabilityData.NetIncome || {},
     TotalRevenue: profitabilityData.TotalRevenue || {},
-    CostOfRevenue: profitabilityData.CostOfRevenue || {},
-    GrossProfit: profitabilityData.GrossProfit || {},
-    OperatingExpenses: profitabilityData.OperatingExpenses || {},
-    CostOfRevenueCAGR: profitabilityData.CostOfRevenueCAGR || {},
-    TotalRevenueCAGR: profitabilityData.TotalRevenueCAGR || {},
-    OperatingExpensesCAGR: profitabilityData.OperatingExpensesCAGR || {},
-    // Debt
-    TotalAssets: liquidityData.TotalAssets || {},
-    TotalLiabilities: liquidityData.TotalLiabilities || {},
-    NetWorth: liquidityData.NetWorth || {},
-    CashCashEquivalents: liquidityData.CashCashEquivalents || {},
-    ShortTermDebtCoverage: liquidityData.ShortTermDebtCoverage || {},
-    CurrentAssets: liquidityData.CurrentAssets || {},
-    CurrentLiabilities: liquidityData.CurrentLiabilities || {},
-    LongTermDebtCoverage: liquidityData.LongTermDebtCoverage || {},
-    NonCurrentAssets: liquidityData.NonCurrentAssets || {},
-    NonCurrentLiabilities: liquidityData.NonCurrentLiabilities || {},
-    TotalAssetsCAGR: liquidityData.TotalAssetsCAGR || {},
-    TotalLiabilitiesCAGR: liquidityData.TotalLiabilitiesCAGR || {},
-    StockholdersEquityCAGR: liquidityData.StockholdersEquityCAGR || {},
-    StockholdersEquity: liquidityData.StockholdersEquity || {},
     // Cashflow
     FreeCashflow: cashflowData.FreeCashflow || {},
-    OperatingCashflow: cashflowData.OperatingCashflow || {},
-    CapitalExpenditure: cashflowData.CapitalExpenditure || {},
-    FreeCashflowYield: cashflowData.FreeCashflowYield || {},
     // Ratios
-    CurrentRatio: ratiosData.CurrentRatio || {},
-    CashRatio: ratiosData.CashRatio || {},
     GrossMargin: ratiosData.GrossMargin || {},
-    // GrossMarginCAGR: ratiosData.GrossMarginCAGR || {},
-    OperatingMargin: ratiosData.OperatingMargin || {},
-    OperatingMarginCAGR: ratiosData.OperatingMarginCAGR || {},
-    ProfitMargin: ratiosData.ProfitMargin || {},
-    ProfitMarginCAGR: ratiosData.ProfitMarginCAGR || {},
-    ReturnOnEquity: ratiosData.ReturnOnEquity || {},
-    ReturnOnEquityCAGR: ratiosData.ReturnOnEquityCAGR || {},
     // Market Risk Sentiment
     beta: marketRiskData.beta || {},
     sharesPercentSharesOut: marketRiskData.sharesPercentSharesOut || {},
@@ -512,65 +421,84 @@ export function displayFundamentalResults(data) {
 export function displayFundamentalResultsClassification(data) {
   // mapa: [secção em data.evaluations, chave base]
   const fields = [
-    ["valuation", "trailingPE"],
-    ["valuation", "evEbitda"],
-    ["valuation", "PriceToSale"],
-    ["valuation", "EquityFCFYield"],
-    ["valuation", "EnterpriseFCFYield"],
-    ["dividends", "divCoverageRate"],
-    ["profitability", "CostOfRevenueCAGR"],
-    ["profitability", "TotalRevenueCAGR"],
-    ["liquidity", "NetWorth"],
-    ["liquidity", "ShortTermDebtCoverage"],
-    ["liquidity", "LongTermDebtCoverage"],
-    ["liquidity", "StockholdersEquityCAGR"],
-    ["liquidity", "TotalAssetsCAGR"],
-    ["liquidity", "TotalLiabilitiesCAGR"],
-    ["cashflow", "FreeCashflowYield"],
-    ["ratios", "CurrentRatio"],
-    ["ratios", "CashRatio"],
+    ["kpis", "trailingPE"],
+    ["kpis", "evEbitda"],
+    ["kpis", "PriceToSale"],
+    ["kpis", "EquityFCFYield"],
+    ["kpis", "EnterpriseFCFYield"],
+    ["kpis", "NetDebtEbitda"],
+    ["kpis", "InterestCoverageEbit"],
+    ["kpis", "CurrentRatio"],
+    ["kpis", "QuickRatio"],
+    ["kpis", "OperationalMargin"],
+    ["kpis", "ROIC"],
+    ["kpis", "ROE"],
+    ["kpis", "ROA"],
+    ["kpis", "FcfMargin"],
+    ["kpis", "WACC"],
+    ["kpis", "EVA"],
+    ["kpis", "GrowthReveneuYoY"],
+    ["kpis", "CagrGrowthReveneuYoY"],
+    ["kpis", "GrowthEPSYoY"],
+    ["kpis", "CagrGrowthEPSYoY"],
+    ["kpis", "divCoverageRate"],
+    ["kpis", "dividendYield"],
+    ["kpis", "PayoutRatio"],
+    ["kpis", "CagrGrowthDividend3y"],
+    ["kpis", "CagrGrowthDividend5y"],
+    ["kpis", "ShareHolderYield"],
+    ["kpis", "fiveYearAvgDividendYield"],
+    ["valuations", "EVenterpriseValue"],
+    ["finantial_health", "StockholdersEquity"],
+    ["profitability", "NetIncome"],
+    ["profitability", "TotalRevenue"],
+    ["cashflow", "FreeCashflow"],
     ["ratios", "GrossMargin"],
-    ["ratios", "OperatingMargin"],
-    ["ratios", "OperatingMarginCAGR"],
-    ["ratios", "ProfitMargin"],
-    ["ratios", "ProfitMarginCAGR"],
-    ["ratios", "ReturnOnEquity"],
-    ["ratios", "ReturnOnEquityCAGR"],
+    ["risk_sentiment", "beta"],
   ];
 
   for (const [section, key] of fields) {
-    const evaluation =
-      data?.evaluations?.[section]?.[`${key}_evaluation`] ?? null;
+    const { evaluation, bucket, messages } = getEvalObj(data, section, key);
 
-    const bucket =
-      data?.evaluations?.[section]?.[`${key}_bucket`] ??
-      (evaluation ? textToBucket(evaluation) : "nodata");
+    const b = bucket || (evaluation ? textToBucket(evaluation) : "nodata");
 
-    // escreve texto + aplica cor no chip principal
+    // chip principal
     const el = document.getElementById(`${key}Class`);
     if (el) {
       el.textContent = evaluation ?? "N/A";
-      applyBadgeClass(el, bucket);
+      applyBadgeClass(el, b);
+      if (messages?.tooltip) el.title = messages.tooltip; // hover
     }
 
-    // escreve texto + aplica cor na versão “overview” (se existir)
+    // chip “overview” (se existir)
     const elOverview = document.getElementById(`${key}ClassOverview`);
     if (elOverview) {
       elOverview.textContent = evaluation ?? "N/A";
-      applyBadgeClass(elOverview, bucket);
+      applyBadgeClass(elOverview, b);
+      if (messages?.tooltip) elOverview.title = messages.tooltip;
     }
+
+    // textos (se existir um alvo no HTML)
+    const shortEl  = document.getElementById(`${key}ShortText`);
+    if (shortEl && messages?.short) {
+      shortEl.innerHTML = renderMarkdownSafe(messages.short);
+    }
+
+    const detailEl = document.getElementById(`${key}DetailText`);
+    if (detailEl && messages?.detail) {
+      detailEl.innerHTML = renderMarkdownSafe(messages.detail);
   }
 
   // Pintar a MODAL de fundamentals com uma âncora (ex.: trailingPE)
   const anchorEval =
-    data?.evaluations?.valuation?.trailingPE_evaluation ?? null;
+    data?.evaluations?.kpis?.trailingPE_evaluation ?? null;
   const anchorBucket =
-    data?.evaluations?.valuation?.trailingPE_bucket ??
+    data?.evaluations?.kpis?.trailingPE_bucket ??
     (anchorEval ? textToBucket(anchorEval) : "neutral");
 
   const fundamentalsModal = document.querySelector("#fundamentalsModal");
   applyModalClass(fundamentalsModal, anchorBucket);
-}
+}}
 
 export function displayInsideTransactions(response) {
   const data = response.data;

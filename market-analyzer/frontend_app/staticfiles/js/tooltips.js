@@ -2,51 +2,238 @@
 
 // Mapa de textos (podes editar/estender)
 export const DEFAULT_TIPS = {
-  // ----- Valuations ----- //
-  // - KPIs
-  evEbitda: `
-    EV/EBITDA compara o valor da empresa (EV) com a geração operacional (EBITDA). É menos sensível à alavancagem do que o P/E.
-
-    - EV = MarketCap + Dívida + Minoritários + Preferenciais − Caixa e ST investments
-    - Usar EBITDA TTM; se não houver, FY mais recente
-    - Evitar bancos/seguradoras e casos com EBITDA negativo
-    - Regras (gerais): <8x barato | 8–12x justo | >12x caro
-    - Ajustar por setor: comparar com a mediana do setor e com o histórico (percentis de 5 anos)
-    `,
-  PriceToSale: `
-    P/S (Price to Sales) usa receita quando lucro é volátil ou negativo. Bom para early-stage e cíclicas.
-
-    - Fórmula: MarketCap / Receita (TTM)
-    - Útil quando margens ainda estão a escalar; combinar com margens brutas/operacionais
-    - Regras (gerais): <2x barato | 2–6x justo | >6x caro
-    - Ajustar por setor: software tende a aceitar múltiplos mais altos; retalho costuma <2x
-    `,
-  EquityFCFYield: `
-    Equity FCF Yield mede o retorno de free cash flow para o acionista.
-
-    - Fórmula: Free Cash Flow / MarketCap
-    - FCF = Operating Cash Flow − Capex (ideal: TTM e normalizado)
-    - Regras (gerais): >5% barato | 3–5% justo | <3% caro
-    - Setores regulados podem exigir limiares mais altos; “growth” tolera <3%
-    - Se FCF for negativo ou errático, ocultar ou sinalizar outliers
-    `,
-  EnterpriseFCFYield: `
-    Enterprise FCF Yield compara FCF com o valor do negócio (EV), tornando a métrica comparável entre diferentes níveis de dívida.
-
-    - Fórmula: Free Cash Flow / EV
-    - EV = MarketCap + Dívida + Minoritários + Preferenciais − Caixa
-    - Regras (gerais): >4% barato | 2,5–4% justo | <2,5% caro
-    - Evitar bancos/seguradoras; atenção a FCF inflado por variações de working capital
-    `,
-  // - Price : Earnings
+  // ===== Valuation / KPIs =====
   trailingPE:
-    "Price/Earnings (TTM). Valor mais baixo pode indicar ‘undervalued’, depende do setor e crescimento.",
+    "P/E (TTM). Mais baixo pode indicar ‘undervalued’, mas depende do crescimento e do setor.",
   sectorTrailingPE:
-    "P/E médio do setor, útil para comparação com pares.",
+    "P/E médio do setor — bom para comparar com pares imediatos.",
   forwardPE:
-    "P/E com base em lucros estimados (12 meses seguintes). Sensível a revisões de analistas.",
+    "P/E com base em lucros estimados (12M seguintes). Sensível a revisões de analistas.",
   trailingPEClass:
     "Classificação qualitativa do P/E face a thresholds por setor.",
+
+  evEbitda: `
+**EV/EBITDA** compara o valor do negócio com a geração operacional.
+  
+- EV = MarketCap + Dívida + Minoritários + Preferenciais − Caixa
+- Preferir **EBITDA TTM**; senão, FY
+- Evitar bancos/seguradoras e casos com EBITDA negativo
+- Regras (gerais): <8x barato | 8–12x justo | >12x caro
+- Comparar sempre com setor e histórico
+`,
+
+  PriceToSale: `
+**P/S** usa receita quando lucros são voláteis/negativos.
+  
+- Fórmula: MarketCap / Receita (**TTM**)
+- Combinar com margens (bruta/operacional)
+- Regras (gerais): <2x barato | 2–6x justo | >6x caro
+- Software aceita múltiplos maiores; retalho costuma <2x
+`,
+
+  EquityFCFYield: `
+**Equity FCF Yield** mede retorno de FCF para o acionista.
+  
+- Fórmula: FCF / MarketCap
+- FCF = OCF − Capex (**TTM** se possível)
+- Regras: >5% barato | 3–5% justo | <3% caro
+- Atenção a FCF inflado por variações de working capital
+`,
+
+  EnterpriseFCFYield: `
+**Enterprise FCF Yield** normaliza por EV (comparável com diferentes dívidas).
+  
+- Fórmula: FCF / EV
+- Regras: >4% barato | 2,5–4% justo | <2,5% caro
+- Evitar bancos/seguradoras
+`,
+
+  // ----- Finantial Health ----- //
+  NetDebtEbitda: `
+**Net Debt/EBITDA** mede alavancagem.
+  
+- **O que mede?** Relação entre a dívida líquida (dívida total menos caixa) e a geração de EBITDA (lucros antes de juros, impostos, depreciação e amortização).
+- **Porquê importante?** Mostra quantos anos de EBITDA seriam necessários, em teoria, para liquidar a dívida líquida.
+- **Usado por quem?** Muito usado por analistas de crédito, bancos e agências de rating para medir alavancagem.
+
+- Net Debt = Total Debt − (Caixa + ST investments)
+- Usar **EBITDA TTM**; senão, FY
+- Regras: <1x forte | 1–3x ok | >3x fraco
+- Net cash (negativo) = muito forte
+`,
+
+  InterestCoverageEbit: `
+**Cobertura de Juros** = EBIT / Despesa de Juros.
+  
+- Alternativa: EBITDA / Juros
+- Regras (EBIT): >8x forte | 3–8x ok | <3x fraco
+- Se “juros” ≤ 0 → rever dados
+`,
+
+  CurrentRatio: `
+**Current Ratio** = Ativo Circulante / Passivo Circulante.
+  
+- Regras: >1,5 forte | 1,0–1,5 ok | <1,0 fraco
+- Usa último **quarter** (não TTM)
+`,
+
+  QuickRatio: `
+**Quick Ratio** = (Ativo Circ. − Inventários) / Passivo Circ.
+  
+- Regras: >1,0 forte | 0,8–1,0 ok | <0,8 fraco
+- Usa último **quarter**
+`,
+
+  // ----- Profitability ----- //
+  OperationalMargin: `
+**Margem Operacional** = EBIT / Receita.
+  
+- Preferir **TTM**; senão, FY
+- Regra geral: ≥15% forte (ajustar por setor)
+`,
+
+  FcfMargin: `
+**Margem FCF** = FCF / Receita.
+  
+- FCF = OCF − Capex (**TTM**)
+- Regras: ≥10% forte | 5–10% ok | <5% fraco
+`,
+
+  ROE: `
+**ROE** = Net Income / Equity Médio.
+  
+- Regras: >15% forte | 8–15% ok | <8% fraco
+- Cuidado: alavancagem elevada pode inflacionar o ROE
+`,
+
+  ROA: `
+**ROA** = Net Income / Ativos Médios.
+  
+- Regras: >7% forte | 3–7% ok | <3% fraco
+- Útil para comparar eficiência entre setores intensivos em ativos
+`,
+
+  // ===== Eficiência de Capital =====
+ROIC: `
+**ROIC** = NOPAT / Capital Investido Médio.
+
+- NOPAT ≈ EBIT × (1 − taxa efetiva)
+- Capital Investido: “Invested Capital” médio (t, t−1) ou (Dívida + Equity − Caixa & ST inv.)
+- Preferir TTM para EBIT; média de 2 períodos para o capital
+- Interpretação: ROIC > WACC ⇒ cria valor
+- Regras (proxy): >12% forte | 6–12% ok | <6% fraco
+`,
+
+WACC: `
+**WACC** = custo médio ponderado do capital (equity + dívida).
+
+- **Ce (CAPM)**: Rf + β × ERP
+- **Cd**: Juros / Dívida; após impostos: Cd × (1 − taxa efetiva)
+- **Pesos**: E/(D+E) e D/(D+E) com market cap e dívida líquida atuais
+- Usos: comparar **ROIC vs WACC** para medir criação de valor
+- Nota: Rf (ex.: US10Y), ERP (ex.: 5–6%), β específico da empresa
+`,
+
+EVA: `
+**EVA (Economic Value Added)** = lucro económico gerado acima do custo do capital.
+
+- Fórmula 1: **EVA** = NOPAT − (WACC × Capital Investido)
+- Fórmula 2 (spread): **EVA** = (ROIC − WACC) × Capital Investido
+- Interpretação:
+  - EVA > 0 ⇒ cria valor
+  - EVA ≈ 0 ⇒ cobre custo de capital
+  - EVA < 0 ⇒ destrói valor
+`,
+
+  // ===== Growth =====
+GrowthReveneuYoY: `
+**Crescimento de Vendas (YoY)** = Receita FY atual vs FY anterior.
+- Evita sazonalidade dos trimestres
+- Regras: ≥10% forte | 4–10% moderado | <4% fraco
+`,
+CagrGrowthReveneuYoY: `
+**CAGR 3 anos (Vendas)** = taxa composta em 3 FY.
+- Captura tendência estrutural
+- Ignora ruído de um único ano
+`,
+GrowthEPSYoY: `
+**Crescimento de EPS (YoY)** = EPS FY atual vs FY anterior.
+- Sensível a recompras e itens não recorrentes
+- Regras: ≥10% forte | 4–10% moderado | <4% fraco
+`,
+CagrGrowthEPSYoY: `
+**CAGR 3 anos (EPS)** = taxa composta em 3 FY.
+- Preferir EPS diluído
+- Se possível, validar com Net Income e ações médias
+`,
+  
+  // ===== Dividend =====
+divCoverageRate: `
+**Coverage Ratio** = Lucro / Dividendos.  
+Mostra quanto os lucros cobrem os dividendos pagos.  
+
+- >2×: cobertura forte, muito espaço para manter/crescer  
+- 1–2×: aceitável  
+- <1×: risco de corte, dividendos > lucros
+`,
+
+dividendYield: `
+**Dividend Yield (TTM)** = Dividendos por ação (últimos 12m) / Preço da ação.  
+
+- Indica retorno em % via dividendos.  
+- 2–5% é considerado saudável  
+- Muito alto pode sinalizar risco
+`,
+
+fiveYearAvgDividendYield: `
+**Dividend Yield Médio 5 anos** = média do dividend yield anual nos últimos 5 anos.  
+
+- Útil para comparar com o yield atual  
+- Yield atual >> média → pode indicar subavaliação  
+- Yield atual << média → pode indicar sobreavaliação
+`,
+
+PayoutRatio: `
+**Payout Ratio** = Dividendos / Lucro Líquido.  
+
+- Mede % dos lucros distribuídos em dividendos  
+- 30–60% → saudável  
+- <30% → espaço para crescer dividendos  
+- >70% → risco de insustentabilidade
+`,
+
+CagrGrowthDividend3y: `
+**CAGR Dividendos 3 anos** = taxa média de crescimento anual dos dividendos por ação nos últimos 3 anos.  
+
+- >5% → bom crescimento  
+- 0–5% → moderado  
+- <0% → corte de dividendos
+`,
+
+CagrGrowthDividend5y: `
+**CAGR Dividendos 5 anos** = taxa média de crescimento anual dos dividendos por ação nos últimos 5 anos.  
+
+- Mostra consistência de longo prazo  
+- >5% → sólido  
+- <0% → histórico de cortes
+`,
+
+dividendTTM: `
+**Dividendos TTM** = soma de todos os dividendos pagos nos últimos 12 meses (em $).  
+
+- Usado para calcular dividend yield  
+- Dá noção do fluxo de dividendos recente
+`,
+
+ShareHolderYield: `
+**Shareholder Yield (SHY)** = (Dividendos + Recompras de ações) / Market Cap.  
+
+- Representa retorno total ao acionista via distribuição e buybacks  
+- >5% → excelente  
+- 2–5% → ok  
+- <2% → baixo  
+- Importante cruzar com FCF e payout para sustentabilidade
+`,
 };
 
 function createHelpIcon(text) {

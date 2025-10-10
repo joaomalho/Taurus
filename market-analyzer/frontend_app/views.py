@@ -14,6 +14,8 @@ from backend.tecnical_analysis.candles_patterns import CandlesPatterns
 from backend.tecnical_analysis.harmonic_patterns import HarmonicPatterns
 from backend.risk_manager.risk_manager import RiskManagerFundamental
 
+dh = DataHistoryYahoo()
+
 
 # ------------------------- Pages -------------------------
 def home(request):
@@ -98,7 +100,7 @@ def _df_to_excel_response(df, base_filename: str):
     return response
 
 
-def get_data_history(request, symbol: str):
+def get_dh(request, symbol: str):
     '''
     Data collection from yahoo
 
@@ -126,8 +128,7 @@ def get_data_history(request, symbol: str):
         interval_time = request.GET.get("interval", "1d")
 
         try:
-            data_history = DataHistoryYahoo()
-            df = data_history.get_data_history(symbol=symbol, period=per, interval=interval_time)
+            df = dh.get_data_history(symbol=symbol, period=per, interval=interval_time)
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -145,8 +146,7 @@ def get_stock_gainers(request):
     View to pass Top 100 Gainers JSON.
     """
 
-    data_history = DataHistoryYahoo()
-    df = data_history.get_stocks_gainers()
+    df = dh.get_stocks_gainers()
 
     if df is None or df.empty:
         return JsonResponse({"error": "No data found"}, status=404)
@@ -160,8 +160,7 @@ def get_stock_trending(request):
     View to pass Top 100 Trending JSON.
     """
     try:
-        data_history = DataHistoryYahoo()
-        df = data_history.get_stocks_trending()
+        df = dh.get_stocks_trending()
 
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -181,8 +180,7 @@ def get_stock_most_active(request):
     View to pass Top 100 Most Active JSON.
     """
     try:
-        data_history = DataHistoryYahoo()
-        df = data_history.get_stocks_most_active()
+        df = dh.get_stocks_most_active()
 
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -243,8 +241,7 @@ def get_crossover_trend_metrics(request, symbol: str):
             except (json.JSONDecodeError, KeyError, TypeError) as e:
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
-            data_history = DataHistoryYahoo()
-            df = data_history.get_data_history(symbol=symbol, period="1mo", interval="1d")
+            df = dh.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -265,7 +262,6 @@ def get_crossover_trend_metrics_draw(request, symbol: str):
     medium = int(request.GET.get("medium", 25))
     slow = int(request.GET.get("slow", 200))
 
-    dh = DataHistoryYahoo()
     df = dh.get_data_history(symbol=symbol, period="1y", interval="1d")
 
     if df is None or df.empty:
@@ -318,8 +314,7 @@ def get_adx_trend_metrics(request, symbol: str):
             except (json.JSONDecodeError, KeyError, TypeError) as e:
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
-            data_history = DataHistoryYahoo()
-            df = data_history.get_data_history(symbol=symbol, period="1mo", interval="1d")
+            df = dh.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -378,8 +373,7 @@ def get_bollinger_bands_metrics(request, symbol: str):
             except (json.JSONDecodeError, KeyError, TypeError) as e:
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
-            data_history = DataHistoryYahoo()
-            df = data_history.get_data_history(symbol=symbol, period="1mo", interval="1d")
+            df = dh.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -399,7 +393,6 @@ def get_bollinger_bands_metrics_draw(request, symbol: str):
     length = int(request.GET.get("length", 14))
     std = int(request.GET.get("std", 2))
 
-    dh = DataHistoryYahoo()
     df = dh.get_data_history(symbol=symbol, period="1y", interval="1d")
 
     if df is None or df.empty:
@@ -442,8 +435,7 @@ def get_rsi_trend_metrics(request, symbol: str):
             except (json.JSONDecodeError, KeyError, TypeError) as e:
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
-            data_history = DataHistoryYahoo()
-            df = data_history.get_data_history(symbol=symbol, period="1mo", interval="1d")
+            df = dh.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -464,7 +456,6 @@ def get_rsi_trend_metrics_draw(request, symbol: str):
     lower_level = int(request.GET.get("lower_level", 30))
     length = int(request.GET.get("length", 30))
 
-    dh = DataHistoryYahoo()
     df = dh.get_data_history(symbol=symbol, period="1y", interval="1d")
 
     if df is None or df.empty:
@@ -511,8 +502,7 @@ def get_candle_detection(request, symbol: str):
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
 
         else:
-            data_history = DataHistoryYahoo()
-            df = data_history.get_data_history(symbol=symbol, period="3mo", interval="1d")
+            df = dh.get_data_history(symbol=symbol, period="3mo", interval="1d")
 
             if df is None or df.empty:
                 return JsonResponse({"error": "No data found"}, status=404)
@@ -580,7 +570,6 @@ def get_harmonic_patterns(request, symbol: str):
             except (json.JSONDecodeError, KeyError, TypeError) as e:
                 return JsonResponse({"error": f"Invalid data format: {str(e)}"}, status=400)
         else:
-            dh = DataHistoryYahoo()
             df = dh.get_data_history(symbol=symbol, period="1mo", interval="1d")
 
             if df is None or df.empty:
@@ -608,8 +597,7 @@ def get_inst_holders(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        df = data_history.get_symbol_institutional_holders(symbol)
+        df = dh.get_symbol_institutional_holders(symbol)
 
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -637,8 +625,7 @@ def get_inside_transactions(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        df = data_history.get_symbol_inside_transactions(symbol)
+        df = dh.get_symbol_inside_transactions(symbol)
 
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -672,8 +659,7 @@ def get_recommendations(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        df = data_history.get_symbol_recommendations(symbol)
+        df = dh.get_symbol_recommendations(symbol)
 
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -700,8 +686,7 @@ def get_fundamental_info(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        fundamental_info = data_history.get_symbol_fundamental_info(symbol)
+        fundamental_info = dh.get_symbol_fundamental_info(symbol)
 
         if not fundamental_info:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -732,8 +717,7 @@ def get_fundamental_evaluations(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        fundamental_info = data_history.get_symbol_fundamental_info(symbol)
+        fundamental_info = dh.get_symbol_fundamental_info(symbol)
 
         if not fundamental_info:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -769,8 +753,7 @@ def get_fundamental_income_download(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        income_stmt = data_history.get_yahoo_symbol_income(symbol)
+        income_stmt = dh.get_yahoo_symbol_income(symbol)
 
         return _df_to_excel_response(income_stmt, f"{symbol}_income_statement")
 
@@ -791,8 +774,7 @@ def get_fundamental_balance_sheet_download(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        balance_sheet = data_history.get_yahoo_symbol_balance_sheet(symbol)
+        balance_sheet = dh.get_yahoo_symbol_balance_sheet(symbol)
 
         return _df_to_excel_response(balance_sheet, f"{symbol}_balance_sheet")
 
@@ -813,8 +795,7 @@ def get_fundamental_cashflow_download(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        cashflow = data_history.get_yahoo_symbol_cashflow(symbol)
+        cashflow = dh.get_yahoo_symbol_cashflow(symbol)
 
         return _df_to_excel_response(cashflow, f"{symbol}_cashflow")
 
@@ -835,8 +816,7 @@ def get_fundamental_income_quarterly_download(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        income_stmt_quarterly = data_history.get_yahoo_symbol_income_quarterly(symbol)
+        income_stmt_quarterly = dh.get_yahoo_symbol_income_quarterly(symbol)
 
         return _df_to_excel_response(income_stmt_quarterly, f"{symbol}_income_stmt_quarterly")
 
@@ -857,8 +837,7 @@ def get_fundamental_balance_sheet_quarterly_download(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        balance_sheet_quarterly = data_history.get_yahoo_symbol_balance_sheet_quarterly(symbol)
+        balance_sheet_quarterly = dh.get_yahoo_symbol_balance_sheet_quarterly(symbol)
 
         return _df_to_excel_response(balance_sheet_quarterly, f"{symbol}_balance_sheet_quarterly")
 
@@ -879,8 +858,7 @@ def get_fundamental_cashflow_quarterly_download(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        cashflow_quarterly = data_history.get_yahoo_symbol_cashflow_quarterly(symbol)
+        cashflow_quarterly = dh.get_yahoo_symbol_cashflow_quarterly(symbol)
 
         return _df_to_excel_response(cashflow_quarterly, f"{symbol}_cashflow_quarterly")
 
@@ -901,8 +879,7 @@ def get_bio_info(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        bio_info = data_history.get_symbol_bio_info(symbol)
+        bio_info = dh.get_symbol_bio_info(symbol)
 
         if not bio_info:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -929,8 +906,7 @@ def get_symbol_fundamental_news(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        news = data_history.get_yahoo_symbol_news(symbol)
+        news = dh.get_yahoo_symbol_news(symbol)
 
         if not news:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -955,8 +931,7 @@ def get_yahoo_symbol_earnings_dates(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        df = data_history.get_yahoo_symbol_earnings_dates(symbol)
+        df = dh.get_yahoo_symbol_earnings_dates(symbol)
 
         # sanity check
         if df is None or not isinstance(df, pd.DataFrame) or df.empty:
@@ -1007,9 +982,8 @@ def get_financial_health_chart_info(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        bio_info = data_history.get_symbol_bio_info(symbol)
-        bio_fund_info = data_history.get_symbol_fundamental_info(symbol)
+        bio_info = dh.get_symbol_bio_info(symbol)
+        bio_fund_info = dh.get_symbol_fundamental_info(symbol)
 
         if not bio_info:
             return JsonResponse({"error": "No bio data found"}, status=404)
@@ -1066,9 +1040,8 @@ def get_profitability_chart_info(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        bio_info = data_history.get_symbol_bio_info(symbol)
-        bio_fund_info = data_history.get_symbol_fundamental_info_profitability(symbol)
+        bio_info = dh.get_symbol_bio_info(symbol)
+        bio_fund_info = dh.get_symbol_fundamental_info_profitability(symbol)
 
         if not bio_info:
             return JsonResponse({"error": "No bio data found"}, status=404)
@@ -1110,9 +1083,8 @@ def get_efficiency_chart_info(request, symbol: str):
 
         symbol = validate_symbol(symbol)
 
-        data_history = DataHistoryYahoo()
-        bio_info = data_history.get_symbol_bio_info(symbol)
-        cap_eff = data_history.get_symbol_fundamental_info_capefficiency(symbol)
+        bio_info = dh.get_symbol_bio_info(symbol)
+        cap_eff = dh.get_symbol_fundamental_info_capefficiency(symbol)
 
         if not bio_info:
             return JsonResponse({"error": "No bio data found"}, status=404)

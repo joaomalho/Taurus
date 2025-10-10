@@ -13,7 +13,8 @@ canvas {
 /* CARD BIO */
 /* ============================= */
 .bio-card {
-    border: 1px solid var(--stock-info-border-color); 
+    border: 1px solid var(--stock-info-border-color);
+    background-color: var(--card-bg);
     border-radius: 10px;
     width: 100%;
     max-width: 100%; 
@@ -57,13 +58,14 @@ canvas {
 .bio-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
     line-height: 1.5;
 }
 
 .bio-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--secondary-bg);
+    background-color: var(--content-p-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
@@ -258,6 +260,7 @@ canvas {
     max-width: 100%; 
     margin-top: 15px; 
     overflow: hidden; 
+    background-color: var(--card-bg);
 }
 
 .fundamental-header {
@@ -286,28 +289,29 @@ canvas {
     margin: 0;
 }
 
-/* CASHFLOW */
+/* CAPITAL EFFICIENCY */
 
-.cashflow-content {
+.capitalefi-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
     line-height: 1.5;
+    background-color: var(--content-bg);
 }
 
-.cashflow-content p {
+.capitalefi-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--secondary-bg);
+    background-color: var(--content-p-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
 
-.cashflow-content a {
+.capitalefi-content a {
     color: var(--link-color);
     font-weight: bold;
 }
 
-.cashflow-content a:hover {
+.capitalefi-content a:hover {
     color: var(--button-hover-bg);
 }
 
@@ -316,13 +320,14 @@ canvas {
 .profitability-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
     line-height: 1.5;
 }
 
 .profitability-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--secondary-bg);
+    background-color: var(--content-p-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
@@ -341,13 +346,14 @@ canvas {
 .health-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
     line-height: 1.5;
 }
 
 .health-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--secondary-bg);
+    background-color: var(--content-p-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
@@ -361,18 +367,45 @@ canvas {
     color: var(--button-hover-bg);
 }
 
+/* KPIS */
+
+.kpis-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
+    line-height: 1.5;
+}
+
+.kpis-content p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: var(--content-p-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--stock-info-border-color); 
+}
+
+.kpis-content a {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.kpis-content a:hover {
+    color: var(--button-hover-bg);
+}
+
 /* VALUATION */
 
 .valuation-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
     line-height: 1.5;
 }
 
 .valuation-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--secondary-bg);
+    background-color: var(--content-p-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
@@ -392,13 +425,14 @@ canvas {
 .dividends-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
     line-height: 1.5;
 }
 
 .dividends-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--secondary-bg);
+    background-color: var(--content-p-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
@@ -412,43 +446,19 @@ canvas {
     color: var(--button-hover-bg);
 }
 
-/* RATIOS */
-
-.ratios-content {
-    padding: 15px 20px;
-    color: var(--stock-info-input-text-color);
-    line-height: 1.5;
-}
-
-.ratios-content p {
-    margin: 6px 0;
-    padding: 8px 12px;
-    background-color: var(--secondary-bg);
-    border-radius: 6px;
-    border-left: 4px solid var(--stock-info-border-color); 
-}
-
-.ratios-content a {
-    color: var(--link-color);
-    font-weight: bold;
-}
-
-.ratios-content a:hover {
-    color: var(--button-hover-bg);
-}
-
 /* RISK */
 
 .risk-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
     line-height: 1.5;
 }
 
 .risk-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--secondary-bg);
+    background-color: var(--content-p-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
@@ -467,13 +477,14 @@ canvas {
 .overview-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
     line-height: 1.5;
 }
 
 .overview-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--secondary-bg);
+    background-color: var(--content-p-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
@@ -492,13 +503,14 @@ canvas {
 .download-content {
     padding: 15px 20px;
     color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
     line-height: 1.5;
 }
 
 .download-content p {
     margin: 6px 0;
     padding: 8px 12px;
-    background-color: var(--secondary-bg);
+    background-color: var(--content-p-bg);
     border-radius: 6px;
     border-left: 4px solid var(--stock-info-border-color); 
 }
@@ -512,7 +524,7 @@ canvas {
     color: var(--button-hover-bg);
 }
 
-.fund-cashflow, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-ratios, .fund-risk, .fund-download {
+.fund-capitalefi, .fund-profitability, .fund-health, .fund-valuation, .fund-dividends, .fund-ratios, .fund-risk, .fund-download, .fund-kpis {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 10px;

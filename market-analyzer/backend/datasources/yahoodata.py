@@ -14,11 +14,11 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
 class DataHistoryYahoo():
 
-    def __init__(self, ttl_seconds: int = 30) -> None:
+    def __init__(self, ttl_seconds: int = 600) -> None:
         self._info_cache: dict[str, dict] = {}
         self._endpoint_cache: dict[str, dict[str, dict]] = {}
         self._tickers: dict[str, yf.Ticker] = {}
-        self._ttl_seconds = int(ttl_seconds * 60)
+        self._ttl_seconds = int(ttl_seconds)
 
     def _get_ticker(self, symbol: str) -> yf.Ticker:
         if symbol not in self._tickers:

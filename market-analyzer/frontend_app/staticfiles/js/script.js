@@ -1,5 +1,5 @@
-import { renderCandlestickFromData } from "./candlestick.js";
-import "./chartsandgraphs.js";
+import { renderCandlestickFromData } from "./custom_charts/candlestick.js";
+import "./custom_charts/chartsandgraphs.js";
 import { initMetricTooltips, initAttributeTooltips } from "./tooltips.js";
 import {
     fetchYahooStockGainers,
@@ -113,10 +113,11 @@ document.addEventListener("DOMContentLoaded", function () {
             { toggleSelector: "#tecCandles", contentSelector: ".candles-content" },
             { toggleSelector: "#tecHarmonic", contentSelector: ".harmonic-content" },
             { toggleSelector: "#funValuation", contentSelector: ".valuation-content" },
+            { toggleSelector: "#funKPIs", contentSelector: ".kpis-content" },
+            { toggleSelector: "#funHealth", contentSelector: ".health-content" },
             { toggleSelector: "#funDividends", contentSelector: ".dividends-content" },
             { toggleSelector: "#funProfitability", contentSelector: ".profitability-content" },
-            { toggleSelector: "#funHealth", contentSelector: ".health-content" },
-            { toggleSelector: "#funCashflow", contentSelector: ".cashflow-content" },
+            { toggleSelector: "#funCapitalEf", contentSelector: ".capitalefi-content" },
             { toggleSelector: "#funRatios", contentSelector: ".ratios-content" },
             { toggleSelector: "#funRisk", contentSelector: ".risk-content" },
             { toggleSelector: "#funOverview", contentSelector: ".overview-content" },
