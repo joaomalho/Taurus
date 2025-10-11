@@ -309,18 +309,6 @@ const METRIC_STYLE = {
   // Profitability
   NetIncome: "currency",
   TotalRevenue: "currency",
-
-  // cashflow & mercado
-  FreeCashflow: "currency",
-
-  // rácios
-  GrossMargin: "percent",
-
-  // risco/sentimento
-  beta: "number",
-  sharesPercentSharesOut: "percent",
-  recommendationMean: "number",
-  targetMeanPrice: "currency",
 };
 
 /* ─────── FORMATADOR CENTRAL ─────── */
@@ -349,12 +337,8 @@ function renderMarkdownSafe(md) {
 export function displayFundamentalResults(data) {
   const kpisData = data.kpis;
   const valuationData = data.valuation;
-  const dividendsData = data.dividends;
   const profitabilityData = data.profitability;
   const finantial_healthData = data.finantial_health;
-  const cashflowData = data.cashflow;
-  const ratiosData = data.ratios;
-  const marketRiskData = data.market_risk_and_sentiment;
 
   const elements = {
     // KPIS
@@ -396,15 +380,6 @@ export function displayFundamentalResults(data) {
     // Profitability
     NetIncome: profitabilityData.NetIncome || {},
     TotalRevenue: profitabilityData.TotalRevenue || {},
-    // Cashflow
-    FreeCashflow: cashflowData.FreeCashflow || {},
-    // Ratios
-    GrossMargin: ratiosData.GrossMargin || {},
-    // Market Risk Sentiment
-    beta: marketRiskData.beta || {},
-    sharesPercentSharesOut: marketRiskData.sharesPercentSharesOut || {},
-    recommendationMean: marketRiskData.recommendationMean || {},
-    targetMeanPrice: marketRiskData.targetMeanPrice || {},
   };
 
   for (const [key, d] of Object.entries(elements)) {
@@ -452,9 +427,6 @@ export function displayFundamentalResultsClassification(data) {
     ["finantial_health", "StockholdersEquity"],
     ["profitability", "NetIncome"],
     ["profitability", "TotalRevenue"],
-    ["cashflow", "FreeCashflow"],
-    ["ratios", "GrossMargin"],
-    ["risk_sentiment", "beta"],
   ];
 
   for (const [section, key] of fields) {

@@ -403,7 +403,6 @@ We are also looking to grow our community with **key roles in market analysis**:
 ## **🚀 Latest Improvements**
 
 - **Cache Improvement**
-- **Refactor on Requests**
 
 Notes:
 -- Adjust charts over values. Fine tunning.

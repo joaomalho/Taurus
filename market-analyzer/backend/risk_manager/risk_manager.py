@@ -174,6 +174,53 @@ class RiskManagerFundamental():
             (0.12,      "Normal",                               "neutral"),
             (math.inf,  "High",                                 "bad"),
         ],
+        "GrowthReveneuYoY": [
+            (0.04,      "Weak",                                 "bad"),
+            (0.10,      "Healthy",                              "good"),
+            (math.inf,  "Strong",                               "verygood"),
+        ],
+        "CagrGrowthReveneuYoY": [
+            (0.04,      "Weak",                                 "bad"),
+            (0.10,      "Healthy",                              "good"),
+            (math.inf,  "Strong",                               "verygood"),
+        ],
+        "GrowthEPSYoY": [
+            (0.04,      "Weak",                                 "bad"),
+            (0.10,      "Healthy",                              "good"),
+            (math.inf,  "Strong",                               "verygood"),
+        ],
+        "CagrGrowthEPSYoY": [
+            (0.04,      "Weak",                                 "bad"),
+            (0.10,      "Healthy",                              "good"),
+            (math.inf,  "Strong",                               "verygood"),
+        ],
+        "divCoverageRate": [
+            (0.01,      "No Coverage",                          "bad"),
+            (0.015,     "Bad Coverage (Cut)",                   "neutral"),
+            (0.03,      "Good Coverage",                        "good"),
+            (math.inf,  "Very Good Coverage (Greedy)",          "verygood"),
+        ],
+        "PayoutRatio": [
+            (0.3,       "Very Good Coverage (Greedy)",          "verygood"),
+            (0.6,       "Good Coverage",                        "neutral"),
+            (0.7,       "Bad Coverage (Cut)",                   "bad"),
+            (math.inf,  "No Coverage",                          "verybad"),
+        ],
+        "CagrGrowthDividend3y": [
+            (0.0,       "Cut on Dividends",                     "bad"),
+            (0.05,      "Moderated",                            "neutral"),
+            (math.inf,  "Good Growth",                          "verygood"),
+        ],
+        "CagrGrowthDividend5y": [
+            (0.0,       "Cut on Dividends",                     "bad"),
+            (0.05,      "Moderated",                            "neutral"),
+            (math.inf,  "Good Growth",                          "verygood"),
+        ],
+        "ShareHolderYield": [
+            (0.02,      "Low",                                  "bad"),
+            (0.05,      "Moderated",                            "neutral"),
+            (math.inf,  "Excellent",                            "verygood"),
+        ],
     }
 
     METRIC_MESSAGES_PT = {
@@ -991,6 +1038,429 @@ class RiskManagerFundamental():
                 "tooltip": "Sem dados."
             },
         },
+        "GrowthReveneuYoY": {
+            "verygood": lambda v: {
+                "short":  f"**Revenue YoY =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento anual de receitas **forte** (acima de 10%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Procura robusta e/ou *mix*/margens a melhorar.\n"
+                    "- Pode sustentar expansão de escala e ganhos de eficiência.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — confirmar qualidade/recorrência das vendas."
+                ),
+                "tooltip": ">10%: forte; 4–10%: saudável; <4%: fraco."
+            },
+            "good": lambda v: {
+                "short":  f"**Revenue YoY =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento anual **saudável** (entre 4% e 10%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Expansão consistente, em linha com setores estáveis.\n"
+                    "- Upside adicional depende de preços, *mix* e geografia.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — sensível a ciclos e competição."
+                ),
+                "tooltip": "4–10%: saudável; >10%: forte; <4%: fraco."
+            },
+            "bad": lambda v: {
+                "short":  f"**Revenue YoY =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento **fraco** (<4%) ou perto de estagnação.\n\n"
+                    "**Interpretação:**\n"
+                    "- Precisa de catalisadores (novos produtos/mercados) ou ganhos de preço.\n"
+                    "- Maior risco de alavancagem operacional negativa.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — pouca folga para choques."
+                ),
+                "tooltip": "<4%: fraco; 4–10%: saudável; >10%: forte."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Revenue YoY.**",
+                "detail": "Não foi possível calcular o crescimento anual de receitas.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "CagrGrowthReveneuYoY": {
+            "verygood": lambda v: {
+                "short":  f"**Revenue CAGR =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento anual composto **forte** no multi-ano (>10%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Trajetória estruturalmente positiva, menos sujeita a ruído anual.\n"
+                    "- Indica *playbook* de execução e expansão sustentada.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — monitorizar manutenção do ritmo."
+                ),
+                "tooltip": ">10%: forte; 4–10%: saudável; <4%: fraco."
+            },
+            "good": lambda v: {
+                "short":  f"**Revenue CAGR =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento anual composto **saudável** (4–10%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Tendência consistente, mas dependente de execução contínua.\n"
+                    "- Consolidação/eficiência podem elevar a margem.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — atenção a saturação de mercado."
+                ),
+                "tooltip": "4–10%: saudável; >10%: forte; <4%: fraco."
+            },
+            "bad": lambda v: {
+                "short":  f"**Revenue CAGR =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento composto **fraco** (<4%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Sugere mercado maduro/pressão competitiva.\n"
+                    "- Valor depende mais de margens/eficiência do que de *top line*.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — pouca alavancagem operacional positiva."
+                ),
+                "tooltip": "<4%: fraco; 4–10%: saudável; >10%: forte."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Revenue CAGR.**",
+                "detail": "Não foi possível calcular o crescimento anual composto de receitas.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "GrowthEPSYoY": {
+            "verygood": lambda v: {
+                "short":  f"**EPS YoY =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento anual do EPS **forte** (>10%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Combinação de expansão de margens e/ou *buybacks*.\n"
+                    "- Suporta re-rating de múltiplos se for recorrente.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — validar qualidade dos lucros (one-offs vs. core)."
+                ),
+                "tooltip": ">10%: forte; 4–10%: saudável; <4%: fraco."
+            },
+            "good": lambda v: {
+                "short":  f"**EPS YoY =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento anual do EPS **saudável** (4–10%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Em linha com empresas de qualidade estável.\n"
+                    "- Depende de disciplina de custos e *mix* de receitas.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — atenção a ciclos de margem."
+                ),
+                "tooltip": "4–10%: saudável; >10%: forte; <4%: fraco."
+            },
+            "bad": lambda v: {
+                "short":  f"**EPS YoY =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento do EPS **fraco** (<4%) ou estagnado.\n\n"
+                    "**Interpretação:**\n"
+                    "- Requer catalisadores (volume/preço/mix) ou otimização de custos.\n"
+                    "- Múltiplos mais vulneráveis a compressão.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — sensível a *misses* de resultados."
+                ),
+                "tooltip": "<4%: fraco; 4–10%: saudável; >10%: forte."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para EPS YoY.**",
+                "detail": "Não foi possível calcular o crescimento anual do EPS.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "CagrGrowthEPSYoY": {
+            "verygood": lambda v: {
+                "short":  f"**EPS CAGR =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento anual composto do EPS **forte** (>10%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Demonstra criação de valor persistente e escalável.\n"
+                    "- Suporta política de dividendos e *buybacks* sustentáveis.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — desde que a base de lucros seja recorrente."
+                ),
+                "tooltip": ">10%: forte; 4–10%: saudável; <4%: fraco."
+            },
+            "good": lambda v: {
+                "short":  f"**EPS CAGR =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento composto **saudável** (4–10%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Tendência positiva no médio prazo; execução consistente é chave.\n"
+                    "- Múltiplos tendem a manter-se se a trajetória não quebrar.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — vigiar volatilidade do negócio."
+                ),
+                "tooltip": "4–10%: saudável; >10%: forte; <4%: fraco."
+            },
+            "bad": lambda v: {
+                "short":  f"**EPS CAGR =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento composto **fraco** (<4%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Dependência maior de redução de custos/financeirização para sustentar EPS.\n"
+                    "- Valuation mais exposto a decepções.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — pouca almofada de crescimento."
+                ),
+                "tooltip": "<4%: fraco; 4–10%: saudável; >10%: forte."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para EPS CAGR.**",
+                "detail": "Não foi possível calcular o crescimento anual composto do EPS.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "divCoverageRate": {
+            "verygood": lambda v: {
+                "short":  f"**Dividend Coverage =** {v:.2f}x",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Cobertura **muito confortável**: o EPS cobre o dividendo várias vezes.\n\n"
+                    "**Interpretação:**\n"
+                    "- Ampla folga para manter/aumentar dividendos mesmo com volatilidade dos lucros.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo — salvo colapsos de lucro extraordinários."
+                ),
+                "tooltip": ">0.03x: muito boa; 0.015–0.03x: boa; 0.01–0.015x: fraca; <0.01x: sem cobertura."
+            },
+            "good": lambda v: {
+                "short":  f"**Dividend Coverage =** {v:.2f}x",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Cobertura **adequada** do dividendo pelo EPS.\n\n"
+                    "**Interpretação:**\n"
+                    "- Sustentável em cenários normais; pode suportar aumentos moderados.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado — atenção a ciclos negativos."
+                ),
+                "tooltip": "0.015–0.03x: boa; >0.03x: muito boa; 0.01–0.015x: fraca; <0.01x: sem cobertura."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Dividend Coverage =** {v:.2f}x",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Cobertura **apertada**; espaço limitado para aumentos.\n\n"
+                    "**Interpretação:**\n"
+                    "- Qualquer queda no EPS pode obrigar a *cut* ou *freeze*.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — monitorizar *payout* e guidance."
+                ),
+                "tooltip": "0.01–0.015x: fraca; >0.03x: muito boa; 0.015–0.03x: boa; <0.01x: sem cobertura."
+            },
+            "bad": lambda v: {
+                "short":  f"**Dividend Coverage =** {v:.2f}x",
+                "detail": (
+                    "**Significado:**\n"
+                    "- **Sem cobertura**: o EPS não suporta o dividendo atual.\n\n"
+                    "**Interpretação:**\n"
+                    "- Elevada probabilidade de corte, suspensão ou endividamento para pagar dividendos.\n\n"
+                    "**Risco:**\n"
+                    "- Muito elevado."
+                ),
+                "tooltip": "<0.01x: sem cobertura; 0.01–0.015x: fraca; 0.015–0.03x: boa; >0.03x: muito boa."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Dividend Coverage.**",
+                "detail": "Não foi possível calcular EPS/Dividendo.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "PayoutRatio": {
+            "verygood": lambda v: {
+                "short":  f"**Payout Ratio =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Payout* **baixo** (≤30%): ampla folga.\n\n"
+                    "**Interpretação:**\n"
+                    "- Elevada sustentabilidade e margem para crescer dividendos.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo."
+                ),
+                "tooltip": "≤30%: muito bom; 30–60%: aceitável; 60–70%: fraco; >70%: sem cobertura."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Payout Ratio =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Payout* **moderado** (30–60%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Sustentável, mas dependente de estabilidade do EPS.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado."
+                ),
+                "tooltip": "30–60%: aceitável; ≤30%: muito bom; 60–70%: fraco; >70%: sem cobertura."
+            },
+            "bad": lambda v: {
+                "short":  f"**Payout Ratio =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- *Payout* **elevado** (60–70%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Pouca flexibilidade para manter aumentos sem melhorar lucros.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado — risco de *cut* em choques."
+                ),
+                "tooltip": "60–70%: fraco; ≤30%: muito bom; 30–60%: aceitável; >70%: sem cobertura."
+            },
+            "verybad": lambda v: {
+                "short":  f"**Payout Ratio =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- **Sem cobertura** (>70%): dividendos próximos/ acima do lucro.\n\n"
+                    "**Interpretação:**\n"
+                    "- Vulnerável a cortes; pode recorrer a dívida/ativos para pagar.\n\n"
+                    "**Risco:**\n"
+                    "- Muito elevado."
+                ),
+                "tooltip": ">70%: sem cobertura; 60–70%: fraco; 30–60%: aceitável; ≤30%: muito bom."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Payout Ratio.**",
+                "detail": "Não foi possível calcular a percentagem de lucros distribuída.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "CagrGrowthDividend3y": {
+            "verygood": lambda v: {
+                "short":  f"**Dividend CAGR (3y) =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento composto **sólido** dos dividendos (>5%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Histórico recente consistente com política progressiva.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — verificar *payout* e cobertura."
+                ),
+                "tooltip": ">5%: bom; 0–5%: moderado; <0%: corte."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Dividend CAGR (3y) =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento **moderado** (0–5%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Aumentos prudentes; dependem de lucros/fluxo de caixa.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado."
+                ),
+                "tooltip": "0–5%: moderado; >5%: bom; <0%: corte."
+            },
+            "bad": lambda v: {
+                "short":  f"**Dividend CAGR (3y) =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- **Corte** ou retração dos dividendos.\n\n"
+                    "**Interpretação:**\n"
+                    "- Pressão em lucros/FCF ou mudança de política.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado."
+                ),
+                "tooltip": "<0%: corte; 0–5%: moderado; >5%: bom."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Dividend CAGR (3y).**",
+                "detail": "Não foi possível calcular o crescimento composto a 3 anos.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "CagrGrowthDividend5y": {
+            "verygood": lambda v: {
+                "short":  f"**Dividend CAGR (5y) =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento composto **sustentado** no longo prazo (>5%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Capacidade comprovada de aumentar dividendos ao longo de ciclos.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado."
+                ),
+                "tooltip": ">5%: bom; 0–5%: moderado; <0%: corte."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Dividend CAGR (5y) =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Crescimento **moderado** (0–5%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Política estável; dependente de *payout* e lucros.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado."
+                ),
+                "tooltip": "0–5%: moderado; >5%: bom; <0%: corte."
+            },
+            "bad": lambda v: {
+                "short":  f"**Dividend CAGR (5y) =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- **Corte**/estagnação no período.\n\n"
+                    "**Interpretação:**\n"
+                    "- Pode refletir maturidade, choques ou *reallocation* de capital.\n\n"
+                    "**Risco:**\n"
+                    "- Elevado."
+                ),
+                "tooltip": "<0%: corte; 0–5%: moderado; >5%: bom."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Dividend CAGR (5y).**",
+                "detail": "Não foi possível calcular o crescimento composto a 5 anos.",
+                "tooltip": "Sem dados."
+            },
+        },
+        "ShareHolderYield": {
+            "verygood": lambda v: {
+                "short":  f"**Shareholder Yield =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Devolução **elevada** (dividendos + *buybacks* >5%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Foco em remuneração do acionista; potencial suporte para a cotação.\n\n"
+                    "**Risco:**\n"
+                    "- Baixo/moderado — verificar sustentabilidade do FCF."
+                ),
+                "tooltip": ">5%: excelente; 2–5%: moderado; <2%: baixo."
+            },
+            "neutral": lambda v: {
+                "short":  f"**Shareholder Yield =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Devolução **moderada** (2–5%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Equilíbrio entre crescimento e remuneração.\n\n"
+                    "**Risco:**\n"
+                    "- Moderado."
+                ),
+                "tooltip": "2–5%: moderado; >5%: excelente; <2%: baixo."
+            },
+            "bad": lambda v: {
+                "short":  f"**Shareholder Yield =** {v:.2%}",
+                "detail": (
+                    "**Significado:**\n"
+                    "- Devolução **baixa** (<2%).\n\n"
+                    "**Interpretação:**\n"
+                    "- Maior prioridade a investimento/desalavancagem ou falta de FCF.\n\n"
+                    "**Risco:**\n"
+                    "- Variável — depende da qualidade do *reinvestment*."
+                ),
+                "tooltip": "<2%: baixo; 2–5%: moderado; >5%: excelente."
+            },
+            "nodata": lambda v: {
+                "short": "**Sem dados para Shareholder Yield.**",
+                "detail": "Não foi possível calcular (dividendos + *buybacks*)/market cap.",
+                "tooltip": "Sem dados."
+            },
+        },
     }
 
     PE_TEXT_TO_BUCKET = {
@@ -1208,152 +1678,58 @@ class RiskManagerFundamental():
         # ----- Growth ----- #
         # ----- GrowthReveneuYoY
         growth_reveneu_yoy = fm.safe_round(kpis.get("GrowthReveneuYoY"))
-        evaluated_metrics["GrowthReveneuYoY"] = growth_reveneu_yoy if growth_reveneu_yoy is not None else None
-
-        if growth_reveneu_yoy is None:
-            text_GrowthReveneuYoY = "No Data"
-        else:
-            if growth_reveneu_yoy <= 4:
-                text_GrowthReveneuYoY = "Weak"
-            elif growth_reveneu_yoy <= 10:
-                text_GrowthReveneuYoY = "Healthy"
-            else:
-                text_GrowthReveneuYoY = "Strong"
-
-        self._set_eval(evaluated_metrics, "GrowthReveneuYoY", text_GrowthReveneuYoY)
+        eval_growth_reveneu_yoy, bucket_growth_reveneu_yoy = self.classify_value("GrowthReveneuYoY", growth_reveneu_yoy)
+        msgs_growth_reveneu_yoy = self.messages_for("GrowthReveneuYoY", growth_reveneu_yoy, bucket_growth_reveneu_yoy, lang="en")
+        self._emit_full(evaluated_metrics, "GrowthReveneuYoY", growth_reveneu_yoy, eval_growth_reveneu_yoy, bucket_growth_reveneu_yoy, msgs_growth_reveneu_yoy)
 
         # ----- CagrGrowthReveneuYoY
         cagr_growth_reveneu_yoy = fm.safe_round(kpis.get("CagrGrowthReveneuYoY"))
-        evaluated_metrics["CagrGrowthReveneuYoY"] = cagr_growth_reveneu_yoy if cagr_growth_reveneu_yoy is not None else None
-
-        if cagr_growth_reveneu_yoy is None:
-            text_CagrGrowthReveneuYoY = "No Data"
-        else:
-            if cagr_growth_reveneu_yoy <= 4:
-                text_CagrGrowthReveneuYoY = "Weak"
-            elif cagr_growth_reveneu_yoy <= 10:
-                text_CagrGrowthReveneuYoY = "Healthy"
-            else:
-                text_CagrGrowthReveneuYoY = "Strong"
-
-        self._set_eval(evaluated_metrics, "CagrGrowthReveneuYoY", text_CagrGrowthReveneuYoY)
+        eval_cagr_growth_reveneu_yoy, bucket_cagr_growth_reveneu_yoy = self.classify_value("CagrGrowthReveneuYoY", cagr_growth_reveneu_yoy)
+        msgs_cagr_growth_reveneu_yoy = self.messages_for("CagrGrowthReveneuYoY", cagr_growth_reveneu_yoy, bucket_cagr_growth_reveneu_yoy, lang="en")
+        self._emit_full(evaluated_metrics, "CagrGrowthReveneuYoY", cagr_growth_reveneu_yoy, eval_cagr_growth_reveneu_yoy, bucket_cagr_growth_reveneu_yoy, msgs_cagr_growth_reveneu_yoy)
 
         # ----- GrowthEPSYoY
         growth_eps_yoy = fm.safe_round(kpis.get("GrowthEPSYoY"))
-        evaluated_metrics["GrowthEPSYoY"] = growth_eps_yoy if growth_eps_yoy is not None else None
-
-        if growth_eps_yoy is None:
-            text_GrowthEPSYoY = "No Data"
-        else:
-            if growth_eps_yoy <= 4:
-                text_GrowthEPSYoY = "Weak"
-            elif growth_eps_yoy <= 10:
-                text_GrowthEPSYoY = "Healthy"
-            else:
-                text_GrowthEPSYoY = "Strong"
-
-        self._set_eval(evaluated_metrics, "GrowthEPSYoY", text_GrowthEPSYoY)
+        eval_growth_eps_yoy, bucket_growth_eps_yoy = self.classify_value("GrowthEPSYoY", growth_eps_yoy)
+        msgs_growth_eps_yoy = self.messages_for("GrowthEPSYoY", growth_eps_yoy, bucket_growth_eps_yoy, lang="en")
+        self._emit_full(evaluated_metrics, "GrowthEPSYoY", growth_eps_yoy, eval_growth_eps_yoy, bucket_growth_eps_yoy, msgs_growth_eps_yoy)
 
         # ----- CagrGrowthEPSYoY
         cagr_growth_eps_yoy = fm.safe_round(kpis.get("CagrGrowthEPSYoY"))
-        evaluated_metrics["CagrGrowthEPSYoY"] = cagr_growth_eps_yoy if cagr_growth_eps_yoy is not None else None
-
-        if cagr_growth_eps_yoy is None:
-            text_CagrGrowthEPSYoY = "No Data"
-        else:
-            if cagr_growth_eps_yoy <= 4:
-                text_CagrGrowthEPSYoY = "Weak"
-            elif cagr_growth_eps_yoy <= 10:
-                text_CagrGrowthEPSYoY = "Healthy"
-            else:
-                text_CagrGrowthEPSYoY = "Strong"
-
-        self._set_eval(evaluated_metrics, "CagrGrowthEPSYoY", text_CagrGrowthEPSYoY)
+        eval_cagr_growth_eps_yoy, bucket_cagr_growth_eps_yoy = self.classify_value("CagrGrowthEPSYoY", cagr_growth_eps_yoy)
+        msgs_cagr_growth_eps_yoy = self.messages_for("CagrGrowthEPSYoY", cagr_growth_eps_yoy, bucket_cagr_growth_eps_yoy, lang="en")
+        self._emit_full(evaluated_metrics, "CagrGrowthEPSYoY", cagr_growth_eps_yoy, eval_cagr_growth_eps_yoy, bucket_cagr_growth_eps_yoy, msgs_cagr_growth_eps_yoy)
 
         # ----- Dividend ----- #
         # ----- Dividend Coverage Ratio
         div_coverage_raw = fm.safe_round(kpis.get("divCoverageRate"))
-        evaluated_metrics["divCoverageRate"] = div_coverage_raw if div_coverage_raw is not None else None
-
-        if div_coverage_raw is None:
-            text_divCoverageRate = "No Data"
-        else:
-            if div_coverage_raw <= 1:
-                text_divCoverageRate = "No Coverage"
-            elif div_coverage_raw <= 1.5:
-                text_divCoverageRate = "Bad Coverage (Cut)"
-            elif div_coverage_raw <= 3:
-                text_divCoverageRate = "Good Coverage"
-            else:
-                text_divCoverageRate = "Very Good Coverage (Greedy)"
-
-        self._set_eval(evaluated_metrics, "divCoverageRate", text_divCoverageRate)
+        eval_div_coverage_raw, bucket_div_coverage_raw = self.classify_value("divCoverageRate", div_coverage_raw)
+        msgs_div_coverage_raw = self.messages_for("divCoverageRate", div_coverage_raw, bucket_div_coverage_raw, lang="en")
+        self._emit_full(evaluated_metrics, "divCoverageRate", div_coverage_raw, eval_div_coverage_raw, bucket_div_coverage_raw, msgs_div_coverage_raw)
 
         # ----- payout_ratio
         payout_ratio = fm.safe_round(kpis.get("PayoutRatio"))
-        evaluated_metrics["PayoutRatio"] = payout_ratio if payout_ratio is not None else None
-
-        if payout_ratio is None:
-            text_PayoutRatio = "No Data"
-        else:
-            if payout_ratio <= 0.3:
-                text_PayoutRatio = "Very Good Coverage (Greedy)"
-            elif payout_ratio <= 0.6:
-                text_PayoutRatio = "Good Coverage"
-            elif payout_ratio <= 0.7:
-                text_PayoutRatio = "Bad Coverage (Cut)"
-            else:
-                text_PayoutRatio = "No Coverage"
-
-        self._set_eval(evaluated_metrics, "PayoutRatio", text_PayoutRatio)
+        eval_payout_ratio, bucket_payout_ratio = self.classify_value("PayoutRatio", payout_ratio)
+        msgs_payout_ratio = self.messages_for("PayoutRatio", payout_ratio, bucket_payout_ratio, lang="en")
+        self._emit_full(evaluated_metrics, "PayoutRatio", payout_ratio, eval_payout_ratio, bucket_payout_ratio, msgs_payout_ratio)
 
         # ----- CagrGrowthDividend3y
         cagr_growth_dividend3y = fm.safe_round(kpis.get("CagrGrowthDividend3y"))
-        evaluated_metrics["CagrGrowthDividend3y"] = cagr_growth_dividend3y if cagr_growth_dividend3y is not None else None
-
-        if cagr_growth_dividend3y is None:
-            text_CagrGrowthDividend3y = "No Data"
-        else:
-            if cagr_growth_dividend3y <= 0.00:
-                text_CagrGrowthDividend3y = "Cut on Dividends"
-            elif cagr_growth_dividend3y <= 0.05:
-                text_CagrGrowthDividend3y = "Moderated"
-            else:
-                text_CagrGrowthDividend3y = "Good Growth"
-
-        self._set_eval(evaluated_metrics, "CagrGrowthDividend3y", text_CagrGrowthDividend3y)
+        eval_cagr_growth_dividend3y, bucket_cagr_growth_dividend3y = self.classify_value("CagrGrowthDividend3y", cagr_growth_dividend3y)
+        msgs_cagr_growth_dividend3y = self.messages_for("CagrGrowthDividend3y", cagr_growth_dividend3y, bucket_cagr_growth_dividend3y, lang="en")
+        self._emit_full(evaluated_metrics, "CagrGrowthDividend3y", cagr_growth_dividend3y, eval_cagr_growth_dividend3y, bucket_cagr_growth_dividend3y, msgs_cagr_growth_dividend3y)
 
         # ----- CagrGrowthDividend5y
         cagr_growth_dividend5y = fm.safe_round(kpis.get("CagrGrowthDividend5y"))
-        evaluated_metrics["CagrGrowthDividend5y"] = cagr_growth_dividend5y if cagr_growth_dividend5y is not None else None
-
-        if cagr_growth_dividend5y is None:
-            text_CagrGrowthDividend5y = "No Data"
-        else:
-            if cagr_growth_dividend5y <= 0.00:
-                text_CagrGrowthDividend5y = "Cut on Dividends"
-            elif cagr_growth_dividend5y <= 0.05:
-                text_CagrGrowthDividend5y = "Moderated"
-            else:
-                text_CagrGrowthDividend5y = "Good Growth"
-
-        self._set_eval(evaluated_metrics, "CagrGrowthDividend5y", text_CagrGrowthDividend5y)
+        eval_cagr_growth_dividend5y, bucket_cagr_growth_dividend5y = self.classify_value("CagrGrowthDividend5y", cagr_growth_dividend5y)
+        msgs_cagr_growth_dividend5y = self.messages_for("CagrGrowthDividend5y", cagr_growth_dividend5y, bucket_cagr_growth_dividend5y, lang="en")
+        self._emit_full(evaluated_metrics, "CagrGrowthDividend5y", cagr_growth_dividend5y, eval_cagr_growth_dividend5y, bucket_cagr_growth_dividend5y, msgs_cagr_growth_dividend5y)
 
         # ----- ShareHolderYield
         shareholder_yield = fm.safe_round(kpis.get("ShareHolderYield"))
-        evaluated_metrics["ShareHolderYield"] = shareholder_yield if shareholder_yield is not None else None
-
-        if shareholder_yield is None:
-            text_ShareHolderYield = "No Data"
-        else:
-            if shareholder_yield <= 0.02:
-                text_ShareHolderYield = "Low"
-            elif shareholder_yield <= 0.05:
-                text_ShareHolderYield = "Moderated"
-            else:
-                text_ShareHolderYield = "Excellent"
-
-        self._set_eval(evaluated_metrics, "ShareHolderYield", text_ShareHolderYield)
+        eval_shareholder_yield, bucket_shareholder_yield = self.classify_value("ShareHolderYield", shareholder_yield)
+        msgs_shareholder_yield = self.messages_for("ShareHolderYield", shareholder_yield, bucket_shareholder_yield, lang="en")
+        self._emit_full(evaluated_metrics, "ShareHolderYield", shareholder_yield, eval_shareholder_yield, bucket_shareholder_yield, msgs_shareholder_yield)
 
         # ----- Extras ----- #
         # ----- Net Worth

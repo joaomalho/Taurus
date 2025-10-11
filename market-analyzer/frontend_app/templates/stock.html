@@ -300,20 +300,20 @@
                         </div>
                         <div>
                             <h3>Growth</h3>
-                            <p><strong>Growth Reveneu YoY:</strong> <span id="GrowthReveneuYoY"></span> <span id="GrowthReveneuYoYClass"></span></p>
-                            <p><strong>CAGR Growth Reveneu YoY:</strong> <span id="CagrGrowthReveneuYoY"></span> <span id="CagrGrowthReveneuYoYClass"></span></p>
-                            <p><strong>Growth EPS YoY:</strong> <span id="GrowthEPSYoY"></span> <span id="GrowthEPSYoYClass"></span></p>
-                            <p><strong>CAGR Growth EPS YoY:</strong> <span id="CagrGrowthEPSYoY"></span> <span id="CagrGrowthEPSYoYClass"></span></p>
+                            <p><strong>Growth Reveneu YoY:</strong> <span id="GrowthReveneuYoY"></span></p>
+                            <p><strong>CAGR Growth Reveneu YoY:</strong> <span id="CagrGrowthReveneuYoY"></span></p>
+                            <p><strong>Growth EPS YoY:</strong> <span id="GrowthEPSYoY"></span></p>
+                            <p><strong>CAGR Growth EPS YoY:</strong> <span id="CagrGrowthEPSYoY"></span></p>
                         </div>
                         <div>
                             <h3>Dividends</h3>
-                            <p><strong>Coverage Ratio:</strong> <span id="divCoverageRate"></span> <span id="divCoverageRateClass"></span></p>
+                            <p><strong>Coverage Ratio:</strong> <span id="divCoverageRate"></span></p>
                             <p><strong>Avg Dividend Yield(5y):</strong> <span id="fiveYearAvgDividendYield"></span></p>
                             <p><strong>Dividend Yield:</strong> <span id="dividendYield"></span></p>
-                            <p><strong>CAGR Growth Dividend (3y):</strong> <span id="CagrGrowthDividend3y"> <span id="CagrGrowthDividend3yClass"></span></p>
-                            <p><strong>CAGR Growth Dividend (5y):</strong> <span id="CagrGrowthDividend5y"> <span id="CagrGrowthDividend5yClass"></span></p>
-                            <p><strong>Payout Ratio:</strong> <span id="PayoutRatio"> <span id="PayoutRatioClass"></span></p>
-                            <p><strong>Shareholder Yield:</strong> <span id="ShareHolderYield"> <span id="ShareHolderYieldClass"></span></p>
+                            <p><strong>CAGR Growth Dividend (3y):</strong> <span id="CagrGrowthDividend3y"></span></p>
+                            <p><strong>CAGR Growth Dividend (5y):</strong> <span id="CagrGrowthDividend5y"></span></p>
+                            <p><strong>Payout Ratio:</strong> <span id="PayoutRatio"></span></p>
+                            <p><strong>Shareholder Yield:</strong> <span id="ShareHolderYield"></span></p>
                         </div>
                     </div>
                 </div>
@@ -475,6 +475,38 @@
                 </div>
             </div>
 
+            <!-- Growth -->
+            <div class="fundamental-card">
+                <div class="fundamental-header" id="funGrowth">
+                    <h2>Growth</h2>
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="growth-content hidden">
+                    <div class="fund-growth">  
+                    </div>
+                    <div>
+                        <p> <span id="GrowthReveneuYoYClass" class="badge"></span></p> 
+                        <p> <span id="GrowthReveneuYoYShortText" class="kpi-short"></span></p>
+                        <p id="GrowthReveneuYoYDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="CagrGrowthReveneuYoYClass" class="badge"></span></p> 
+                        <p> <span id="CagrGrowthReveneuYoYShortText" class="kpi-short"></span></p>
+                        <p id="CagrGrowthReveneuYoYDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="GrowthEPSYoYClass" class="badge"></span></p> 
+                        <p> <span id="GrowthEPSYoYShortText" class="kpi-short"></span></p>
+                        <p id="GrowthEPSYoYDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="CagrGrowthEPSYoYClass" class="badge"></span></p> 
+                        <p> <span id="CagrGrowthEPSYoYShortText" class="kpi-short"></span></p>
+                        <p id="CagrGrowthEPSYoYDetailText"></p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Dividends -->
             <div class="fundamental-card">
                 <div class="fundamental-header" id="funDividends">
@@ -482,33 +514,36 @@
                     <span class="toggle-icon">+</span>
                 </div>
                 <div class="dividends-content hidden">
-                    <div>
-                        <h3>Distribution</h3>
-                    </div>
                     <div class="fund-dividends">  
+                    </div>
+                    <div>
+                        <p> <span id="divCoverageRateClass" class="badge"></span></p> 
+                        <p> <span id="divCoverageRateShortText" class="kpi-short"></span></p>
+                        <p id="divCoverageRateDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="PayoutRatioClass" class="badge"></span></p> 
+                        <p> <span id="PayoutRatioShortText" class="kpi-short"></span></p>
+                        <p id="PayoutRatioDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="CagrGrowthDividend3yClass" class="badge"></span></p> 
+                        <p> <span id="CagrGrowthDividend3yShortText" class="kpi-short"></span></p>
+                        <p id="CagrGrowthDividend3yDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="CagrGrowthDividend5yClass" class="badge"></span></p> 
+                        <p> <span id="CagrGrowthDividend5yShortText" class="kpi-short"></span></p>
+                        <p id="CagrGrowthDividend5yDetailText"></p>
+                    </div>
+                    <div>
+                        <p> <span id="ShareHolderYieldClass" class="badge"></span></p> 
+                        <p> <span id="ShareHolderYieldShortText" class="kpi-short"></span></p>
+                        <p id="ShareHolderYieldDetailText"></p>
                     </div>
                 </div>
             </div>
                   
-            <!-- Risk-->
-            <div class="fundamental-card">
-                <div class="fundamental-header" id="funRisk">
-                    <h2>Risk & Market Sentiment</h2>
-                    <span class="toggle-icon">+</span>
-                </div>
-
-                <div class="risk-content hidden">
-                    <div>
-                        <h3>Stability</h3>
-                    </div>
-                    <div class="fund-risk">
-                        <p><strong>Beta:</strong> <span id="beta"></span></p>
-                        <p><strong>Short Interest:</strong> <span id="sharesPercentSharesOut"></span></p>
-                        <p><strong>Recommendaton Mean:</strong> <span id="recommendationMean"></span></p>
-                        <p><strong>Target Mean Price:</strong> <span id="targetMeanPrice"></span></p>
-                    </div>
-                </div>
-            </div>
 
         </section>
        
