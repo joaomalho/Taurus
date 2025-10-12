@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 from dotenv import load_dotenv
-
 load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,13 +24,78 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y5bd2%sy*x5w&b^ual=w*x$b&8+hi!^s-n78$40g^g^efad&af'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-not-safe")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = []
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",") if not DEBUG else ["*"]
+
+# -------------------------
+# Redis / Cache
+# -------------------------
+# Usa um URL distinto do broker do Celery (por ex. outra DB do mesmo Redis).
+REDIS_CACHE_URL = os.environ.get("REDIS_CACHE_URL", "redis://localhost:6379/1")
+CACHE_KEY_PREFIX = os.environ.get("CACHE_KEY_PREFIX", "webapp")
+
+CACHES = {
+    # Cache “default” para low-level API (get/set), decorators e ORM helpers
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_CACHE_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 200, "retry_on_timeout": True},
+            "SOCKET_CONNECT_TIMEOUT": 2,  # s
+            "SOCKET_TIMEOUT": 2,          # s
+        },
+        "KEY_PREFIX": CACHE_KEY_PREFIX,
+        "TIMEOUT": None,  # define TTL por chamada (boa prática em mega apps)
+    },
+
+    # Cache separada para páginas (site-wide/page caching) caso uses o middleware
+    "pages": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_CACHE_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        },
+        "KEY_PREFIX": f"{CACHE_KEY_PREFIX}:pages",
+        "TIMEOUT": 30,  # exemplo; ajusta
+    },
+
+    # Cache dedicada a sessões (mantém sessões fora da DB quando escalar)
+    "sessions": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_CACHE_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": f"{CACHE_KEY_PREFIX}:sess",
+        "TIMEOUT": 60 * 60 * 24 * 7,  # 7 dias
+    },
+}
+
+
+# Sessões em cache (melhor performance em multi-pod)
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "sessions"
+
+# -------------------------
+# Celery
+# -------------------------
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
 # Application definition
 
@@ -132,11 +197,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "frontend_app/static")]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Celery / Redis config
-CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
 
 # Users
 AUTH_USER_MODEL = 'users.User'

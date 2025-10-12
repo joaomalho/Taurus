@@ -4,93 +4,66 @@ import time
 import warnings
 import requests
 import pandas as pd
+import hashlib
+import json
 import yfinance as yf
 from datetime import datetime
 from bs4 import BeautifulSoup
+from django.core.cache import cache
 from backend.funcionalities.formulas import Formulas
 
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
 
+def _ck(prefix, symbol, endpoint, params=None):
+    s = symbol.strip().upper()
+    base = f"{prefix}:{s}:{endpoint}"
+    if params:
+        h = hashlib.sha1(json.dumps(params, sort_keys=True).encode()).hexdigest()[:10]
+        base = f"{base}:{h}"
+    return base
+
+
 class DataHistoryYahoo():
 
     def __init__(self, ttl_seconds: int = 600) -> None:
-        self._info_cache: dict[str, dict] = {}
-        self._endpoint_cache: dict[str, dict[str, dict]] = {}
         self._tickers: dict[str, yf.Ticker] = {}
         self._ttl_seconds = int(ttl_seconds)
 
     def _get_ticker(self, symbol: str) -> yf.Ticker:
-        if symbol not in self._tickers:
-            self._tickers[symbol] = yf.Ticker(symbol)
-        return self._tickers[symbol]
+        s = symbol.strip().upper()
+        if s not in self._tickers:
+            self._tickers[s] = yf.Ticker(s)
+        return self._tickers[s]
 
     def _is_expired(self, ts_mono: float) -> bool:
         return (time.monotonic() - ts_mono) > self._ttl_seconds
 
-    def _get_cached_endpoint(self, symbol: str, endpoint: str, fetch: Callable[[], Any]) -> Any:
-        """
-        Cache genérico por símbolo+endpoint. Guarda o resultado de fetch()
-        e devolve do cache se ainda dentro do TTL.
-        """
-        symbol = symbol.strip().upper()
-        sym_cache = self._endpoint_cache.setdefault(symbol, {})
-        entry = sym_cache.get(endpoint)
-
-        if entry and not self._is_expired(entry["ts_mono"]):
-            return entry["data"]
-
-        try:
-            data = fetch()
-        except Exception:
-            data = None
-
-        sym_cache[endpoint] = {"data": data, "ts_mono": time.monotonic()}
+    def get_endpoint(self, symbol: str, endpoint: str, fetch, ttl=None, params=None):
+        key = _ck("yahoo", symbol, endpoint, params)
+        data = cache.get(key)
+        if data is not None:
+            return data
+        data = fetch()
+        cache.set(key, data, timeout=ttl or self._ttl_seconds)
         return data
-
-    def clear_cache(self) -> None:
-        """
-        Clear cache.
-        """
-        self._info_cache.clear()
-        self._endpoint_cache.clear()
-        self._tickers.clear()
-
-    def prune_expired(self) -> None:
-        """Remove entradas expiradas de _info_cache e _endpoint_cache (limpeza ativa)."""
-        # info
-        to_del = [sym for sym, entry in self._info_cache.items() if self._is_expired(entry["ts_mono"])]
-        for sym in to_del:
-            self._info_cache.pop(sym, None)
-
-        # endpoints
-        symbols_to_delete = []
-        for sym, endpoints in self._endpoint_cache.items():
-            expired_eps = [ep for ep, entry in endpoints.items() if self._is_expired(entry["ts_mono"])]
-            for ep in expired_eps:
-                endpoints.pop(ep, None)
-            if not endpoints:  # se ficou vazio, marcamos o símbolo para remoção
-                symbols_to_delete.append(sym)
-        for sym in symbols_to_delete:
-            self._endpoint_cache.pop(sym, None)
 
     def get_endpoints_yahoo(self, symbol: str) -> dict:
         '''
         Request all necessary endpoints once and store in cache with timeout.
         Return always dictionary or {} if error.
         '''
-        cached = self._info_cache.get(symbol)
-        if cached and not self._is_expired(cached["ts_mono"]):
-            return cached["data"]
-
+        key = _ck("yahoo", symbol, "info")
+        data = cache.get(key)
+        if data is not None:
+            return data
         try:
             info = self._get_ticker(symbol).get_info()
             if not isinstance(info, dict):
                 info = {}
         except Exception:
             info = {}
-
-        self._info_cache[symbol] = {"data": info, "ts_mono": time.monotonic()}
+        cache.set(key, info, timeout=1800)  # 30 min para fundamentals
         return info
 
     # ---------- STOCKS TOPs ----------
