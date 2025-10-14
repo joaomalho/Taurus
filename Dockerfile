@@ -21,14 +21,14 @@ RUN apt-get update && apt-get install -y \
     libxslt-dev \
     && rm -rf /var/lib/apt/lists/*
 
-    
+
 # Instalar TA-Lib (C library)
 WORKDIR /tmp
 RUN set -eux; \
     wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz; \
     tar -xzf ta-lib-0.4.0-src.tar.gz; \
     cd ta-lib; \
-    ./configure --prefix=/usr; \ 
+    ./configure --prefix=/usr; \
     make; \
     make install; \
     ldconfig; \

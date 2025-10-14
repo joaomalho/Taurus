@@ -1,4 +1,3 @@
-from typing import Callable, Any
 import math
 import time
 import warnings
@@ -291,9 +290,9 @@ class DataHistoryYahoo():
         def _fetch():
             return ticker.institutional_holders  # pode ser None/DF vazio conforme o ativo
 
-        df = self._get_cached_endpoint(symbol, "institutional_holders", _fetch)
+        df = self.get_endpoint(symbol, "institutional_holders", _fetch, ttl=1800)
 
-        if df is None:
+        if not isinstance(df, pd.DataFrame) or df.empty:
             return pd.DataFrame()
 
         df = df.copy()
@@ -351,16 +350,16 @@ class DataHistoryYahoo():
         '''
         ticker = self._get_ticker(symbol)
 
-        def safe_df(endpoint_name: str, attr: str) -> pd.DataFrame:
+        def safe_df(endpoint_name: str, attr: str, ttl: int = 1800) -> pd.DataFrame:
             def _fetch():
                 return getattr(ticker, attr)
-            df = self._get_cached_endpoint(symbol, endpoint_name, _fetch)
+            df = self.get_endpoint(symbol, endpoint_name, _fetch, ttl=ttl)
             return df.copy() if isinstance(df, pd.DataFrame) else pd.DataFrame()
 
-        def safe_series(endpoint_name: str, attr: str) -> pd.Series:
+        def safe_series(endpoint_name: str, attr: str, ttl: int = 1800) -> pd.Series:
             def _fetch():
                 return getattr(ticker, attr)
-            s = self._get_cached_endpoint(symbol, endpoint_name, _fetch)
+            s = self.get_endpoint(symbol, endpoint_name, _fetch, ttl=ttl)
             return s.copy() if isinstance(s, pd.Series) else pd.Series(dtype=float)
 
         info = self.get_endpoints_yahoo(symbol) or {}
