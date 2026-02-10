@@ -156,36 +156,14 @@ First, clone the repository to your local machine using Git:
 
 ```bash
 git clone https://github.com/joaomalho/Taurus.git
-cd Taurus
 ```
-
-Alternatively, if you prefer not to use Git, you can download the repository as a ZIP file from GitHub and extract it to a folder.
-
-### 2️⃣ Direct Installation
-
-**🖥️ For Windows:**
-
-Install the application as a Python package directly, you can use the setup.py file:
 
 ```bash
-python setup.py install
+cd ~/Taurus
+docker compose up --build -d
+docker compose logs -f web
 ```
 
-### 3️⃣ Direct Uninstall
-
-Uninstall the application as a Python package directly, deleting isolated enviroments, variables and temporaty files:
-
-```bash
-python uninstaller.py
-```
-
-### 4️⃣ Direct Update
-
-Update the application as a Python package directly:
-
-```bash
-python update.py
-```
 
 ### **📌 Notes**
 
