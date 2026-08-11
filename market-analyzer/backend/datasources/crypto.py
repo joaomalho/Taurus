@@ -18,10 +18,12 @@ class DataHistoryCrypto():
 
         response = requests.get(url, params=params)
 
+        price = None
+        error = None
         if response.status_code == 200:
             price = response.json()["price"]
         else:
-            error = print(f"Erro: {response.status_code} - {response.text}")
+            error = f"Erro: {response.status_code} - {response.text}"
 
         return symbol, price, error
 

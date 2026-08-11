@@ -35,7 +35,25 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",") if not DEBUG else ["*"]
+ALLOWED_HOSTS = (
+    [h.strip() for h in os.environ.get("ALLOWED_HOSTS", "").split(",") if h.strip()]
+    if not DEBUG
+    else ["*"]
+)
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
+# -------------------------
+# Rate limiting (Redis-backed)
+# -------------------------
+RATE_LIMIT_ENABLED = os.environ.get("RATE_LIMIT_ENABLED", "True").lower() == "true"
+RATE_LIMIT_API = int(os.environ.get("RATE_LIMIT_API", "120"))
+RATE_LIMIT_HEAVY = int(os.environ.get("RATE_LIMIT_HEAVY", "20"))
+RATE_LIMIT_WINDOW = int(os.environ.get("RATE_LIMIT_WINDOW", "60"))
 
 # -------------------------
 # Redis / Cache
@@ -96,6 +114,16 @@ CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = "UTC"
+
+SCREENER_CACHE_TTL = int(os.environ.get('SCREENER_CACHE_TTL', '900'))
+
+CELERY_BEAT_SCHEDULE = {
+    'refresh-stock-screeners': {
+        'task': 'frontend_app.tasks.refresh_all_screeners_task',
+        'schedule': float(os.environ.get('SCREENER_REFRESH_INTERVAL', '900')),
+    },
+}
 
 # Application definition
 
@@ -116,6 +144,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'frontend_app.middleware.RateLimitMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

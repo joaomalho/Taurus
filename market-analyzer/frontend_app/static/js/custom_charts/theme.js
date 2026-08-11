@@ -34,12 +34,22 @@ Chart.defaults.maintainAspectRatio = false;
 Chart.defaults.responsive = true;
 
 // ---- Escalas: estilo de ticks e títulos
-// (Se quiseres títulos brancos por omissão)
-Chart.defaults.scales.category.ticks.color = COLOR_TEXT;
-Chart.defaults.scales.linear.ticks.color   = COLOR_TEXT;
-// Títulos de eixo (quando activados por gráfico)
-Chart.defaults.scales.category.title.color = COLOR_TEXT;
-Chart.defaults.scales.linear.title.color   = COLOR_TEXT;
+function setScaleDefaults(scaleType) {
+    if (!Chart.defaults.scales[scaleType]) {
+        Chart.defaults.scales[scaleType] = {};
+    }
+    if (!Chart.defaults.scales[scaleType].ticks) {
+        Chart.defaults.scales[scaleType].ticks = {};
+    }
+    if (!Chart.defaults.scales[scaleType].title) {
+        Chart.defaults.scales[scaleType].title = {};
+    }
+    Chart.defaults.scales[scaleType].ticks.color = COLOR_TEXT;
+    Chart.defaults.scales[scaleType].title.color = COLOR_TEXT;
+}
+
+setScaleDefaults("category");
+setScaleDefaults("linear");
 
 // LEGENDA: garante branco sempre
 Chart.defaults.plugins.legend.labels.color = COLOR_TEXT;

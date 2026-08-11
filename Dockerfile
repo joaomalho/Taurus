@@ -45,5 +45,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar código do projeto
 COPY . .
 
+RUN chmod +x /code/scripts/entrypoint.prod.sh
+
 EXPOSE 8000
 

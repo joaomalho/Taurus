@@ -3,6 +3,94 @@
     display: none !important;
 }
 
+.watchlist-actions {
+    margin: 0 15px 10px;
+}
+
+.watchlist-actions button {
+    background: var(--stock-info-button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--stock-info-border-color);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+}
+
+.watchlist-actions button:hover:not(:disabled) {
+    background: var(--stock-info-button-hover-bg);
+}
+
+.watchlist-actions button:disabled {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.watchlist-message {
+    color: var(--p-text-color);
+    margin: 0.5rem 0 0;
+}
+
+.watchlist-error {
+    color: #ff6b6b;
+}
+
+.decision-verdict {
+    max-width: 1100px;
+    margin: 1rem auto 1.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--stock-info-border-color);
+    border-radius: 12px;
+    background: var(--card-bg);
+}
+
+.decision-verdict-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.decision-verdict-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #0d1117;
+    background: var(--decision-color, #6b7280);
+}
+
+.decision-verdict-title {
+    margin: 0;
+    color: var(--stock-info-titles);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.decision-verdict-confidence {
+    margin: 0.25rem 0 0;
+    color: var(--p-text-color);
+    font-size: 0.95rem;
+}
+
+.decision-verdict-reasons {
+    margin: 0.85rem 0 0;
+    padding-left: 1.2rem;
+    color: var(--text-color);
+}
+
+.decision-verdict-reasons li {
+    margin: 0.35rem 0;
+}
+
+.decision-verdict-disclaimer {
+    margin: 0.75rem 0 0;
+    color: var(--p-text-color);
+    font-size: 0.8rem;
+}
+
 canvas {
     width: 100%;
     height: 100%;

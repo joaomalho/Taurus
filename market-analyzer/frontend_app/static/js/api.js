@@ -1,5 +1,9 @@
 // static/js/api.js
 //////////// ###### API: Data for Symbol ###### ////////////
+export function fetchStockSummary(symbol) {
+    return fetch(`/stock/${symbol}/summary/`).then(res => res.json());
+}
+
 export function fetchBioData(symbol) {
     return fetch(`/stock/${symbol}/bio_info/`).then(res => res.json());
 }

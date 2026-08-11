@@ -9,7 +9,7 @@ from .views import (home, stock_page, stockbytop_page, get_stock_gainers, get_st
                     get_fundamental_income_quarterly_download, get_fundamental_cashflow_quarterly_download,
                     get_fundamental_balance_sheet_quarterly_download, get_symbol_fundamental_news,
                     get_yahoo_symbol_earnings_dates, get_financial_health_chart_info, get_profitability_chart_info,
-                    get_efficiency_chart_info)
+                    get_efficiency_chart_info, get_stock_summary)
 
 urlpatterns = [
     # ------ MAIN PAGE ------
@@ -19,6 +19,7 @@ urlpatterns = [
     path('stock/<str:symbol>/', stock_page, name='stock_page'),
 
     # ------ API: Data for Symbol ------
+    path('stock/<str:symbol>/summary/', get_stock_summary, name='get_stock_summary'),
     path('stock/<str:symbol>/bio_info/', get_bio_info, name='get_bio_info'),
     path('stock/<str:symbol>/data_history/', get_dh, name='get_dh'),
     path('stock/<str:symbol>/crossover_trend/', get_crossover_trend_metrics, name='get_crossover_trend'),

@@ -1,0 +1,126 @@
+.dashboard-page {
+    max-width: 720px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    color: var(--text-color);
+}
+
+.dashboard-page h1 {
+    color: var(--stock-info-titles);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-subtitle {
+    color: var(--p-text-color);
+    margin-bottom: 2rem;
+}
+
+.watchlist-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+.watchlist-card h2 {
+    margin-top: 0;
+    color: var(--stock-info-titles);
+    font-size: 1.25rem;
+}
+
+.watchlist-form {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.watchlist-form input {
+    flex: 1;
+    background: var(--stock-info-input-bg);
+    color: var(--stock-info-input-text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+    text-transform: uppercase;
+}
+
+.watchlist-form button,
+.watchlist-item button {
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+}
+
+.watchlist-form button:hover,
+.watchlist-item button:hover {
+    background: var(--button-hover-bg);
+}
+
+.watchlist-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.watchlist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.watchlist-item:last-child {
+    border-bottom: none;
+}
+
+.watchlist-item a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.watchlist-item a:hover {
+    text-decoration: underline;
+}
+
+.watchlist-empty,
+.watchlist-error,
+.watchlist-message {
+    color: var(--p-text-color);
+    margin: 0.5rem 0 0;
+}
+
+.watchlist-error {
+    color: #ff6b6b;
+}
+
+.watchlist-add-btn {
+    margin-top: 0.75rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.watchlist-actions {
+    margin: 0.75rem 0 1rem;
+}
+
+.watchlist-actions button {
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+}
+
+.watchlist-actions button:disabled {
+    opacity: 0.7;
+    cursor: default;
+}

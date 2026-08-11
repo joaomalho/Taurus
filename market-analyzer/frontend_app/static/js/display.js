@@ -567,3 +567,38 @@ export function displayNewsList(payload, {
     ? items.map(i => renderCard(i, { locale, timeZone })).join("")
     : `<p class="news-empty">Sem notícias.</p>`;
 }
+
+export function displayDecisionVerdict(verdict) {
+  const section = document.getElementById("decisionVerdict");
+  const badge = document.getElementById("decisionVerdictBadge");
+  const confidence = document.getElementById("decisionVerdictConfidence");
+  const reasonsList = document.getElementById("decisionVerdictReasons");
+  const disclaimer = document.getElementById("decisionVerdictDisclaimer");
+
+  if (!section || !verdict || verdict.error) {
+    return;
+  }
+
+  section.classList.remove("hidden");
+  section.style.setProperty("--decision-color", verdict.color || "#6b7280");
+
+  if (badge) {
+    badge.textContent = verdict.verdict || "Hold";
+  }
+
+  if (confidence) {
+    const fund = verdict.components?.fundamental;
+    const fundLabel = fund?.score_10 != null ? `${fund.score_10}/10 fundamentals` : "fundamentals n/a";
+    confidence.textContent = `Confidence ${verdict.confidence}% · ${fundLabel}`;
+  }
+
+  if (reasonsList) {
+    reasonsList.innerHTML = (verdict.reasons || [])
+      .map((reason) => `<li>${reason}</li>`)
+      .join("");
+  }
+
+  if (disclaimer) {
+    disclaimer.textContent = verdict.disclaimer || "";
+  }
+}

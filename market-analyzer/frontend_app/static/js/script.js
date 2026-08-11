@@ -5,18 +5,11 @@ import {
     fetchYahooStockGainers,
     fetchYahooStockTrending,
     fetchYahooStockMostActive,
-    fetchBioData,
-    fetchStockData,
+    fetchStockSummary,
     fetchCrossoverData,
     fetchADXData,
     fetchBollingerData,
     fetchRSIData,
-    fetchCandlePatternData,
-    fetchHarmonicPatternData,
-    fetchFundamentalInfo,
-    fetchFundamentalInfoClassification,
-    fetchInsideTransactions,
-    fetchSymbolNews
 } from './api.js';
 
 import {
@@ -31,8 +24,11 @@ import {
     displayFundamentalResultsClassification,
     displayInsideTransactions,
     populateYahooStockTable,
-    displayNewsList
+    displayNewsList,
+    displayDecisionVerdict,
 } from './display.js';
+
+import { initStockWatchlistButton } from './watchlist.js';
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -49,57 +45,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
         setupDownloadLinks(symbol);
 
-        // ─────────────── NOTÍCIAS DO SÍMBOLO ───────────────
-        fetchSymbolNews(symbol)
-            .then(payload => displayNewsList(payload, { containerId: "symbolNews" }))
+        if (document.getElementById("watchlistAddButton")) {
+            initStockWatchlistButton(symbol);
+        }
+
+        fetchStockSummary(symbol)
+            .then(summary => {
+                if (summary.verdict && !summary.verdict.error) {
+                    displayDecisionVerdict(summary.verdict);
+                }
+                if (summary.news && !summary.news.error) {
+                    displayNewsList(summary.news, { containerId: "symbolNews" });
+                }
+                if (summary.bio && !summary.bio.error) displayBioResults(summary.bio);
+                if (summary.data_history && !summary.data_history.error) {
+                    renderCandlestickFromData(symbol, summary.data_history.data);
+                }
+                if (summary.crossover && !summary.crossover.error) displayCrossoverResults(summary.crossover);
+                if (summary.adx && !summary.adx.error) displayADXResults(summary.adx);
+                if (summary.bollinger && !summary.bollinger.error) displayBollingerResults(summary.bollinger);
+                if (summary.rsi && !summary.rsi.error) displayRSIResults(summary.rsi);
+                if (summary.candle_patterns && !summary.candle_patterns.error) {
+                    displayCandleResults(summary.candle_patterns);
+                }
+                if (summary.harmonic_patterns && !summary.harmonic_patterns.error) {
+                    displayHarmonicResults(summary.harmonic_patterns);
+                }
+                if (summary.fundamental_info && !summary.fundamental_info.error) {
+                    displayFundamentalResults(summary.fundamental_info);
+                }
+                if (summary.fundamental_evaluations && !summary.fundamental_evaluations.error) {
+                    displayFundamentalResultsClassification(summary.fundamental_evaluations);
+                }
+                if (summary.inside_transactions && !summary.inside_transactions.error) {
+                    displayInsideTransactions(summary.inside_transactions);
+                }
+            })
             .catch(err => {
                 const c = document.getElementById("symbolNews");
-                if (c) c.innerHTML = `<div class="news-error">${(err?.message)||"Falha ao obter notícias."}</div>`;
-        });
-
-        fetchBioData(symbol).then(data => {
-            if (!data.error) displayBioResults(data);
-        });
-
-        fetchStockData(symbol).then(data => {
-            if (!data.error) renderCandlestickFromData(symbol, data.data);
-        });
-    
-        fetchCrossoverData(symbol).then(data => {
-            if (!data.error) displayCrossoverResults(data);
-        });
-    
-        fetchADXData(symbol).then(data => {
-            if (!data.error) displayADXResults(data);
-        });
-    
-        fetchBollingerData(symbol).then(data => {
-            if (!data.error) displayBollingerResults(data);
-        });
-    
-        fetchRSIData(symbol).then(data => {
-            if (!data.error) displayRSIResults(data);
-        });
-    
-        fetchCandlePatternData(symbol).then(data => {
-            if (!data.error) displayCandleResults(data);
-        });
-    
-        fetchHarmonicPatternData(symbol).then(data => {
-            if (!data.error) displayHarmonicResults(data);
-        });
-    
-        fetchFundamentalInfo(symbol).then(data => {
-            if (!data.error) displayFundamentalResults(data);
-        });
-    
-        fetchFundamentalInfoClassification(symbol).then(data => {
-            if (!data.error) displayFundamentalResultsClassification(data);
-        });
-        
-        fetchInsideTransactions(symbol).then(data => {
-            if (!data.error) displayInsideTransactions(data);
-        });
+                if (c) {
+                    c.innerHTML = `<div class="news-error">${(err?.message) || "Falha ao obter dados do ativo."}</div>`;
+                }
+            });
 
         // ─────────────── EVENTOS DOS BOTÕES ───────────────
         setupTechnicalAnalysisEvents(symbol);
@@ -119,7 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
             { toggleSelector: "#funGrowth", contentSelector: ".growth-content" },
             { toggleSelector: "#funProfitability", contentSelector: ".profitability-content" },
             { toggleSelector: "#funCapitalEf", contentSelector: ".capitalefi-content" },
-            { toggleSelector: "#funOverview", contentSelector: ".overview-content" },
             { toggleSelector: "#funDownload", contentSelector: ".download-content" },
             { toggleSelector: "#tecInsiders", contentSelector: ".insiders-content" },
         ];
@@ -274,10 +260,9 @@ function setupTechnicalAnalysisEvents(symbol) {
 function setupToggle({ toggleSelector, contentSelector, iconSelector = null }) {
     const toggleElement = document.querySelector(toggleSelector);
     const contentElement = document.querySelector(contentSelector);
-    const toggleIcon = iconSelector ? document.querySelector(iconSelector) : null;
+    const toggleIcon = iconSelector ? toggleElement?.querySelector(iconSelector) : null;
 
     if (!toggleElement || !contentElement) {
-        console.error(`Elemento(s) não encontrado(s) para os seletores fornecidos.`);
         return;
     }
 

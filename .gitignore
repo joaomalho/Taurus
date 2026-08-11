@@ -37,4 +37,12 @@ notes_dev.txt
 .docker-compose.yml
 .Dockerfile
 
+# Django collectstatic output (generated at build/deploy)
+market-analyzer/frontend_app/staticfiles/
+
+# Celery Beat (runtime schedule file)
+celerybeat-schedule
+celerybeat.pid
+market-analyzer/celerybeat-schedule
+
 requirements-dev.txt

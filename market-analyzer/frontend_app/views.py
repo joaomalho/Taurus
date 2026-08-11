@@ -3,16 +3,20 @@ import numpy as np
 import pandas as pd
 from io import BytesIO
 from datetime import datetime, timezone
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.utils.timezone import now
 from django.http import JsonResponse, Http404, HttpResponse
 from django.core.validators import RegexValidator
+from frontend_app.decorators import login_required_api
+from frontend_app.services import screener_cache
 from backend.datasources.yahoodata import DataHistoryYahoo
 from backend.tecnical_analysis.trend_metrics import TrendMetrics
 from backend.tecnical_analysis.candlestick_chart_data import CandlestickData
 from backend.tecnical_analysis.candles_patterns import CandlesPatterns
 from backend.tecnical_analysis.harmonic_patterns import HarmonicPatterns
 from backend.risk_manager.risk_manager import RiskManagerFundamental
+from frontend_app.services.stock_summary import build_stock_summary
 
 dh = DataHistoryYahoo()
 
@@ -23,6 +27,7 @@ def home(request):
 
 
 # ------------------------- stockbytop Page -------------------------
+@login_required
 def stockbytop_page(request):
     return render(request, 'stockbytop.html')
 
@@ -141,12 +146,13 @@ def get_dh(request, symbol: str):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
+@login_required_api
 def get_stock_gainers(request):
     """
     View to pass Top 100 Gainers JSON.
     """
 
-    df = dh.get_stocks_gainers()
+    df = screener_cache.get_or_fetch_screener("gainers")
 
     if df is None or df.empty:
         return JsonResponse({"error": "No data found"}, status=404)
@@ -155,12 +161,13 @@ def get_stock_gainers(request):
     return JsonResponse({"data": df.to_dict(orient="records")})
 
 
+@login_required_api
 def get_stock_trending(request):
     """
     View to pass Top 100 Trending JSON.
     """
     try:
-        df = dh.get_stocks_trending()
+        df = screener_cache.get_or_fetch_screener("trending")
 
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -175,12 +182,13 @@ def get_stock_trending(request):
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
+@login_required_api
 def get_stock_most_active(request):
     """
     View to pass Top 100 Most Active JSON.
     """
     try:
-        df = dh.get_stocks_most_active()
+        df = screener_cache.get_or_fetch_screener("most_active")
 
         if df is None or df.empty:
             return JsonResponse({"error": "No data found"}, status=404)
@@ -933,33 +941,47 @@ def get_yahoo_symbol_earnings_dates(request, symbol: str):
 
         df = dh.get_yahoo_symbol_earnings_dates(symbol)
 
-        # sanity check
         if df is None or not isinstance(df, pd.DataFrame) or df.empty:
             return JsonResponse({"data": []}, status=200)
 
-        # ordena por data
+        df = df.copy()
+        df.columns = [str(col).strip() for col in df.columns]
         df = df.sort_index()
 
-        # filtra apenas Earnings
-        if "Event Type" in df.columns:
-            df = df[df["Event Type"] == "Earnings"]
+        def _column(*names):
+            for name in names:
+                if name in df.columns:
+                    return name
+            return None
+
+        event_col = _column("Event Type", "EventType", "event_type")
+        if event_col:
+            df = df[df[event_col].astype(str).str.lower() == "earnings"]
 
         if df.empty:
             return JsonResponse({"data": []}, status=200)
 
-        # monta lista de dicts
+        eps_est_col = _column("EPS Estimate", "Eps Estimate", "eps_estimate")
+        reported_col = _column("Reported EPS", "Reported Eps", "reported_eps")
+        surprise_col = _column("Surprise(%)", "Surprise (%)", "surprise_pct")
+
         rows = []
         for idx, row in df.iterrows():
             dt = pd.to_datetime(idx, utc=True, errors="coerce")
             if pd.isna(dt):
                 continue
 
+            eps_estimate = row[eps_est_col] if eps_est_col else None
+            reported_eps = row[reported_col] if reported_col else None
+            surprise_pct = row[surprise_col] if surprise_col else None
+            event_type = row[event_col] if event_col else "Earnings"
+
             rows.append({
                 "datetime": dt.isoformat(),
-                "eps_estimate": float(row["EPS Estimate"]) if pd.notna(row["EPS Estimate"]) else None,
-                "reported_eps": float(row["Reported EPS"]) if pd.notna(row["Reported EPS"]) else None,
-                "surprise_pct": float(row["Surprise(%)"]) if pd.notna(row["Surprise(%)"]) else None,
-                "event_type": str(row["Event Type"]) if pd.notna(row["Event Type"]) else None,
+                "eps_estimate": float(eps_estimate) if eps_est_col and pd.notna(eps_estimate) else None,
+                "reported_eps": float(reported_eps) if reported_col and pd.notna(reported_eps) else None,
+                "surprise_pct": float(surprise_pct) if surprise_col and pd.notna(surprise_pct) else None,
+                "event_type": str(event_type) if pd.notna(event_type) else "Earnings",
             })
 
         return JsonResponse({"data": rows}, status=200)
@@ -967,7 +989,7 @@ def get_yahoo_symbol_earnings_dates(request, symbol: str):
     except ConnectionError:
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
     except Exception as e:
-        return JsonResponse({"error": f"Unexpected server error: {e}"}, status=500)
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
 
 
 # Financial Health Chart
@@ -1105,5 +1127,21 @@ def get_efficiency_chart_info(request, symbol: str):
 
     except ConnectionError:
         return JsonResponse({"error": "Failed to connect to Yahoo Finance API"}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)
+
+
+def get_stock_summary(request, symbol: str):
+    """Aggregated payload for the stock detail page initial load."""
+    try:
+        symbol = symbol.strip().upper()
+        if not symbol:
+            return JsonResponse({"error": "Symbol is missing"}, status=400)
+
+        symbol = validate_symbol(symbol)
+        summary = build_stock_summary(symbol)
+        return JsonResponse(summary)
+    except Http404:
+        raise
     except Exception as e:
         return JsonResponse({"error": f"Unexpected server error: {str(e)}"}, status=500)

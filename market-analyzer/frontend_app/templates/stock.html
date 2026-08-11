@@ -30,6 +30,18 @@
 
     <hr class="line1">
 
+    <section id="decisionVerdict" class="decision-verdict hidden" aria-live="polite">
+        <div class="decision-verdict-main">
+            <span id="decisionVerdictBadge" class="decision-verdict-badge">—</span>
+            <div class="decision-verdict-copy">
+                <p class="decision-verdict-title">Investment verdict</p>
+                <p id="decisionVerdictConfidence" class="decision-verdict-confidence"></p>
+            </div>
+        </div>
+        <ul id="decisionVerdictReasons" class="decision-verdict-reasons"></ul>
+        <p id="decisionVerdictDisclaimer" class="decision-verdict-disclaimer"></p>
+    </section>
+
     <main class="stock-info">
 
         <section id="Information">
@@ -38,6 +50,13 @@
                     <h2 id="LongName"></h2>
                     <span class="toggle-icon">+</span>
                 </div>
+
+                {% if user.is_authenticated %}
+                <div class="watchlist-actions">
+                    <button id="watchlistAddButton" type="button">Add to watchlist</button>
+                    <p id="watchlistAddMessage" class="watchlist-message"></p>
+                </div>
+                {% endif %}
             
                 <div class="bio-content hidden">
                     

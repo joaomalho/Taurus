@@ -1,6 +1,40 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
 {% block content %}
-<h1>Área do Utilizador</h1>
-<p>Bem-vindo, {{ user.display_name|default:user.username }}!</p>
+<section class="dashboard-page">
+  <h1>Área do Utilizador</h1>
+  <p class="dashboard-subtitle">Bem-vindo, {{ user.display_name|default:user.username }}!</p>
+
+  <div class="watchlist-card">
+    <h2>Watchlist</h2>
+    <form id="watchlistForm" class="watchlist-form">
+      {% csrf_token %}
+      <input
+        type="text"
+        id="watchlistSymbolInput"
+        placeholder="Add symbol (e.g., AAPL)"
+        maxlength="10"
+        autocomplete="off"
+      >
+      <button type="submit">Add</button>
+    </form>
+    <p id="watchlistError" class="watchlist-error"></p>
+    <p id="watchlistEmpty" class="watchlist-empty hidden">No symbols in your watchlist yet.</p>
+    <ul id="watchlistItems" class="watchlist-list"></ul>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script type="module">
+  import { initDashboardWatchlist } from "{% static 'js/watchlist.js' %}";
+  initDashboardWatchlist();
+</script>
 {% endblock %}
