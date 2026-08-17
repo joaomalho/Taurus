@@ -65,6 +65,7 @@ def build_stock_summary(symbol: str, *, portfolio_value: float | None = None, ri
             "rsi": lambda: technical_metrics.compute_rsi(
                 symbol, technical_metrics.tail_df(history_df, 30) or ta_df
             ),
+            "pivot_points": lambda: technical_metrics.compute_pivot_points(symbol, ta_df),
             "harmonic_patterns": lambda: technical_metrics.compute_harmonic_patterns(
                 technical_metrics.tail_df(history_df, 30) or ta_df
             ),
@@ -89,6 +90,7 @@ def build_stock_summary(symbol: str, *, portfolio_value: float | None = None, ri
             "adx",
             "bollinger",
             "rsi",
+            "pivot_points",
             "candle_patterns",
             "harmonic_patterns",
         ):

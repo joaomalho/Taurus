@@ -479,6 +479,21 @@ def get_efficiency_chart_info(request, symbol: str):
     return _symbol_endpoint(symbol, handler)
 
 
+def get_pivot_points(request, symbol: str):
+    def handler(validated: str):
+        method = request.GET.get("method", technical_metrics.DEFAULT_PIVOT_METHOD).lower()
+        df = stock_data.get_history_dataframe(validated, period="3mo", interval="1d")
+        if df is None:
+            return JsonResponse({"error": "No data found"}, status=404)
+        result = technical_metrics.compute_pivot_points(validated, df, method=method)
+        if "error" in result:
+            status = 400 if "Invalid method" in result["error"] else 404
+            return JsonResponse(result, status=status)
+        return JsonResponse(result)
+
+    return _symbol_endpoint(symbol, handler)
+
+
 def get_stock_summary(request, symbol: str):
     try:
         validated = _validated_symbol(symbol)

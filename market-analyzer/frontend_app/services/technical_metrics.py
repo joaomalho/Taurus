@@ -6,6 +6,7 @@ import pandas as pd
 from backend.tecnical_analysis.candlestick_chart_data import CandlestickData
 from backend.tecnical_analysis.candles_patterns import CandlesPatterns
 from backend.tecnical_analysis.harmonic_patterns import HarmonicPatterns
+from backend.tecnical_analysis.pivot_points import SUPPORTED_METHODS, calculate_levels, pivot_signal
 from backend.tecnical_analysis.trend_metrics import TrendMetrics
 
 from frontend_app.services.stock_data import get_history_dataframe
@@ -256,6 +257,55 @@ def ohlc_arrays_from_records(data_list: list[dict]) -> tuple[np.ndarray, ...]:
 
 def close_prices_from_records(data_list: list[dict]) -> np.ndarray:
     return np.array([entry.get("Close", np.nan) for entry in data_list], dtype=np.float64)
+
+
+DEFAULT_PIVOT_METHOD = "classic"
+
+
+def compute_pivot_points(
+    symbol: str,
+    df: pd.DataFrame,
+    method: str = DEFAULT_PIVOT_METHOD,
+) -> dict:
+    if method not in SUPPORTED_METHODS:
+        return {"error": f"Invalid method. Use one of: {', '.join(SUPPORTED_METHODS)}"}
+
+    if df is None or len(df) < 2:
+        return {"error": "Not enough data for pivot calculation"}
+
+    reference = df.iloc[-2]
+    current = df.iloc[-1]
+
+    try:
+        high = float(reference["High"])
+        low = float(reference["Low"])
+        close = float(reference["Close"])
+        current_price = float(current["Close"])
+    except (KeyError, TypeError, ValueError):
+        return {"error": "Invalid OHLC data for pivot calculation"}
+
+    levels = calculate_levels(high, low, close, method)
+    rounded_levels = {key: round(value, 4) for key, value in levels.items()}
+
+    reference_date = reference["Date"] if "Date" in reference else None
+    if hasattr(reference_date, "isoformat"):
+        reference_date = reference_date.isoformat()
+    elif reference_date is not None:
+        reference_date = str(reference_date)
+
+    return {
+        "symbol": symbol,
+        "method": method,
+        "reference_date": reference_date,
+        "reference_ohlc": {
+            "high": round(high, 4),
+            "low": round(low, 4),
+            "close": round(close, 4),
+        },
+        "current_price": round(current_price, 4),
+        "levels": rounded_levels,
+        "signal": pivot_signal(current_price, levels),
+    }
 
 
 def records_to_dataframe(data_list: list[dict]) -> pd.DataFrame:

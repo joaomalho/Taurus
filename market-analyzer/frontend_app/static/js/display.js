@@ -136,6 +136,44 @@ export function displayRSIResults(data) {
   document.getElementById("RsiSignal").textContent = signal;
 }
 
+const PIVOT_LEVEL_ORDER = [
+  ["r3", "R3"],
+  ["r2", "R2"],
+  ["r1", "R1"],
+  ["pp", "PP"],
+  ["s1", "S1"],
+  ["s2", "S2"],
+  ["s3", "S3"],
+];
+
+export function displayPivotResults(data) {
+  const signalEl = document.getElementById("PivotSignal");
+  const refEl = document.getElementById("PivotReferenceDate");
+  const priceEl = document.getElementById("PivotCurrentPrice");
+  const tableEl = document.getElementById("PivotLevelsTable");
+
+  if (signalEl) signalEl.textContent = data.signal || "—";
+  if (refEl) refEl.textContent = data.reference_date || "—";
+  if (priceEl) priceEl.textContent = data.current_price != null ? `$${Number(data.current_price).toFixed(2)}` : "—";
+
+  if (!tableEl || !data.levels) return;
+
+  const current = Number(data.current_price);
+  const rows = PIVOT_LEVEL_ORDER.map(([key, label]) => {
+    const value = data.levels[key];
+    if (value == null) return "";
+    const isNear = Math.abs(current - value) / Math.max(current, 1) <= 0.005;
+    return `
+      <div class="pivot-level-row${isNear ? " pivot-level-near" : ""}">
+        <span class="pivot-level-label">${label}</span>
+        <span class="pivot-level-value">$${Number(value).toFixed(2)}</span>
+      </div>
+    `;
+  }).join("");
+
+  tableEl.innerHTML = rows;
+}
+
 export function displayCandleResults(data) {
   const tableData = [];
 

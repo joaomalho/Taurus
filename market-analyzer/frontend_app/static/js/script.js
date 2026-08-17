@@ -10,6 +10,7 @@ import {
     fetchADXData,
     fetchBollingerData,
     fetchRSIData,
+    fetchPivotData,
 } from './api.js';
 
 import {
@@ -18,6 +19,7 @@ import {
     displayADXResults,
     displayBollingerResults,
     displayRSIResults,
+    displayPivotResults,
     displayCandleResults,
     displayHarmonicResults,
     displayFundamentalResults,
@@ -69,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (summary.adx && !summary.adx.error) displayADXResults(summary.adx);
                 if (summary.bollinger && !summary.bollinger.error) displayBollingerResults(summary.bollinger);
                 if (summary.rsi && !summary.rsi.error) displayRSIResults(summary.rsi);
+                if (summary.pivot_points && !summary.pivot_points.error) displayPivotResults(summary.pivot_points);
                 if (summary.candle_patterns && !summary.candle_patterns.error) {
                     displayCandleResults(summary.candle_patterns);
                 }
@@ -179,7 +182,22 @@ function setupTechnicalAnalysisEvents(symbol) {
             return;
         }
     
-        fetchADXData(symbol, adxLength);
+        fetchADXData(symbol, adxLength).then(data => {
+            if (data && !data.error) displayADXResults(data);
+        });
+    });
+
+    document.getElementById("PivotButton").addEventListener("click", function () {
+        const method = document.getElementById("pivotMethod").value;
+
+        if (!symbol) {
+            alert("Por favor, selecione um ativo antes de calcular.");
+            return;
+        }
+
+        fetchPivotData(symbol, method).then(data => {
+            if (data && !data.error) displayPivotResults(data);
+        });
     });
 
     document.getElementById("BollingerButton").addEventListener("click", function () {

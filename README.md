@@ -193,6 +193,7 @@ docker compose down -v
 | Endpoint | Auth | Description |
 |----------|------|-------------|
 | `GET /stock/<symbol>/summary/` | Public | Aggregated page data + verdict + trade plan |
+| `GET /stock/<symbol>/pivot_points/` | Public | Pivot levels (`?method=classic\|fibonacci\|camarilla`) |
 | `GET /stock/<symbol>/bio_info/` | Public | Company profile |
 | `GET /stock/<symbol>/fundamental_*` | Public | Fundamentals, evaluations, charts |
 | `GET /stock/<symbol>/crossover_trend/` | Public | EMA crossover (params: fast, medium, slow) |
@@ -276,6 +277,7 @@ Crypto (Binance) and economic calendar modules exist in code but are **not yet e
 - **Services layer** — `stock_data`, `technical_metrics`; thin views
 - Technical & fundamental analysis
 - Candlestick + harmonic patterns
+- **Pivot points** — classic, Fibonacci, Camarilla (Trend section)
 - User auth, dashboard, watchlist
 - Stock-by-top screeners (authenticated)
 - Redis caching, rate limiting, Celery screeners
@@ -284,7 +286,6 @@ Crypto (Binance) and economic calendar modules exist in code but are **not yet e
 
 ### In progress / planned
 
-- Pivot points
 - News sentiment (NLP)
 - Economic calendar UI
 - Crypto endpoints
@@ -375,6 +376,7 @@ We welcome maintainers, testers, UI/UX designers, and market analysts.
 
 - **Trade plan** — entry, stop-loss, TP, R:R (Phase 2)
 - **Services refactor** — views → stock_data + technical_metrics
+- **Pivot points** — classic, Fibonacci, Camarilla
 - Unified `/summary/` endpoint (1 request instead of 11)
 - Buy / Hold / Sell investment verdict
 - User watchlist (dashboard + stock page)

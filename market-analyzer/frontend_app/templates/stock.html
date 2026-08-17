@@ -193,6 +193,24 @@
                             <p>Signal: <span id="AdxSignal"></span></p>
                         </div>
                     </div>
+
+                    <div class="tec-trend-pivots">
+                        <h3>Pivot Points</h3>
+                        <button class="executeButtons" id="PivotButton">Calculate</button>
+                        <form id="PivotForm">
+                            <label for="pivotMethod">Method:</label>
+                            <select id="pivotMethod">
+                                <option value="classic" selected>Classic</option>
+                                <option value="fibonacci">Fibonacci</option>
+                                <option value="camarilla">Camarilla</option>
+                            </select>
+                        </form>
+                        <div>
+                            <p>Signal: <span id="PivotSignal"></span></p>
+                            <p class="pivot-meta">Ref: <span id="PivotReferenceDate">—</span> · Price: <span id="PivotCurrentPrice">—</span></p>
+                        </div>
+                        <div id="PivotLevelsTable" class="pivot-levels-table"></div>
+                    </div>
                 </div>
             </div>
 

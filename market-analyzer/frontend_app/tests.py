@@ -271,6 +271,51 @@ class TradingPrefsTests(TestCase):
         self.assertEqual(payload["portfolio_value"], 25000)
         self.assertEqual(payload["risk_percent"], 1.5)
 
+
+class PivotPointsTests(TestCase):
+    def test_classic_pivot_levels(self):
+        from backend.tecnical_analysis.pivot_points import calculate_levels
+
+        levels = calculate_levels(110, 90, 100, "classic")
+        self.assertAlmostEqual(levels["pp"], 100.0)
+        self.assertAlmostEqual(levels["r1"], 110.0)
+        self.assertAlmostEqual(levels["s1"], 90.0)
+
+    def test_fibonacci_pivot_levels(self):
+        from backend.tecnical_analysis.pivot_points import calculate_levels
+
+        levels = calculate_levels(110, 90, 100, "fibonacci")
+        self.assertAlmostEqual(levels["pp"], 100.0)
+        self.assertAlmostEqual(levels["r1"], 107.64, places=2)
+
+    def test_compute_pivot_points_from_dataframe(self):
+        import pandas as pd
+
+        from frontend_app.services.technical_metrics import compute_pivot_points
+
+        df = pd.DataFrame([
+            {"Date": "2026-08-15", "Open": 98, "High": 110, "Low": 90, "Close": 100},
+            {"Date": "2026-08-16", "Open": 101, "High": 105, "Low": 99, "Close": 104},
+        ])
+        result = compute_pivot_points("TEST", df, method="classic")
+        self.assertEqual(result["symbol"], "TEST")
+        self.assertIn("levels", result)
+        self.assertIn(result["signal"], ("Buy", "Sell", "Flat"))
+
+    @patch("frontend_app.views.technical_metrics.compute_pivot_points")
+    def test_pivot_endpoint(self, mock_compute):
+        mock_compute.return_value = {
+            "symbol": "AAPL",
+            "method": "classic",
+            "levels": {"pp": 100},
+            "signal": "Flat",
+        }
+        response = self.client.get(reverse("get_pivot_points", kwargs={"symbol": "AAPL"}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["symbol"], "AAPL")
+
+
+class ScreenerCacheTests(TestCase):
     def setUp(self):
         cache.clear()
 

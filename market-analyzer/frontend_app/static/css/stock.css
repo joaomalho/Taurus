@@ -400,11 +400,52 @@ canvas {
     color: var(--button-hover-bg);
 }
 
-.tec-insiders, .tec-trend-crossover, .tec-trend-adx, .tec-volatility, .tec-oscilators, .tec-candles, .tec-harmonic {
+.tec-insiders, .tec-trend-crossover, .tec-trend-adx, .tec-trend-pivots, .tec-volatility, .tec-oscilators, .tec-candles, .tec-harmonic {
     display: flex;
     align-items: center;
     gap: 15px;
     flex-wrap: wrap;
+}
+
+.tec-trend-pivots {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.pivot-meta {
+    color: var(--p-text-color);
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0.75rem;
+}
+
+.pivot-levels-table {
+    display: grid;
+    gap: 0.35rem;
+    width: 100%;
+    max-width: 280px;
+}
+
+.pivot-level-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--card-bg);
+}
+
+.pivot-level-row.pivot-level-near {
+    border-color: var(--link-color);
+    background: rgba(81, 207, 102, 0.08);
+}
+
+.pivot-level-label {
+    font-weight: 600;
+    color: var(--stock-info-titles);
+}
+
+.pivot-level-value {
+    font-variant-numeric: tabular-nums;
 }
 
 

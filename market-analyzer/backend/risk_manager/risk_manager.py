@@ -61,6 +61,15 @@ class RiskManagerTechnical ():
             crossover_signal = 'Flat'
         return crossover_signal
 
+    def signal_decision_pivot(self, current_price, pivot, r1, s1):
+        if current_price >= r1:
+            return "Sell"
+        if current_price <= s1:
+            return "Buy"
+        if current_price > pivot:
+            return "Flat"
+        return "Flat"
+
     def stoploss_candles_conditions(self, signal, stoploss, future_close_prices):
         """
         Verify if stoploss were hitted in candle patterns

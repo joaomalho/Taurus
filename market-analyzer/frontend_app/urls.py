@@ -9,7 +9,7 @@ from .views import (home, stock_page, stockbytop_page, get_stock_gainers, get_st
                     get_fundamental_income_quarterly_download, get_fundamental_cashflow_quarterly_download,
                     get_fundamental_balance_sheet_quarterly_download, get_symbol_fundamental_news,
                     get_yahoo_symbol_earnings_dates, get_financial_health_chart_info, get_profitability_chart_info,
-                    get_efficiency_chart_info, get_stock_summary)
+                    get_efficiency_chart_info, get_stock_summary, get_pivot_points)
 
 urlpatterns = [
     # ------ MAIN PAGE ------
@@ -26,6 +26,7 @@ urlpatterns = [
     path('stock/<str:symbol>/adx_trend/', get_adx_trend_metrics, name='get_adx_trend'),
     path('stock/<str:symbol>/bollinger_trend/', get_bollinger_bands_metrics, name='get_bollinger_trend'),
     path('stock/<str:symbol>/rsi_trend/', get_rsi_trend_metrics, name='get_rsi_trend'),
+    path('stock/<str:symbol>/pivot_points/', get_pivot_points, name='get_pivot_points'),
     path('stock/<str:symbol>/candle_patterns/', get_candle_detection, name='get_candle_patterns'),
     path('stock/<str:symbol>/harmonic_patterns/', get_harmonic_patterns, name='get_harmonic_patterns'),
     path('stock/<str:symbol>/fundamental_info/', get_fundamental_info, name='get_fundamental_info'),

@@ -28,7 +28,7 @@ sequenceDiagram
 | Service | Responsibility |
 |---------|----------------|
 | `stock_data.py` | Yahoo fetches: bio, news, fundamentals, holders, earnings, charts |
-| `technical_metrics.py` | TA: crossover, ADX, Bollinger, RSI, candle/harmonic patterns |
+| `technical_metrics.py` | TA: crossover, ADX, Bollinger, RSI, pivots, candle/harmonic patterns |
 | `screener_cache.py` | Cache Yahoo screeners; Celery refresh |
 | `stock_summary.py` | Orchestrate parallel fetches + verdict + trade plan |
 | `decision_verdict.py` | Buy / Hold / Sell verdict |

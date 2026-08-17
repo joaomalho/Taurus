@@ -28,6 +28,10 @@ export function fetchRSIData(symbol, length = 14, upper = 70, lower = 30) {
     return fetch(`/stock/${symbol}/rsi_trend/?length=${length}&upper_level=${upper}&lower_level=${lower}`).then(res => res.json());
 }
 
+export function fetchPivotData(symbol, method = "classic") {
+    return fetch(`/stock/${symbol}/pivot_points/?method=${method}`).then(res => res.json());
+}
+
 export function fetchCandlePatternData(symbol) {
     return fetch(`/stock/${symbol}/candle_patterns/`).then(res => res.json());
 }
