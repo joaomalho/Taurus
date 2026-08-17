@@ -602,3 +602,77 @@ export function displayDecisionVerdict(verdict) {
     disclaimer.textContent = verdict.disclaimer || "";
   }
 }
+
+function _formatPrice(value) {
+  if (value == null || Number.isNaN(Number(value))) return "—";
+  return Number(value).toFixed(2);
+}
+
+function _formatPct(value) {
+  if (value == null || Number.isNaN(Number(value))) return "";
+  const sign = value > 0 ? "+" : "";
+  return `${sign}${Number(value).toFixed(2)}%`;
+}
+
+function _metric(label, value, sub = "") {
+  return `
+    <div class="trade-plan-metric">
+      <span class="trade-plan-metric-label">${label}</span>
+      <span class="trade-plan-metric-value">${value}</span>
+      ${sub ? `<span class="trade-plan-metric-sub">${sub}</span>` : ""}
+    </div>
+  `;
+}
+
+export function displayTradePlan(plan) {
+  const section = document.getElementById("tradePlan");
+  const unavailable = document.getElementById("tradePlanUnavailable");
+  const unavailableReason = document.getElementById("tradePlanUnavailableReason");
+
+  if (!plan) {
+    return;
+  }
+
+  if (!plan.available) {
+    section?.classList.add("hidden");
+    if (unavailable && unavailableReason) {
+      unavailable.classList.remove("hidden");
+      unavailableReason.textContent = plan.reason || "Trade plan unavailable.";
+    }
+    return;
+  }
+
+  unavailable?.classList.add("hidden");
+  if (!section) return;
+
+  section.classList.remove("hidden");
+
+  const title = document.getElementById("tradePlanTitle");
+  const source = document.getElementById("tradePlanSource");
+  const grid = document.getElementById("tradePlanGrid");
+  const notes = document.getElementById("tradePlanNotes");
+  const disclaimer = document.getElementById("tradePlanDisclaimer");
+
+  if (title) title.textContent = `Trade plan — ${plan.side}`;
+  if (source) source.textContent = plan.label || plan.source || "";
+  if (disclaimer) disclaimer.textContent = plan.disclaimer || "";
+
+  const stop = plan.stop_loss || {};
+  const tp1 = plan.targets?.tp1 || {};
+  const tp2 = plan.targets?.tp2;
+  const hint = plan.position_hint || {};
+
+  if (grid) {
+    grid.innerHTML = [
+      _metric("Entry", `$${_formatPrice(plan.entry)}`),
+      _metric("Stop-loss", `$${_formatPrice(stop.price)}`, _formatPct(stop.change_pct)),
+      _metric("TP1", `$${_formatPrice(tp1.price)}`, `${_formatPct(tp1.change_pct)} · R:R ${tp1.risk_reward ?? "—"}`),
+      tp2 ? _metric("TP2", `$${_formatPrice(tp2.price)}`, `${_formatPct(tp2.change_pct)} · R:R ${tp2.risk_reward ?? "—"}`) : "",
+      _metric("Size hint", hint.shares != null ? `${hint.shares} shares` : "—", hint.example_portfolio ? `@ $${hint.example_portfolio} · ${hint.risk_percent}% risk` : ""),
+    ].join("");
+  }
+
+  if (notes) {
+    notes.textContent = (plan.notes || []).join(" ");
+  }
+}

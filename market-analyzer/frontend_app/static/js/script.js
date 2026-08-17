@@ -26,6 +26,7 @@ import {
     populateYahooStockTable,
     displayNewsList,
     displayDecisionVerdict,
+    displayTradePlan,
 } from './display.js';
 
 import { initStockWatchlistButton } from './watchlist.js';
@@ -53,6 +54,9 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(summary => {
                 if (summary.verdict && !summary.verdict.error) {
                     displayDecisionVerdict(summary.verdict);
+                }
+                if (summary.trade_plan) {
+                    displayTradePlan(summary.trade_plan);
                 }
                 if (summary.news && !summary.news.error) {
                     displayNewsList(summary.news, { containerId: "symbolNews" });

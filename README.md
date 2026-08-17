@@ -15,6 +15,7 @@ Taurus is a financial market analysis web application for stocks and ETFs. It co
 ### Decision support
 
 - **Investment verdict** — unified Buy / Hold / Sell on each stock page, with confidence score and reasons
+- **Trade plan** — entry, stop-loss, TP1/TP2, R:R, and position hint (when verdict is Buy or Sell)
 - **Fundamental pillar scoring** — Valuation, Financial Health, Profitability, Growth, Dividends, Capital Efficiency
 - **Watchlist** — save up to 50 symbols per user (dashboard + add from stock page)
 
@@ -191,7 +192,7 @@ docker compose down -v
 
 | Endpoint | Auth | Description |
 |----------|------|-------------|
-| `GET /stock/<symbol>/summary/` | Public | Aggregated page data + verdict |
+| `GET /stock/<symbol>/summary/` | Public | Aggregated page data + verdict + trade plan |
 | `GET /stock/<symbol>/bio_info/` | Public | Company profile |
 | `GET /stock/<symbol>/fundamental_*` | Public | Fundamentals, evaluations, charts |
 | `GET /stock/<symbol>/crossover_trend/` | Public | EMA crossover (params: fast, medium, slow) |
@@ -218,6 +219,38 @@ Output: **Buy**, **Hold**, or **Sell** + confidence % + bullet reasons.
 
 Implementation: `market-analyzer/frontend_app/services/decision_verdict.py`
 
+Full documentation: [docs/DECISION_VERDICT.md](docs/DECISION_VERDICT.md)
+
+---
+
+## Trade plan
+
+When the verdict is **Buy** or **Sell**, a trade plan is shown below the verdict banner.
+
+| Field | Description |
+|-------|-------------|
+| Entry | Current price |
+| Stop-loss | From pattern or Bollinger |
+| TP1 / TP2 | Profit targets + R:R |
+| Size hint | Illustrative shares @ $10k portfolio, 2% risk |
+
+**Source priority:** harmonic pattern → candlestick pattern → Bollinger fallback.
+
+Implementation: `market-analyzer/frontend_app/services/trade_plan.py`
+
+Full documentation: [docs/TRADE_PLAN.md](docs/TRADE_PLAN.md)
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [docs/README.md](docs/README.md) | Documentation index |
+| [docs/DECISION_VERDICT.md](docs/DECISION_VERDICT.md) | Verdict formula and fields |
+| [docs/TRADE_PLAN.md](docs/TRADE_PLAN.md) | Trade plan logic and schema |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Services and request flow |
+
 ---
 
 ## Data sources & delays
@@ -239,6 +272,8 @@ Crypto (Binance) and economic calendar modules exist in code but are **not yet e
 
 - Stock search and analysis page
 - Unified summary endpoint + verdict banner
+- **Trade plan (entry, stop, targets, R:R)**
+- **Services layer** — `stock_data`, `technical_metrics`; thin views
 - Technical & fundamental analysis
 - Candlestick + harmonic patterns
 - User auth, dashboard, watchlist
@@ -249,8 +284,7 @@ Crypto (Binance) and economic calendar modules exist in code but are **not yet e
 
 ### In progress / planned
 
-- Trade plan (stop-loss, take-profit, R:R) from patterns
-- Price alerts on watchlist
+- Trade plan: user portfolio size + trailing stop
 - Pivot points
 - News sentiment (NLP)
 - Economic calendar UI
@@ -258,6 +292,10 @@ Crypto (Binance) and economic calendar modules exist in code but are **not yet e
 - Optimizer / backtest UI
 - Sector & peer comparison
 - Portfolio tracking
+
+### Deferred (far future)
+
+- Push / email notifications (not on the current roadmap)
 
 ---
 
@@ -336,6 +374,8 @@ We welcome maintainers, testers, UI/UX designers, and market analysts.
 
 ## Recent improvements (2025–2026)
 
+- **Trade plan** — entry, stop-loss, TP, R:R (Phase 2)
+- **Services refactor** — views → stock_data + technical_metrics
 - Unified `/summary/` endpoint (1 request instead of 11)
 - Buy / Hold / Sell investment verdict
 - User watchlist (dashboard + stock page)

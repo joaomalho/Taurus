@@ -158,6 +158,61 @@ class DecisionVerdictTests(TestCase):
         self.assertLess(result["score"], 0)
 
 
+class TradePlanTests(TestCase):
+    def test_hold_verdict_has_no_plan(self):
+        from frontend_app.services.trade_plan import build_trade_plan
+
+        plan = build_trade_plan(
+            symbol="AAPL",
+            verdict={"verdict": "Hold"},
+            bio={"data": {"CurrentPrice": 100}},
+        )
+        self.assertFalse(plan["available"])
+        self.assertIn("Hold", plan["reason"])
+
+    def test_bollinger_fallback_for_buy(self):
+        from frontend_app.services.trade_plan import build_trade_plan
+
+        plan = build_trade_plan(
+            symbol="AAPL",
+            verdict={"verdict": "Buy"},
+            bio={"data": {"CurrentPrice": 100}},
+            bollinger={
+                "lower_band": 95,
+                "upper_band": 110,
+                "signal": "Buy",
+            },
+        )
+        self.assertTrue(plan["available"])
+        self.assertEqual(plan["source"], "bollinger_fallback")
+        self.assertEqual(plan["stop_loss"]["price"], 95)
+        self.assertGreater(plan["targets"]["tp1"]["price"], 100)
+
+    def test_harmonic_plan_preferred(self):
+        from frontend_app.services.trade_plan import build_trade_plan
+
+        plan = build_trade_plan(
+            symbol="AAPL",
+            verdict={"verdict": "Buy"},
+            bio={"data": {"CurrentPrice": 182.5}},
+            harmonic_patterns={
+                "patterns_detected": [{
+                    "pattern": "Gartley",
+                    "direction": 1,
+                    "stop_hit": False,
+                    "STOP": 178.2,
+                    "TP1": 188.0,
+                    "TP2": 192.5,
+                    "D_index": 120,
+                }]
+            },
+            bollinger={"lower_band": 95, "upper_band": 110},
+        )
+        self.assertTrue(plan["available"])
+        self.assertEqual(plan["source"], "harmonic_pattern")
+        self.assertEqual(plan["entry"], 182.5)
+
+
 class ScreenerCacheTests(TestCase):
     def setUp(self):
         cache.clear()
