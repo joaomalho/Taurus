@@ -9,8 +9,10 @@ Priority:
 
 from __future__ import annotations
 
-DEFAULT_RISK_PERCENT = 2.0
-EXAMPLE_PORTFOLIO = 10_000
+from users.models import DEFAULT_PORTFOLIO_VALUE, DEFAULT_RISK_PERCENT as _DEFAULT_RISK_PERCENT
+
+DEFAULT_RISK_PERCENT = float(_DEFAULT_RISK_PERCENT)
+EXAMPLE_PORTFOLIO = float(DEFAULT_PORTFOLIO_VALUE)
 MIN_RISK_REWARD = 1.0
 TP2_MULTIPLIER = 2.0
 
@@ -50,18 +52,45 @@ def _risk_reward(entry: float, stop: float, target: float) -> float | None:
     return round(reward / risk, 2)
 
 
-def _position_hint(entry: float, stop: float) -> dict:
+def _position_hint(
+    entry: float,
+    stop: float,
+    *,
+    portfolio_value: float | None = None,
+    risk_percent: float | None = None,
+) -> dict:
     risk_per_share = abs(entry - stop)
     if risk_per_share <= 0:
         return {}
 
-    capital_at_risk = EXAMPLE_PORTFOLIO * (DEFAULT_RISK_PERCENT / 100)
+    portfolio = portfolio_value if portfolio_value is not None else EXAMPLE_PORTFOLIO
+    risk_pct = risk_percent if risk_percent is not None else DEFAULT_RISK_PERCENT
+    capital_at_risk = portfolio * (risk_pct / 100)
     shares = int(capital_at_risk / risk_per_share)
     return {
-        "risk_percent": DEFAULT_RISK_PERCENT,
-        "example_portfolio": EXAMPLE_PORTFOLIO,
+        "risk_percent": risk_pct,
+        "portfolio_value": round(portfolio, 2),
+        "example_portfolio": round(portfolio, 2),
         "capital_at_risk": round(capital_at_risk, 2),
         "shares": max(shares, 0),
+    }
+
+
+def _trailing_stop(side: str, entry: float, stop: float, tp1: float) -> dict:
+    risk = abs(entry - stop)
+    if risk <= 0:
+        return {}
+
+    if side == "Buy":
+        description = "At TP1, move stop to breakeven; then trail 1R below the peak."
+    else:
+        description = "At TP1, move stop to breakeven; then trail 1R above the trough."
+
+    return {
+        "activate_at": round(tp1, 4),
+        "move_stop_to": round(entry, 4),
+        "trail_distance": round(risk, 4),
+        "description": description,
     }
 
 
@@ -76,6 +105,8 @@ def _plan_payload(
     tp3: float | None = None,
     label: str | None = None,
     notes: list[str] | None = None,
+    portfolio_value: float | None = None,
+    risk_percent: float | None = None,
 ) -> dict:
     targets = {
         "tp1": {
@@ -110,13 +141,22 @@ def _plan_payload(
         },
         "targets": targets,
         "risk_reward": rr,
-        "position_hint": _position_hint(entry, stop),
+        "position_hint": _position_hint(
+            entry, stop, portfolio_value=portfolio_value, risk_percent=risk_percent
+        ),
+        "trailing_stop": _trailing_stop(side, entry, stop, tp1),
         "notes": notes or [],
         "disclaimer": "Advisory only — validate levels before trading.",
     }
 
 
-def _pick_harmonic(harmonic_patterns: dict | None, side: str) -> dict | None:
+def _pick_harmonic(
+    harmonic_patterns: dict | None,
+    side: str,
+    *,
+    portfolio_value: float | None = None,
+    risk_percent: float | None = None,
+) -> dict | None:
     if not harmonic_patterns or harmonic_patterns.get("error"):
         return None
 
@@ -155,6 +195,8 @@ def _pick_harmonic(harmonic_patterns: dict | None, side: str) -> dict | None:
             f"Harmonic setup from pattern {pattern.get('pattern', 'N/A')}.",
             "Pattern is still open (stop not hit).",
         ],
+        portfolio_value=portfolio_value,
+        risk_percent=risk_percent,
     )
 
 
@@ -189,7 +231,14 @@ def _pick_candle(candle_patterns: dict | None, side: str) -> tuple[str, dict, fl
     return pattern_name, entry, stop
 
 
-def _build_from_candle(candle_patterns: dict | None, side: str, entry: float) -> dict | None:
+def _build_from_candle(
+    candle_patterns: dict | None,
+    side: str,
+    entry: float,
+    *,
+    portfolio_value: float | None = None,
+    risk_percent: float | None = None,
+) -> dict | None:
     picked = _pick_candle(candle_patterns, side)
     if not picked:
         return None
@@ -218,10 +267,19 @@ def _build_from_candle(candle_patterns: dict | None, side: str, entry: float) ->
             f"Candlestick pattern: {pattern_name}.",
             "Stop from pattern; TP1/TP2 estimated at 2R and 3R.",
         ],
+        portfolio_value=portfolio_value,
+        risk_percent=risk_percent,
     )
 
 
-def _build_from_bollinger(bollinger: dict | None, side: str, entry: float) -> dict | None:
+def _build_from_bollinger(
+    bollinger: dict | None,
+    side: str,
+    entry: float,
+    *,
+    portfolio_value: float | None = None,
+    risk_percent: float | None = None,
+) -> dict | None:
     if not bollinger or bollinger.get("error"):
         return None
 
@@ -261,6 +319,8 @@ def _build_from_bollinger(bollinger: dict | None, side: str, entry: float) -> di
             "No active harmonic/candle setup — using Bollinger bands.",
             f"Bollinger signal: {bollinger.get('signal', 'N/A')}.",
         ],
+        portfolio_value=portfolio_value,
+        risk_percent=risk_percent,
     )
 
 
@@ -272,6 +332,8 @@ def build_trade_plan(
     harmonic_patterns: dict | None = None,
     candle_patterns: dict | None = None,
     bollinger: dict | None = None,
+    portfolio_value: float | None = None,
+    risk_percent: float | None = None,
 ) -> dict:
     if not verdict or verdict.get("error"):
         return {"available": False, "symbol": symbol, "reason": "Verdict unavailable."}
@@ -292,7 +354,9 @@ def build_trade_plan(
             "reason": "Current price unavailable — cannot build trade plan.",
         }
 
-    harmonic_plan = _pick_harmonic(harmonic_patterns, side)
+    harmonic_plan = _pick_harmonic(
+        harmonic_patterns, side, portfolio_value=portfolio_value, risk_percent=risk_percent
+    )
     if harmonic_plan:
         stop = harmonic_plan["stop_loss"]["price"]
         tp1 = harmonic_plan["targets"]["tp1"]["price"]
@@ -308,16 +372,22 @@ def build_trade_plan(
             tp3=tp3,
             label=harmonic_plan["label"],
             notes=harmonic_plan.get("notes"),
+            portfolio_value=portfolio_value,
+            risk_percent=risk_percent,
         )
         rebuilt["symbol"] = symbol
         return rebuilt
 
-    candle_plan = _build_from_candle(candle_patterns, side, entry)
+    candle_plan = _build_from_candle(
+        candle_patterns, side, entry, portfolio_value=portfolio_value, risk_percent=risk_percent
+    )
     if candle_plan:
         candle_plan["symbol"] = symbol
         return candle_plan
 
-    bollinger_plan = _build_from_bollinger(bollinger, side, entry)
+    bollinger_plan = _build_from_bollinger(
+        bollinger, side, entry, portfolio_value=portfolio_value, risk_percent=risk_percent
+    )
     if bollinger_plan:
         bollinger_plan["symbol"] = symbol
         return bollinger_plan

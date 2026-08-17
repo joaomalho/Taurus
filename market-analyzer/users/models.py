@@ -1,14 +1,29 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from .validators import normalize_symbol
 
 MAX_WATCHLIST_ITEMS = 50
+DEFAULT_PORTFOLIO_VALUE = 10_000
+DEFAULT_RISK_PERCENT = 2.0
 
 
 class User(AbstractUser):
     display_name = models.CharField(max_length=150, blank=True)
+    portfolio_value = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=DEFAULT_PORTFOLIO_VALUE,
+        validators=[MinValueValidator(100), MaxValueValidator(10_000_000)],
+    )
+    risk_percent = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=DEFAULT_RISK_PERCENT,
+        validators=[MinValueValidator(0.1), MaxValueValidator(10)],
+    )
 
 
 class WatchlistItem(models.Model):

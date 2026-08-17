@@ -482,7 +482,16 @@ def get_efficiency_chart_info(request, symbol: str):
 def get_stock_summary(request, symbol: str):
     try:
         validated = _validated_symbol(symbol)
-        summary = build_stock_summary(validated)
+        portfolio_value = None
+        risk_percent = None
+        if request.user.is_authenticated:
+            portfolio_value = float(request.user.portfolio_value)
+            risk_percent = float(request.user.risk_percent)
+        summary = build_stock_summary(
+            validated,
+            portfolio_value=portfolio_value,
+            risk_percent=risk_percent,
+        )
         return JsonResponse(summary)
     except ValueError:
         return missing_symbol_response()

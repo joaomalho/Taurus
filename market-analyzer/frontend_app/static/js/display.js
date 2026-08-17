@@ -661,6 +661,7 @@ export function displayTradePlan(plan) {
   const tp1 = plan.targets?.tp1 || {};
   const tp2 = plan.targets?.tp2;
   const hint = plan.position_hint || {};
+  const trail = plan.trailing_stop || {};
 
   if (grid) {
     grid.innerHTML = [
@@ -668,7 +669,14 @@ export function displayTradePlan(plan) {
       _metric("Stop-loss", `$${_formatPrice(stop.price)}`, _formatPct(stop.change_pct)),
       _metric("TP1", `$${_formatPrice(tp1.price)}`, `${_formatPct(tp1.change_pct)} · R:R ${tp1.risk_reward ?? "—"}`),
       tp2 ? _metric("TP2", `$${_formatPrice(tp2.price)}`, `${_formatPct(tp2.change_pct)} · R:R ${tp2.risk_reward ?? "—"}`) : "",
-      _metric("Size hint", hint.shares != null ? `${hint.shares} shares` : "—", hint.example_portfolio ? `@ $${hint.example_portfolio} · ${hint.risk_percent}% risk` : ""),
+      _metric("Size hint", hint.shares != null ? `${hint.shares} shares` : "—", hint.portfolio_value ? `@ $${hint.portfolio_value} · ${hint.risk_percent}% risk` : ""),
+      trail.activate_at != null
+        ? _metric(
+            "Trailing stop",
+            `@ TP1 $${_formatPrice(trail.activate_at)}`,
+            trail.description || `Breakeven $${_formatPrice(trail.move_stop_to)} · trail ${trail.trail_distance}R`
+          )
+        : "",
     ].join("");
   }
 

@@ -20,6 +20,67 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.trading-prefs-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.trading-prefs-card h2 {
+    margin-top: 0;
+    color: var(--stock-info-titles);
+    font-size: 1.25rem;
+}
+
+.trading-prefs-help {
+    color: var(--p-text-color);
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+}
+
+.trading-prefs-form {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.trading-prefs-form label {
+    display: grid;
+    gap: 0.35rem;
+    color: var(--p-text-color);
+    font-size: 0.95rem;
+}
+
+.trading-prefs-form input {
+    background: var(--stock-info-input-bg);
+    color: var(--stock-info-input-text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+}
+
+.trading-prefs-form button {
+    justify-self: start;
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+}
+
+.trading-prefs-error {
+    color: #ff6b6b;
+    margin: 0.75rem 0 0;
+}
+
+.trading-prefs-success {
+    color: #51cf66;
+    margin: 0.75rem 0 0;
 }
 
 .watchlist-card h2 {

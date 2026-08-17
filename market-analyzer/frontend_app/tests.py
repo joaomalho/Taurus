@@ -212,8 +212,65 @@ class TradePlanTests(TestCase):
         self.assertEqual(plan["source"], "harmonic_pattern")
         self.assertEqual(plan["entry"], 182.5)
 
+    def test_custom_portfolio_changes_position_hint(self):
+        from frontend_app.services.trade_plan import build_trade_plan
 
-class ScreenerCacheTests(TestCase):
+        plan = build_trade_plan(
+            symbol="AAPL",
+            verdict={"verdict": "Buy"},
+            bio={"data": {"CurrentPrice": 100}},
+            bollinger={"lower_band": 95, "upper_band": 110, "signal": "Buy"},
+            portfolio_value=50_000,
+            risk_percent=1.0,
+        )
+        self.assertTrue(plan["available"])
+        self.assertEqual(plan["position_hint"]["portfolio_value"], 50_000)
+        self.assertEqual(plan["position_hint"]["risk_percent"], 1.0)
+        self.assertEqual(plan["position_hint"]["shares"], 100)
+
+    def test_trailing_stop_included(self):
+        from frontend_app.services.trade_plan import build_trade_plan
+
+        plan = build_trade_plan(
+            symbol="AAPL",
+            verdict={"verdict": "Buy"},
+            bio={"data": {"CurrentPrice": 100}},
+            bollinger={"lower_band": 95, "upper_band": 110, "signal": "Buy"},
+        )
+        trail = plan["trailing_stop"]
+        self.assertEqual(trail["activate_at"], plan["targets"]["tp1"]["price"])
+        self.assertEqual(trail["move_stop_to"], 100)
+        self.assertEqual(trail["trail_distance"], 5)
+
+
+class TradingPrefsTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="prefsuser", password="testpass123")
+
+    def test_get_requires_login(self):
+        response = self.client.get(reverse("trading_prefs"))
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_returns_defaults_for_new_user(self):
+        self.client.login(username="prefsuser", password="testpass123")
+        response = self.client.get(reverse("trading_prefs"))
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["portfolio_value"], 10000)
+        self.assertEqual(payload["risk_percent"], 2.0)
+
+    def test_patch_updates_preferences(self):
+        self.client.login(username="prefsuser", password="testpass123")
+        response = self.client.patch(
+            reverse("trading_prefs"),
+            data='{"portfolio_value": 25000, "risk_percent": 1.5}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["portfolio_value"], 25000)
+        self.assertEqual(payload["risk_percent"], 1.5)
+
     def setUp(self):
         cache.clear()
 

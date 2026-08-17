@@ -15,7 +15,7 @@ def _run_section(name: str, fn) -> tuple[str, dict]:
         return name, stock_data.error_payload(str(exc))
 
 
-def build_stock_summary(symbol: str) -> dict:
+def build_stock_summary(symbol: str, *, portfolio_value: float | None = None, risk_percent: float | None = None) -> dict:
     summary = {"symbol": symbol}
 
     with ThreadPoolExecutor(max_workers=5) as executor:
@@ -114,6 +114,8 @@ def build_stock_summary(symbol: str) -> dict:
         harmonic_patterns=summary.get("harmonic_patterns"),
         candle_patterns=summary.get("candle_patterns"),
         bollinger=summary.get("bollinger"),
+        portfolio_value=portfolio_value,
+        risk_percent=risk_percent,
     )
 
     return summary

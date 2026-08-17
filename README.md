@@ -272,7 +272,7 @@ Crypto (Binance) and economic calendar modules exist in code but are **not yet e
 
 - Stock search and analysis page
 - Unified summary endpoint + verdict banner
-- **Trade plan (entry, stop, targets, R:R)**
+- **Trade plan** — entry, stop, TP, R:R, trailing stop, user portfolio sizing
 - **Services layer** — `stock_data`, `technical_metrics`; thin views
 - Technical & fundamental analysis
 - Candlestick + harmonic patterns
@@ -284,7 +284,6 @@ Crypto (Binance) and economic calendar modules exist in code but are **not yet e
 
 ### In progress / planned
 
-- Trade plan: user portfolio size + trailing stop
 - Pivot points
 - News sentiment (NLP)
 - Economic calendar UI

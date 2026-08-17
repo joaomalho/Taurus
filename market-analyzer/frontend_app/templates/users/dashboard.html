@@ -12,6 +12,25 @@
   <h1>Área do Utilizador</h1>
   <p class="dashboard-subtitle">Bem-vindo, {{ user.display_name|default:user.username }}!</p>
 
+  <div class="trading-prefs-card">
+    <h2>Trade plan settings</h2>
+    <p class="trading-prefs-help">Used for position sizing hints on stock pages.</p>
+    <form id="tradingPrefsForm" class="trading-prefs-form">
+      {% csrf_token %}
+      <label>
+        Portfolio value ($)
+        <input type="number" id="portfolioValueInput" min="100" max="10000000" step="100" required>
+      </label>
+      <label>
+        Risk per trade (%)
+        <input type="number" id="riskPercentInput" min="0.1" max="10" step="0.1" required>
+      </label>
+      <button type="submit">Save</button>
+    </form>
+    <p id="tradingPrefsError" class="trading-prefs-error"></p>
+    <p id="tradingPrefsSuccess" class="trading-prefs-success"></p>
+  </div>
+
   <div class="watchlist-card">
     <h2>Watchlist</h2>
     <form id="watchlistForm" class="watchlist-form">
@@ -35,6 +54,8 @@
 {% block extra_js %}
 <script type="module">
   import { initDashboardWatchlist } from "{% static 'js/watchlist.js' %}";
+  import { initDashboardTradingPrefs } from "{% static 'js/trading_prefs.js' %}";
   initDashboardWatchlist();
+  initDashboardTradingPrefs();
 </script>
 {% endblock %}

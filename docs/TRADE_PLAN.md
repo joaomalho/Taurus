@@ -63,9 +63,15 @@ flowchart TD
   "risk_reward": 1.25,
   "position_hint": {
     "risk_percent": 2.0,
-    "example_portfolio": 10000,
+    "portfolio_value": 10000,
     "capital_at_risk": 200.0,
     "shares": 47
+  },
+  "trailing_stop": {
+    "activate_at": 188.00,
+    "move_stop_to": 182.50,
+    "trail_distance": 4.30,
+    "description": "At TP1, move stop to breakeven; then trail 1R below the peak."
   },
   "notes": ["..."],
   "disclaimer": "Advisory only — validate levels before trading."
@@ -84,13 +90,26 @@ When unavailable:
 
 ## Position sizing hint
 
-Illustrative only (MVP):
+Uses the logged-in user's settings from **Dashboard → Trade plan settings** (`portfolio_value`, `risk_percent`). Anonymous users get defaults:
 
-- Example portfolio: **$10,000**
-- Risk per trade: **2%** → $200 at risk
-- Shares = `$200 / |entry - stop|`
+- Portfolio: **$10,000**
+- Risk per trade: **2%**
 
-Users can adjust constants in `trade_plan.py` (`EXAMPLE_PORTFOLIO`, `DEFAULT_RISK_PERCENT`).
+```
+Shares = (portfolio × risk%) / |entry − stop|
+```
+
+API: `GET/PATCH /trading-prefs/` (authenticated).
+
+## Trailing stop
+
+Every available plan includes a trailing-stop suggestion:
+
+| Field | Meaning |
+|-------|---------|
+| `activate_at` | Price level (TP1) to start trailing |
+| `move_stop_to` | Breakeven (entry) when TP1 is hit |
+| `trail_distance` | 1R — distance to trail after breakeven |
 
 ## API
 
@@ -120,8 +139,6 @@ docker compose exec web python manage.py test frontend_app.tests.TradePlanTests
 
 ## Future enhancements
 
-- [ ] User-configurable portfolio size
-- [ ] Trailing stop
 - [ ] Multiple plans ranked by R:R
 
 Push/email notifications are explicitly **out of scope** for now — deferred to a much later phase.
