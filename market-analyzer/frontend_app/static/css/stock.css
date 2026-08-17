@@ -321,7 +321,8 @@ canvas {
     max-width: 100%; 
     margin-top: 15px; 
     overflow: hidden;
-    align-items: center; 
+    align-items: center;
+    background-color: var(--card-bg);
 }
 
 .technical-card form {
@@ -400,22 +401,51 @@ canvas {
     color: var(--button-hover-bg);
 }
 
-.tec-insiders, .tec-trend-crossover, .tec-trend-adx, .tec-trend-pivots, .tec-volatility, .tec-oscilators, .tec-candles, .tec-harmonic {
+.trend-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: stretch;
+}
+
+.trend-content > .tec-trend-crossover,
+.trend-content > .tec-trend-adx,
+.trend-content > .tec-trend-pivots-main {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.tec-trend-pivots {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.tec-trend-pivots-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding-left: 0;
+}
+
+.tec-insiders, .tec-volatility, .tec-oscilators, .tec-candles, .tec-harmonic {
     display: flex;
     align-items: center;
     gap: 15px;
     flex-wrap: wrap;
 }
 
-.tec-trend-pivots {
-    flex-direction: column;
-    align-items: flex-start;
-}
-
 .pivot-meta {
     color: var(--p-text-color);
     font-size: 0.9rem;
-    margin: 0.25rem 0 0.75rem;
+    margin: 0;
+    flex: 1 1 220px;
 }
 
 .pivot-levels-table {
@@ -423,6 +453,7 @@ canvas {
     gap: 0.35rem;
     width: 100%;
     max-width: 280px;
+    flex: 0 0 auto;
 }
 
 .pivot-level-row {
@@ -486,6 +517,57 @@ canvas {
     color: var(--link-color);
     font-size: 18px;
     margin: 0;
+}
+
+.peers-content {
+    padding: 15px 20px;
+    color: var(--stock-info-input-text-color);
+    background-color: var(--content-bg);
+}
+
+.peer-comparison-meta {
+    margin: 0 0 12px;
+    color: var(--p-text-color);
+    font-size: 0.95rem;
+}
+
+.peer-table-wrap {
+    overflow-x: auto;
+}
+
+.peer-comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+
+.peer-comparison-table th,
+.peer-comparison-table td {
+    padding: 0.65rem 0.5rem;
+    border-bottom: 1px solid var(--stock-info-border-color);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.peer-comparison-table a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.peer-comparison-table a:hover {
+    text-decoration: underline;
+}
+
+.peer-row-subject {
+    background-color: var(--content-p-bg);
+}
+
+.peer-empty {
+    caption-side: top;
+    text-align: left;
+    color: var(--p-text-color);
+    margin-bottom: 0.5rem;
 }
 
 /* CAPITAL EFFICIENCY */

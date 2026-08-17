@@ -6,7 +6,6 @@ from django.urls import reverse
 
 from users.models import User
 
-
 class HomePageTests(TestCase):
     def test_home_page_loads(self):
         response = self.client.get(reverse("home"))
@@ -106,7 +105,7 @@ class StockSummaryTests(TestCase):
         payload = response.json()
         self.assertEqual(payload["symbol"], "AAPL")
         self.assertIn("bio", payload)
-        mock_build.assert_called_once_with("AAPL")
+        mock_build.assert_called_once_with("AAPL", portfolio_value=None, risk_percent=None)
 
     def test_summary_rejects_invalid_symbol(self):
         response = self.client.get(reverse("get_stock_summary", kwargs={"symbol": "INVALID!"}))
@@ -156,6 +155,77 @@ class DecisionVerdictTests(TestCase):
         )
         self.assertEqual(result["verdict"], "Sell")
         self.assertLess(result["score"], 0)
+
+    def test_news_sentiment_adds_reason(self):
+        from frontend_app.services.decision_verdict import build_decision_verdict
+
+        result = build_decision_verdict(
+            symbol="AAPL",
+            news_sentiment={
+                "label": "Bullish",
+                "compound_avg": 0.42,
+                "sample_size": 10,
+            },
+        )
+        self.assertGreater(result["components"]["news"]["bias"], 0)
+        self.assertTrue(any("News sentiment" in reason for reason in result["reasons"]))
+
+
+class NewsSentimentTests(TestCase):
+    def test_bullish_headline_scores_positive(self):
+        from frontend_app.services.news_sentiment import score_text
+
+        result = score_text("Apple stock surges to record high on strong earnings beat")
+        self.assertGreater(result["compound"], 0)
+        self.assertEqual(result["label"], "Bullish")
+
+    def test_bearish_headline_scores_negative(self):
+        from frontend_app.services.news_sentiment import score_text
+
+        result = score_text("Company plunges after disappointing guidance and layoffs")
+        self.assertLess(result["compound"], 0)
+        self.assertEqual(result["label"], "Bearish")
+
+    def test_analyze_news_builds_aggregate(self):
+        from frontend_app.services.news_sentiment import analyze_news
+
+        payload = analyze_news([
+            {"content": {"title": "Stock jumps on strong results", "summary": "Investors cheer earnings beat"}},
+            {"content": {"title": "Shares rally after upgrade", "summary": "Analysts turn bullish"}},
+            {"content": {"title": "Market falls on recession fears", "summary": "Investors dump risky assets"}},
+        ])
+        self.assertEqual(len(payload["items"]), 3)
+        self.assertEqual(payload["aggregate"]["sample_size"], 3)
+        self.assertIn(payload["aggregate"]["label"], ("Bullish", "Neutral", "Bearish"))
+
+    def test_normalize_handles_null_storyline(self):
+        from frontend_app.services.news_sentiment import normalize_yahoo_news_item
+
+        item = normalize_yahoo_news_item({
+            "id": "abc",
+            "content": {
+                "title": "Headline",
+                "summary": "Summary text",
+                "storyline": None,
+                "finance": {"premiumFinance": {"isPremiumNews": False}},
+            },
+        })
+        self.assertEqual(item["title"], "Headline")
+        self.assertEqual(item["related"], [])
+
+    @patch("frontend_app.services.stock_data.dh.get_yahoo_symbol_news")
+    def test_fetch_news_includes_sentiment(self, mock_news):
+        from frontend_app.services.stock_data import fetch_news
+
+        mock_news.return_value = [
+            {"content": {"title": "Stock jumps on strong results", "summary": "Investors cheer earnings beat"}},
+            {"content": {"title": "Shares rally after upgrade", "summary": "Analysts turn bullish"}},
+            {"content": {"title": "Market falls on recession fears", "summary": "Investors dump risky assets"}},
+        ]
+        payload = fetch_news("AAPL")
+        self.assertIn("items", payload)
+        self.assertIn("sentiment", payload)
+        self.assertEqual(payload["sentiment"]["sample_size"], 3)
 
 
 class TradePlanTests(TestCase):
@@ -313,6 +383,69 @@ class PivotPointsTests(TestCase):
         response = self.client.get(reverse("get_pivot_points", kwargs={"symbol": "AAPL"}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["symbol"], "AAPL")
+
+
+class EconomicCalendarTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    @patch("frontend_app.services.economic_calendar.EcoCalendar.get_economic_calendar")
+    def test_calendar_endpoint_returns_events(self, mock_fetch):
+        mock_fetch.return_value = [{
+            "datetime": "2026-08-17T12:30:00+00:00",
+            "country": "USD",
+            "event": "Retail Sales",
+            "importance": 3,
+            "impact_label": "High",
+            "forecast": "0.4%",
+            "previous": "0.3%",
+            "actual": None,
+            "source": "forex_factory",
+        }]
+
+        response = self.client.get(reverse("get_economic_calendar"), {"timeframe": "today"})
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["count"], 1)
+        self.assertEqual(payload["events"][0]["event"], "Retail Sales")
+
+    def test_calendar_rejects_invalid_timeframe(self):
+        response = self.client.get(reverse("get_economic_calendar"), {"timeframe": "invalid"})
+        self.assertEqual(response.status_code, 400)
+
+
+class PeerComparisonTests(TestCase):
+    @patch("frontend_app.services.peers.dh.get_symbol_peer_symbols")
+    @patch("frontend_app.services.peers.dh.get_symbol_fundamental_info")
+    @patch("frontend_app.services.peers.stock_data.fetch_bio")
+    def test_peers_endpoint(self, mock_bio, mock_fundamentals, mock_peer_symbols):
+        mock_bio.return_value = {"data": {"LongName": "Apple Inc.", "Sector": "Technology", "Industry": "Consumer Electronics"}}
+        mock_fundamentals.return_value = {"kpis": {"trailingPE": 28.5, "sectorTrailingPE": 30.0}}
+        mock_peer_symbols.return_value = ["MSFT"]
+
+        response = self.client.get(reverse("get_stock_peers", kwargs={"symbol": "AAPL"}))
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["symbol"], "AAPL")
+        self.assertEqual(payload["subject"]["symbol"], "AAPL")
+        self.assertEqual(len(payload["peers"]), 1)
+        self.assertEqual(payload["peers"][0]["symbol"], "MSFT")
+
+    def test_peers_rejects_invalid_limit(self):
+        response = self.client.get(reverse("get_stock_peers", kwargs={"symbol": "AAPL"}), {"limit": "bad"})
+        self.assertEqual(response.status_code, 400)
+
+    @patch("frontend_app.services.peers.build_peer_comparison")
+    def test_summary_includes_peers(self, mock_build):
+        mock_build.return_value = {"symbol": "AAPL", "peers": []}
+        with patch("frontend_app.views.build_stock_summary") as mock_summary:
+            mock_summary.side_effect = lambda symbol, **kwargs: {
+                "symbol": symbol,
+                "peers": mock_build(symbol),
+            }
+            response = self.client.get(reverse("get_stock_summary", kwargs={"symbol": "AAPL"}))
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("peers", response.json())
 
 
 class ScreenerCacheTests(TestCase):

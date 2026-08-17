@@ -5,6 +5,7 @@ import pandas as pd
 
 from backend.datasources.yahoodata import DataHistoryYahoo
 from backend.risk_manager.risk_manager import RiskManagerFundamental
+from frontend_app.services.peers import build_financial_health_peers
 
 dh = DataHistoryYahoo()
 
@@ -25,7 +26,15 @@ def fetch_news(symbol: str) -> dict:
     news = dh.get_yahoo_symbol_news(symbol)
     if not news:
         return error_payload("No data found")
-    return {"data": news}
+
+    from frontend_app.services.news_sentiment import analyze_news
+
+    analyzed = analyze_news(news)
+    return {
+        "data": news,
+        "items": analyzed["items"],
+        "sentiment": analyzed["aggregate"],
+    }
 
 
 def fetch_data_history(symbol: str, period: str = "1y", interval: str = "1d") -> dict:
@@ -214,7 +223,7 @@ def fetch_financial_health_chart(symbol: str) -> dict:
         "metrics": metrics,
         "thresholds": thresholds,
         "asof": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "peers": [],
+        "peers": build_financial_health_peers(symbol, limit=3),
     }
     return {"data": payload}
 

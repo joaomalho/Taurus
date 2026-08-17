@@ -52,3 +52,13 @@ Also included in `GET /stock/<symbol>/summary/` as `pivot_points` (classic by de
 ## UI
 
 Stock page → **Technical Analysis → Trend → Pivot Points**. Method selector + level table; nearest level (within 0.5%) is highlighted.
+
+## Chart overlay
+
+Pivot levels appear as horizontal lines on the **Historic Price** candlestick chart:
+
+- **PP** — solid yellow
+- **R1–R3** — dashed red tones
+- **S1–S3** — dashed green tones
+
+Toggle visibility with the eye icon in the chart legend (left side, **PP** row). Lines update when you click **Calculate** or on initial page load from `/summary/`.

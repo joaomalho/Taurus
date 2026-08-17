@@ -29,6 +29,7 @@
       </nav>
   </header>
   <section class="button-zone">
+    <a href="{% url 'economic_calendar_page' %}" class="button-like">Economic Calendar</a>
     {% if user.is_authenticated %}
       <button id="stockbytopButton">Stock by Top</button>
     {% else %}

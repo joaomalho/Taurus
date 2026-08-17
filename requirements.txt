@@ -28,6 +28,8 @@ gunicorn
 psycopg2-binary>=2.9
 django-redis>=5.4
 
+vaderSentiment
+
 # Interface gráfica
 PyQt6
 

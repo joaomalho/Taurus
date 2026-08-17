@@ -113,6 +113,25 @@ def _recommendation_bias(fundamental_info: dict | None) -> tuple[float, list[str
     return bias * 0.25, [f"Analyst consensus: {label} ({mean_rec:.2f})."]
 
 
+def _news_sentiment_bias(news_sentiment: dict | None) -> tuple[float, list[str]]:
+    if not news_sentiment or news_sentiment.get("sample_size", 0) < 3:
+        return 0.0, []
+
+    compound = news_sentiment.get("compound_avg")
+    if compound is None:
+        return 0.0, []
+
+    try:
+        compound = float(compound)
+    except (TypeError, ValueError):
+        return 0.0, []
+
+    bias = max(-1.0, min(1.0, compound)) * 0.15
+    label = news_sentiment.get("label", "Neutral")
+    sample_size = news_sentiment.get("sample_size", 0)
+    return bias, [f"News sentiment: {label} ({compound:+.2f} avg, {sample_size} headlines)."]
+
+
 def build_decision_verdict(
     *,
     symbol: str,
@@ -122,6 +141,7 @@ def build_decision_verdict(
     adx: dict | None = None,
     bollinger: dict | None = None,
     rsi: dict | None = None,
+    news_sentiment: dict | None = None,
 ) -> dict:
     reasons: list[str] = []
 
@@ -142,11 +162,13 @@ def build_decision_verdict(
     fund_bias, fund_reasons = _fundamental_bias(overall_score)
     ta_bias, ta_reasons = _technical_bias(crossover, adx, bollinger, rsi)
     rec_bias, rec_reasons = _recommendation_bias(fundamental_info)
+    news_bias, news_reasons = _news_sentiment_bias(news_sentiment)
 
     combined = (
         FUNDAMENTAL_WEIGHT * fund_bias
         + TECHNICAL_WEIGHT * ta_bias
         + rec_bias
+        + news_bias
     )
     combined = max(-1.0, min(1.0, combined))
 
@@ -169,6 +191,7 @@ def build_decision_verdict(
     reasons.extend(fund_reasons[:2])
     reasons.extend(ta_reasons[:3])
     reasons.extend(rec_reasons[:1])
+    reasons.extend(news_reasons[:1])
 
     return {
         "symbol": symbol,
@@ -193,6 +216,12 @@ def build_decision_verdict(
             },
             "analyst": {
                 "bias": round(rec_bias, 3),
+            },
+            "news": {
+                "bias": round(news_bias, 3),
+                "label": news_sentiment.get("label") if news_sentiment else None,
+                "compound_avg": news_sentiment.get("compound_avg") if news_sentiment else None,
+                "sample_size": news_sentiment.get("sample_size", 0) if news_sentiment else 0,
             },
         },
         "reasons": reasons[:6],

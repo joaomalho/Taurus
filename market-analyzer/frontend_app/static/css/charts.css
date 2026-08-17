@@ -61,7 +61,8 @@
 #toggleEmaBtn,
 #toggleRsiBtn,
 #toggleHarmonicBtn,
-#toggleBollingerBtn {
+#toggleBollingerBtn,
+#togglePivotBtn {
     background: transparent;
     border: none;
     cursor: pointer;
@@ -77,7 +78,8 @@
 #toggleEmaBtn.visible,
 #toggleRsiBtn.visible,
 #toggleHarmonicBtn.visible,
-#toggleBollingerBtn.visible {
+#toggleBollingerBtn.visible,
+#togglePivotBtn.visible {
     display: inline-flex;
     opacity: 1;
 }
@@ -85,7 +87,8 @@
 #toggleEmaIcon,
 #toggleRsiIcon,
 #toggleHarmonicIcon,
-#toggleBollingerIcon {
+#toggleBollingerIcon,
+#togglePivotIcon {
     width: 18px;
     height: 18px;
     display: block;

@@ -69,6 +69,32 @@ def economic_calendar_page(request):
     return render(request, "economiccalendar.html")
 
 
+def get_economic_calendar(request):
+    from datetime import datetime as dt
+
+    from frontend_app.services.economic_calendar import fetch_economic_calendar
+
+    timeframe = request.GET.get("timeframe")
+    d1_raw = request.GET.get("d1")
+    d2_raw = request.GET.get("d2")
+
+    try:
+        if d1_raw and d2_raw:
+            d1 = dt.strptime(d1_raw, "%Y-%m-%d").date()
+            d2 = dt.strptime(d2_raw, "%Y-%m-%d").date()
+            payload = fetch_economic_calendar(timeframe=None, d1=d1, d2=d2)
+        else:
+            payload = fetch_economic_calendar(timeframe=timeframe or "today")
+
+        if "error" in payload:
+            return JsonResponse(payload, status=400)
+        return JsonResponse(payload)
+    except ValueError:
+        return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+    except Exception as exc:
+        return server_error_response(exc)
+
+
 # ------------------------- Market data -------------------------
 def get_dh(request, symbol: str):
     try:
@@ -490,6 +516,21 @@ def get_pivot_points(request, symbol: str):
             status = 400 if "Invalid method" in result["error"] else 404
             return JsonResponse(result, status=status)
         return JsonResponse(result)
+
+    return _symbol_endpoint(symbol, handler)
+
+
+def get_stock_peers(request, symbol: str):
+    def handler(validated: str):
+        from frontend_app.services.peers import build_peer_comparison
+
+        try:
+            limit = int(request.GET.get("limit", 5))
+        except (TypeError, ValueError):
+            return JsonResponse({"error": "Limit must be between 1 and 10."}, status=400)
+        if limit <= 0 or limit > 10:
+            return JsonResponse({"error": "Limit must be between 1 and 10."}, status=400)
+        return JsonResponse(build_peer_comparison(validated, limit=limit))
 
     return _symbol_endpoint(symbol, handler)
 

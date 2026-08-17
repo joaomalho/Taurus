@@ -1,5 +1,5 @@
 .dashboard-page {
-    max-width: 720px;
+    max-width: 960px;
     margin: 2rem auto;
     padding: 0 1rem;
     color: var(--text-color);
@@ -184,4 +184,118 @@
 .watchlist-actions button:disabled {
     opacity: 0.7;
     cursor: default;
+}
+
+.portfolio-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.portfolio-card h2 {
+    margin-top: 0;
+    color: var(--stock-info-titles);
+    font-size: 1.25rem;
+}
+
+.portfolio-help {
+    color: var(--p-text-color);
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+}
+
+.portfolio-form {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.portfolio-form input {
+    background: var(--stock-info-input-bg);
+    color: var(--stock-info-input-text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+}
+
+.portfolio-form input:first-child {
+    text-transform: uppercase;
+}
+
+.portfolio-form button,
+.portfolio-table button {
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+}
+
+.portfolio-form button:hover,
+.portfolio-table button:hover {
+    background: var(--button-hover-bg);
+}
+
+.portfolio-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.portfolio-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+
+.portfolio-table th,
+.portfolio-table td {
+    padding: 0.65rem 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.portfolio-table a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.portfolio-table a:hover {
+    text-decoration: underline;
+}
+
+.portfolio-pnl-positive {
+    color: #51cf66;
+}
+
+.portfolio-pnl-negative {
+    color: #ff6b6b;
+}
+
+.portfolio-empty,
+.portfolio-error,
+.portfolio-totals {
+    color: var(--p-text-color);
+    margin: 0.5rem 0 0;
+}
+
+.portfolio-error {
+    color: #ff6b6b;
+}
+
+.portfolio-totals {
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+    .portfolio-form {
+        grid-template-columns: 1fr;
+    }
 }

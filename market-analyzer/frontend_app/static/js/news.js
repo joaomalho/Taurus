@@ -21,11 +21,13 @@ export function initSymbolNews({
         }
 
         // 2) extrair o array de items
-        const raw = Array.isArray(payload) ? payload : (payload?.data || []);
+        const raw = Array.isArray(payload)
+            ? payload
+            : (payload?.items?.length ? payload.items : (payload?.data || []));
 
         // 3) normalizar, ordenar, deduplicar e limitar
         const items = dedupe(
-            sortByDateDesc(raw.map(normalizeNewsItem))
+            sortByDateDesc(raw.map(item => item?.title ? item : normalizeNewsItem(item)))
         ).slice(0, limit);
 
         // 4) render
@@ -104,6 +106,9 @@ export function renderCard(item, opts){
   const published = formatDateISO(item.publishedAt, opts.locale, opts.timeZone);
   const ago = timeAgo(item.publishedAt);
   const badges = [
+    item.sentiment?.label
+      ? `<span class="news-badge badge-sentiment-${item.sentiment.label.toLowerCase()}">${item.sentiment.label}</span>`
+      : "",
     item.isEditorsPick ? `<span class="news-badge badge-editors">Editor’s pick</span>` : "",
     item.isPremium ? `<span class="news-badge badge-premium">Premium</span>` : "",
     item.contentType === "VIDEO" ? `<span class="news-badge badge-video">Vídeo</span>` : ""

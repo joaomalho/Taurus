@@ -13,6 +13,22 @@ let bbUpperSeries, bbMiddleSeries, bbLowerSeries;
 let bbUpperData = [], bbMiddleData = [], bbLowerData = [];
 let bollingerVisible = false 
 
+/// Pivot Points ///
+let pivotPriceLines = [];
+let pivotVisible = true;
+let storedPivotData = null;
+
+const PIVOT_LEVEL_ORDER = ["r3", "r2", "r1", "pp", "s1", "s2", "s3"];
+const PIVOT_LEVEL_STYLE = {
+    r3: { color: "#ef5350", title: "R3" },
+    r2: { color: "#f44336", title: "R2" },
+    r1: { color: "#ff7043", title: "R1" },
+    pp: { color: "#ffd000", title: "PP" },
+    s1: { color: "#66bb6a", title: "S1" },
+    s2: { color: "#43a047", title: "S2" },
+    s3: { color: "#2e7d32", title: "S3" },
+};
+
 /// Rsi ///
 let rsiSeries;
 let rsiData = [];
@@ -461,6 +477,105 @@ function clearBollingerSeries() {
     }
 }
 
+
+////////// DRAW PIVOT POINTS //////////
+export function updatePivotLevels(pivotData) {
+    if (!pivotData || pivotData.error || !pivotData.levels) {
+        return;
+    }
+
+    storedPivotData = pivotData;
+    clearPivotPriceLines();
+
+    if (pivotVisible && candleSeries) {
+        renderPivotPriceLines(pivotData.levels);
+    }
+
+    updatePivotLegend(pivotData);
+
+    const toggleBtn = document.getElementById("togglePivotBtn");
+    if (toggleBtn) {
+        toggleBtn.classList.add("visible");
+    }
+
+    const icon = document.getElementById("togglePivotIcon");
+    if (icon) {
+        icon.src = pivotVisible
+            ? "/static/images/open-eye-white.png"
+            : "/static/images/close-eye-white.png";
+    }
+}
+
+function renderPivotPriceLines(levels) {
+    if (!candleSeries) return;
+
+    for (const key of PIVOT_LEVEL_ORDER) {
+        const price = levels[key];
+        if (price == null) continue;
+
+        const style = PIVOT_LEVEL_STYLE[key];
+        const line = candleSeries.createPriceLine({
+            price,
+            color: style.color,
+            lineWidth: key === "pp" ? 2 : 1,
+            lineStyle: key === "pp" ? LightweightCharts.LineStyle.Solid : LightweightCharts.LineStyle.Dashed,
+            axisLabelVisible: true,
+            title: style.title,
+        });
+        pivotPriceLines.push(line);
+    }
+}
+
+function clearPivotPriceLines() {
+    if (!candleSeries) {
+        pivotPriceLines = [];
+        return;
+    }
+
+    for (const line of pivotPriceLines) {
+        candleSeries.removePriceLine(line);
+    }
+    pivotPriceLines = [];
+}
+
+function updatePivotLegend(pivotData) {
+    const legendDiv = document.getElementById("customLegendPivot");
+    if (!legendDiv) return;
+
+    if (!pivotVisible || !pivotData?.levels?.pp) {
+        legendDiv.innerHTML = `<span style="color:#ffd000">Pivots: off</span>`;
+        return;
+    }
+
+    const pp = Number(pivotData.levels.pp).toFixed(2);
+    const method = pivotData.method || "classic";
+    legendDiv.innerHTML = `<span style="color:#ffd000">PP: ${pp}</span> · ${method}`;
+}
+
+function setupTogglePivotButton() {
+    const toggleBtn = document.getElementById("togglePivotBtn");
+    const icon = document.getElementById("togglePivotIcon");
+
+    if (!toggleBtn || !icon) return;
+
+    toggleBtn.addEventListener("click", () => {
+        pivotVisible = !pivotVisible;
+
+        if (pivotVisible && storedPivotData?.levels) {
+            renderPivotPriceLines(storedPivotData.levels);
+        } else {
+            clearPivotPriceLines();
+        }
+
+        icon.src = pivotVisible
+            ? "/static/images/open-eye-white.png"
+            : "/static/images/close-eye-white.png";
+
+        updatePivotLegend(storedPivotData);
+    });
+}
+
+
 function setupBollingerDynamicLegend() {
     const legendDiv = document.getElementById("customLegendBollinger");
 
@@ -805,6 +920,12 @@ function renderCandlestickChart(priceData, symbol) {
     /// Harmonic patterns ///
     updateHarmonicPatterns(symbol);
     setupToggleHarmonicButton();
+
+    /// Pivot points ///
+    setupTogglePivotButton();
+    if (storedPivotData) {
+        updatePivotLevels(storedPivotData);
+    }
     
 }
 

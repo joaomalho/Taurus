@@ -1,4 +1,4 @@
-import { renderCandlestickFromData } from "./custom_charts/candlestick.js";
+import { renderCandlestickFromData, updatePivotLevels } from "./custom_charts/candlestick.js";
 import "./custom_charts/chartsandgraphs.js";
 import { initMetricTooltips, initAttributeTooltips } from "./tooltips.js";
 import {
@@ -29,6 +29,7 @@ import {
     displayNewsList,
     displayDecisionVerdict,
     displayTradePlan,
+    displayPeerComparison,
 } from './display.js';
 
 import { initStockWatchlistButton } from './watchlist.js';
@@ -71,7 +72,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (summary.adx && !summary.adx.error) displayADXResults(summary.adx);
                 if (summary.bollinger && !summary.bollinger.error) displayBollingerResults(summary.bollinger);
                 if (summary.rsi && !summary.rsi.error) displayRSIResults(summary.rsi);
-                if (summary.pivot_points && !summary.pivot_points.error) displayPivotResults(summary.pivot_points);
+                if (summary.pivot_points && !summary.pivot_points.error) {
+                    displayPivotResults(summary.pivot_points);
+                    updatePivotLevels(summary.pivot_points);
+                }
                 if (summary.candle_patterns && !summary.candle_patterns.error) {
                     displayCandleResults(summary.candle_patterns);
                 }
@@ -83,6 +87,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 if (summary.fundamental_evaluations && !summary.fundamental_evaluations.error) {
                     displayFundamentalResultsClassification(summary.fundamental_evaluations);
+                }
+                if (summary.peers && !summary.peers.error) {
+                    displayPeerComparison(summary.peers);
                 }
                 if (summary.inside_transactions && !summary.inside_transactions.error) {
                     displayInsideTransactions(summary.inside_transactions);
@@ -106,6 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
             { toggleSelector: "#tecOscilators", contentSelector: ".oscilators-content" },
             { toggleSelector: "#tecCandles", contentSelector: ".candles-content" },
             { toggleSelector: "#tecHarmonic", contentSelector: ".harmonic-content" },
+            { toggleSelector: "#funPeers", contentSelector: ".peers-content" },
             { toggleSelector: "#funValuation", contentSelector: ".valuation-content" },
             { toggleSelector: "#funKPIs", contentSelector: ".kpis-content" },
             { toggleSelector: "#funHealth", contentSelector: ".health-content" },
@@ -196,7 +204,10 @@ function setupTechnicalAnalysisEvents(symbol) {
         }
 
         fetchPivotData(symbol, method).then(data => {
-            if (data && !data.error) displayPivotResults(data);
+            if (data && !data.error) {
+                displayPivotResults(data);
+                updatePivotLevels(data);
+            }
         });
     });
 

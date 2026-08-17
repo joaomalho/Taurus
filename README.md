@@ -31,7 +31,7 @@ Taurus is a financial market analysis web application for stocks and ETFs. It co
 - KPIs, valuations, insider transactions, institutional holders
 - Analyst recommendations
 - Financial statement Excel downloads (annual + quarterly)
-- News feed per symbol
+- News feed per symbol with **headline sentiment** (VADER)
 
 ### Platform
 
@@ -192,6 +192,7 @@ docker compose down -v
 
 | Endpoint | Auth | Description |
 |----------|------|-------------|
+| `GET /economic-calendar/events/` | Public | Macro calendar (`?timeframe=today`) |
 | `GET /stock/<symbol>/summary/` | Public | Aggregated page data + verdict + trade plan |
 | `GET /stock/<symbol>/pivot_points/` | Public | Pivot levels (`?method=classic\|fibonacci\|camarilla`) |
 | `GET /stock/<symbol>/bio_info/` | Public | Company profile |
@@ -263,7 +264,7 @@ Full documentation: [docs/TRADE_PLAN.md](docs/TRADE_PLAN.md)
 | Screeners | Yahoo Finance (scraped) | Refreshed every 15 min |
 | Insiders (US) | SEC via Yahoo | Varies |
 
-Crypto (Binance) and economic calendar modules exist in code but are **not yet exposed** in the UI.
+Crypto (Binance) modules exist in code but are **not yet exposed** in the UI.
 
 ---
 
@@ -278,6 +279,7 @@ Crypto (Binance) and economic calendar modules exist in code but are **not yet e
 - Technical & fundamental analysis
 - Candlestick + harmonic patterns
 - **Pivot points** — classic, Fibonacci, Camarilla (Trend section)
+- **Economic calendar** — macro events (Forex Factory / TradingEconomics)
 - User auth, dashboard, watchlist
 - Stock-by-top screeners (authenticated)
 - Redis caching, rate limiting, Celery screeners
@@ -286,8 +288,6 @@ Crypto (Binance) and economic calendar modules exist in code but are **not yet e
 
 ### In progress / planned
 
-- News sentiment (NLP)
-- Economic calendar UI
 - Crypto endpoints
 - Optimizer / backtest UI
 - Sector & peer comparison

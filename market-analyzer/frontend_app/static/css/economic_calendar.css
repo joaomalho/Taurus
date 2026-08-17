@@ -1,0 +1,117 @@
+.eco-calendar-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 1.5rem auto 0;
+    padding: 0 1rem;
+}
+
+.eco-calendar-header h1 {
+    margin: 0;
+    color: var(--stock-info-titles);
+}
+
+.header-logo-icon {
+    width: 48px;
+    height: 48px;
+}
+
+.eco-calendar-subtitle {
+    margin: 0.35rem 0 0;
+    color: var(--p-text-color);
+}
+
+.eco-calendar-page {
+    max-width: 1100px;
+    margin: 1.5rem auto 3rem;
+    padding: 0 1rem;
+}
+
+.eco-calendar-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.eco-calendar-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.eco-filter {
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.55rem 0.9rem;
+    cursor: pointer;
+}
+
+.eco-filter.active,
+.eco-filter:hover {
+    background: var(--button-hover-bg);
+}
+
+.eco-calendar-meta {
+    margin: 0;
+    color: var(--p-text-color);
+    font-size: 0.95rem;
+}
+
+.eco-calendar-notice {
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 208, 0, 0.08);
+    color: var(--p-text-color);
+}
+
+.eco-calendar-error {
+    color: #ff6b6b;
+    min-height: 1.25rem;
+}
+
+.eco-calendar-table {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem;
+}
+
+.impact-badge {
+    display: inline-block;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.impact-badge--high {
+    background: rgba(239, 83, 80, 0.18);
+    color: #ff8a80;
+}
+
+.impact-badge--medium {
+    background: rgba(255, 193, 7, 0.18);
+    color: #ffd54f;
+}
+
+.impact-badge--low {
+    background: rgba(102, 187, 106, 0.15);
+    color: #a5d6a7;
+}
+
+.impact-badge--holiday {
+    background: rgba(158, 158, 158, 0.15);
+    color: #bdbdbd;
+}
+
+.hidden {
+    display: none;
+}

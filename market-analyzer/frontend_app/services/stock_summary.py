@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from frontend_app.services.decision_verdict import build_decision_verdict
 from frontend_app.services import stock_data
 from frontend_app.services import technical_metrics
+from frontend_app.services.peers import build_peer_comparison
 from frontend_app.services.trade_plan import build_trade_plan
 
 
@@ -99,6 +100,11 @@ def build_stock_summary(symbol: str, *, portfolio_value: float | None = None, ri
     summary.setdefault("fundamental_info", stock_data.error_payload("No data found"))
     summary.setdefault("fundamental_evaluations", stock_data.error_payload("No data found"))
 
+    news_sentiment = None
+    news_payload = summary.get("news")
+    if isinstance(news_payload, dict) and not news_payload.get("error"):
+        news_sentiment = news_payload.get("sentiment")
+
     summary["verdict"] = build_decision_verdict(
         symbol=symbol,
         fundamental_info=summary.get("fundamental_info"),
@@ -107,6 +113,7 @@ def build_stock_summary(symbol: str, *, portfolio_value: float | None = None, ri
         adx=summary.get("adx"),
         bollinger=summary.get("bollinger"),
         rsi=summary.get("rsi"),
+        news_sentiment=news_sentiment,
     )
 
     summary["trade_plan"] = build_trade_plan(
@@ -119,5 +126,10 @@ def build_stock_summary(symbol: str, *, portfolio_value: float | None = None, ri
         portfolio_value=portfolio_value,
         risk_percent=risk_percent,
     )
+
+    try:
+        summary["peers"] = build_peer_comparison(symbol)
+    except Exception as exc:
+        summary["peers"] = stock_data.error_payload(str(exc))
 
     return summary

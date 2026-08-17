@@ -315,6 +315,31 @@ class DataHistoryYahoo():
         )
         return yahoo_symbol_recommendations
 
+    def get_symbol_peer_symbols(self, symbol: str, limit: int = 5) -> list[str]:
+        info = self.get_endpoints_yahoo(symbol) or {}
+        recommended = info.get("recommendedSymbols") or []
+        peers: list[str] = []
+        symbol_upper = symbol.strip().upper()
+
+        for item in recommended:
+            peer_symbol = None
+            if isinstance(item, dict):
+                peer_symbol = item.get("symbol") or item.get("Symbol")
+            elif isinstance(item, str):
+                peer_symbol = item
+
+            if not peer_symbol:
+                continue
+
+            peer_symbol = str(peer_symbol).strip().upper()
+            if peer_symbol == symbol_upper or peer_symbol in peers:
+                continue
+            peers.append(peer_symbol)
+            if len(peers) >= limit:
+                break
+
+        return peers
+
     def get_sector_etf_info(self, sector: str, search_value: str = "info"):
         """
         Return information about symbol ETF sector.

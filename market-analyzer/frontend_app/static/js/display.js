@@ -590,6 +590,7 @@ export function populateYahooStockTable(containerId, data) {
 
 export function displayNewsList(payload, {
   containerId = "symbolNews",
+  summaryId = "newsSentimentSummary",
   locale = "pt-PT",
   timeZone = "Europe/Lisbon",
   limit = 30
@@ -597,8 +598,31 @@ export function displayNewsList(payload, {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const raw = Array.isArray(payload) ? payload : (payload?.data || []);
-  const items = dedupeByUrl(sortByDateDesc(raw.map(normalizeNewsItem))).slice(0, limit);
+  const summaryEl = summaryId ? document.getElementById(summaryId) : null;
+  const sentiment = payload?.sentiment;
+  if (summaryEl) {
+    if (sentiment?.sample_size) {
+      summaryEl.classList.remove("hidden");
+      summaryEl.innerHTML = `
+        <span class="news-sentiment-label news-sentiment-${(sentiment.label || "neutral").toLowerCase()}">${sentiment.label}</span>
+        <span class="news-sentiment-copy">
+          Average score ${Number(sentiment.compound_avg).toFixed(2)}
+          · ${sentiment.sample_size} headlines
+          · ${sentiment.positive_pct}% bullish / ${sentiment.neutral_pct}% neutral / ${sentiment.negative_pct}% bearish
+        </span>
+      `;
+    } else {
+      summaryEl.classList.add("hidden");
+      summaryEl.innerHTML = "";
+    }
+  }
+
+  const source = Array.isArray(payload)
+    ? payload
+    : (payload?.items?.length ? payload.items : (payload?.data || []));
+  const items = dedupeByUrl(
+    sortByDateDesc(source.map((item) => (item?.title ? item : normalizeNewsItem(item))))
+  ).slice(0, limit);
 
   container.classList.add("news-grid");
   container.innerHTML = items.length
@@ -626,8 +650,12 @@ export function displayDecisionVerdict(verdict) {
 
   if (confidence) {
     const fund = verdict.components?.fundamental;
+    const news = verdict.components?.news;
     const fundLabel = fund?.score_10 != null ? `${fund.score_10}/10 fundamentals` : "fundamentals n/a";
-    confidence.textContent = `Confidence ${verdict.confidence}% · ${fundLabel}`;
+    const newsLabel = news?.sample_size
+      ? ` · news ${news.label?.toLowerCase() || "neutral"} (${Number(news.compound_avg).toFixed(2)})`
+      : "";
+    confidence.textContent = `Confidence ${verdict.confidence}% · ${fundLabel}${newsLabel}`;
   }
 
   if (reasonsList) {
@@ -721,4 +749,56 @@ export function displayTradePlan(plan) {
   if (notes) {
     notes.textContent = (plan.notes || []).join(" ");
   }
+}
+
+function _formatMetricValue(value) {
+  if (value == null || Number.isNaN(Number(value))) return "—";
+  return Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 });
+}
+
+export function displayPeerComparison(payload) {
+  const table = document.getElementById("peerComparisonTable");
+  const meta = document.getElementById("peerComparisonMeta");
+  if (!table || !payload || payload.error) {
+    return;
+  }
+
+  const metrics = payload.metrics || [];
+  const rows = [payload.subject, ...(payload.peers || [])].filter(Boolean);
+
+  if (meta) {
+    const sectorPe = payload.sector_trailing_pe != null
+      ? ` · Sector P/E ${ _formatMetricValue(payload.sector_trailing_pe) }`
+      : "";
+    meta.textContent = `${payload.sector || "Unknown"} · ${payload.industry || "Unknown"}${sectorPe}`;
+  }
+
+  if (!rows.length || !metrics.length) {
+    table.innerHTML = `<caption class="peer-empty">No peer data available.</caption>`;
+    return;
+  }
+
+  const header = `
+    <thead>
+      <tr>
+        <th>Symbol</th>
+        <th>Company</th>
+        ${metrics.map((metric) => `<th>${metric.label}</th>`).join("")}
+      </tr>
+    </thead>
+  `;
+
+  const body = `
+    <tbody>
+      ${rows.map((row) => `
+        <tr class="${row.is_subject ? "peer-row-subject" : ""}">
+          <td><a href="/stock/${row.symbol}/">${row.symbol}</a></td>
+          <td>${row.company || row.symbol}</td>
+          ${metrics.map((metric) => `<td>${_formatMetricValue(row.metrics?.[metric.key])}</td>`).join("")}
+        </tr>
+      `).join("")}
+    </tbody>
+  `;
+
+  table.innerHTML = header + body;
 }

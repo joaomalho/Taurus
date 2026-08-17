@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Economic Calendar{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/economic_calendar.css' %}">
+<link rel="stylesheet" href="{% static 'css/mermaid.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="eco-calendar-header">
+  <a href="/">
+    <img class="header-logo-icon" alt="Logo" src="{% static 'images/logo.png' %}">
+  </a>
+  <div>
+    <h1>Economic Calendar</h1>
+    <p class="eco-calendar-subtitle">Macro events that can move markets — CPI, NFP, FOMC, GDP, and more.</p>
+  </div>
+</header>
+
+<section class="eco-calendar-page">
+  <div class="eco-calendar-toolbar">
+    <div class="eco-calendar-filters" role="tablist" aria-label="Calendar timeframe">
+      <button type="button" class="eco-filter active" data-timeframe="today">Today</button>
+      <button type="button" class="eco-filter" data-timeframe="tomorrow">Tomorrow</button>
+      <button type="button" class="eco-filter" data-timeframe="yesterday">Yesterday</button>
+      <button type="button" class="eco-filter" data-timeframe="this week">This week</button>
+      <button type="button" class="eco-filter" data-timeframe="next week">Next week</button>
+    </div>
+    <p id="ecoCalendarMeta" class="eco-calendar-meta">Loading…</p>
+  </div>
+
+  <p id="ecoCalendarNotice" class="eco-calendar-notice hidden"></p>
+  <p id="ecoCalendarError" class="eco-calendar-error"></p>
+  <div id="ecoCalendarTable" class="eco-calendar-table"></div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script type="module">
+  import { initEconomicCalendarPage } from "{% static 'js/economic_calendar.js' %}";
+  initEconomicCalendarPage();
+</script>
+{% endblock %}

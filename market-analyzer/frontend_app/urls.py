@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import (home, stock_page, stockbytop_page, get_stock_gainers, get_stock_trending,
+from .views import (home, stock_page, stockbytop_page, economic_calendar_page, get_economic_calendar,
+                    get_stock_gainers, get_stock_trending,
                     get_stock_most_active, get_dh, get_crossover_trend_metrics, get_adx_trend_metrics,
                     get_bollinger_bands_metrics, get_rsi_trend_metrics, get_candle_detection, get_inst_holders,
                     get_recommendations, get_fundamental_info, get_bio_info, get_fundamental_evaluations,
@@ -9,11 +10,15 @@ from .views import (home, stock_page, stockbytop_page, get_stock_gainers, get_st
                     get_fundamental_income_quarterly_download, get_fundamental_cashflow_quarterly_download,
                     get_fundamental_balance_sheet_quarterly_download, get_symbol_fundamental_news,
                     get_yahoo_symbol_earnings_dates, get_financial_health_chart_info, get_profitability_chart_info,
-                    get_efficiency_chart_info, get_stock_summary, get_pivot_points)
+                    get_efficiency_chart_info, get_stock_summary, get_pivot_points, get_stock_peers)
 
 urlpatterns = [
     # ------ MAIN PAGE ------
     path('', home, name='home'),
+
+    # ------ Economic Calendar ------
+    path('economic-calendar/', economic_calendar_page, name='economic_calendar_page'),
+    path('economic-calendar/events/', get_economic_calendar, name='get_economic_calendar'),
 
     # ------ PAGE STOCK ------
     path('stock/<str:symbol>/', stock_page, name='stock_page'),
@@ -27,6 +32,7 @@ urlpatterns = [
     path('stock/<str:symbol>/bollinger_trend/', get_bollinger_bands_metrics, name='get_bollinger_trend'),
     path('stock/<str:symbol>/rsi_trend/', get_rsi_trend_metrics, name='get_rsi_trend'),
     path('stock/<str:symbol>/pivot_points/', get_pivot_points, name='get_pivot_points'),
+    path('stock/<str:symbol>/peers/', get_stock_peers, name='get_stock_peers'),
     path('stock/<str:symbol>/candle_patterns/', get_candle_detection, name='get_candle_patterns'),
     path('stock/<str:symbol>/harmonic_patterns/', get_harmonic_patterns, name='get_harmonic_patterns'),
     path('stock/<str:symbol>/fundamental_info/', get_fundamental_info, name='get_fundamental_info'),

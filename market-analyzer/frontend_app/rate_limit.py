@@ -30,6 +30,8 @@ def get_client_ip(request) -> str:
 
 def is_stock_api_path(path: str) -> bool:
     parts = [part for part in path.split("/") if part]
+    if len(parts) >= 2 and parts[0] == "economic-calendar" and parts[1] == "events":
+        return True
     if len(parts) >= 3 and parts[0] == "stock":
         return True
     if len(parts) >= 2 and parts[0] == "stockbytop" and parts[1] != "":
