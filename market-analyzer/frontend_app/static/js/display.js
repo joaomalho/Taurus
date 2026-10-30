@@ -1,6 +1,6 @@
 import { formatPercent, formatMultiple, formatCurrency, formatNumber, formatDate } from "./utils/formatter.js";
 import { Grid, html } from "./plugins/gridjs.production.es.min.js";
-import {normalizeNewsItem, sortByDateDesc, dedupeByUrl, renderCard} from "./news.js";
+import {normalizeNewsItem, sortByDateDesc, dedupeByUrl, renderCard, escapeHTML} from "./news.js";
 
 /* ─────── HELPERS DE ESTILO POR BUCKET ─────── */
 function applyBadgeClass(el, bucket) {
@@ -604,7 +604,7 @@ export function displayNewsList(payload, {
     if (sentiment?.sample_size) {
       summaryEl.classList.remove("hidden");
       summaryEl.innerHTML = `
-        <span class="news-sentiment-label news-sentiment-${(sentiment.label || "neutral").toLowerCase()}">${sentiment.label}</span>
+        <span class="news-sentiment-label news-sentiment-${escapeHTML((sentiment.label || "neutral").toLowerCase())}">${escapeHTML(sentiment.label)}</span>
         <span class="news-sentiment-copy">
           Average score ${Number(sentiment.compound_avg).toFixed(2)}
           · ${sentiment.sample_size} headlines
@@ -660,7 +660,7 @@ export function displayDecisionVerdict(verdict) {
 
   if (reasonsList) {
     reasonsList.innerHTML = (verdict.reasons || [])
-      .map((reason) => `<li>${reason}</li>`)
+      .map((reason) => `<li>${escapeHTML(reason)}</li>`)
       .join("");
   }
 
@@ -783,7 +783,7 @@ export function displayPeerComparison(payload) {
       <tr>
         <th>Symbol</th>
         <th>Company</th>
-        ${metrics.map((metric) => `<th>${metric.label}</th>`).join("")}
+        ${metrics.map((metric) => `<th>${escapeHTML(metric.label)}</th>`).join("")}
       </tr>
     </thead>
   `;
@@ -792,8 +792,8 @@ export function displayPeerComparison(payload) {
     <tbody>
       ${rows.map((row) => `
         <tr class="${row.is_subject ? "peer-row-subject" : ""}">
-          <td><a href="/stock/${row.symbol}/">${row.symbol}</a></td>
-          <td>${row.company || row.symbol}</td>
+          <td><a href="/stock/${encodeURIComponent(row.symbol)}/">${escapeHTML(row.symbol)}</a></td>
+          <td>${escapeHTML(row.company || row.symbol)}</td>
           ${metrics.map((metric) => `<td>${_formatMetricValue(row.metrics?.[metric.key])}</td>`).join("")}
         </tr>
       `).join("")}

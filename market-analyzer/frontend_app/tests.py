@@ -56,6 +56,27 @@ class StockByTopAuthTests(TestCase):
 class RateLimitTests(TestCase):
     def setUp(self):
         cache.clear()
+        patcher = patch(
+            "frontend_app.views.stock_data.fetch_bio",
+            return_value={"data": {"name": "Apple Inc."}},
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_rate_limit_ignores_spoofed_forwarded_for(self):
+        url = reverse("get_bio_info", kwargs={"symbol": "AAPL"})
+        for i in range(2):
+            response = self.client.get(url, HTTP_X_FORWARDED_FOR=f"10.0.0.{i}")
+            self.assertNotEqual(response.status_code, 429)
+        response = self.client.get(url, HTTP_X_FORWARDED_FOR="10.0.0.99")
+        self.assertEqual(response.status_code, 429)
+
+    def test_rate_limit_uses_real_ip_from_proxy(self):
+        url = reverse("get_bio_info", kwargs={"symbol": "AAPL"})
+        for _ in range(2):
+            self.client.get(url, HTTP_X_REAL_IP="203.0.113.1")
+        self.assertEqual(self.client.get(url, HTTP_X_REAL_IP="203.0.113.1").status_code, 429)
+        self.assertNotEqual(self.client.get(url, HTTP_X_REAL_IP="203.0.113.2").status_code, 429)
 
     def test_stock_api_returns_429_when_limit_exceeded(self):
         url = reverse("get_bio_info", kwargs={"symbol": "AAPL"})
@@ -83,6 +104,12 @@ class RateLimitTests(TestCase):
 class HeavyRateLimitTests(TestCase):
     def setUp(self):
         cache.clear()
+        patcher = patch(
+            "frontend_app.views.stock_data.get_history_dataframe",
+            return_value=None,
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def test_heavy_endpoint_has_stricter_limit(self):
         url = reverse("get_candle_detection", kwargs={"symbol": "AAPL"})
@@ -372,8 +399,14 @@ class PivotPointsTests(TestCase):
         self.assertIn("levels", result)
         self.assertIn(result["signal"], ("Buy", "Sell", "Flat"))
 
+    @patch("frontend_app.views.stock_data.get_history_dataframe")
     @patch("frontend_app.views.technical_metrics.compute_pivot_points")
-    def test_pivot_endpoint(self, mock_compute):
+    def test_pivot_endpoint(self, mock_compute, mock_history):
+        import pandas as pd
+
+        mock_history.return_value = pd.DataFrame([
+            {"Date": "2026-08-15", "Open": 98, "High": 110, "Low": 90, "Close": 100},
+        ])
         mock_compute.return_value = {
             "symbol": "AAPL",
             "method": "classic",

@@ -3,6 +3,9 @@ import warnings
 from decimal import Decimal
 from datetime import datetime
 
+# Avoid hanging a web worker if a provider stops responding.
+HTTP_TIMEOUT_SECONDS = 15
+
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
 
@@ -16,7 +19,7 @@ class DataHistoryCrypto():
         url = "https://api.binance.com/api/v3/ticker/price"
         params = {"symbol": symbol}
 
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=HTTP_TIMEOUT_SECONDS)
 
         price = None
         error = None
@@ -32,7 +35,7 @@ class DataHistoryCrypto():
         url = "https://api.binance.com/api/v3/ticker/24hr"
         params = {"symbol": symbol}
 
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=HTTP_TIMEOUT_SECONDS)
 
         if response.status_code == 200:
             self.priceChangePercent = Decimal(

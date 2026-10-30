@@ -1,3 +1,4 @@
+import logging
 from concurrent.futures import ThreadPoolExecutor
 
 from frontend_app.services.decision_verdict import build_decision_verdict
@@ -6,14 +7,17 @@ from frontend_app.services import technical_metrics
 from frontend_app.services.peers import build_peer_comparison
 from frontend_app.services.trade_plan import build_trade_plan
 
+logger = logging.getLogger(__name__)
+
 
 def _run_section(name: str, fn) -> tuple[str, dict]:
     try:
         return name, fn()
     except ConnectionError:
         return name, stock_data.error_payload("Failed to connect to Provider API")
-    except Exception as exc:
-        return name, stock_data.error_payload(str(exc))
+    except Exception:
+        logger.exception("Summary section %s failed", name)
+        return name, stock_data.error_payload("Failed to load this section.")
 
 
 def build_stock_summary(symbol: str, *, portfolio_value: float | None = None, risk_percent: float | None = None) -> dict:
@@ -129,7 +133,8 @@ def build_stock_summary(symbol: str, *, portfolio_value: float | None = None, ri
 
     try:
         summary["peers"] = build_peer_comparison(symbol)
-    except Exception as exc:
-        summary["peers"] = stock_data.error_payload(str(exc))
+    except Exception:
+        logger.exception("Peer comparison failed for %s", symbol)
+        summary["peers"] = stock_data.error_payload("Failed to load peer comparison.")
 
     return summary
