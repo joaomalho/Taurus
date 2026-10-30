@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
+
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -24,14 +27,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-not-safe")
+_DEV_SECRET_KEY = "dev-only-not-safe"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", _DEV_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
+# Off unless explicitly enabled, so a missing .env never starts production in debug mode.
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
+
+if not DEBUG and SECRET_KEY == _DEV_SECRET_KEY:
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is not True."
+    )
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    SECURE_SSL_REDIRECT = True
+    # Set DJANGO_SECURE_SSL_REDIRECT=False only if nothing in front of nginx
+    # terminates TLS; otherwise every request would redirect to https forever.
+    SECURE_SSL_REDIRECT = (
+        os.environ.get("DJANGO_SECURE_SSL_REDIRECT", "True").lower() == "true"
+    )
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
@@ -102,6 +116,18 @@ CACHES = {
     },
 }
 
+
+# Durante os testes, usa cache em memória: os testes ficam isolados do Redis real
+# (cache.clear() nos testes não apaga a cache nem as sessões da app a correr).
+TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"
+if TESTING:
+    CACHES = {
+        alias: {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": f"taurus-test-{alias}",
+        }
+        for alias in CACHES
+    }
 
 # Sessões em cache (melhor performance em multi-pod)
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -234,3 +260,20 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # dev
+
+# Logging: send app errors (e.g. server_error_response) to stdout so they show
+# up in `docker compose logs`.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"},
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "simple"},
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": os.environ.get("LOG_LEVEL", "INFO"),
+    },
+}

@@ -1,6 +1,10 @@
+import logging
+
 from django.http import Http404, JsonResponse
 
 from frontend_app.symbols import normalize_symbol, validate_symbol
+
+logger = logging.getLogger(__name__)
 
 
 def missing_symbol_response():
@@ -12,7 +16,10 @@ def provider_error_response(message: str = "Failed to connect to Yahoo Finance A
 
 
 def server_error_response(exc: Exception):
-    return JsonResponse({"error": f"Unexpected server error: {str(exc)}"}, status=500)
+    # Full details go to the server log; the client only gets a generic message
+    # so internal paths, queries or provider errors are never exposed.
+    logger.error("Unexpected server error", exc_info=exc)
+    return JsonResponse({"error": "Unexpected server error."}, status=500)
 
 
 def error_response(payload: dict, default_status: int = 404):

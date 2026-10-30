@@ -11,6 +11,9 @@ from bs4 import BeautifulSoup
 from django.core.cache import cache
 from backend.funcionalities.formulas import Formulas
 
+# Avoid hanging a web worker if a provider stops responding.
+HTTP_TIMEOUT_SECONDS = 15
+
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
 
@@ -113,7 +116,7 @@ class DataHistoryYahoo():
         }
 
         try:
-            response = requests.get("https://finance.yahoo.com/markets/stocks/gainers/?start=0&count=100", headers=headers)
+            response = requests.get("https://finance.yahoo.com/markets/stocks/gainers/?start=0&count=100", headers=headers, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -167,7 +170,7 @@ class DataHistoryYahoo():
         }
 
         try:
-            response = requests.get("https://finance.yahoo.com/markets/stocks/most-active/?start=0&count=100", headers=headers)
+            response = requests.get("https://finance.yahoo.com/markets/stocks/most-active/?start=0&count=100", headers=headers, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -221,7 +224,7 @@ class DataHistoryYahoo():
         }
 
         try:
-            response = requests.get("https://finance.yahoo.com/markets/stocks/trending/", headers=headers)
+            response = requests.get("https://finance.yahoo.com/markets/stocks/trending/", headers=headers, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -1158,7 +1161,7 @@ class DataHistoryYahoo():
         }
 
         try:
-            response = requests.get("https://finance.yahoo.com/markets/world-indices/", headers=headers)
+            response = requests.get("https://finance.yahoo.com/markets/world-indices/", headers=headers, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -1207,7 +1210,7 @@ class DataHistoryYahoo():
         }
 
         try:
-            response = requests.get("https://finance.yahoo.com/markets/crypto/gainers/?start=0&count=100", headers=headers)
+            response = requests.get("https://finance.yahoo.com/markets/crypto/gainers/?start=0&count=100", headers=headers, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -1259,7 +1262,7 @@ class DataHistoryYahoo():
         }
 
         try:
-            response = requests.get("https://finance.yahoo.com/markets/crypto/most-active/?start=0&count=100", headers=headers)
+            response = requests.get("https://finance.yahoo.com/markets/crypto/most-active/?start=0&count=100", headers=headers, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -1311,7 +1314,7 @@ class DataHistoryYahoo():
         }
 
         try:
-            response = requests.get("https://finance.yahoo.com/markets/crypto/trending/", headers=headers)
+            response = requests.get("https://finance.yahoo.com/markets/crypto/trending/", headers=headers, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')

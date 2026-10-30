@@ -22,9 +22,16 @@ HEAVY_PATH_SUFFIXES = (
 
 
 def get_client_ip(request) -> str:
-    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-    if forwarded_for:
-        return forwarded_for.split(",")[0].strip()
+    """Return the client IP used for rate limiting.
+
+    X-Forwarded-For is deliberately ignored: nginx appends to whatever the client
+    sent, so its first entry is attacker-controlled and would let anyone bypass
+    the limit by sending a different value on each request. nginx overwrites
+    X-Real-IP with $remote_addr, so that header can be trusted behind the proxy.
+    """
+    real_ip = (request.META.get("HTTP_X_REAL_IP") or "").strip()
+    if real_ip:
+        return real_ip
     return request.META.get("REMOTE_ADDR", "127.0.0.1")
 
 

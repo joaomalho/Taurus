@@ -46,7 +46,19 @@ jobs:
         run: docker compose exec -T web python manage.py check
 
       - name: Run tests
-        run: docker compose exec -T web python manage.py test
+        run: |
+          set -o pipefail
+          docker compose exec -T web python manage.py test -v 2 2>&1 | tee test-output.log
+
+      - name: Report test failures
+        if: failure()
+        run: |
+          # Surface failing tests and tracebacks as an annotation on the PR
+          summary=$(grep -E -A 25 '^(ERROR|FAIL):' test-output.log | head -n 150 || true)
+          [ -z "$summary" ] && summary=$(tail -n 80 test-output.log)
+          summary="${summary//'%'/'%25'}"
+          summary="${summary//$'\n'/'%0A'}"
+          echo "::error title=Django tests failed::${summary}"
 
       - name: Shutdown
         if: always()

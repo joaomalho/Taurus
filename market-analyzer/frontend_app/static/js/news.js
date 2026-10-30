@@ -86,7 +86,17 @@ function dedupe(arr){
   });
 }
 
-function escapeHTML(s=""){ return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+export function escapeHTML(s=""){ return String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+
+// Only allow http(s) links from third-party data; blocks javascript:/data: URLs.
+export function safeUrl(url){
+  try {
+    const parsed = new URL(String(url ?? ""), window.location.origin);
+    return ["http:", "https:"].includes(parsed.protocol) ? escapeHTML(parsed.href) : "#";
+  } catch {
+    return "#";
+  }
+}
 function timeAgo(iso, now=new Date()){
   const d = (now - new Date(iso))/1000;
   if(d<60) return "agora";
@@ -107,36 +117,36 @@ export function renderCard(item, opts){
   const ago = timeAgo(item.publishedAt);
   const badges = [
     item.sentiment?.label
-      ? `<span class="news-badge badge-sentiment-${item.sentiment.label.toLowerCase()}">${item.sentiment.label}</span>`
+      ? `<span class="news-badge badge-sentiment-${escapeHTML(item.sentiment.label.toLowerCase())}">${escapeHTML(item.sentiment.label)}</span>`
       : "",
     item.isEditorsPick ? `<span class="news-badge badge-editors">Editor’s pick</span>` : "",
     item.isPremium ? `<span class="news-badge badge-premium">Premium</span>` : "",
     item.contentType === "VIDEO" ? `<span class="news-badge badge-video">Vídeo</span>` : ""
   ].join("");
   const img = item.imageUrl
-    ? `<div class="news-thumb"><img src="${item.imageUrl}" alt="${title}" loading="lazy"></div>`
+    ? `<div class="news-thumb"><img src="${safeUrl(item.imageUrl)}" alt="${title}" loading="lazy"></div>`
     : `<div class="news-thumb placeholder"></div>`;
   const summary = item.summary ? `<p class="news-summary">${escapeHTML(item.summary)}</p>` : "";
   const related = item.related?.length
     ? `<div class="news-related">
          ${item.related.slice(0,4).map(r =>
-           `<a class="news-related-chip" href="${r.url}" target="_blank" rel="noopener noreferrer">${r.type==="VIDEO"?"+ ":""}${escapeHTML(r.title)}</a>`
+           `<a class="news-related-chip" href="${safeUrl(r.url)}" target="_blank" rel="noopener noreferrer">${r.type==="VIDEO"?"+ ":""}${escapeHTML(r.title)}</a>`
          ).join("")}
        </div>` : "";
 
   return `
   <article class="news-card">
-    <a class="news-link" href="${item.url}" target="_blank" rel="noopener noreferrer" aria-label="${title}">
+    <a class="news-link" href="${safeUrl(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="${title}">
       ${img}
       <header class="news-header">
         <div class="news-badges">${badges}</div>
-        <span class="news-timeago">${ago}</span>
+        <span class="news-timeago">${escapeHTML(ago)}</span>
       </header>
       <h3 class="news-title">${title}</h3>
       ${summary}
       <footer class="news-footer">
         <span class="news-provider">${provider}</span>
-        <time datetime="${item.publishedAt}">${published}</time>
+        <time datetime="${escapeHTML(item.publishedAt)}">${escapeHTML(published)}</time>
       </footer>
     </a>
     ${related}
