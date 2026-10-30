@@ -112,7 +112,7 @@ class HeavyRateLimitTests(TestCase):
         self.addCleanup(patcher.stop)
 
     def test_heavy_endpoint_has_stricter_limit(self):
-        url = reverse("get_candle_detection", kwargs={"symbol": "AAPL"})
+        url = reverse("get_candle_patterns", kwargs={"symbol": "AAPL"})
         self.assertNotEqual(self.client.get(url).status_code, 429)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 429)
